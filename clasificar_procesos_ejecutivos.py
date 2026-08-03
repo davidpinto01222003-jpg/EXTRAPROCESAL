@@ -344,6 +344,31 @@ def _candidatos_en_drive(servicio, terminos):
     return list(vistos.values())
 
 
+# Cache de [(archivo, carpeta), ...] ya encontrados en Drive para un
+# radicado, indexado por radicado. Un proceso "acumulado" (mismo numero
+# y mismo radicado en varias cuentas -- ver modulo docstring) genera
+# una fila por cuenta, y las 7, 10 o mas filas de un mismo acumulado
+# comparten la MISMA carpeta de Drive: sin esta cache, cada fila
+# repetia la busqueda y volvia a listar/leer los mismos archivos desde
+# cero. Solo se cachea cuando hay radicado -- sin el (ej. NO INICIO),
+# cada fila depende de su propia cuenta y no hay nada compartido que
+# cachear.
+_CACHE_ARCHIVOS_POR_RADICADO = {}
+
+
+def _buscar_archivos(servicio, radicado, cuentas):
+    if radicado and radicado in _CACHE_ARCHIVOS_POR_RADICADO:
+        return _CACHE_ARCHIVOS_POR_RADICADO[radicado]
+
+    terminos = _terminos_busqueda(radicado, cuentas)
+    candidatos = _candidatos_en_drive(servicio, terminos)
+    archivos = _archivos_de_candidatos(servicio, candidatos, radicado)
+
+    if radicado:
+        _CACHE_ARCHIVOS_POR_RADICADO[radicado] = archivos
+    return archivos
+
+
 def _archivos_de_candidatos(servicio, candidatos, radicado):
     """
     A partir de los candidatos de Drive (carpetas o archivos sueltos que
@@ -389,38 +414,55 @@ def _archivos_de_candidatos(servicio, candidatos, radicado):
     return list(vistos.values())
 
 
-def _archivo_es_seguro(servicio, archivo, nombre_carpeta, demandados):
-    """
-    Aplica la regla obligatoria de buscar_faltantes_en_drive.py: el
-    documento (o su carpeta contenedora) tiene que mencionar a ESSA/
-    Electrificadora de Santander, y no debe contradecir al DEMANDADO
-    esperado del Excel.
-    """
-    contextos = [nombre_carpeta, archivo.get("name", "")]
-    tiene_essa = any(
-        buscador._nombre_coincide(texto, termino)
-        for texto in contextos for termino in buscador.TERMINOS_DEMANDANTE_VALIDO
-    )
-    if not tiene_essa:
-        tiene_essa = buscador._archivos_tienen_demandante_valido(servicio, [archivo])
-    if not tiene_essa:
-        return False, "no se confirmo que el proceso sea de ESSA/Electrificadora de Santander"
-
-    for demandado in demandados:
-        resultado = buscador._demandado_coincide_en_varios(contextos, demandado)
-        if resultado is False:
-            return False, f"el nombre en el documento no corresponde al demandado esperado ({demandado})"
-
-    return True, "ok"
+# Cache del contenido normalizado (nombre + texto de PDF/DOCX) de cada
+# archivo de Drive ya leido en esta corrida -- indexado por el ID del
+# archivo. Sin esto, un mismo archivo se terminaba descargando/leyendo
+# DOS veces (una para _archivo_es_seguro, otra para clasificarlo), y
+# ademas una vez POR CADA fila de un proceso "acumulado" que comparte
+# el mismo radicado (ver _buscar_archivos) -- con carpetas de cientos
+# de PDF y procesos con varias cuentas, eso se sentia como si el script
+# estuviera pegado.
+_CACHE_CONTENIDO_ARCHIVO = {}
 
 
 def _info_documento(servicio, archivo):
-    """Contenido normalizado (nombre + texto de PDF/DOCX si aplica) -- ver funciones de clasificacion mas abajo."""
+    """Contenido normalizado (nombre + texto de PDF/DOCX si aplica) -- cacheado por ID de archivo."""
+    archivo_id = archivo.get("id")
+    if archivo_id in _CACHE_CONTENIDO_ARCHIVO:
+        return _CACHE_CONTENIDO_ARCHIVO[archivo_id]
+
     nombre = archivo.get("name", "")
     texto = ""
     if Path(nombre).suffix.lower() in buscador.EXTENSIONES_CONTENIDO_DRIVE:
         texto = buscador._texto_de_archivo_drive(servicio, archivo)
-    return buscador._normalizar_para_comparar(nombre + " " + texto)
+    contenido = buscador._normalizar_para_comparar(nombre + " " + texto)
+
+    if archivo_id:
+        _CACHE_CONTENIDO_ARCHIVO[archivo_id] = contenido
+    return contenido
+
+
+def _archivo_es_seguro(nombre_carpeta, archivo, contenido_normalizado, demandados):
+    """
+    Aplica la regla obligatoria de buscar_faltantes_en_drive.py: el
+    documento (o su carpeta contenedora) tiene que mencionar a ESSA/
+    Electrificadora de Santander, y no debe contradecir al DEMANDADO
+    esperado del Excel. Reutiliza 'contenido_normalizado' (ya leido por
+    _info_documento) en vez de volver a descargar el archivo para
+    revisar el demandante, como hacia la version anterior.
+    """
+    contexto_nombre = buscador._normalizar_para_comparar(f"{nombre_carpeta} {archivo.get('name', '')}")
+    terminos_essa = [buscador._normalizar_para_comparar(t) for t in buscador.TERMINOS_DEMANDANTE_VALIDO]
+    tiene_essa = any(t in contexto_nombre for t in terminos_essa) or any(t in contenido_normalizado for t in terminos_essa)
+    if not tiene_essa:
+        return False, "no se confirmo que el proceso sea de ESSA/Electrificadora de Santander"
+
+    for demandado in demandados:
+        resultado = buscador._demandado_coincide_en_varios([contexto_nombre, contenido_normalizado], demandado)
+        if resultado is False:
+            return False, f"el nombre en el documento no corresponde al demandado esperado ({demandado})"
+
+    return True, "ok"
 
 
 def es_informacion_no_procesal(contenido_normalizado):
@@ -647,18 +689,16 @@ def procesar_con_radicado(servicio, proceso, carpetas_existentes, credenciales_c
             carpetas_existentes.add(nombre_carpeta)
             logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, proceso["estado"], proceso["fila_excel"], nombre_carpeta)
 
-    terminos = _terminos_busqueda(radicado, proceso["cuentas"])
-    candidatos = _candidatos_en_drive(servicio, terminos)
-    archivos = _archivos_de_candidatos(servicio, candidatos, radicado)
+    archivos = _buscar_archivos(servicio, radicado, proceso["cuentas"])
 
     subidos = 0
     for archivo, carpeta in archivos:
-        seguro, motivo = _archivo_es_seguro(servicio, archivo, carpeta.get("name", ""), proceso["demandados"])
+        contenido_norm = _info_documento(servicio, archivo)
+        seguro, motivo = _archivo_es_seguro(carpeta.get("name", ""), archivo, contenido_norm, proceso["demandados"])
         if not seguro:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
 
-        contenido_norm = _info_documento(servicio, archivo)
         es_no_procesal, motivo = es_informacion_no_procesal(contenido_norm)
         if not es_no_procesal:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
@@ -694,23 +734,21 @@ def procesar_terminado(servicio, proceso, carpetas_existentes, pendientes):
             carpetas_existentes.add(nombre_carpeta)
             logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, estado, proceso["fila_excel"], nombre_carpeta)
 
-    terminos = _terminos_busqueda(radicado, proceso["cuentas"])
-    if not terminos:
+    if not _terminos_busqueda(radicado, proceso["cuentas"]):
         pendientes.append(proceso)
         logging.warning("Proceso %s (%s): no hay radicado ni cuenta valida para buscar en Drive, queda pendiente.", numero, estado)
         return
 
-    candidatos = _candidatos_en_drive(servicio, terminos)
-    archivos = _archivos_de_candidatos(servicio, candidatos, radicado)
+    archivos = _buscar_archivos(servicio, radicado, proceso["cuentas"])
 
     encontrado = False
     for archivo, carpeta in archivos:
-        seguro, motivo = _archivo_es_seguro(servicio, archivo, carpeta.get("name", ""), proceso["demandados"])
+        contenido_norm = _info_documento(servicio, archivo)
+        seguro, motivo = _archivo_es_seguro(carpeta.get("name", ""), archivo, contenido_norm, proceso["demandados"])
         if not seguro:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
 
-        contenido_norm = _info_documento(servicio, archivo)
         if not es_auto_terminador(contenido_norm):
             continue
 
