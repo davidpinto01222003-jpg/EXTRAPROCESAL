@@ -16,8 +16,19 @@ de negocio según el `ESTADO PROCESAL` de cada fila:
    o `"<numero>. <ESTADO PROCESAL>"` si todavía no lo tiene (mismo
    formato que la regla 2). SOLO se sube información NO procesal:
    tutelas, derechos de petición, y correos de cobro (ver
-   `es_informacion_no_procesal`) -- se busca tanto en Google Drive como
-   (opcional, ver `BUSCAR_EN_CORREO`) en TODO el Gmail.
+   `es_informacion_no_procesal`) -- se busca en Google Drive por
+   radicado/radicado corto/cuenta (igual que el resto del proyecto), y
+   (opcional, ver `BUSCAR_EN_CORREO`) en TODO el Gmail, pero en Gmail
+   la búsqueda es AL REVÉS: en vez de buscar por radicado, se busca
+   directamente por tutela/derecho de petición/cobro (una sola vez
+   para toda la corrida, no una vez por proceso) y CADA correo
+   encontrado se empareja después con el proceso correcto si coincide
+   su radicado, su cuenta, O el nombre de su demandado (cualquiera de
+   los tres alcanza) -- ver `buscar_correo_global_informacion_no_procesal`
+   y `_procesos_que_coinciden_con_correo`. Esto encuentra correos que
+   una búsqueda por radicado se perdería (ej. un derecho de petición
+   que solo menciona el nombre del demandado o la cuenta, no el
+   radicado exacto).
 
 2. Procesos terminados por pago, por auto, por contrato/prepago, o que
    nunca se presentaron (`ESTADO PROCESAL` que empieza con `TERMINADO`
@@ -545,18 +556,6 @@ def buscar_correo_informacion_no_procesal(usuario: str, app_password: str, termi
     return resultados
 
 
-def _correo_es_seguro(contenido_normalizado, demandados):
-    """Version del chequeo de seguridad de _archivo_es_seguro, pero sobre texto de correo (sin llamar a Drive)."""
-    tiene_essa = any(buscador._nombre_coincide(contenido_normalizado, t) for t in buscador.TERMINOS_DEMANDANTE_VALIDO)
-    if not tiene_essa:
-        return False, "no se confirmo que el proceso sea de ESSA/Electrificadora de Santander"
-    for demandado in demandados:
-        resultado = buscador._demandado_coincide_en_texto(contenido_normalizado, demandado)
-        if resultado is False:
-            return False, f"el nombre en el correo no corresponde al demandado esperado ({demandado})"
-    return True, "ok"
-
-
 def _extraer_pdfs_de_zip(contenido: bytes, destino: Path) -> int:
     extraidos = 0
     try:
@@ -603,64 +602,147 @@ def _guardar_correo(correo: dict, destino: Path) -> int:
     return guardados
 
 
-def _procesar_correo_no_procesal(proceso, destino: Path, nombre_carpeta: str, credenciales_correo) -> int:
-    numero = proceso["numero"]
-    usuario, app_password = credenciales_correo
-    terminos = _terminos_busqueda(proceso["radicado"], proceso["cuentas"])
-    if not terminos:
-        logging.info("   [Correo] Proceso %s: sin radicado/cuenta valida para buscar en Gmail, se omite.", numero)
-        return 0
-
-    subidos = 0
-    vistos = set()
-    total_correos_revisados = 0
-    for termino in terminos:
+def buscar_correo_global_informacion_no_procesal(usuario: str, app_password: str):
+    """
+    Busca en TODO Gmail, UNA SOLA VEZ para toda la corrida (no una vez
+    por proceso), los correos que mencionen alguna de las frases de
+    PALABRAS_TIPO_INFORMACION_FUERTES o PALABRAS_CORREO_DE_COBRO --
+    exactamente las que usa es_informacion_no_procesal. Se busca por
+    TIPO de correo (tutela/derecho de peticion/cobro), no por radicado:
+    un correo de este tipo no siempre menciona el radicado exacto tal
+    como Gmail lo indexaria, así que primero se encuentra por su
+    contenido y DESPUES se empareja con el proceso correcto por
+    radicado, cuenta, o nombre del demandado -- ver
+    _procesos_que_coinciden_con_correo. Devuelve la lista de correos
+    (sin duplicados, [{"asunto", "cuerpo", "adjuntos", "fecha"}, ...]).
+    """
+    vistos = {}
+    for frase in PALABRAS_TIPO_INFORMACION_FUERTES + PALABRAS_CORREO_DE_COBRO:
         try:
-            correos = buscar_correo_informacion_no_procesal(usuario, app_password, termino)
+            correos = buscar_correo_informacion_no_procesal(usuario, app_password, frase)
         except Exception as error:
-            logging.error("[Correo] Proceso %s: fallo buscando '%s': %s", numero, termino, error)
+            logging.error("[Correo] Fallo buscando '%s' en Gmail: %s", frase, error)
+            continue
+        for correo in correos:
+            vistos[(correo["asunto"], correo["fecha"])] = correo
+    return list(vistos.values())
+
+
+def _indexar_procesos_para_correo(procesos):
+    """
+    Indices para emparejar un correo (encontrado por TIPO: tutela/
+    peticion/cobro) con el/los proceso(s) al que corresponde, por
+    radicado, por cuenta, o por palabra significativa del nombre del
+    demandado. Un mismo correo puede corresponder a mas de un proceso
+    (ej. un proceso "acumulado" con varias cuentas bajo un radicado).
+    """
+    por_radicado, por_cuenta, por_palabra_demandado = {}, {}, {}
+    for proceso in procesos:
+        if proceso["radicado"]:
+            por_radicado.setdefault(proceso["radicado"], []).append(proceso)
+        for cuenta in proceso["cuentas"]:
+            if buscador._cuenta_es_valida_para_buscar(cuenta):
+                por_cuenta.setdefault(cuenta, []).append(proceso)
+        for demandado in proceso["demandados"]:
+            for palabra in buscador._palabras_significativas(demandado):
+                por_palabra_demandado.setdefault(palabra, []).append(proceso)
+    return por_radicado, por_cuenta, por_palabra_demandado
+
+
+def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
+    """
+    Devuelve los procesos (sin duplicados) a los que este correo
+    corresponde: basta con que coincida el radicado, la cuenta, O el
+    nombre del demandado (cualquiera de los tres, no hace falta que
+    coincidan todos).
+    """
+    por_radicado, por_cuenta, por_palabra_demandado = indices
+    encontrados = {}
+
+    for radicado, procesos in por_radicado.items():
+        terminos = [radicado] + buscador.radicados_cortos(radicado)
+        if any(buscador._nombre_coincide(contenido_normalizado, t) for t in terminos):
+            for proceso in procesos:
+                encontrados[proceso["nombre_carpeta"]] = proceso
+
+    for cuenta, procesos in por_cuenta.items():
+        if buscador._nombre_coincide(contenido_normalizado, cuenta):
+            for proceso in procesos:
+                encontrados[proceso["nombre_carpeta"]] = proceso
+
+    palabras_en_correo = set(re.findall(r"[A-ZÑ]+", contenido_normalizado))
+    for palabra in palabras_en_correo:
+        for proceso in por_palabra_demandado.get(palabra, []):
+            encontrados[proceso["nombre_carpeta"]] = proceso
+
+    return list(encontrados.values())
+
+
+def procesar_correos_no_procesal(correos, procesos_con_radicado, carpetas_existentes):
+    """
+    Clasifica los correos ya encontrados globalmente (ver
+    buscar_correo_global_informacion_no_procesal) y los adjunta a la
+    carpeta de CADA proceso con el que coincidan por radicado, cuenta o
+    demandado (ver _procesos_que_coinciden_con_correo). Siempre exige
+    ademas que el correo mencione a ESSA/Electrificadora de Santander.
+    """
+    indices = _indexar_procesos_para_correo(procesos_con_radicado)
+    sin_proceso = 0
+    adjuntados = 0
+
+    for correo in correos:
+        contenido_norm = buscador._normalizar_para_comparar(
+            correo["asunto"] + " " + correo["cuerpo"] + " " + " ".join(n for n, _ in correo["adjuntos"])
+        )
+        es_no_procesal, motivo = es_informacion_no_procesal(contenido_norm)
+        if not es_no_procesal:
             continue
 
-        total_correos_revisados += len(correos)
-        for correo in correos:
-            clave = (correo["asunto"], correo["fecha"])
-            if clave in vistos:
-                continue
-
-            contenido_norm = buscador._normalizar_para_comparar(
-                correo["asunto"] + " " + correo["cuerpo"] + " " + " ".join(n for n, _ in correo["adjuntos"])
+        procesos_coincidentes = _procesos_que_coinciden_con_correo(contenido_norm, indices)
+        if not procesos_coincidentes:
+            sin_proceso += 1
+            logging.info(
+                "   [Correo] '%s' parece %s, pero no coincide con el radicado/cuenta/demandado de ningun "
+                "proceso -- no se pudo emparejar, se omite.", correo["asunto"], motivo,
             )
-            es_no_procesal, motivo = es_informacion_no_procesal(contenido_norm)
-            if not es_no_procesal:
-                continue
+            continue
 
-            seguro, motivo_seguridad = _correo_es_seguro(contenido_norm, proceso["demandados"])
-            if not seguro:
-                logging.info("   (se omite el correo '%s' del proceso %s: %s)", correo["asunto"], numero, motivo_seguridad)
-                continue
+        tiene_essa = any(buscador._nombre_coincide(contenido_norm, t) for t in buscador.TERMINOS_DEMANDANTE_VALIDO)
+        if not tiene_essa:
+            logging.info(
+                "   [Correo] se omite '%s': no se confirmo que sea de ESSA/Electrificadora de Santander.",
+                correo["asunto"],
+            )
+            continue
 
-            vistos.add(clave)
+        for proceso in procesos_coincidentes:
+            numero, nombre_carpeta = proceso["numero"], proceso["nombre_carpeta"]
+            destino = Path(CARPETA_PROCESOS) / nombre_carpeta
+
             if MODO_PRUEBA:
                 logging.info(
                     "[SIMULACION] Proceso %s: subiria el correo '%s' (%s) a '%s'.",
                     numero, correo["asunto"], motivo, nombre_carpeta,
                 )
-                subidos += 1
+                adjuntados += 1
                 continue
+
+            if nombre_carpeta not in carpetas_existentes:
+                destino.mkdir(parents=True, exist_ok=True)
+                carpetas_existentes.add(nombre_carpeta)
+                logging.info("[Creada] Proceso %s: carpeta '%s' (encontrada por correo).", numero, nombre_carpeta)
 
             guardados = _guardar_correo(correo, destino)
             logging.info(
                 "[Descargado] Proceso %s: correo '%s' (%s) -> %d archivo(s) en %s",
                 numero, correo["asunto"], motivo, guardados, nombre_carpeta,
             )
-            subidos += guardados
+            adjuntados += guardados
 
     logging.info(
-        "   [Correo] Proceso %s: %d termino(s) buscado(s) en Gmail (%s), %d correo(s) encontrado(s) en total, "
-        "%d con informacion no procesal.",
-        numero, len(terminos), ", ".join(terminos), total_correos_revisados, subidos,
+        "[Correo] %d correo(s) de informacion no procesal adjuntados a algun proceso; %d no se pudieron "
+        "emparejar con ningun proceso conocido.", adjuntados, sin_proceso,
     )
-    return subidos
 
 
 # ==================== Carpetas en disco ====================
@@ -689,8 +771,13 @@ def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
 # ==================== Procesamiento por fila ====================
 
 
-def procesar_con_radicado(servicio, proceso, carpetas_existentes, credenciales_correo):
-    """Filas que NO son terminadas (activo, suspendido, reorganizacion, remitida a castigo/prepago, etc)."""
+def procesar_con_radicado(servicio, proceso, carpetas_existentes):
+    """
+    Filas que NO son terminadas (activo, suspendido, reorganizacion,
+    remitida a castigo/prepago, etc). La busqueda en Gmail para estas
+    filas NO se hace aqui -- se hace UNA vez para todas al final, ver
+    procesar_correos_no_procesal.
+    """
     numero, radicado = proceso["numero"], proceso["radicado"]
     nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
@@ -725,13 +812,10 @@ def procesar_con_radicado(servicio, proceso, carpetas_existentes, credenciales_c
             logging.info("[Descargado] Proceso %s: '%s' -> %s", numero, archivo["name"], ruta)
         subidos += 1
 
-    if credenciales_correo:
-        subidos += _procesar_correo_no_procesal(proceso, destino, nombre_carpeta, credenciales_correo)
-
     if subidos == 0:
         logging.info(
-            "Proceso %s (%s, radicado %s): no se encontro informacion no procesal (tutelas/derechos de "
-            "peticion/correos de cobro) para subir todavia.", numero, proceso["estado"], radicado,
+            "Proceso %s (%s, radicado %s): no se encontro informacion no procesal en Drive todavia "
+            "(el correo se revisa aparte, al final de la corrida).", numero, proceso["estado"], radicado,
         )
 
 
@@ -811,8 +895,8 @@ def procesar():
             )
         else:
             logging.info(
-                "[Correo] Credenciales encontradas (%s) -- se buscara tambien en Gmail para cada proceso "
-                "(vas a ver una linea '[Correo] Proceso N: ...' por cada uno, aunque no encuentre nada).",
+                "[Correo] Credenciales encontradas (%s) -- se buscara en Gmail por tutela/derecho de peticion/"
+                "correo de cobro (no por radicado), y se emparejara cada correo con su proceso al final.",
                 credenciales_correo[0],
             )
 
@@ -820,9 +904,20 @@ def procesar():
 
     for proceso in con_radicado:
         try:
-            procesar_con_radicado(servicio, proceso, carpetas_existentes, credenciales_correo)
+            procesar_con_radicado(servicio, proceso, carpetas_existentes)
         except Exception as error:
             logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
+
+    if credenciales_correo:
+        try:
+            correos = buscar_correo_global_informacion_no_procesal(*credenciales_correo)
+            logging.info(
+                "[Correo] %d correo(s) de tutela/derecho de peticion/cobro encontrados en todo Gmail -- "
+                "emparejando con los procesos...", len(correos),
+            )
+            procesar_correos_no_procesal(correos, con_radicado, carpetas_existentes)
+        except Exception as error:
+            logging.error("[Correo] Fallo la busqueda global en Gmail, se omite: %s", error)
 
     pendientes = []
     for proceso in terminados:

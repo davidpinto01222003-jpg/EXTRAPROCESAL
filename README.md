@@ -815,15 +815,26 @@ el correo** (no solo la bandeja de entrada) para esto, y el script ya
 lo hace si `BUSCAR_EN_CORREO = True` (por defecto) y existe
 `credenciales_sgde.txt` (las mismas credenciales que ya usa
 `procesos_juridicos.py`/`buscar_faltantes_en_drive.py`, ver más abajo).
-Usa la misma búsqueda de Gmail por `X-GM-RAW` sobre "Todos los
-mensajes" que ya usa `buscar_faltantes_en_drive.py` para el radicado/
-radicado corto/cuenta de cada proceso, pero revisando además el
-**cuerpo** del correo y **cualquier adjunto** (no solo enlaces de Drive
-o adjuntos `.zip`, que era todo lo que miraba ese script). Si el correo
-clasifica como tutela/petición/cobro: se guardan sus adjuntos PDF/DOCX
-(extrayendo los que vengan dentro de un `.zip`), o si no trae ningún
-adjunto útil, se guarda el asunto + cuerpo como un `.txt` simple para
-no perder la información.
+
+A diferencia de Drive (donde sí se busca por radicado/radicado corto/
+cuenta de cada proceso, uno por uno), en Gmail la búsqueda es **al
+revés**: se busca **una sola vez para toda la corrida** por tutela/
+derecho de petición/correo de cobro directamente (no por radicado), y
+**cada correo encontrado se empareja después con el proceso correcto**
+si coincide su radicado, su cuenta, **o** el nombre de su demandado
+(con que coincida cualquiera de los tres alcanza -- no hace falta que
+coincidan los tres). Esto encuentra correos que una búsqueda por
+radicado se perdería (ej. un derecho de petición que en el cuerpo solo
+menciona el nombre del demandado o la cuenta, no el radicado exacto).
+Un mismo correo puede terminar adjuntado a más de un proceso si aplica
+a varios (ej. un proceso "acumulado" con varias cuentas). Igual que en
+Drive, siempre se exige además que el correo mencione a ESSA/
+Electrificadora de Santander.
+
+Si el correo clasifica y se emparejó con algún proceso: se guardan sus
+adjuntos PDF/DOCX (extrayendo los que vengan dentro de un `.zip`), o si
+no trae ningún adjunto útil, se guarda el asunto + cuerpo como un
+`.txt` simple para no perder la información.
 
 La clasificación de "información no procesal" y de "documento que
 termina el proceso" es por **palabras clave** (nombre/asunto y, si es
