@@ -608,10 +608,12 @@ def _procesar_correo_no_procesal(proceso, destino: Path, nombre_carpeta: str, cr
     usuario, app_password = credenciales_correo
     terminos = _terminos_busqueda(proceso["radicado"], proceso["cuentas"])
     if not terminos:
+        logging.info("   [Correo] Proceso %s: sin radicado/cuenta valida para buscar en Gmail, se omite.", numero)
         return 0
 
     subidos = 0
     vistos = set()
+    total_correos_revisados = 0
     for termino in terminos:
         try:
             correos = buscar_correo_informacion_no_procesal(usuario, app_password, termino)
@@ -619,6 +621,7 @@ def _procesar_correo_no_procesal(proceso, destino: Path, nombre_carpeta: str, cr
             logging.error("[Correo] Proceso %s: fallo buscando '%s': %s", numero, termino, error)
             continue
 
+        total_correos_revisados += len(correos)
         for correo in correos:
             clave = (correo["asunto"], correo["fecha"])
             if clave in vistos:
@@ -651,6 +654,12 @@ def _procesar_correo_no_procesal(proceso, destino: Path, nombre_carpeta: str, cr
                 numero, correo["asunto"], motivo, guardados, nombre_carpeta,
             )
             subidos += guardados
+
+    logging.info(
+        "   [Correo] Proceso %s: %d termino(s) buscado(s) en Gmail (%s), %d correo(s) encontrado(s) en total, "
+        "%d con informacion no procesal.",
+        numero, len(terminos), ", ".join(terminos), total_correos_revisados, subidos,
+    )
     return subidos
 
 
@@ -799,6 +808,12 @@ def procesar():
             logging.warning(
                 "[Correo] No hay %s (o le faltan datos); se omite la busqueda en Gmail.",
                 organizador.ARCHIVO_CREDENCIALES,
+            )
+        else:
+            logging.info(
+                "[Correo] Credenciales encontradas (%s) -- se buscara tambien en Gmail para cada proceso "
+                "(vas a ver una linea '[Correo] Proceso N: ...' por cada uno, aunque no encuentre nada).",
+                credenciales_correo[0],
             )
 
     carpetas_existentes = _listar_carpetas_existentes()
