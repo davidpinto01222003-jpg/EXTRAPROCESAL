@@ -763,6 +763,64 @@ usa `borrar_carpetas_terminados_castigo.py` (o su iniciador
   `MODO_PRUEBA = False` cuando estés segura de que la lista de
   carpetas a borrar es la correcta.
 
+## Clasificar procesos ejecutivos (información no procesal + auto de terminación)
+
+`clasificar_procesos_ejecutivos.py` (o su iniciador
+`clasificar_ejecutivos.bat`) es una versión **especializada** de
+`buscar_faltantes_en_drive.py` para el informe
+`3._CONTROL_PROCESOS_EJECUTIVOS_ESSA...xlsm` (hoja `DatosProcesados1`
+por defecto -- la versión de la hoja `ACTIVOS` ya aplanada a un solo
+encabezado por fila). En vez de descargar TODO el contenido relacionado
+con el radicado, aplica dos reglas distintas según el `ESTADO
+PROCESAL` de cada uno de los ~1180 procesos del informe:
+
+1. **Activos, suspendidos o en reorganización** (mismos estados de
+   `ESTADOS_A_CONTAR`): la carpeta se nombra `"<numero>. <radicado>"`
+   como siempre, pero **solo** se sube información **no procesal** --
+   derechos de petición, tutelas y solicitudes dirigidas a una entidad
+   **distinta** al juzgado del proceso (bancos, EPS, ministerios,
+   municipios, etc). Los memoriales, recursos, contestaciones y demás
+   actuaciones dirigidas al juzgado del proceso **no** se suben.
+
+2. **Terminados por pago, por auto, por contrato/prepago, o que nunca
+   se presentaron** (`ESTADO PROCESAL` que empieza con `TERMINADO` o
+   `NO INICIO` -- igual que `crear_carpetas_terminados_castigo.py`): la
+   carpeta se nombra `"<numero>. <ESTADO PROCESAL EXACTO del Excel>"`
+   (ej. `"245. TERMINADO POR AUTO"`), y **solo** se sube el AUTO que
+   termina el proceso (el que decreta la terminación por pago, acepta
+   el retiro de la demanda, o decreta la terminación en general). Si no
+   se encuentra ese auto en Drive, el proceso queda listado en
+   `terminados_sin_auto_pendientes.csv` para que lo descargues a mano.
+
+Los procesos en cualquier otro estado (`REMITIDA*`, `DESISTIMIENTO DE
+PRETENSIONES`, etc) quedan **fuera de alcance** a propósito -- usa
+`crear_carpetas_terminados_castigo.py` para esos.
+
+La clasificación de "información no procesal" y de "auto que termina
+el proceso" es por **palabras clave** (nombre del archivo y, si es
+PDF/DOCX, sus primeras páginas de contenido) -- es una heurística, no
+perfecta. Cada decisión queda registrada en
+`clasificar_procesos_ejecutivos.log` para que la revises y ajustes las
+listas de palabras clave al inicio del script si hace falta
+(`PALABRAS_TIPO_INFORMACION_FUERTES`,
+`PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE`, `PALABRAS_PROCESAL_JUZGADO`,
+`PALABRAS_AUTO_TERMINADOR`).
+
+Reutiliza toda la infraestructura de `buscar_faltantes_en_drive.py`
+(las mismas credenciales `credenciales_drive.json`/`token_drive.json`,
+la búsqueda por radicado/radicado corto/cuenta, y la validación
+obligatoria de que el documento sea de ESSA y del demandado correcto).
+
+Antes de usarlo, edita al inicio del script:
+
+- `RUTA_EXCEL_CONTROL`: ruta a `3._CONTROL_PROCESOS_EJECUTIVOS_ESSA...xlsm`.
+- `HOJA_EXCEL_CONTROL` / columnas (`COLUMNA_NO`, `COLUMNA_ESTADO`,
+  etc): solo si tu Excel usa otros nombres de hoja/columna.
+
+Respeta `MODO_PRUEBA` (por defecto `True`): en modo prueba solo busca y
+clasifica, mostrando qué subiría y a qué carpeta, sin crear carpetas ni
+descargar nada todavía.
+
 ## Comparar Excel vs disco (solo un reporte de lo que falta o sobra)
 
 `comparar_excel_disco.py` (o su iniciador `comparar_excel_disco.bat`)
