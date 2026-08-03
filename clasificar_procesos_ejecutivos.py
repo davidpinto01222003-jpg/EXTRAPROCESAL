@@ -11,12 +11,13 @@ de negocio según el `ESTADO PROCESAL` de cada fila:
 
 1. Cualquier fila que NO sea "terminada" (ver regla 2) -- `ACTIVO`,
    `ACTIVOS CON TITULOS`, `SUSPENDIDO`, `REORGANIZACION`, `REMITIDA A
-   CASTIGO`/`A PREPAGO`, etc -- se organiza con la carpeta de siempre
-   `"<numero>. <radicado>"`, y SOLO se sube información NO procesal:
-   derechos de petición, tutelas y solicitudes (ver
-   `es_informacion_no_procesal`). Si la fila no tiene un radicado válido
-   de 23 dígitos todavía, no se puede crear su carpeta y queda
-   reportada aparte (ver `sin_radicado` en el log).
+   CASTIGO`/`A PREPAGO`, etc: la carpeta se nombra `"<numero>.
+   <radicado>"` si la fila ya tiene un radicado válido de 23 dígitos,
+   o `"<numero>. <ESTADO PROCESAL>"` si todavía no lo tiene (mismo
+   formato que la regla 2). SOLO se sube información NO procesal:
+   tutelas, derechos de petición, y correos de cobro (ver
+   `es_informacion_no_procesal`) -- se busca tanto en Google Drive como
+   (opcional, ver `BUSCAR_EN_CORREO`) en TODO el Gmail.
 
 2. Procesos terminados por pago, por auto, por contrato/prepago, o que
    nunca se presentaron (`ESTADO PROCESAL` que empieza con `TERMINADO`
@@ -25,10 +26,10 @@ de negocio según el `ESTADO PROCESAL` de cada fila:
    (ej. `"245. TERMINADO POR AUTO"`), y SOLO se sube el documento que
    deja constancia de que el proceso NO sigue su curso -- un auto de
    terminación, de aceptación de retiro de la demanda, de
-   desistimiento, etc (ver `es_auto_terminador`, ya NO exige que
-   aparezca literalmente la palabra "AUTO"). Si no se encuentra ese
-   documento en Drive, el proceso queda listado en
-   `ARCHIVO_PENDIENTES_TERMINADOS` para que lo descargues a mano.
+   desistimiento, etc (ver `es_auto_terminador`, no exige que aparezca
+   literalmente la palabra "AUTO"). Si no se encuentra ese documento en
+   Drive, el proceso queda listado en `ARCHIVO_PENDIENTES_TERMINADOS`
+   para que lo descargues a mano.
 
 IMPORTANTE -- procesos "acumulados" y filas duplicadas: el Excel repite
 el mismo número de proceso en más de una fila en dos casos distintos:
@@ -44,21 +45,26 @@ numeran "<nombre>_2", "<nombre>_3", etc, igual que el resto del
 proyecto nombra duplicados. Ver `_asignar_nombres_de_carpeta`.
 
 La clasificación de "información no procesal" y de "documento que
-termina el proceso" es por PALABRAS CLAVE (nombre del archivo y, si es
-PDF/DOCX, sus primeras páginas de contenido) -- es una heurística, no
-perfecta. Cada decisión queda registrada en el log para que la revises
-y ajustes las listas de palabras clave
-(`PALABRAS_TIPO_INFORMACION_FUERTES`,
-`PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE`, `PALABRAS_PROCESO_NO_CONTINUA`)
-si hace falta.
+termina el proceso" es por PALABRAS CLAVE (nombre/asunto y, si es
+PDF/DOCX o el cuerpo de un correo, su contenido) -- es una heurística,
+no perfecta. Cada decisión queda registrada en el log para que la
+revises y ajustes las listas de palabras clave
+(`PALABRAS_TIPO_INFORMACION_FUERTES`, `PALABRAS_CORREO_DE_COBRO`,
+`PALABRAS_PROCESO_NO_CONTINUA`) si hace falta.
 
 Reutiliza toda la infraestructura de `buscar_faltantes_en_drive.py`
-(autenticación, búsqueda por radicado/radicado corto/cuenta, validación
-de que el documento sea de ESSA y del demandado correcto, descarga de
-PDF/exportables de Google) -- no repite esa lógica.
+(autenticación de Drive, búsqueda por radicado/radicado corto/cuenta,
+validación de que el documento sea de ESSA y del demandado correcto,
+descarga de PDF/exportables de Google) -- no repite esa lógica. Para
+Gmail, reutiliza el mismo mecanismo de búsqueda que ese script (IMAP
+`X-GM-RAW` sobre "Todos los mensajes", igual que buscar en la barra de
+búsqueda de Gmail), pero además revisa el CUERPO del correo y CUALQUIER
+adjunto (no solo enlaces de Drive o adjuntos .zip).
 
-Requiere las mismas credenciales que `buscar_faltantes_en_drive.py`
-(`credenciales_drive.json` / `token_drive.json`, ver README).
+Requiere las mismas credenciales que `buscar_faltantes_en_drive.py`:
+`credenciales_drive.json`/`token_drive.json` para Drive (ver README), y
+`credenciales_sgde.txt` para Gmail (opcional -- si no existe, la
+búsqueda en correo simplemente se omite, ver `BUSCAR_EN_CORREO`).
 
 Respeta MODO_PRUEBA (por defecto True): en modo prueba solo BUSCA y
 CLASIFICA, mostrando qué subiría y a qué carpeta, sin crear carpetas ni
@@ -66,9 +72,13 @@ descargar nada todavía.
 """
 
 import csv
+import email
+import imaplib
+import io
 import logging
 import os
 import re
+import zipfile
 from pathlib import Path
 
 import openpyxl
@@ -118,22 +128,33 @@ ARCHIVO_PENDIENTES_TERMINADOS = os.path.join(os.path.dirname(__file__), "termina
 # muestra qué haría. False: aplica los cambios de verdad.
 MODO_PRUEBA = True
 
+# True (por defecto): ademas de Drive, busca en TODO tu Gmail (via IMAP,
+# usando credenciales_sgde.txt -- ver README) tutelas, derechos de
+# peticion y correos de cobro relacionados con cada proceso. Si ese
+# archivo de credenciales no existe, esta busqueda se omite sola, sin
+# error.
+BUSCAR_EN_CORREO = True
+
 # --------------------- Palabras clave de clasificación ---------------------
 
-# Frases que, si aparecen en el CONTENIDO (o el nombre) de un documento,
-# confirman que es un derecho de petición o una tutela.
+# Frases que, si aparecen en el contenido (nombre de archivo, texto del
+# documento, o asunto/cuerpo de un correo), confirman que es un derecho
+# de petición o una tutela. A propósito NO se incluye "SOLICITUD": es
+# una palabra demasiado común dentro de cualquier memorial procesal
+# ("se solicita...") y generaba muchas imprecisiones.
 PALABRAS_TIPO_INFORMACION_FUERTES = [
     "DERECHO DE PETICION",
     "ACCION DE TUTELA",
     "TUTELA",
 ]
 
-# "SOLICITUD" es demasiado común DENTRO del contenido de cualquier
-# memorial ("se solicita...") como para usarla ahí -- solo cuenta si
-# aparece en el NOMBRE del archivo (donde sí suele describir el TIPO de
-# documento, ej. "SOLICITUD INFORMACION BANCOLOMBIA.pdf").
-PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE = [
-    "SOLICITUD",
+# Frases que identifican un correo/documento de COBRO (a un banco, EPS,
+# municipio, etc, reclamando el pago de la obligación) -- cuenta igual
+# que una tutela o un derecho de petición como "información no procesal".
+PALABRAS_CORREO_DE_COBRO = [
+    "COBRO PREJURIDICO", "CUENTA DE COBRO", "ESTADO DE CUENTA",
+    "RECORDATORIO DE PAGO", "REQUERIMIENTO DE PAGO", "NOTIFICACION DE COBRO",
+    "GESTION DE COBRO", "COBRO DE CARTERA", "COBRO ADMINISTRATIVO",
 ]
 
 # Frases que dan a entender que el proceso judicial NO sigue su curso
@@ -252,11 +273,18 @@ def _asignar_nombres_de_carpeta(procesos):
 
 
 def clasificar_procesos(procesos):
-    """Separa las filas leidas en dos listas de trabajo (con_radicado, terminados) y dos informativas (sin_estado, sin_radicado)."""
+    """
+    Separa las filas leidas en dos listas de trabajo: con_radicado
+    (todo lo que no es "terminado" -- se busca información no procesal)
+    y terminados (se busca el documento que termina el proceso), mas
+    una lista informativa sin_estado. Toda fila con ESTADO PROCESAL
+    diligenciado recibe una carpeta: con su radicado si ya lo tiene, o
+    con "numero. ESTADO PROCESAL" si todavia no (igual que las filas
+    terminadas) -- ver módulo docstring.
+    """
     con_radicado = []
     terminados = []
     sin_estado = []
-    sin_radicado = []
 
     for proceso in procesos:
         if not proceso["estado"]:
@@ -272,15 +300,14 @@ def clasificar_procesos(procesos):
             proceso["nombre_base"] = terminados_folder._nombre_carpeta_para(numero, estado) or f"{numero}. {estado}"
             terminados.append(proceso)
         else:
-            if not proceso["radicado"]:
-                sin_radicado.append(proceso)
-                continue
-            proceso["nombre_base"] = f"{numero}. {proceso['radicado']}"
+            proceso["nombre_base"] = (
+                f"{numero}. {proceso['radicado']}" if proceso["radicado"] else f"{numero}. {estado}"
+            )
             con_radicado.append(proceso)
 
     _asignar_nombres_de_carpeta(con_radicado)
     _asignar_nombres_de_carpeta(terminados)
-    return con_radicado, terminados, sin_estado, sin_radicado
+    return con_radicado, terminados, sin_estado
 
 
 # ==================== Google Drive (usa buscar_faltantes_en_drive.py) ====================
@@ -384,41 +411,196 @@ def _archivo_es_seguro(servicio, archivo, nombre_carpeta, demandados):
 
 
 def _info_documento(servicio, archivo):
-    """(nombre_normalizado, contenido_normalizado) -- ver funciones de clasificacion mas abajo."""
+    """Contenido normalizado (nombre + texto de PDF/DOCX si aplica) -- ver funciones de clasificacion mas abajo."""
     nombre = archivo.get("name", "")
     texto = ""
     if Path(nombre).suffix.lower() in buscador.EXTENSIONES_CONTENIDO_DRIVE:
         texto = buscador._texto_de_archivo_drive(servicio, archivo)
-    nombre_norm = buscador._normalizar_para_comparar(nombre)
-    contenido_norm = buscador._normalizar_para_comparar(nombre + " " + texto)
-    return nombre_norm, contenido_norm
+    return buscador._normalizar_para_comparar(nombre + " " + texto)
 
 
-def es_informacion_no_procesal(nombre_normalizado, contenido_normalizado):
+def es_informacion_no_procesal(contenido_normalizado):
     """
-    True si el documento parece ser un derecho de petición, tutela o
-    solicitud -- sin importar si menciona o no al juzgado del proceso
-    (lo único que importa es que SEA una petición/tutela/solicitud).
+    True si el contenido (nombre/texto de un documento, o asunto/cuerpo
+    de un correo) parece ser una tutela, un derecho de petición, o un
+    correo/documento de cobro.
     """
-    tiene_tipo = (
-        any(frase in contenido_normalizado for frase in PALABRAS_TIPO_INFORMACION_FUERTES)
-        or any(frase in nombre_normalizado for frase in PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE)
-    )
-    if not tiene_tipo:
-        return False, "no menciona derecho de peticion, tutela ni solicitud"
-    return True, "ok"
+    if any(frase in contenido_normalizado for frase in PALABRAS_TIPO_INFORMACION_FUERTES):
+        return True, "peticion o tutela"
+    if any(frase in contenido_normalizado for frase in PALABRAS_CORREO_DE_COBRO):
+        return True, "correo de cobro"
+    return False, "no parece una tutela, un derecho de peticion ni un correo de cobro"
 
 
-def es_auto_terminador(nombre_normalizado, contenido_normalizado):
+def es_auto_terminador(contenido_normalizado):
     """
-    True si el documento da a entender que el proceso judicial NO sigue
+    True si el contenido da a entender que el proceso judicial NO sigue
     su curso (terminación por pago, retiro/desistimiento de la demanda,
-    archivo del proceso, etc) -- NO exige que aparezca la palabra
+    archivo del proceso, etc) -- no exige que aparezca la palabra
     "AUTO", con que aparezca cualquiera de PALABRAS_PROCESO_NO_CONTINUA
     alcanza.
     """
-    contenido_completo = nombre_normalizado + " " + contenido_normalizado
-    return any(frase in contenido_completo for frase in PALABRAS_PROCESO_NO_CONTINUA)
+    return any(frase in contenido_normalizado for frase in PALABRAS_PROCESO_NO_CONTINUA)
+
+
+# ==================== Gmail (busqueda propia, no la de buscar_faltantes_en_drive.py) ====================
+
+
+def _texto_plano_html(texto: str) -> str:
+    """Quita etiquetas HTML de forma simple, solo para poder buscar palabras clave adentro."""
+    return re.sub(r"<[^>]+>", " ", texto or "")
+
+
+def buscar_correo_informacion_no_procesal(usuario: str, app_password: str, termino: str):
+    """
+    Busca en TODO el Gmail (via X-GM-RAW, igual que buscar_en_correo de
+    buscar_faltantes_en_drive.py -- es la misma busqueda que escribir
+    'termino' en la barra de busqueda de Gmail, sobre "Todos los
+    mensajes") los correos que mencionen 'termino'. A diferencia de esa
+    función (que solo mira enlaces de Drive y adjuntos .zip), esta
+    devuelve TODO lo que hace falta para clasificar un correo como
+    tutela/derecho de petición/correo de cobro: asunto, cuerpo de texto
+    (HTML ya limpiado), y CUALQUIER adjunto (no solo .zip). Devuelve
+    [{"asunto", "cuerpo", "adjuntos": [(nombre, bytes), ...], "fecha"}, ...].
+    """
+    resultados = []
+    with imaplib.IMAP4_SSL("imap.gmail.com") as mail:
+        mail.login(usuario, app_password)
+        mail.select('"[Gmail]/All Mail"', readonly=True)
+        typ, datos = mail.search(None, "X-GM-RAW", f'"{termino}"')
+        if typ != "OK" or not datos or not datos[0]:
+            return resultados
+        for id_correo in datos[0].split():
+            typ, msg_datos = mail.fetch(id_correo, "(RFC822)")
+            if typ != "OK" or not msg_datos or not msg_datos[0]:
+                continue
+            mensaje = email.message_from_bytes(msg_datos[0][1])
+            asunto = buscador._decodificar_asunto(mensaje.get("Subject", ""))
+            fecha_correo = buscador._fecha_del_correo(mensaje)
+            cuerpo = ""
+            adjuntos = []
+            for parte in mensaje.walk():
+                nombre_adjunto = parte.get_filename()
+                if nombre_adjunto:
+                    contenido = parte.get_payload(decode=True)
+                    if contenido:
+                        adjuntos.append((organizador.sanear_nombre(nombre_adjunto), contenido))
+                elif parte.get_content_type() in ("text/html", "text/plain"):
+                    texto_bruto = parte.get_payload(decode=True)
+                    if texto_bruto:
+                        texto = texto_bruto.decode(parte.get_content_charset() or "utf-8", errors="ignore")
+                        cuerpo += _texto_plano_html(texto) + " "
+            resultados.append({"asunto": asunto, "cuerpo": cuerpo, "adjuntos": adjuntos, "fecha": fecha_correo})
+    return resultados
+
+
+def _correo_es_seguro(contenido_normalizado, demandados):
+    """Version del chequeo de seguridad de _archivo_es_seguro, pero sobre texto de correo (sin llamar a Drive)."""
+    tiene_essa = any(buscador._nombre_coincide(contenido_normalizado, t) for t in buscador.TERMINOS_DEMANDANTE_VALIDO)
+    if not tiene_essa:
+        return False, "no se confirmo que el proceso sea de ESSA/Electrificadora de Santander"
+    for demandado in demandados:
+        resultado = buscador._demandado_coincide_en_texto(contenido_normalizado, demandado)
+        if resultado is False:
+            return False, f"el nombre en el correo no corresponde al demandado esperado ({demandado})"
+    return True, "ok"
+
+
+def _extraer_pdfs_de_zip(contenido: bytes, destino: Path) -> int:
+    extraidos = 0
+    try:
+        with zipfile.ZipFile(io.BytesIO(contenido)) as archivo_zip:
+            for info in archivo_zip.infolist():
+                if info.is_dir() or Path(info.filename).suffix.lower() not in (".pdf", ".docx"):
+                    continue
+                nombre_seguro = organizador.sanear_nombre(Path(info.filename).name)
+                ruta = buscador._ruta_archivo_libre(destino, nombre_seguro)
+                with archivo_zip.open(info) as origen, open(organizador._ruta_larga_segura(str(ruta)), "wb") as f:
+                    f.write(origen.read())
+                extraidos += 1
+    except zipfile.BadZipFile:
+        pass
+    return extraidos
+
+
+def _guardar_correo(correo: dict, destino: Path) -> int:
+    """
+    Guarda los adjuntos PDF/DOCX del correo (extrayendo los de dentro
+    de un .zip si aplica). Si no trae ningun adjunto util, guarda el
+    asunto + cuerpo como un .txt simple, para no perder la informacion
+    (ej. un correo de cobro en texto plano, sin adjuntos).
+    """
+    destino.mkdir(parents=True, exist_ok=True)
+    guardados = 0
+    for nombre_adjunto, contenido in correo["adjuntos"]:
+        extension = Path(nombre_adjunto).suffix.lower()
+        if extension == ".zip":
+            guardados += _extraer_pdfs_de_zip(contenido, destino)
+        elif extension in (".pdf", ".docx"):
+            ruta = buscador._ruta_archivo_libre(destino, nombre_adjunto)
+            with open(organizador._ruta_larga_segura(str(ruta)), "wb") as f:
+                f.write(contenido)
+            guardados += 1
+
+    if guardados == 0:
+        fecha_texto = correo["fecha"].isoformat() if correo["fecha"] else "sin_fecha"
+        nombre_txt = organizador.sanear_nombre(f"{fecha_texto} - {correo['asunto'] or 'correo'}.txt")
+        ruta = buscador._ruta_archivo_libre(destino, nombre_txt)
+        with open(organizador._ruta_larga_segura(str(ruta)), "w", encoding="utf-8") as f:
+            f.write(f"Asunto: {correo['asunto']}\nFecha: {correo['fecha']}\n\n{correo['cuerpo']}")
+        guardados = 1
+    return guardados
+
+
+def _procesar_correo_no_procesal(proceso, destino: Path, nombre_carpeta: str, credenciales_correo) -> int:
+    numero = proceso["numero"]
+    usuario, app_password = credenciales_correo
+    terminos = _terminos_busqueda(proceso["radicado"], proceso["cuentas"])
+    if not terminos:
+        return 0
+
+    subidos = 0
+    vistos = set()
+    for termino in terminos:
+        try:
+            correos = buscar_correo_informacion_no_procesal(usuario, app_password, termino)
+        except Exception as error:
+            logging.error("[Correo] Proceso %s: fallo buscando '%s': %s", numero, termino, error)
+            continue
+
+        for correo in correos:
+            clave = (correo["asunto"], correo["fecha"])
+            if clave in vistos:
+                continue
+
+            contenido_norm = buscador._normalizar_para_comparar(
+                correo["asunto"] + " " + correo["cuerpo"] + " " + " ".join(n for n, _ in correo["adjuntos"])
+            )
+            es_no_procesal, motivo = es_informacion_no_procesal(contenido_norm)
+            if not es_no_procesal:
+                continue
+
+            seguro, motivo_seguridad = _correo_es_seguro(contenido_norm, proceso["demandados"])
+            if not seguro:
+                logging.info("   (se omite el correo '%s' del proceso %s: %s)", correo["asunto"], numero, motivo_seguridad)
+                continue
+
+            vistos.add(clave)
+            if MODO_PRUEBA:
+                logging.info(
+                    "[SIMULACION] Proceso %s: subiria el correo '%s' (%s) a '%s'.",
+                    numero, correo["asunto"], motivo, nombre_carpeta,
+                )
+                subidos += 1
+                continue
+
+            guardados = _guardar_correo(correo, destino)
+            logging.info(
+                "[Descargado] Proceso %s: correo '%s' (%s) -> %d archivo(s) en %s",
+                numero, correo["asunto"], motivo, guardados, nombre_carpeta,
+            )
+            subidos += guardados
+    return subidos
 
 
 # ==================== Carpetas en disco ====================
@@ -447,7 +629,7 @@ def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
 # ==================== Procesamiento por fila ====================
 
 
-def procesar_con_radicado(servicio, proceso, carpetas_existentes):
+def procesar_con_radicado(servicio, proceso, carpetas_existentes, credenciales_correo):
     """Filas que NO son terminadas (activo, suspendido, reorganizacion, remitida a castigo/prepago, etc)."""
     numero, radicado = proceso["numero"], proceso["radicado"]
     nombre_carpeta = proceso["nombre_carpeta"]
@@ -472,23 +654,26 @@ def procesar_con_radicado(servicio, proceso, carpetas_existentes):
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
 
-        nombre_norm, contenido_norm = _info_documento(servicio, archivo)
-        es_no_procesal, motivo = es_informacion_no_procesal(nombre_norm, contenido_norm)
+        contenido_norm = _info_documento(servicio, archivo)
+        es_no_procesal, motivo = es_informacion_no_procesal(contenido_norm)
         if not es_no_procesal:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
 
         if MODO_PRUEBA:
-            logging.info("[SIMULACION] Proceso %s: subiria '%s' (informacion no procesal) a '%s'.", numero, archivo["name"], nombre_carpeta)
+            logging.info("[SIMULACION] Proceso %s: subiria '%s' (%s) a '%s'.", numero, archivo["name"], motivo, nombre_carpeta)
         else:
             ruta = _descargar_archivo(servicio, archivo, destino)
             logging.info("[Descargado] Proceso %s: '%s' -> %s", numero, archivo["name"], ruta)
         subidos += 1
 
+    if credenciales_correo:
+        subidos += _procesar_correo_no_procesal(proceso, destino, nombre_carpeta, credenciales_correo)
+
     if subidos == 0:
         logging.info(
-            "Proceso %s (%s, radicado %s): no se encontro informacion no procesal (peticiones/tutelas/"
-            "solicitudes) para subir todavia.", numero, proceso["estado"], radicado,
+            "Proceso %s (%s, radicado %s): no se encontro informacion no procesal (tutelas/derechos de "
+            "peticion/correos de cobro) para subir todavia.", numero, proceso["estado"], radicado,
         )
 
 
@@ -521,8 +706,8 @@ def procesar_terminado(servicio, proceso, carpetas_existentes, pendientes):
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
 
-        nombre_norm, contenido_norm = _info_documento(servicio, archivo)
-        if not es_auto_terminador(nombre_norm, contenido_norm):
+        contenido_norm = _info_documento(servicio, archivo)
+        if not es_auto_terminador(contenido_norm):
             continue
 
         if MODO_PRUEBA:
@@ -547,11 +732,12 @@ def procesar():
         return
 
     procesos = leer_procesos_control()
-    con_radicado, terminados, sin_estado, sin_radicado = clasificar_procesos(procesos)
+    con_radicado, terminados, sin_estado = clasificar_procesos(procesos)
     logging.info(
-        "Excel: %d fila(s) con numero de proceso -- %d con radicado (activo/suspendido/reorganizacion/"
-        "remitida/etc), %d terminadas (pago/auto/contrato/no inicio), %d sin estado, %d sin radicado valido.",
-        len(procesos), len(con_radicado), len(terminados), len(sin_estado), len(sin_radicado),
+        "Excel: %d fila(s) con numero de proceso -- %d activo/suspendido/reorganizacion/remitida/etc "
+        "(carpeta con radicado, o con ESTADO PROCESAL si todavia no lo tiene), %d terminadas (pago/auto/"
+        "contrato/no inicio), %d sin ESTADO PROCESAL diligenciado.",
+        len(procesos), len(con_radicado), len(terminados), len(sin_estado),
     )
 
     servicio = autenticar_drive_o_none()
@@ -559,11 +745,20 @@ def procesar():
         logging.error("No se puede continuar sin conexion a Google Drive.")
         return
 
+    credenciales_correo = None
+    if BUSCAR_EN_CORREO:
+        credenciales_correo = organizador.leer_credenciales()
+        if not credenciales_correo:
+            logging.warning(
+                "[Correo] No hay %s (o le faltan datos); se omite la busqueda en Gmail.",
+                organizador.ARCHIVO_CREDENCIALES,
+            )
+
     carpetas_existentes = _listar_carpetas_existentes()
 
     for proceso in con_radicado:
         try:
-            procesar_con_radicado(servicio, proceso, carpetas_existentes)
+            procesar_con_radicado(servicio, proceso, carpetas_existentes, credenciales_correo)
         except Exception as error:
             logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
 
@@ -587,14 +782,6 @@ def procesar():
             "%d proceso(s) terminado(s) se quedaron SIN el documento que los termina -- descargalos a mano, "
             "quedaron listados en %s.", len(pendientes), ARCHIVO_PENDIENTES_TERMINADOS,
         )
-
-    if sin_radicado:
-        logging.warning(
-            "%d fila(s) no tienen un radicado de 23 digitos valido todavia y no son de un estado 'terminado' "
-            "-- no se les pudo crear carpeta, revisalas a mano:", len(sin_radicado),
-        )
-        for proceso in sin_radicado:
-            logging.warning("   - Fila %s, proceso %s (%s)", proceso["fila_excel"], proceso["numero"], proceso["estado"])
 
     if sin_estado:
         logging.warning("%d fila(s) no tienen ESTADO PROCESAL diligenciado todavia en el Excel:", len(sin_estado))

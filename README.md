@@ -775,12 +775,16 @@ proceso) y, en vez de descargar todo el contenido relacionado con el
 radicado, aplica dos reglas según el `ESTADO PROCESAL` de cada fila:
 
 1. **Cualquier fila que no sea "terminada"** (ver punto 2) -- activos,
-   suspendidos, en reorganización, remitidos a castigo/prepago, etc:
-   la carpeta se nombra `"<numero>. <radicado>"` como siempre, pero
-   **solo** se sube información **no procesal** -- derechos de
-   petición, tutelas y solicitudes. No importa si el documento también
-   menciona al juzgado del proceso; lo único que importa es que
-   **sea** una petición/tutela/solicitud.
+   suspendidos, en reorganización, remitidos a castigo/prepago, etc: la
+   carpeta se nombra `"<numero>. <radicado>"` si la fila ya tiene un
+   radicado de 23 dígitos válido, o `"<numero>. <ESTADO PROCESAL>"`
+   (igual que el punto 2) si todavía no lo tiene. **Solo** se sube
+   información **no procesal**: tutelas, derechos de petición, y
+   correos de cobro. No importa si el documento también menciona al
+   juzgado del proceso; lo único que importa es que **sea** una
+   tutela/petición/cobro (a propósito ya NO cuenta "solicitud" sola --
+   se prestaba para confundirse con solicitudes procesales dirigidas al
+   juzgado).
 
 2. **Terminados por pago, por auto, por contrato/prepago, o que nunca
    se presentaron** (`ESTADO PROCESAL` que empieza con `TERMINADO` o
@@ -790,9 +794,13 @@ radicado, aplica dos reglas según el `ESTADO PROCESAL` de cada fila:
    que deja constancia de que el proceso **no sigue su curso**
    (termina por pago, acepta el retiro de la demanda, decreta
    desistimiento/archivo, etc) -- no hace falta que diga literalmente
-   "auto". Si no se encuentra ese documento en Drive, el proceso queda
-   listado en `terminados_sin_auto_pendientes.csv` para que lo
-   descargues a mano.
+   "auto". Si no se encuentra ese documento, el proceso queda listado
+   en `terminados_sin_auto_pendientes.csv` para que lo descargues a
+   mano.
+
+Con estas dos reglas, **toda** fila del Excel con `ESTADO PROCESAL`
+diligenciado recibe una carpeta (solo quedan sin carpeta las filas sin
+ese dato todavía).
 
 **Procesos acumulados y filas repetidas**: el Excel repite el mismo
 número de proceso en varias filas cuando agrupa varias cuentas bajo un
@@ -802,14 +810,29 @@ carpeta** -- nunca se fusionan. Si dos filas producen el mismo nombre
 de carpeta (mismo número + mismo radicado/estado), la segunda (y
 siguientes) quedan como `"<nombre>_2"`, `"<nombre>_3"`, etc.
 
+**Búsqueda en Gmail** (además de Drive): sí es posible escanear **todo
+el correo** (no solo la bandeja de entrada) para esto, y el script ya
+lo hace si `BUSCAR_EN_CORREO = True` (por defecto) y existe
+`credenciales_sgde.txt` (las mismas credenciales que ya usa
+`procesos_juridicos.py`/`buscar_faltantes_en_drive.py`, ver más abajo).
+Usa la misma búsqueda de Gmail por `X-GM-RAW` sobre "Todos los
+mensajes" que ya usa `buscar_faltantes_en_drive.py` para el radicado/
+radicado corto/cuenta de cada proceso, pero revisando además el
+**cuerpo** del correo y **cualquier adjunto** (no solo enlaces de Drive
+o adjuntos `.zip`, que era todo lo que miraba ese script). Si el correo
+clasifica como tutela/petición/cobro: se guardan sus adjuntos PDF/DOCX
+(extrayendo los que vengan dentro de un `.zip`), o si no trae ningún
+adjunto útil, se guarda el asunto + cuerpo como un `.txt` simple para
+no perder la información.
+
 La clasificación de "información no procesal" y de "documento que
-termina el proceso" es por **palabras clave** (nombre del archivo y, si
-es PDF/DOCX, sus primeras páginas de contenido) -- es una heurística,
+termina el proceso" es por **palabras clave** (nombre/asunto y, si es
+PDF/DOCX o el cuerpo de un correo, su contenido) -- es una heurística,
 no perfecta. Cada decisión queda registrada en
 `clasificar_procesos_ejecutivos.log` para que la revises y ajustes las
 listas de palabras clave al inicio del script si hace falta
-(`PALABRAS_TIPO_INFORMACION_FUERTES`,
-`PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE`, `PALABRAS_PROCESO_NO_CONTINUA`).
+(`PALABRAS_TIPO_INFORMACION_FUERTES`, `PALABRAS_CORREO_DE_COBRO`,
+`PALABRAS_PROCESO_NO_CONTINUA`).
 
 Reutiliza toda la infraestructura de `buscar_faltantes_en_drive.py`
 (las mismas credenciales `credenciales_drive.json`/`token_drive.json`,
@@ -822,11 +845,11 @@ Antes de usarlo, edita al inicio del script:
   ESSA...xlsm`.
 - `HOJA_EXCEL_CONTROL` / columnas (`COLUMNA_NO`, `COLUMNA_ESTADO`,
   etc): solo si tu Excel usa otros nombres de hoja/columna.
+- `BUSCAR_EN_CORREO`: ponlo en `False` si no quieres que también
+  busque en Gmail (solo Drive).
 
-Las filas sin `ESTADO PROCESAL` diligenciado, y las que no son
-"terminadas" pero todavía no tienen un radicado de 23 dígitos válido en
-el Excel, no se pueden organizar todavía -- quedan reportadas en el log
-para que completes el Excel primero.
+Las filas sin `ESTADO PROCESAL` diligenciado todavía no se pueden
+organizar -- quedan reportadas en el log.
 
 Respeta `MODO_PRUEBA` (por defecto `True`): en modo prueba solo busca y
 clasifica, mostrando qué subiría y a qué carpeta, sin crear carpetas ni
