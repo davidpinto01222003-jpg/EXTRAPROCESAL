@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.log
+credenciales_sgde.txt
+expedientes_procesados.txt
+_tmp_descargas_sgde/
