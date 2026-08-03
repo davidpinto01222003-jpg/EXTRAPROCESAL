@@ -182,9 +182,14 @@ PALABRAS_PROCESO_NO_CONTINUA = [
 
 
 def configurar_logging():
+    # Con hora (%(asctime)s): para poder ver a simple vista cuanto tarda
+    # entre una fila y otra -- por ejemplo entre las filas de un mismo
+    # proceso acumulado, para confirmar que la cache de _buscar_archivos/
+    # _info_documento de verdad evita repetir trabajo.
     logging.basicConfig(
         level=logging.INFO,
-        format="%(message)s",
+        format="%(asctime)s %(message)s",
+        datefmt="%H:%M:%S",
         handlers=[
             logging.FileHandler(ARCHIVO_LOG, encoding="utf-8", mode="w"),
             logging.StreamHandler(),
