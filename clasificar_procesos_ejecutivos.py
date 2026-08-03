@@ -116,7 +116,11 @@ COLUMNA_RADICADO = "RADICADO"
 # PREPAGO, etc) se organiza con la carpeta "numero. radicado" de siempre.
 PREFIJOS_ESTADO_TERMINADO = ("TERMINADO", "NO INICIO")
 
-CARPETA_PROCESOS = cruce_excel.CARPETA_PROCESOS
+# Carpeta donde se crean las carpetas de cada proceso. A diferencia del
+# resto del proyecto (que usa CARPETA_PROCESOS de validar_renombrar_carpetas.py,
+# un disco duro externo detectado por etiqueta), este script tiene su
+# PROPIO destino fijo -- no depende de ningun disco externo.
+CARPETA_PROCESOS = r"C:\Users\Francy\Documents\INFORMACIÓN EXTRAPROCESAL"
 
 ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "clasificar_procesos_ejecutivos.log")
 

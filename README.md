@@ -845,6 +845,11 @@ Antes de usarlo, edita al inicio del script:
   ESSA...xlsm`.
 - `HOJA_EXCEL_CONTROL` / columnas (`COLUMNA_NO`, `COLUMNA_ESTADO`,
   etc): solo si tu Excel usa otros nombres de hoja/columna.
+- `CARPETA_PROCESOS`: dónde se crean las carpetas de cada proceso. A
+  diferencia del resto del proyecto (que usa el disco duro externo
+  detectado por `ETIQUETA_DISCO_EXTERNO` en `validar_renombrar_carpetas.py`),
+  este script tiene su **propio** destino fijo -- no depende de ningún
+  disco externo.
 - `BUSCAR_EN_CORREO`: ponlo en `False` si no quieres que también
   busque en Gmail (solo Drive).
 
