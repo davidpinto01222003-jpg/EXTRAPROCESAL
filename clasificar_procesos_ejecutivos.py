@@ -1,47 +1,56 @@
 """
 Especializa la búsqueda en Google Drive para el informe
-"3._CONTROL_PROCESOS_EJECUTIVOS_ESSA...xlsm" (hoja `HOJA_EXCEL_CONTROL`,
+"3. CONTROL PROCESOS EJECUTIVOS ESSA...xlsm" (hoja `HOJA_EXCEL_CONTROL`,
 por defecto `DatosProcesados1` -- la versión de la hoja `ACTIVOS` ya
 aplanada a un solo encabezado por fila).
 
 A diferencia de `buscar_faltantes_en_drive.py` (que descarga TODO el
-contenido relacionado con el radicado), este script aplica dos reglas
-de negocio distintas según el `ESTADO PROCESAL` de cada proceso:
+contenido relacionado con el radicado), este script trabaja FILA POR
+FILA del Excel (no agrupa por número de proceso) y aplica dos reglas
+de negocio según el `ESTADO PROCESAL` de cada fila:
 
-1. Procesos en un estado de `ESTADOS_INFORMACION_NO_PROCESAL` (`ACTIVO`,
-   `ACTIVOS CON TITULOS`, `SUSPENDIDO`, `REORGANIZACION` -- los mismos
-   de `validar_renombrar_carpetas.ESTADOS_A_CONTAR`): la carpeta se
-   nombra `"<numero>. <radicado>"` (igual que el resto del proyecto), y
-   SOLO se sube información NO procesal -- derechos de petición,
-   tutelas y solicitudes dirigidas a una entidad DISTINTA al juzgado
-   del proceso (bancos, EPS, ministerios, municipios, etc). Los
-   memoriales, recursos, contestaciones y demás actuaciones dirigidas
-   al juzgado del proceso NO se suben. Ver `es_informacion_no_procesal`.
+1. Cualquier fila que NO sea "terminada" (ver regla 2) -- `ACTIVO`,
+   `ACTIVOS CON TITULOS`, `SUSPENDIDO`, `REORGANIZACION`, `REMITIDA A
+   CASTIGO`/`A PREPAGO`, etc -- se organiza con la carpeta de siempre
+   `"<numero>. <radicado>"`, y SOLO se sube información NO procesal:
+   derechos de petición, tutelas y solicitudes (ver
+   `es_informacion_no_procesal`). Si la fila no tiene un radicado válido
+   de 23 dígitos todavía, no se puede crear su carpeta y queda
+   reportada aparte (ver `sin_radicado` en el log).
 
 2. Procesos terminados por pago, por auto, por contrato/prepago, o que
    nunca se presentaron (`ESTADO PROCESAL` que empieza con `TERMINADO`
    o `NO INICIO` -- igual que `crear_carpetas_terminados_castigo.py`):
    la carpeta se nombra `"<numero>. <ESTADO PROCESAL EXACTO del Excel>"`
-   (ej. `"245. TERMINADO POR AUTO"`), y SOLO se sube el AUTO que
-   termina el proceso (el que decreta la terminación por pago, acepta
-   el retiro de la demanda, o decreta la terminación). Ver
-   `es_auto_terminador`. Si no se encuentra ese auto en Drive, el
-   proceso queda listado en `ARCHIVO_PENDIENTES_TERMINADOS` para que lo
-   descargues a mano.
+   (ej. `"245. TERMINADO POR AUTO"`), y SOLO se sube el documento que
+   deja constancia de que el proceso NO sigue su curso -- un auto de
+   terminación, de aceptación de retiro de la demanda, de
+   desistimiento, etc (ver `es_auto_terminador`, ya NO exige que
+   aparezca literalmente la palabra "AUTO"). Si no se encuentra ese
+   documento en Drive, el proceso queda listado en
+   `ARCHIVO_PENDIENTES_TERMINADOS` para que lo descargues a mano.
 
-Los procesos en cualquier OTRO estado (`REMITIDA*`, `DESISTIMIENTO DE
-PRETENSIONES`, etc) quedan FUERA del alcance de este script a
-propósito -- no se tocan, y se reportan en el log (usa
-`crear_carpetas_terminados_castigo.py` para esos si hace falta).
+IMPORTANTE -- procesos "acumulados" y filas duplicadas: el Excel repite
+el mismo número de proceso en más de una fila en dos casos distintos:
+  - Cuentas/demandados distintos bajo el MISMO radicado (proceso
+    "acumulado": un solo expediente judicial que agrupa varias cuentas).
+  - Menos frecuente: el mismo número de proceso con un radicado
+    DISTINTO en cada fila (numeración administrativa repetida por
+    error o por reuso, no es el mismo expediente).
+En AMBOS casos cada fila del Excel se organiza en SU PROPIA carpeta
+(nunca se fusionan) -- si dos filas producen el mismo nombre de carpeta
+(mismo número + mismo radicado/estado), la segunda (y siguientes) se
+numeran "<nombre>_2", "<nombre>_3", etc, igual que el resto del
+proyecto nombra duplicados. Ver `_asignar_nombres_de_carpeta`.
 
-La clasificación de "información no procesal" y de "auto que termina
-el proceso" es por PALABRAS CLAVE (nombre del archivo y, si es PDF/DOCX,
-sus primeras páginas de contenido) -- ES una heurística, no perfecta.
-Cada decisión (por qué se subió o por qué se omitió cada archivo) queda
-registrada en el log para que la revises y ajustes las listas de
-palabras clave (`PALABRAS_TIPO_INFORMACION_FUERTES`,
-`PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE`, `PALABRAS_PROCESAL_JUZGADO`,
-`PALABRAS_AUTO_TERMINADOR`) si hace falta.
+La clasificación de "información no procesal" y de "documento que
+termina el proceso" es por PALABRAS CLAVE (nombre del archivo y, si es
+PDF/DOCX, sus primeras páginas de contenido) -- es una heurística, no
+perfecta. Cada decisión queda registrada en el log para que la revises
+y ajustes las listas de palabras clave
+(`PALABRAS_TIPO_INFORMACION_FUERTES`,
+`PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE`, `PALABRAS_PROCESO_NO_CONTINUA`)
+si hace falta.
 
 Reutiliza toda la infraestructura de `buscar_faltantes_en_drive.py`
 (autenticación, búsqueda por radicado/radicado corto/cuenta, validación
@@ -71,9 +80,8 @@ import validar_renombrar_carpetas as cruce_excel
 
 # ============================= CONFIGURACION =============================
 
-# Ruta al informe de Excel de procesos ejecutivos (.xlsm). Cambia esto a
-# donde tengas guardado "3._CONTROL_PROCESOS_EJECUTIVOS_ESSA...xlsm".
-RUTA_EXCEL_CONTROL = r"C:\Users\User\Documents\3._CONTROL_PROCESOS_EJECUTIVOS_ESSA.xlsm"
+# Ruta al informe de Excel de procesos ejecutivos (.xlsm).
+RUTA_EXCEL_CONTROL = r"C:\Users\Francy\OneDrive\INFORME ENTREGA ESSA\3. CONTROL PROCESOS EJECUTIVOS ESSA 29072026 .xlsm"
 
 # Hoja del Excel a leer -- "DatosProcesados1" ya trae, en un solo
 # encabezado por fila, todas las columnas que hacen falta (No., ESTADO
@@ -90,15 +98,12 @@ COLUMNA_DEMANDADO = "DEMANDADO"
 COLUMNA_JUZGADO = "JUZGADO"
 COLUMNA_RADICADO = "RADICADO"
 
-# Mismos estados que validar_renombrar_carpetas.ESTADOS_A_CONTAR -- se
-# organizan con la carpeta "<numero>. <radicado>" de siempre, pero aquí
-# SOLO se les sube información no procesal (ver módulo docstring).
-ESTADOS_INFORMACION_NO_PROCESAL = {estado.upper() for estado in cruce_excel.ESTADOS_A_CONTAR}
-
 # Prefijos de ESTADO PROCESAL que cuentan como "terminado" para este
 # script -- igual que crear_carpetas_terminados_castigo.py: TERMINADO
 # (por pago, por auto, por contrato/prepago) y NO INICIO (nunca se
-# presentó la demanda, quedó como reclamación administrativa).
+# presentó la demanda, quedó como reclamación administrativa). CUALQUIER
+# otro estado (ACTIVO, SUSPENDIDO, REORGANIZACION, REMITIDA A CASTIGO/
+# PREPAGO, etc) se organiza con la carpeta "numero. radicado" de siempre.
 PREFIJOS_ESTADO_TERMINADO = ("TERMINADO", "NO INICIO")
 
 CARPETA_PROCESOS = cruce_excel.CARPETA_PROCESOS
@@ -106,7 +111,7 @@ CARPETA_PROCESOS = cruce_excel.CARPETA_PROCESOS
 ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "clasificar_procesos_ejecutivos.log")
 
 # Procesos terminados (por pago/auto/contrato/no inicio) en los que NO
-# se encontró el auto que los termina -- para que los descargues a mano.
+# se encontró el documento que los termina -- para que los descargues a mano.
 ARCHIVO_PENDIENTES_TERMINADOS = os.path.join(os.path.dirname(__file__), "terminados_sin_auto_pendientes.csv")
 
 # True (por defecto): no crea carpetas ni descarga nada, solo busca y
@@ -116,9 +121,7 @@ MODO_PRUEBA = True
 # --------------------- Palabras clave de clasificación ---------------------
 
 # Frases que, si aparecen en el CONTENIDO (o el nombre) de un documento,
-# confirman por sí solas que es información no procesal (derecho de
-# petición o tutela) -- son frases poco ambiguas, casi no aparecen
-# "de pasada" dentro de un memorial normal dirigido al juzgado.
+# confirman que es un derecho de petición o una tutela.
 PALABRAS_TIPO_INFORMACION_FUERTES = [
     "DERECHO DE PETICION",
     "ACCION DE TUTELA",
@@ -133,33 +136,21 @@ PALABRAS_TIPO_INFORMACION_SOLO_NOMBRE = [
     "SOLICITUD",
 ]
 
-# Si el documento menciona alguna de estas palabras (marcas típicas de
-# una actuación procesal) Y además menciona al JUZGADO del proceso, se
-# descarta como información no procesal -- lo más probable es que sea
-# un memorial/actuación dirigida al juzgado, no una solicitud a un
-# tercero. Si el documento no menciona al juzgado (ej. una tutela o
-# derecho de petición real dirigida a otra entidad), esta lista no
-# bloquea nada.
-PALABRAS_PROCESAL_JUZGADO = [
-    "MEMORIAL", "DEMANDA", "CONTESTACION", "EXCEPCIONES", "RECURSO",
-    "REPOSICION", "APELACION", "ALEGATOS", "TRASLADO", "MANDAMIENTO",
-    "AUTO", "SENTENCIA", "NOTIFICACION", "EMBARGO", "SECUESTRO",
-    "REMATE", "LIQUIDACION", "PODER", "SUSTITUCION", "CURADOR",
-    "EMPLAZAMIENTO", "DILIGENCIA",
-]
-
-# Frases que confirman que un AUTO es el que TERMINA el proceso (por
-# pago, por retiro/desistimiento de la demanda, o que decreta la
-# terminación en general). Debe aparecer ADEMÁS la palabra "AUTO" (ver
-# es_auto_terminador) -- sin eso, un memorial que simplemente PIDE la
-# terminación no cuenta, solo el AUTO que la decreta.
-PALABRAS_AUTO_TERMINADOR = [
-    "TERMINA EL PROCESO", "TERMINACION DEL PROCESO", "TERMINACION POR PAGO",
-    "TERMINACION POR CONTRATO", "TERMINACION DE LA OBLIGACION",
+# Frases que dan a entender que el proceso judicial NO sigue su curso
+# (terminó por pago, se aceptó el retiro de la demanda, se decretó
+# desistimiento o archivo, etc) -- NO hace falta que el documento diga
+# literalmente "AUTO", con que aparezca cualquiera de estas frases
+# alcanza (ver es_auto_terminador).
+PALABRAS_PROCESO_NO_CONTINUA = [
+    "TERMINA EL PROCESO", "TERMINACION DEL PROCESO", "SE DA POR TERMINADO",
+    "TERMINADO EL PROCESO", "PROCESO TERMINADO", "DECLARA TERMINADO EL PROCESO",
+    "TERMINACION POR PAGO", "TERMINACION POR CONTRATO", "TERMINACION DE LA OBLIGACION",
     "DECRETA LA TERMINACION", "DECRETA TERMINACION",
     "ACEPTA EL RETIRO", "ACEPTA RETIRO DE LA DEMANDA", "RETIRO DE LA DEMANDA",
-    "TERMINACION POR DESISTIMIENTO", "APRUEBA EL DESISTIMIENTO",
-    "ARCHIVA EL PROCESO", "ARCHIVESE EL PROCESO",
+    "SE RETIRA LA DEMANDA", "DESISTIMIENTO DEL PROCESO", "DESISTIMIENTO DE LA DEMANDA",
+    "APRUEBA EL DESISTIMIENTO", "ARCHIVA EL PROCESO", "ARCHIVESE EL PROCESO",
+    "ARCHIVO DEL PROCESO", "CULMINA EL PROCESO", "FINALIZA EL PROCESO",
+    "NO CONTINUA EL PROCESO", "CESE DE LA ACCION EJECUTIVA", "DA POR CONCLUIDO EL PROCESO",
 ]
 
 # ===========================================================================
@@ -195,10 +186,9 @@ def _encontrar_columna(encabezados, nombre_buscado):
 
 def leer_procesos_control():
     """
-    Lee HOJA_EXCEL_CONTROL y agrupa las filas por columna No. (un
-    proceso puede tener varias cuentas/demandados en varias filas).
-    Devuelve {numero: {"estados": {...}, "radicados": {...},
-    "cuentas": {...}, "demandados": {...}, "juzgados": {...}}}.
+    Lee HOJA_EXCEL_CONTROL FILA POR FILA (sin agrupar por No. -- ver
+    módulo docstring sobre procesos acumulados). Devuelve una lista de
+    {fila_excel, numero, estado, radicado, cuenta, demandado, juzgado}.
     """
     wb = openpyxl.load_workbook(RUTA_EXCEL_CONTROL, data_only=True, read_only=True)
     if HOJA_EXCEL_CONTROL not in wb.sheetnames:
@@ -217,8 +207,11 @@ def leer_procesos_control():
     idx_juzgado = _encontrar_columna(encabezados, COLUMNA_JUZGADO)
     idx_radicado = _encontrar_columna(encabezados, COLUMNA_RADICADO)
 
-    por_numero = {}
-    for fila in ws.iter_rows(min_row=FILA_ENCABEZADO_CONTROL + 1, values_only=True):
+    procesos = []
+    for fila_excel, fila in enumerate(
+        ws.iter_rows(min_row=FILA_ENCABEZADO_CONTROL + 1, values_only=True),
+        start=FILA_ENCABEZADO_CONTROL + 1,
+    ):
         numero_crudo = fila[idx_no]
         if numero_crudo is None or not isinstance(numero_crudo, (int, float)):
             continue  # fila vacia o de notas/leyenda al final de la hoja
@@ -230,69 +223,64 @@ def leer_procesos_control():
         juzgado = str(fila[idx_juzgado]).strip() if fila[idx_juzgado] is not None else ""
         radicado = _normalizar_radicado(fila[idx_radicado])
 
-        registro = por_numero.setdefault(numero, {
-            "estados": set(), "radicados": set(), "cuentas": set(),
-            "demandados": set(), "juzgados": set(),
-        })
-        if estado:
-            registro["estados"].add(estado)
-        if radicado:
-            registro["radicados"].add(radicado)
-        if cuenta and cuenta.strip("0"):
-            registro["cuentas"].add(cuenta)
-        if demandado:
-            registro["demandados"].add(demandado)
-        if juzgado:
-            registro["juzgados"].add(juzgado)
-    return por_numero
-
-
-def clasificar_procesos(por_numero):
-    """
-    Separa los procesos leídos en dos listas de trabajo (activos,
-    terminados) y tres listas informativas (fuera_de_alcance, sin_estado,
-    ambiguos). Ver módulo docstring para las reglas de clasificación.
-    """
-    activos = []
-    terminados = []
-    fuera_de_alcance = []
-    sin_estado = []
-    ambiguos = []
-
-    for numero, datos in sorted(por_numero.items()):
-        if len(datos["estados"]) > 1:
-            ambiguos.append((numero, f"varios ESTADO PROCESAL distintos: {sorted(datos['estados'])}"))
-            continue
-        if len(datos["radicados"]) > 1:
-            ambiguos.append((numero, f"varios RADICADO distintos: {sorted(datos['radicados'])}"))
-            continue
-        if not datos["estados"]:
-            sin_estado.append(numero)
-            continue
-
-        estado = next(iter(datos["estados"]))
-        estado_norm = estado.upper()
-        radicado = next(iter(datos["radicados"])) if datos["radicados"] else None
-        proceso = {
+        procesos.append({
+            "fila_excel": fila_excel,
             "numero": numero,
             "estado": estado,
             "radicado": radicado,
-            "cuentas": sorted(datos["cuentas"]),
-            "demandados": sorted(datos["demandados"]),
-            "juzgado": next(iter(sorted(datos["juzgados"])), ""),
-        }
+            "cuenta": cuenta if cuenta.strip("0") else "",
+            "demandado": demandado,
+            "juzgado": juzgado,
+        })
+    return procesos
 
-        if estado_norm in ESTADOS_INFORMACION_NO_PROCESAL:
-            if not radicado:
-                fuera_de_alcance.append((numero, estado, "activo/suspendido/reorganizacion sin radicado de 23 digitos todavia"))
-                continue
-            activos.append(proceso)
-        elif estado_norm.startswith(PREFIJOS_ESTADO_TERMINADO):
+
+def _asignar_nombres_de_carpeta(procesos):
+    """
+    Asigna a cada proceso (fila) su nombre de carpeta final a partir de
+    "nombre_base", agregando "_2", "_3", etc cuando dos filas DISTINTAS
+    (ej. un proceso acumulado: mismo número y mismo radicado en dos
+    cuentas) producen el mismo nombre -- nunca se fusionan, cada fila
+    del Excel es una carpeta propia (ver módulo docstring).
+    """
+    contador = {}
+    for proceso in procesos:
+        base = proceso["nombre_base"]
+        contador[base] = contador.get(base, 0) + 1
+        indice = contador[base]
+        proceso["nombre_carpeta"] = base if indice == 1 else f"{base}_{indice}"
+
+
+def clasificar_procesos(procesos):
+    """Separa las filas leidas en dos listas de trabajo (con_radicado, terminados) y dos informativas (sin_estado, sin_radicado)."""
+    con_radicado = []
+    terminados = []
+    sin_estado = []
+    sin_radicado = []
+
+    for proceso in procesos:
+        if not proceso["estado"]:
+            sin_estado.append(proceso)
+            continue
+
+        numero, estado = proceso["numero"], proceso["estado"]
+        proceso = dict(proceso)
+        proceso["cuentas"] = [proceso["cuenta"]] if proceso["cuenta"] else []
+        proceso["demandados"] = [proceso["demandado"]] if proceso["demandado"] else []
+
+        if estado.upper().startswith(PREFIJOS_ESTADO_TERMINADO):
+            proceso["nombre_base"] = terminados_folder._nombre_carpeta_para(numero, estado) or f"{numero}. {estado}"
             terminados.append(proceso)
         else:
-            fuera_de_alcance.append((numero, estado, "fuera del alcance de este script"))
+            if not proceso["radicado"]:
+                sin_radicado.append(proceso)
+                continue
+            proceso["nombre_base"] = f"{numero}. {proceso['radicado']}"
+            con_radicado.append(proceso)
 
-    return activos, terminados, fuera_de_alcance, sin_estado, ambiguos
+    _asignar_nombres_de_carpeta(con_radicado)
+    _asignar_nombres_de_carpeta(terminados)
+    return con_radicado, terminados, sin_estado, sin_radicado
 
 
 # ==================== Google Drive (usa buscar_faltantes_en_drive.py) ====================
@@ -406,19 +394,11 @@ def _info_documento(servicio, archivo):
     return nombre_norm, contenido_norm
 
 
-def _menciona_palabras(contenido_normalizado, texto_esperado):
-    palabras_esperadas = buscador._palabras_significativas(texto_esperado)
-    if not palabras_esperadas:
-        return False
-    palabras_en_contenido = set(re.findall(r"[A-ZÑ]+", contenido_normalizado))
-    return bool(palabras_esperadas & palabras_en_contenido)
-
-
-def es_informacion_no_procesal(nombre_normalizado, contenido_normalizado, juzgado):
+def es_informacion_no_procesal(nombre_normalizado, contenido_normalizado):
     """
     True si el documento parece ser un derecho de petición, tutela o
-    solicitud dirigida a una entidad DISTINTA al juzgado del proceso.
-    Ver las listas PALABRAS_TIPO_INFORMACION_* y PALABRAS_PROCESAL_JUZGADO.
+    solicitud -- sin importar si menciona o no al juzgado del proceso
+    (lo único que importa es que SEA una petición/tutela/solicitud).
     """
     tiene_tipo = (
         any(frase in contenido_normalizado for frase in PALABRAS_TIPO_INFORMACION_FUERTES)
@@ -426,20 +406,19 @@ def es_informacion_no_procesal(nombre_normalizado, contenido_normalizado, juzgad
     )
     if not tiene_tipo:
         return False, "no menciona derecho de peticion, tutela ni solicitud"
-
-    tiene_marcador_procesal = any(frase in contenido_normalizado for frase in PALABRAS_PROCESAL_JUZGADO)
-    if tiene_marcador_procesal and juzgado and _menciona_palabras(contenido_normalizado, juzgado):
-        return False, "parece un documento procesal dirigido al juzgado del proceso, no a otra entidad"
-
     return True, "ok"
 
 
 def es_auto_terminador(nombre_normalizado, contenido_normalizado):
-    """True si el documento parece ser el AUTO que termina el proceso (por pago, retiro de demanda, o terminacion en general)."""
+    """
+    True si el documento da a entender que el proceso judicial NO sigue
+    su curso (terminación por pago, retiro/desistimiento de la demanda,
+    archivo del proceso, etc) -- NO exige que aparezca la palabra
+    "AUTO", con que aparezca cualquiera de PALABRAS_PROCESO_NO_CONTINUA
+    alcanza.
+    """
     contenido_completo = nombre_normalizado + " " + contenido_normalizado
-    tiene_auto = re.search(r"\bAUTO\b", contenido_completo) is not None
-    tiene_frase_terminacion = any(frase in contenido_completo for frase in PALABRAS_AUTO_TERMINADOR)
-    return tiene_auto and tiene_frase_terminacion
+    return any(frase in contenido_completo for frase in PALABRAS_PROCESO_NO_CONTINUA)
 
 
 # ==================== Carpetas en disco ====================
@@ -454,15 +433,6 @@ def _listar_carpetas_existentes():
     }
 
 
-def _carpeta_existente_para_numero(numero, carpetas_existentes):
-    prefijo = f"{numero}. "
-    exacto = f"{numero}."
-    for nombre in carpetas_existentes:
-        if nombre.startswith(prefijo) or nombre == exacto:
-            return nombre
-    return None
-
-
 def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
     destino.mkdir(parents=True, exist_ok=True)
     nombre_seguro = organizador.sanear_nombre(archivo["name"])
@@ -474,22 +444,22 @@ def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
     return ruta_local
 
 
-# ==================== Procesamiento por proceso ====================
+# ==================== Procesamiento por fila ====================
 
 
-def procesar_activo(servicio, proceso, carpetas_existentes):
-    numero, radicado, juzgado = proceso["numero"], proceso["radicado"], proceso["juzgado"]
-    existente = _carpeta_existente_para_numero(numero, carpetas_existentes)
-    nombre_carpeta = existente or f"{numero}. {radicado}"
+def procesar_con_radicado(servicio, proceso, carpetas_existentes):
+    """Filas que NO son terminadas (activo, suspendido, reorganizacion, remitida a castigo/prepago, etc)."""
+    numero, radicado = proceso["numero"], proceso["radicado"]
+    nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
 
-    if not existente:
+    if nombre_carpeta not in carpetas_existentes:
         if MODO_PRUEBA:
-            logging.info("[SIMULACION] Proceso %s (%s): se crearia la carpeta '%s'.", numero, proceso["estado"], nombre_carpeta)
+            logging.info("[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.", numero, proceso["estado"], proceso["fila_excel"], nombre_carpeta)
         else:
             destino.mkdir(parents=True, exist_ok=True)
             carpetas_existentes.add(nombre_carpeta)
-            logging.info("[Creada] Proceso %s (%s): carpeta '%s'.", numero, proceso["estado"], nombre_carpeta)
+            logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, proceso["estado"], proceso["fila_excel"], nombre_carpeta)
 
     terminos = _terminos_busqueda(radicado, proceso["cuentas"])
     candidatos = _candidatos_en_drive(servicio, terminos)
@@ -503,7 +473,7 @@ def procesar_activo(servicio, proceso, carpetas_existentes):
             continue
 
         nombre_norm, contenido_norm = _info_documento(servicio, archivo)
-        es_no_procesal, motivo = es_informacion_no_procesal(nombre_norm, contenido_norm, juzgado)
+        es_no_procesal, motivo = es_informacion_no_procesal(nombre_norm, contenido_norm)
         if not es_no_procesal:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
@@ -524,17 +494,16 @@ def procesar_activo(servicio, proceso, carpetas_existentes):
 
 def procesar_terminado(servicio, proceso, carpetas_existentes, pendientes):
     numero, estado, radicado = proceso["numero"], proceso["estado"], proceso["radicado"]
-    existente = _carpeta_existente_para_numero(numero, carpetas_existentes)
-    nombre_carpeta = existente or terminados_folder._nombre_carpeta_para(numero, estado) or f"{numero}. {estado}"
+    nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
 
-    if not existente:
+    if nombre_carpeta not in carpetas_existentes:
         if MODO_PRUEBA:
-            logging.info("[SIMULACION] Proceso %s (%s): se crearia la carpeta '%s'.", numero, estado, nombre_carpeta)
+            logging.info("[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.", numero, estado, proceso["fila_excel"], nombre_carpeta)
         else:
             destino.mkdir(parents=True, exist_ok=True)
             carpetas_existentes.add(nombre_carpeta)
-            logging.info("[Creada] Proceso %s (%s): carpeta '%s'.", numero, estado, nombre_carpeta)
+            logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, estado, proceso["fila_excel"], nombre_carpeta)
 
     terminos = _terminos_busqueda(radicado, proceso["cuentas"])
     if not terminos:
@@ -557,16 +526,16 @@ def procesar_terminado(servicio, proceso, carpetas_existentes, pendientes):
             continue
 
         if MODO_PRUEBA:
-            logging.info("[SIMULACION] Proceso %s (%s): subiria el auto '%s' a '%s'.", numero, estado, archivo["name"], nombre_carpeta)
+            logging.info("[SIMULACION] Proceso %s (%s): subiria '%s' (termina el proceso) a '%s'.", numero, estado, archivo["name"], nombre_carpeta)
         else:
             ruta = _descargar_archivo(servicio, archivo, destino)
-            logging.info("[Descargado] Proceso %s (%s): auto '%s' -> %s", numero, estado, archivo["name"], ruta)
+            logging.info("[Descargado] Proceso %s (%s): '%s' -> %s", numero, estado, archivo["name"], ruta)
         encontrado = True
-        # No se corta el ciclo: puede haber mas de un auto relevante (ej. primera y segunda instancia).
+        # No se corta el ciclo: puede haber mas de un documento relevante (ej. primera y segunda instancia).
 
     if not encontrado:
         pendientes.append(proceso)
-        logging.warning("Proceso %s (%s): no se encontro el auto que termina el proceso, queda pendiente.", numero, estado)
+        logging.warning("Proceso %s (%s): no se encontro el documento que termina el proceso, queda pendiente.", numero, estado)
 
 
 # ==================== Orquestacion ====================
@@ -577,12 +546,12 @@ def procesar():
         logging.error("No se encontro el Excel configurado en RUTA_EXCEL_CONTROL: %r", RUTA_EXCEL_CONTROL)
         return
 
-    por_numero = leer_procesos_control()
-    activos, terminados, fuera_de_alcance, sin_estado, ambiguos = clasificar_procesos(por_numero)
+    procesos = leer_procesos_control()
+    con_radicado, terminados, sin_estado, sin_radicado = clasificar_procesos(procesos)
     logging.info(
-        "Excel: %d proceso(s) distintos -- %d activos/suspendidos/reorganizacion, %d terminados "
-        "(pago/auto/contrato/no inicio), %d fuera de alcance, %d sin estado, %d con datos ambiguos.",
-        len(por_numero), len(activos), len(terminados), len(fuera_de_alcance), len(sin_estado), len(ambiguos),
+        "Excel: %d fila(s) con numero de proceso -- %d con radicado (activo/suspendido/reorganizacion/"
+        "remitida/etc), %d terminadas (pago/auto/contrato/no inicio), %d sin estado, %d sin radicado valido.",
+        len(procesos), len(con_radicado), len(terminados), len(sin_estado), len(sin_radicado),
     )
 
     servicio = autenticar_drive_o_none()
@@ -592,51 +561,45 @@ def procesar():
 
     carpetas_existentes = _listar_carpetas_existentes()
 
-    for proceso in activos:
+    for proceso in con_radicado:
         try:
-            procesar_activo(servicio, proceso, carpetas_existentes)
+            procesar_con_radicado(servicio, proceso, carpetas_existentes)
         except Exception as error:
-            logging.error("[Error] Proceso %s (activo) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], error)
+            logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
 
     pendientes = []
     for proceso in terminados:
         try:
             procesar_terminado(servicio, proceso, carpetas_existentes, pendientes)
         except Exception as error:
-            logging.error("[Error] Proceso %s (terminado) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], error)
+            logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
 
     if pendientes:
         with open(ARCHIVO_PENDIENTES_TERMINADOS, "w", newline="", encoding="utf-8-sig") as f:
             escritor = csv.writer(f, delimiter=";")
-            escritor.writerow(["No.", "Estado", "Radicado", "Cuentas", "Demandados", "Juzgado"])
+            escritor.writerow(["No.", "Fila Excel", "Estado", "Radicado", "Cuentas", "Demandados", "Juzgado"])
             for proceso in pendientes:
                 escritor.writerow([
-                    proceso["numero"], proceso["estado"], proceso["radicado"] or "",
+                    proceso["numero"], proceso["fila_excel"], proceso["estado"], proceso["radicado"] or "",
                     ", ".join(proceso["cuentas"]), ", ".join(proceso["demandados"]), proceso["juzgado"],
                 ])
         logging.warning(
-            "%d proceso(s) terminado(s) se quedaron SIN el auto que los termina -- descargalos a mano, "
+            "%d proceso(s) terminado(s) se quedaron SIN el documento que los termina -- descargalos a mano, "
             "quedaron listados en %s.", len(pendientes), ARCHIVO_PENDIENTES_TERMINADOS,
         )
 
-    if fuera_de_alcance:
-        logging.info(
-            "%d proceso(s) con un ESTADO PROCESAL fuera del alcance de este script (ni activo/suspendido/"
-            "reorganizacion, ni terminado por pago/auto/contrato/no inicio):", len(fuera_de_alcance),
+    if sin_radicado:
+        logging.warning(
+            "%d fila(s) no tienen un radicado de 23 digitos valido todavia y no son de un estado 'terminado' "
+            "-- no se les pudo crear carpeta, revisalas a mano:", len(sin_radicado),
         )
-        for numero, estado, motivo in fuera_de_alcance:
-            logging.info("   - Proceso %s (%r): %s", numero, estado, motivo)
+        for proceso in sin_radicado:
+            logging.warning("   - Fila %s, proceso %s (%s)", proceso["fila_excel"], proceso["numero"], proceso["estado"])
 
     if sin_estado:
-        logging.warning("%d proceso(s) no tienen ESTADO PROCESAL diligenciado todavia en el Excel: %s", len(sin_estado), sin_estado)
-
-    if ambiguos:
-        logging.warning(
-            "%d proceso(s) tienen datos ambiguos en el Excel (mas de un ESTADO PROCESAL o RADICADO distinto "
-            "para el mismo No.) -- se omitieron, revisalos a mano:", len(ambiguos),
-        )
-        for numero, motivo in ambiguos:
-            logging.warning("   - Proceso %s: %s", numero, motivo)
+        logging.warning("%d fila(s) no tienen ESTADO PROCESAL diligenciado todavia en el Excel:", len(sin_estado))
+        for proceso in sin_estado:
+            logging.warning("   - Fila %s, proceso %s", proceso["fila_excel"], proceso["numero"])
 
     if MODO_PRUEBA:
         logging.info(
