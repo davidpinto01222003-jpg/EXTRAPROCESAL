@@ -42,18 +42,18 @@ de negocio según el `ESTADO PROCESAL` de cada fila:
    Drive, el proceso queda listado en `ARCHIVO_PENDIENTES_TERMINADOS`
    para que lo descargues a mano.
 
-IMPORTANTE -- procesos "acumulados" y filas duplicadas: el Excel repite
-el mismo número de proceso en más de una fila en dos casos distintos:
+IMPORTANTE -- procesos "acumulados": el Excel repite el mismo número de
+proceso en más de una fila en dos casos distintos:
   - Cuentas/demandados distintos bajo el MISMO radicado (proceso
     "acumulado": un solo expediente judicial que agrupa varias cuentas).
+    Estas filas se FUSIONAN en UNA SOLA carpeta (una carpeta por
+    radicado, no una por cuenta) -- sus cuentas y demandados se juntan
+    para la búsqueda/validación, pero la carpeta es una sola.
   - Menos frecuente: el mismo número de proceso con un radicado
     DISTINTO en cada fila (numeración administrativa repetida por
-    error o por reuso, no es el mismo expediente).
-En AMBOS casos cada fila del Excel se organiza en SU PROPIA carpeta
-(nunca se fusionan) -- si dos filas producen el mismo nombre de carpeta
-(mismo número + mismo radicado/estado), la segunda (y siguientes) se
-numeran "<nombre>_2", "<nombre>_3", etc, igual que el resto del
-proyecto nombra duplicados. Ver `_asignar_nombres_de_carpeta`.
+    error o por reuso, no es el mismo expediente) -- estas SÍ generan
+    carpetas separadas, porque el nombre (que incluye el radicado) ya
+    sale distinto para cada una. Ver `clasificar_procesos`.
 
 La clasificación de "información no procesal" y de "documento que
 termina el proceso" es por PALABRAS CLAVE (nombre/asunto y, si es
@@ -276,22 +276,6 @@ def leer_procesos_control():
     return procesos
 
 
-def _asignar_nombres_de_carpeta(procesos):
-    """
-    Asigna a cada proceso (fila) su nombre de carpeta final a partir de
-    "nombre_base", agregando "_2", "_3", etc cuando dos filas DISTINTAS
-    (ej. un proceso acumulado: mismo número y mismo radicado en dos
-    cuentas) producen el mismo nombre -- nunca se fusionan, cada fila
-    del Excel es una carpeta propia (ver módulo docstring).
-    """
-    contador = {}
-    for proceso in procesos:
-        base = proceso["nombre_base"]
-        contador[base] = contador.get(base, 0) + 1
-        indice = contador[base]
-        proceso["nombre_carpeta"] = base if indice == 1 else f"{base}_{indice}"
-
-
 def clasificar_procesos(procesos):
     """
     Separa las filas leidas en dos listas de trabajo: con_radicado
@@ -301,33 +285,48 @@ def clasificar_procesos(procesos):
     diligenciado recibe una carpeta: con su radicado si ya lo tiene, o
     con "numero. ESTADO PROCESAL" si todavia no (igual que las filas
     terminadas) -- ver módulo docstring.
+
+    UNA SOLA carpeta por nombre: las filas que producen el MISMO nombre
+    (ej. un proceso "acumulado" -- mismo número y mismo radicado en
+    varias cuentas) se FUSIONAN en un único proceso de trabajo, sumando
+    sus cuentas/demandados/filas del Excel -- nunca se crean carpetas
+    "_2", "_3" por tener más de una cuenta.
     """
-    con_radicado = []
-    terminados = []
+    con_radicado_por_nombre = {}
+    terminados_por_nombre = {}
     sin_estado = []
 
-    for proceso in procesos:
-        if not proceso["estado"]:
-            sin_estado.append(proceso)
+    for fila in procesos:
+        if not fila["estado"]:
+            sin_estado.append(fila)
             continue
 
-        numero, estado = proceso["numero"], proceso["estado"]
-        proceso = dict(proceso)
-        proceso["cuentas"] = [proceso["cuenta"]] if proceso["cuenta"] else []
-        proceso["demandados"] = [proceso["demandado"]] if proceso["demandado"] else []
+        numero, estado = fila["numero"], fila["estado"]
 
         if estado.upper().startswith(PREFIJOS_ESTADO_TERMINADO):
             base = terminados_folder._nombre_carpeta_para(numero, estado) or f"{numero}. {estado}"
-            proceso["nombre_base"] = organizador.sanear_nombre(base)
-            terminados.append(proceso)
+            grupo = terminados_por_nombre
         else:
-            base = f"{numero}. {proceso['radicado']}" if proceso["radicado"] else f"{numero}. {estado}"
-            proceso["nombre_base"] = organizador.sanear_nombre(base)
-            con_radicado.append(proceso)
+            base = f"{numero}. {fila['radicado']}" if fila["radicado"] else f"{numero}. {estado}"
+            grupo = con_radicado_por_nombre
 
-    _asignar_nombres_de_carpeta(con_radicado)
-    _asignar_nombres_de_carpeta(terminados)
-    return con_radicado, terminados, sin_estado
+        nombre_carpeta = organizador.sanear_nombre(base)
+        proceso = grupo.get(nombre_carpeta)
+        if proceso is None:
+            proceso = dict(fila)
+            proceso["nombre_carpeta"] = nombre_carpeta
+            proceso["cuentas"] = []
+            proceso["demandados"] = []
+            proceso["filas_excel"] = []
+            grupo[nombre_carpeta] = proceso
+
+        if fila["cuenta"] and fila["cuenta"] not in proceso["cuentas"]:
+            proceso["cuentas"].append(fila["cuenta"])
+        if fila["demandado"] and fila["demandado"] not in proceso["demandados"]:
+            proceso["demandados"].append(fila["demandado"])
+        proceso["filas_excel"].append(fila["fila_excel"])
+
+    return list(con_radicado_por_nombre.values()), list(terminados_por_nombre.values()), sin_estado
 
 
 # ==================== Google Drive (usa buscar_faltantes_en_drive.py) ====================
@@ -775,17 +774,18 @@ def crear_todas_las_carpetas(procesos, carpetas_existentes, etiqueta):
         if nombre_carpeta in carpetas_existentes:
             continue
         destino = Path(CARPETA_PROCESOS) / nombre_carpeta
+        filas = ", ".join(str(f) for f in proceso["filas_excel"])
         if MODO_PRUEBA:
             logging.info(
-                "[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.",
-                proceso["numero"], proceso["estado"], proceso["fila_excel"], nombre_carpeta,
+                "[SIMULACION] Proceso %s (%s, fila(s) %s): se crearia la carpeta '%s'.",
+                proceso["numero"], proceso["estado"], filas, nombre_carpeta,
             )
         else:
             _crear_carpeta(destino)
             carpetas_existentes.add(nombre_carpeta)
             logging.info(
-                "[Creada] Proceso %s (%s, fila %s): carpeta '%s'.",
-                proceso["numero"], proceso["estado"], proceso["fila_excel"], nombre_carpeta,
+                "[Creada] Proceso %s (%s, fila(s) %s): carpeta '%s'.",
+                proceso["numero"], proceso["estado"], filas, nombre_carpeta,
             )
         creadas += 1
     logging.info("%s: %d carpeta(s) %s.", etiqueta, creadas, "simuladas (MODO_PRUEBA activo)" if MODO_PRUEBA else "creadas")
@@ -943,7 +943,7 @@ def procesar():
         try:
             procesar_con_radicado(servicio, proceso)
         except Exception as error:
-            logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
+            logging.error("[Error] Proceso %s (fila(s) %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], ", ".join(str(f) for f in proceso["filas_excel"]), error)
 
     if credenciales_correo:
         try:
@@ -961,16 +961,17 @@ def procesar():
         try:
             procesar_terminado(servicio, proceso, pendientes)
         except Exception as error:
-            logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
+            logging.error("[Error] Proceso %s (fila(s) %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], ", ".join(str(f) for f in proceso["filas_excel"]), error)
 
     if pendientes:
         with open(ARCHIVO_PENDIENTES_TERMINADOS, "w", newline="", encoding="utf-8-sig") as f:
             escritor = csv.writer(f, delimiter=";")
-            escritor.writerow(["No.", "Fila Excel", "Estado", "Radicado", "Cuentas", "Demandados", "Juzgado"])
+            escritor.writerow(["No.", "Filas Excel", "Estado", "Radicado", "Cuentas", "Demandados", "Juzgado"])
             for proceso in pendientes:
                 escritor.writerow([
-                    proceso["numero"], proceso["fila_excel"], proceso["estado"], proceso["radicado"] or "",
-                    ", ".join(proceso["cuentas"]), ", ".join(proceso["demandados"]), proceso["juzgado"],
+                    proceso["numero"], ", ".join(str(f) for f in proceso["filas_excel"]), proceso["estado"],
+                    proceso["radicado"] or "", ", ".join(proceso["cuentas"]), ", ".join(proceso["demandados"]),
+                    proceso["juzgado"],
                 ])
         logging.warning(
             "%d proceso(s) terminado(s) se quedaron SIN el documento que los termina -- descargalos a mano, "

@@ -802,13 +802,15 @@ Con estas dos reglas, **toda** fila del Excel con `ESTADO PROCESAL`
 diligenciado recibe una carpeta (solo quedan sin carpeta las filas sin
 ese dato todavía).
 
-**Procesos acumulados y filas repetidas**: el Excel repite el mismo
-número de proceso en varias filas cuando agrupa varias cuentas bajo un
-mismo radicado (proceso "acumulado"), y rara vez con un radicado
-distinto en cada fila. En ambos casos **cada fila es su propia
-carpeta** -- nunca se fusionan. Si dos filas producen el mismo nombre
-de carpeta (mismo número + mismo radicado/estado), la segunda (y
-siguientes) quedan como `"<nombre>_2"`, `"<nombre>_3"`, etc.
+**Procesos acumulados**: el Excel repite el mismo número de proceso en
+varias filas cuando agrupa varias cuentas bajo un mismo radicado
+(proceso "acumulado"). Esas filas se **fusionan en una sola carpeta**
+(una carpeta por radicado, no una por cuenta) -- sus cuentas y
+demandados se juntan para la búsqueda/validación. Solo cuando el mismo
+número de proceso tiene un radicado **distinto** en cada fila (poco
+frecuente -- numeración administrativa repetida por error, no es el
+mismo expediente) sí salen carpetas separadas, porque ahí el nombre
+(que incluye el radicado) ya es distinto para cada una.
 
 **Búsqueda en Gmail** (además de Drive): sí es posible escanear **todo
 el correo** (no solo la bandeja de entrada) para esto, y el script ya
