@@ -768,11 +768,17 @@ usa `borrar_carpetas_terminados_castigo.py` (o su iniciador
 `clasificar_procesos_ejecutivos.py` (o su iniciador
 `clasificar_ejecutivos.bat`) es una versión **especializada** de
 `buscar_faltantes_en_drive.py` para el informe `3. CONTROL PROCESOS
-EJECUTIVOS ESSA...xlsm` (hoja `DatosProcesados1` por defecto -- la
-versión de la hoja `ACTIVOS` ya aplanada a un solo encabezado por
-fila). Trabaja **fila por fila** del Excel (no agrupa por número de
-proceso) y, en vez de descargar todo el contenido relacionado con el
-radicado, aplica dos reglas según el `ESTADO PROCESAL` de cada fila:
+EJECUTIVOS ESSA...xlsm`, leyendo directo de la hoja **`ACTIVOS`** (la
+que se mantiene al día). **No** usa `DatosProcesados1` ni las demás
+hojas `DatosProcesadosN` -- son copias aplanadas que no se actualizan
+solas cuando editas `ACTIVOS`, así que pueden traer radicados/cuentas/
+demandados desactualizados o de relleno. En `ACTIVOS`, un proceso
+"acumulado" (varias cuentas bajo un mismo radicado) no repite el No./
+ESTADO PROCESAL/RADICADO/JUZGADO en cada fila -- el script arrastra
+esos datos hacia abajo automáticamente a las filas de continuación.
+Trabaja fila por fila y, en vez de descargar todo el contenido
+relacionado con el radicado, aplica dos reglas según el `ESTADO
+PROCESAL` de cada una:
 
 1. **Cualquier fila que no sea "terminada"** (ver punto 2) -- activos,
    suspendidos, en reorganización, remitidos a castigo/prepago, etc: la

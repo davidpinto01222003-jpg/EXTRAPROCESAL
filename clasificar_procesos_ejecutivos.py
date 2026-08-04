@@ -1,8 +1,16 @@
 """
 Especializa la búsqueda en Google Drive para el informe
 "3. CONTROL PROCESOS EJECUTIVOS ESSA...xlsm" (hoja `HOJA_EXCEL_CONTROL`,
-por defecto `DatosProcesados1` -- la versión de la hoja `ACTIVOS` ya
-aplanada a un solo encabezado por fila).
+por defecto `ACTIVOS` -- la hoja real que se mantiene al día. NO usa
+`DatosProcesados1` ni las demás hojas `DatosProcesadosN`: son copias
+aplanadas que no se actualizan solas cuando se edita `ACTIVOS`, así que
+pueden quedar con radicados/cuentas/demandados desactualizados o con
+valores de relleno. En `ACTIVOS`, un proceso "acumulado" (varias
+cuentas bajo un mismo radicado) no repite el No./ESTADO PROCESAL/
+RADICADO/JUZGADO en cada fila -- solo la primera fila del grupo los
+trae; `leer_procesos_control` los "arrastra hacia abajo" (forward-fill)
+a las filas de continuación (identificadas por tener el "No." en
+blanco pero sí una CUENTA propia).
 
 A diferencia de `buscar_faltantes_en_drive.py` (que descarga TODO el
 contenido relacionado con el radicado), este script trabaja FILA POR
@@ -104,13 +112,16 @@ import validar_renombrar_carpetas as cruce_excel
 # Ruta al informe de Excel de procesos ejecutivos (.xlsm).
 RUTA_EXCEL_CONTROL = r"C:\Users\Francy\OneDrive\INFORME ENTREGA ESSA\3. CONTROL PROCESOS EJECUTIVOS ESSA 29072026 .xlsm"
 
-# Hoja del Excel a leer -- "DatosProcesados1" ya trae, en un solo
-# encabezado por fila, todas las columnas que hacen falta (No., ESTADO
-# PROCESAL, CUENTA, DEMANDADO, JUZGADO, RADICADO), a diferencia de la
-# hoja "ACTIVOS" (que trae los mismos datos pero repartidos en varias
-# filas de encabezado y cientos de columnas de honorarios/costas).
-HOJA_EXCEL_CONTROL = "DatosProcesados1"
-FILA_ENCABEZADO_CONTROL = 1
+# Hoja del Excel a leer -- "ACTIVOS" es la hoja que se mantiene al dia
+# (la que editas tu). NO usar "DatosProcesados1" ni las demas hojas
+# "DatosProcesadosN": son copias aplanadas que NO se actualizan solas
+# cuando editas "ACTIVOS" -- usarlas hacia que el script leyera
+# radicados/cuentas/demandados desactualizados o de relleno.
+HOJA_EXCEL_CONTROL = "ACTIVOS"
+
+# Fila donde estan los encabezados de columna reales dentro de "ACTIVOS"
+# (las primeras filas son titulos/logos de la hoja).
+FILA_ENCABEZADO_CONTROL = 5
 
 COLUMNA_NO = "No."
 COLUMNA_ESTADO = "ESTADO PROCESAL"
@@ -227,9 +238,18 @@ def _encontrar_columna(encabezados, nombre_buscado):
 
 def leer_procesos_control():
     """
-    Lee HOJA_EXCEL_CONTROL FILA POR FILA (sin agrupar por No. -- ver
-    módulo docstring sobre procesos acumulados). Devuelve una lista de
-    {fila_excel, numero, estado, radicado, cuenta, demandado, juzgado}.
+    Lee HOJA_EXCEL_CONTROL ("ACTIVOS") fila por fila. En esa hoja, un
+    proceso "acumulado" (varias cuentas bajo el mismo radicado) NO
+    repite el No./ESTADO PROCESAL/RADICADO/JUZGADO en cada fila -- solo
+    la PRIMERA fila del grupo los trae, y las siguientes (con el "No."
+    en blanco) solo traen su propia CUENTA/DEMANDADO. Por eso aca se
+    "arrastra hacia abajo" (forward-fill) el No./estado/radicado/juzgado
+    de la ultima fila con "No." real hacia sus filas de continuacion.
+    Una fila con "No." en blanco Y sin CUENTA se ignora (nota, leyenda,
+    o fila vacia -- no es una cuenta real de ningun proceso).
+    Devuelve una lista de {fila_excel, numero, estado, radicado, cuenta,
+    demandado, juzgado} -- una entrada POR FILA (incluidas las de
+    continuacion), igual que antes.
     """
     wb = openpyxl.load_workbook(RUTA_EXCEL_CONTROL, data_only=True, read_only=True)
     if HOJA_EXCEL_CONTROL not in wb.sheetnames:
@@ -249,29 +269,38 @@ def leer_procesos_control():
     idx_radicado = _encontrar_columna(encabezados, COLUMNA_RADICADO)
 
     procesos = []
+    numero_actual = None
+    estado_actual = ""
+    radicado_actual = None
+    juzgado_actual = ""
+
     for fila_excel, fila in enumerate(
         ws.iter_rows(min_row=FILA_ENCABEZADO_CONTROL + 1, values_only=True),
         start=FILA_ENCABEZADO_CONTROL + 1,
     ):
         numero_crudo = fila[idx_no]
-        if numero_crudo is None or not isinstance(numero_crudo, (int, float)):
-            continue  # fila vacia o de notas/leyenda al final de la hoja
-        numero = int(numero_crudo)
+        cuenta_crudo = fila[idx_cuenta]
 
-        estado = str(fila[idx_estado]).strip() if fila[idx_estado] is not None else ""
-        cuenta = str(fila[idx_cuenta]).strip() if fila[idx_cuenta] is not None else ""
-        demandado = str(fila[idx_demandado]).strip() if fila[idx_demandado] is not None else ""
-        juzgado = str(fila[idx_juzgado]).strip() if fila[idx_juzgado] is not None else ""
-        radicado = _normalizar_radicado(fila[idx_radicado])
+        if numero_crudo is not None and isinstance(numero_crudo, (int, float)):
+            numero_actual = int(numero_crudo)
+            estado_actual = str(fila[idx_estado]).strip() if fila[idx_estado] is not None else ""
+            radicado_actual = _normalizar_radicado(fila[idx_radicado])
+            juzgado_actual = str(fila[idx_juzgado]).strip() if fila[idx_juzgado] is not None else ""
+        elif numero_actual is None or cuenta_crudo is None:
+            continue  # fila vacia, de notas/leyenda, o sin ningun proceso todavia
+
+        cuenta = str(cuenta_crudo).strip() if cuenta_crudo is not None else ""
+        demandado_crudo = fila[idx_demandado]
+        demandado = str(demandado_crudo).strip() if demandado_crudo is not None else ""
 
         procesos.append({
             "fila_excel": fila_excel,
-            "numero": numero,
-            "estado": estado,
-            "radicado": radicado,
+            "numero": numero_actual,
+            "estado": estado_actual,
+            "radicado": radicado_actual,
             "cuenta": cuenta if cuenta.strip("0") else "",
             "demandado": demandado,
-            "juzgado": juzgado,
+            "juzgado": juzgado_actual,
         })
     return procesos
 
