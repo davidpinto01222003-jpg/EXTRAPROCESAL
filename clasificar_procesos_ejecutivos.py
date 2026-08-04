@@ -317,12 +317,12 @@ def clasificar_procesos(procesos):
         proceso["demandados"] = [proceso["demandado"]] if proceso["demandado"] else []
 
         if estado.upper().startswith(PREFIJOS_ESTADO_TERMINADO):
-            proceso["nombre_base"] = terminados_folder._nombre_carpeta_para(numero, estado) or f"{numero}. {estado}"
+            base = terminados_folder._nombre_carpeta_para(numero, estado) or f"{numero}. {estado}"
+            proceso["nombre_base"] = organizador.sanear_nombre(base)
             terminados.append(proceso)
         else:
-            proceso["nombre_base"] = (
-                f"{numero}. {proceso['radicado']}" if proceso["radicado"] else f"{numero}. {estado}"
-            )
+            base = f"{numero}. {proceso['radicado']}" if proceso["radicado"] else f"{numero}. {estado}"
+            proceso["nombre_base"] = organizador.sanear_nombre(base)
             con_radicado.append(proceso)
 
     _asignar_nombres_de_carpeta(con_radicado)
@@ -580,7 +580,7 @@ def _guardar_correo(correo: dict, destino: Path) -> int:
     asunto + cuerpo como un .txt simple, para no perder la informacion
     (ej. un correo de cobro en texto plano, sin adjuntos).
     """
-    destino.mkdir(parents=True, exist_ok=True)
+    _crear_carpeta(destino)
     guardados = 0
     for nombre_adjunto, contenido in correo["adjuntos"]:
         extension = Path(nombre_adjunto).suffix.lower()
@@ -728,7 +728,7 @@ def procesar_correos_no_procesal(correos, procesos_con_radicado, carpetas_existe
                 continue
 
             if nombre_carpeta not in carpetas_existentes:
-                destino.mkdir(parents=True, exist_ok=True)
+                _crear_carpeta(destino)
                 carpetas_existentes.add(nombre_carpeta)
                 logging.info("[Creada] Proceso %s: carpeta '%s' (encontrada por correo).", numero, nombre_carpeta)
 
@@ -748,9 +748,21 @@ def procesar_correos_no_procesal(correos, procesos_con_radicado, carpetas_existe
 # ==================== Carpetas en disco ====================
 
 
+def _crear_carpeta(destino: Path):
+    """
+    mkdir a prueba de rutas largas de Windows -- sin el prefijo especial
+    (ver organizador._ruta_larga_segura), una carpeta cuyo camino
+    completo (CARPETA_PROCESOS + nombre) supere ~260 caracteres falla
+    con un OSError silencioso que hacia que TODA la fila se saltara
+    (quedaba solo un "[Error] ... fallo y se omite" generico en el log,
+    sin crear la carpeta ni buscar nada para ese proceso).
+    """
+    os.makedirs(organizador._ruta_larga_segura(str(destino)), exist_ok=True)
+
+
 def _listar_carpetas_existentes():
     carpeta_raiz = Path(CARPETA_PROCESOS)
-    carpeta_raiz.mkdir(parents=True, exist_ok=True)
+    _crear_carpeta(carpeta_raiz)
     return {
         d.name for d in carpeta_raiz.iterdir()
         if d.is_dir() and d.name not in cruce_excel.CARPETAS_A_IGNORAR
@@ -758,7 +770,7 @@ def _listar_carpetas_existentes():
 
 
 def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
-    destino.mkdir(parents=True, exist_ok=True)
+    _crear_carpeta(destino)
     nombre_seguro = organizador.sanear_nombre(archivo["name"])
     ruta_local = buscador._ruta_archivo_libre(destino, nombre_seguro)
     if archivo["mimeType"] in buscador.MIME_EXPORTAR:
@@ -786,7 +798,7 @@ def procesar_con_radicado(servicio, proceso, carpetas_existentes):
         if MODO_PRUEBA:
             logging.info("[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.", numero, proceso["estado"], proceso["fila_excel"], nombre_carpeta)
         else:
-            destino.mkdir(parents=True, exist_ok=True)
+            _crear_carpeta(destino)
             carpetas_existentes.add(nombre_carpeta)
             logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, proceso["estado"], proceso["fila_excel"], nombre_carpeta)
 
@@ -828,7 +840,7 @@ def procesar_terminado(servicio, proceso, carpetas_existentes, pendientes):
         if MODO_PRUEBA:
             logging.info("[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.", numero, estado, proceso["fila_excel"], nombre_carpeta)
         else:
-            destino.mkdir(parents=True, exist_ok=True)
+            _crear_carpeta(destino)
             carpetas_existentes.add(nombre_carpeta)
             logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, estado, proceso["fila_excel"], nombre_carpeta)
 
