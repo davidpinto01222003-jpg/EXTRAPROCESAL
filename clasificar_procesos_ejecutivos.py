@@ -222,8 +222,16 @@ PALABRAS_PAGO_OFICIOSO = [
 # tutela/petición (ej. narrando el historial del proceso). El nombre
 # del archivo es una señal mucho más confiable que rastrear la palabra
 # en las paginas de un PDF largo -- ver es_informacion_no_procesal.
+#
+# A propósito NO se incluye "CONTESTACION" sola: "contestación de la
+# demanda" (que sí debe excluirse) ya queda cubierta por "DEMANDA"
+# arriba, pero "contestación"/"respuesta" TAMBIÉN es como se suele
+# llamar la respuesta que un municipio/departamento envía a un derecho
+# de petición o una tutela -- esas respuestas SÍ son información no
+# procesal y deben poder pasar a la revisión de contenido (tier 3), no
+# descartarse solo por decir "contestación".
 PALABRAS_PROCESAL_EXCLUIR = [
-    "DEMANDA", "MEMORIAL", "MANDAMIENTO", "CONTESTACION",
+    "DEMANDA", "MEMORIAL", "MANDAMIENTO",
     "RECURSO DE REPOSICION", "RECURSO DE APELACION", "EXCEPCIONES",
     "TRASLADO", "SENTENCIA", "LIQUIDACION DE CREDITO",
     "SOLICITUD DE CONCILIACION", "SOLICITA REQUERIR", "SOLICITUD DE REQUERIR",

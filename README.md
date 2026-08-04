@@ -797,7 +797,13 @@ PROCESAL` de cada una:
       (demanda, memorial, solicitud, mandamiento, recurso, traslado,
       etc), se **descarta**, aunque el contenido mencione de pasada
       una tutela/petición/pago oficioso (ej. una demanda que narra en
-      su historial "el demandado interpuso una tutela").
+      su historial "el demandado interpuso una tutela"). A propósito
+      esta lista NO incluye la palabra "contestación" sola -- una
+      **respuesta** de un municipio/departamento a un derecho de
+      petición o tutela también suele llamarse así, y esas respuestas
+      SÍ son información no procesal que hay que descargar (la
+      "contestación de la demanda", que sí debe excluirse, ya queda
+      cubierta porque menciona "demanda").
    3. Si no hay ninguna marca clara en el nombre, se acepta solo si la
       frase aparece cerca del **inicio** del contenido (el propio
       encabezado/título del documento), no en cualquier parte de un
@@ -958,45 +964,50 @@ defecto `True`): revisa el log primero, y solo cambia `MODO_PRUEBA =
 False` cuando estés segura de que la lista de carpetas a borrar/renombrar
 es la correcta.
 
-## Clasificar información extraprocesal por el nombre del demandado
+## Clasificar información extraprocesal por proceso (demandado, radicado o cuenta)
 
 `clasificar_por_demandado.py` (o su iniciador
 `clasificar_por_demandado.bat`) reparte información extraprocesal a la
-carpeta que le corresponde según el **nombre del demandado** (en vez de
-por radicado/cuenta, como el resto del proyecto), en dos pasos:
+carpeta del proceso que le corresponde, en dos pasos:
 
 1. **Carpeta de descargas manuales** (`CARPETA_DESCARGAS_MANUAL`, por
    defecto tu carpeta "Downloads"): revisa cada PDF/DOCX que haya ahí y
-   lo **mueve** directo a la carpeta del proceso cuyo demandado
-   coincide -- ej. si el demandado es "ALBERTO SUAREZ" y el archivo lo
-   menciona, se mueve a `"<numero>. <radicado o ESTADO>"`. No hay
-   restricción de tipo de documento aquí -- se asume que ya es
-   información extraprocesal porque tú la descargaste a propósito.
-2. **Gmail**: busca cada demandado de los procesos activos en **todo**
-   tu correo (en lotes combinados con `OR`, una sola conexión -- no una
-   por demandado, para que no tarde horas con cientos de demandados) y
-   **solo descarga** lo que además sea un derecho de petición o una
-   tutela (**no** pagos oficiosos esta vez). Igual de riguroso que el
-   resto del proyecto: si el nombre ya trae una marca de documento
-   procesal (demanda, memorial, etc), se descarta aunque mencione la
-   tutela/petición de pasada; también exige que el correo mencione a
-   ESSA/Electrificadora de Santander.
+   lo **mueve** directo a la carpeta del proceso que coincide -- ej. si
+   el demandado es "ALBERTO SUAREZ" y el archivo lo menciona, se mueve
+   a `"<numero>. <radicado o ESTADO>"`. No hay restricción de tipo de
+   documento aquí -- se asume que ya es información extraprocesal
+   porque tú la descargaste a propósito.
+2. **Gmail**: busca en **todo** tu correo (en lotes combinados con
+   `OR`, una sola conexión -- no una por término, para que no tarde
+   horas con cientos de procesos activos) el nombre de cada demandado,
+   el radicado (y sus formas cortas), y la cuenta de cada proceso. Del
+   resultado **solo descarga** lo que además sea un derecho de
+   petición, una tutela, o un pago oficioso -- **tanto lo presentado
+   como las respuestas** que da el municipio/departamento al que se
+   envió. Igual de riguroso que el resto del proyecto: si el nombre ya
+   trae una marca de documento procesal (demanda, memorial, etc), se
+   descarta aunque mencione la tutela/petición de pasada; también
+   exige que el correo mencione a ESSA/Electrificadora de Santander.
 
-La coincidencia por demandado es **estricta a propósito**: tienen que
-aparecer **todas** las palabras significativas de su nombre (no basta
-con una sola) -- aquí el nombre es la única señal disponible, a
-diferencia del resto del proyecto donde el radicado/cuenta ya corrobora
-el proceso. Si un archivo/correo no coincide con ningún demandado
-activo, o coincide con más de uno (dos procesos activos contra la misma
-persona), se deja intacto y se reporta en el log para que lo revises a
-mano -- nunca se adivina.
+En **ambos** pasos, a qué proceso corresponde un archivo/correo se
+decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
+para emparejar su búsqueda global de correo: coincide su **radicado**,
+su **cuenta**, **o** el nombre de su **demandado** -- basta con que
+coincida cualquiera de los tres, no hace falta que coincidan todos. No
+se limita al nombre exacto del demandado: si un documento no lo
+menciona pero sí su radicado o su cuenta, también se encuentra. Si un
+archivo/correo no coincide con ningún proceso activo, o coincide con
+más de uno (ej. dos procesos activos contra la misma persona), se deja
+intacto y se reporta en el log para que lo revises a mano -- nunca se
+adivina.
 
 Solo considera procesos **activos** (todo lo que no es terminado/no
 inicio), igual que la regla de "información no procesal" del resto del
-proyecto. Reutiliza la misma lectura del Excel y el mismo
-`CARPETA_PROCESOS` de `clasificar_procesos_ejecutivos.py`, y las mismas
-credenciales `credenciales_sgde.txt` para Gmail (ver más abajo). Respeta
-`MODO_PRUEBA` (por defecto `True`).
+proyecto. Reutiliza la misma lectura del Excel, el mismo
+`CARPETA_PROCESOS`, y el mismo clasificador de tipo de documento de
+`clasificar_procesos_ejecutivos.py` (incluye pago oficioso, ver abajo),
+y las mismas credenciales `credenciales_sgde.txt` para Gmail (ver más
+abajo). Respeta `MODO_PRUEBA` (por defecto `True`).
 
 ## Listar terminados por auto o por pago (partes y radicado)
 
