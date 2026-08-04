@@ -36,10 +36,23 @@ para emparejar el correo global con un proceso: coincide su radicado,
 su cuenta, O el nombre de su demandado -- basta con que coincida
 CUALQUIERA de los tres, no hace falta que coincidan todos (ver
 clasificar_procesos_ejecutivos._procesos_que_coinciden_con_correo). Si
-un archivo/correo no coincide con ningún proceso activo, o coincide con
-más de uno (ej. dos procesos activos contra la misma persona), se deja
-intacto y se reporta en el log para que lo revises a mano -- nunca se
-adivina.
+YA se encuentra el proceso, la carpeta se CREA sola si todavía no
+existe (mismo nombre "<numero>. <radicado o ESTADO>" que usa
+clasificar_procesos_ejecutivos.py) -- no hace falta haberla creado
+antes. Si un archivo/correo no coincide con ningún proceso activo, o
+coincide con más de uno (ej. dos procesos activos contra la misma
+persona), se deja intacto y queda registrado en un CSV
+(ARCHIVO_SIN_COINCIDENCIA / ARCHIVO_AMBIGUOS / ARCHIVO_CORREO_SIN_COINCIDENCIA)
+para que lo revises a mano -- nunca se adivina.
+
+Rendimiento y precisión (paso 1): para cada archivo primero se prueba
+la coincidencia SOLO con su NOMBRE (rápido, sin abrir nada) -- solo si
+el nombre no basta para encontrar ningún proceso se descarga/lee su
+contenido (PDF/DOCX), que es lo más lento. Esto además es más preciso:
+el contenido completo de un documento largo puede coincidir con más
+procesos de los que el nombre por sí solo sugeriría (nunca con menos),
+así que cuando el nombre ya da una única coincidencia clara, usar esa
+evita diluirla con texto de más.
 
 Reutiliza toda la lectura del Excel y las carpetas de
 clasificar_procesos_ejecutivos.py (misma hoja ACTIVOS, mismo
@@ -84,6 +97,17 @@ MODO_PRUEBA = True
 
 ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "clasificar_por_demandado.log")
 
+# Archivos de CARPETA_DESCARGAS_MANUAL que no coincidieron con ningun
+# proceso activo, o que coincidieron con mas de uno (no se movieron,
+# quedan para que los revises a mano).
+ARCHIVO_SIN_COINCIDENCIA = os.path.join(os.path.dirname(__file__), "clasificar_por_demandado_sin_coincidencia.csv")
+ARCHIVO_AMBIGUOS = os.path.join(os.path.dirname(__file__), "clasificar_por_demandado_ambiguos.csv")
+
+# Correos de Gmail que SI eran tutela/derecho de peticion/pago
+# oficioso, pero no coincidieron con el radicado/cuenta/demandado de
+# ningun proceso activo conocido (no se descargaron).
+ARCHIVO_CORREO_SIN_COINCIDENCIA = os.path.join(os.path.dirname(__file__), "clasificar_por_demandado_correo_sin_coincidencia.csv")
+
 # ===========================================================================
 
 
@@ -110,6 +134,33 @@ def _texto_de_archivo(ruta: Path) -> str:
     return ""
 
 
+def _procesos_para_archivo(ruta, indices):
+    """
+    Encuentra los procesos que coinciden con 'ruta', priorizando
+    SOLO el nombre del archivo (rapido, sin abrir nada) antes de leer
+    su contenido: si el nombre YA alcanza para decidir (0 o varios
+    procesos coinciden), no hace falta descargar/leer el PDF/DOCX --
+    eso ahorra la parte mas lenta (extraer texto) para la mayoria de
+    los archivos con un nombre descriptivo (ej. "peticion alberto
+    suarez.pdf"). Ademas es mas PRECISO: el contenido completo de un
+    documento largo puede coincidir por casualidad con mas procesos de
+    los que el nombre por si solo sugeriria (nunca con MENOS -- el
+    contenido normalizado siempre incluye el nombre), asi que si el
+    nombre ya da una unica coincidencia clara, usar esa es mas
+    confiable que diluirla con el resto del texto. Solo se lee el
+    contenido cuando el nombre NO da ninguna coincidencia (0), para
+    intentar encontrarla ahi.
+    """
+    nombre_norm = buscador._normalizar_para_comparar(ruta.name)
+    coincidencias = base._procesos_que_coinciden_con_correo(nombre_norm, indices)
+    if coincidencias:
+        return coincidencias
+
+    texto = _texto_de_archivo(ruta)
+    contenido_norm = buscador._normalizar_para_comparar(ruta.name + " " + texto)
+    return base._procesos_que_coinciden_con_correo(contenido_norm, indices)
+
+
 def clasificar_carpeta_descargas(indices, carpeta_raiz):
     carpeta_descargas = Path(CARPETA_DESCARGAS_MANUAL)
     if not carpeta_descargas.exists():
@@ -124,10 +175,7 @@ def clasificar_carpeta_descargas(indices, carpeta_raiz):
         if not ruta.is_file() or ruta.suffix.lower() not in (".pdf", ".docx"):
             continue
 
-        texto = _texto_de_archivo(ruta)
-        contenido_norm = buscador._normalizar_para_comparar(ruta.name + " " + texto)
-
-        coincidencias = base._procesos_que_coinciden_con_correo(contenido_norm, indices)
+        coincidencias = _procesos_para_archivo(ruta, indices)
 
         if not coincidencias:
             sin_coincidencia.append(ruta.name)
@@ -235,7 +283,7 @@ def procesar_correos(correos, con_radicado, carpeta_raiz):
     indices = base._indexar_procesos_para_correo(con_radicado)
     adjuntados = 0
     descartados = 0
-    sin_proceso = 0
+    sin_proceso = []
 
     for correo in correos:
         asunto_norm = buscador._normalizar_para_comparar(correo["asunto"])
@@ -249,7 +297,8 @@ def procesar_correos(correos, con_radicado, carpeta_raiz):
 
         procesos_coincidentes = base._procesos_que_coinciden_con_correo(contenido_norm, indices)
         if not procesos_coincidentes:
-            sin_proceso += 1
+            fecha_texto = correo["fecha"].isoformat() if correo["fecha"] else ""
+            sin_proceso.append((correo["asunto"], fecha_texto, motivo))
             logging.info(
                 "   [Correo] '%s' parece %s, pero no coincide con el radicado/cuenta/demandado de ningun "
                 "proceso activo -- no se pudo emparejar, se omite.", correo["asunto"], motivo,
@@ -287,8 +336,9 @@ def procesar_correos(correos, con_radicado, carpeta_raiz):
     logging.info(
         "[Correo] %d correo(s)/archivo(s) descargados; %d correo(s) no eran tutela/derecho de peticion/pago "
         "oficioso; %d coincidian con el tipo pero no con ningun proceso activo conocido.",
-        adjuntados, descartados, sin_proceso,
+        adjuntados, descartados, len(sin_proceso),
     )
+    return sin_proceso
 
 
 # ==================== Orquestacion ====================
@@ -319,10 +369,14 @@ def procesar():
         movidos, "simulados para mover (MODO_PRUEBA activo)" if MODO_PRUEBA else "movidos",
         len(sin_coincidencia), len(ambiguos),
     )
-    if sin_coincidencia:
-        logging.warning("%d archivo(s) no coincidieron con ningun proceso activo:", len(sin_coincidencia))
-        for nombre in sin_coincidencia:
-            logging.warning("   - %s", nombre)
+    if sin_coincidencia and cruce_excel._escribir_csv_tolerante(
+        ARCHIVO_SIN_COINCIDENCIA, ["Archivo"], [(n,) for n in sin_coincidencia], "Sin coincidencia (descargas)",
+    ):
+        logging.info("[Reporte] %d archivo(s) sin coincidencia guardados en: %s", len(sin_coincidencia), ARCHIVO_SIN_COINCIDENCIA)
+    if ambiguos and cruce_excel._escribir_csv_tolerante(
+        ARCHIVO_AMBIGUOS, ["Archivo", "Procesos posibles"], ambiguos, "Ambiguos (descargas)",
+    ):
+        logging.info("[Reporte] %d archivo(s) ambiguo(s) guardados en: %s", len(ambiguos), ARCHIVO_AMBIGUOS)
 
     if not BUSCAR_EN_CORREO:
         return
@@ -346,7 +400,13 @@ def procesar():
         return
 
     logging.info("[Correo] %d correo(s) encontrados en total -- clasificando y emparejando...", len(correos))
-    procesar_correos(correos, con_radicado, carpeta_raiz)
+    correo_sin_proceso = procesar_correos(correos, con_radicado, carpeta_raiz)
+    if correo_sin_proceso and cruce_excel._escribir_csv_tolerante(
+        ARCHIVO_CORREO_SIN_COINCIDENCIA, ["Asunto", "Fecha", "Motivo"], correo_sin_proceso, "Sin coincidencia (correo)",
+    ):
+        logging.info(
+            "[Reporte] %d correo(s) sin coincidencia guardados en: %s", len(correo_sin_proceso), ARCHIVO_CORREO_SIN_COINCIDENCIA,
+        )
 
     if MODO_PRUEBA:
         logging.info(

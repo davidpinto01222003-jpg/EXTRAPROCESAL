@@ -998,8 +998,22 @@ se limita al nombre exacto del demandado: si un documento no lo
 menciona pero sí su radicado o su cuenta, también se encuentra. Si un
 archivo/correo no coincide con ningún proceso activo, o coincide con
 más de uno (ej. dos procesos activos contra la misma persona), se deja
-intacto y se reporta en el log para que lo revises a mano -- nunca se
-adivina.
+intacto y queda registrado en un CSV para que lo revises a mano --
+nunca se adivina: `clasificar_por_demandado_sin_coincidencia.csv`
+(archivos de la carpeta de descargas sin ningún proceso posible),
+`clasificar_por_demandado_ambiguos.csv` (archivos con más de un proceso
+posible), y `clasificar_por_demandado_correo_sin_coincidencia.csv`
+(correos que sí eran tutela/petición/pago oficioso pero no
+coincidieron con ningún proceso activo conocido). Si YA se encuentra el
+proceso, la carpeta se **crea sola** si todavía no existe -- no hace
+falta haberla creado antes.
+
+Para que sea lo más **rápido y preciso** posible, el paso 1 primero
+prueba la coincidencia SOLO con el **nombre** del archivo (sin abrir
+nada); solo si el nombre no basta se lee su contenido (PDF/DOCX), que
+es lo más lento -- y es además más preciso, porque el contenido
+completo de un documento largo puede coincidir con más procesos de los
+que el nombre por sí solo sugeriría (nunca con menos).
 
 Solo considera procesos **activos** (todo lo que no es terminado/no
 inicio), igual que la regla de "información no procesal" del resto del
