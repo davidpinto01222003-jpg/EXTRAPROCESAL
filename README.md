@@ -785,12 +785,23 @@ PROCESAL` de cada una:
    carpeta se nombra `"<numero>. <radicado>"` si la fila ya tiene un
    radicado de 23 dígitos válido, o `"<numero>. <ESTADO PROCESAL>"`
    (igual que el punto 2) si todavía no lo tiene. **Solo** se sube
-   información **no procesal**: tutelas, derechos de petición, y
-   correos de cobro. No importa si el documento también menciona al
-   juzgado del proceso; lo único que importa es que **sea** una
-   tutela/petición/cobro (a propósito ya NO cuenta "solicitud" sola --
-   se prestaba para confundirse con solicitudes procesales dirigidas al
-   juzgado).
+   información **no procesal**: tutelas, derechos de petición, o pagos
+   oficiosos -- **nada más** (ni demandas, ni solicitudes de
+   conciliación, ni memoriales pidiendo requerir a alguien, aunque
+   mencionen esas palabras de pasada). La clasificación es estricta a
+   propósito, en este orden:
+   1. Si el **nombre** del archivo/asunto ya lo dice (ej. "DERECHO DE
+      PETICION ADRESS.pdf"), se acepta directo -- es la señal más
+      confiable.
+   2. Si el nombre trae una marca clara de ser un documento procesal
+      (demanda, memorial, solicitud, mandamiento, recurso, traslado,
+      etc), se **descarta**, aunque el contenido mencione de pasada
+      una tutela/petición/pago oficioso (ej. una demanda que narra en
+      su historial "el demandado interpuso una tutela").
+   3. Si no hay ninguna marca clara en el nombre, se acepta solo si la
+      frase aparece cerca del **inicio** del contenido (el propio
+      encabezado/título del documento), no en cualquier parte de un
+      PDF de varias páginas.
 
 2. **Terminados por pago, por auto, por contrato/prepago, o que nunca
    se presentaron** (`ESTADO PROCESAL` que empieza con `TERMINADO` o
@@ -827,7 +838,7 @@ lo hace si `BUSCAR_EN_CORREO = True` (por defecto) y existe
 A diferencia de Drive (donde sí se busca por radicado/radicado corto/
 cuenta de cada proceso, uno por uno), en Gmail la búsqueda es **al
 revés**: se busca **una sola vez para toda la corrida** por tutela/
-derecho de petición/correo de cobro directamente (no por radicado), y
+derecho de petición/pago oficioso directamente (no por radicado), y
 **cada correo encontrado se empareja después con el proceso correcto**
 si coincide su radicado, su cuenta, **o** el nombre de su demandado
 (con que coincida cualquiera de los tres alcanza -- no hace falta que
@@ -850,13 +861,23 @@ PDF/DOCX o el cuerpo de un correo, su contenido) -- es una heurística,
 no perfecta. Cada decisión queda registrada en
 `clasificar_procesos_ejecutivos.log` para que la revises y ajustes las
 listas de palabras clave al inicio del script si hace falta
-(`PALABRAS_TIPO_INFORMACION_FUERTES`, `PALABRAS_CORREO_DE_COBRO`,
+(`PALABRAS_TIPO_INFORMACION_FUERTES`, `PALABRAS_PAGO_OFICIOSO`,
 `PALABRAS_PROCESO_NO_CONTINUA`).
 
 Reutiliza toda la infraestructura de `buscar_faltantes_en_drive.py`
 (las mismas credenciales `credenciales_drive.json`/`token_drive.json`,
 la búsqueda por radicado/radicado corto/cuenta, y la validación
 obligatoria de que el documento sea de ESSA y del demandado correcto).
+
+**No repite trabajo ya hecho**: cada proceso que termina de revisarse
+por completo (Drive, y si encontró lo que buscaba) queda registrado en
+`clasificar_procesos_ejecutivos_revisados.txt`. Si vuelves a correr el
+script (por ejemplo porque lo interrumpiste, o simplemente para
+capturar lo nuevo), esos procesos se **omiten** -- ni Drive ni Gmail --
+en vez de volver a revisarlos desde cero. Un proceso "terminado" que se
+quedó pendiente (no se encontró el documento que lo termina) **no**
+queda marcado, así que se reintenta en cada corrida hasta que aparezca.
+Si quieres forzar que se revise todo de nuevo, borra ese archivo.
 
 Antes de usarlo, edita al inicio del script:
 

@@ -23,12 +23,12 @@ de negocio según el `ESTADO PROCESAL` de cada fila:
    <radicado>"` si la fila ya tiene un radicado válido de 23 dígitos,
    o `"<numero>. <ESTADO PROCESAL>"` si todavía no lo tiene (mismo
    formato que la regla 2). SOLO se sube información NO procesal:
-   tutelas, derechos de petición, y correos de cobro (ver
+   tutelas, derechos de petición, y pagos oficiosos (ver
    `es_informacion_no_procesal`) -- se busca en Google Drive por
    radicado/radicado corto/cuenta (igual que el resto del proyecto), y
    (opcional, ver `BUSCAR_EN_CORREO`) en TODO el Gmail, pero en Gmail
    la búsqueda es AL REVÉS: en vez de buscar por radicado, se busca
-   directamente por tutela/derecho de petición/cobro (una sola vez
+   directamente por tutela/derecho de petición/pago oficioso (una sola vez
    para toda la corrida, no una vez por proceso) y CADA correo
    encontrado se empareja después con el proceso correcto si coincide
    su radicado, su cuenta, O el nombre de su demandado (cualquiera de
@@ -68,7 +68,7 @@ termina el proceso" es por PALABRAS CLAVE (nombre/asunto y, si es
 PDF/DOCX o el cuerpo de un correo, su contenido) -- es una heurística,
 no perfecta. Cada decisión queda registrada en el log para que la
 revises y ajustes las listas de palabras clave
-(`PALABRAS_TIPO_INFORMACION_FUERTES`, `PALABRAS_CORREO_DE_COBRO`,
+(`PALABRAS_TIPO_INFORMACION_FUERTES`, `PALABRAS_PAGO_OFICIOSO`,
 `PALABRAS_PROCESO_NO_CONTINUA`) si hace falta.
 
 Reutiliza toda la infraestructura de `buscar_faltantes_en_drive.py`
@@ -150,13 +150,25 @@ ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "clasificar_procesos_ejecu
 # se encontró el documento que los termina -- para que los descargues a mano.
 ARCHIVO_PENDIENTES_TERMINADOS = os.path.join(os.path.dirname(__file__), "terminados_sin_auto_pendientes.csv")
 
+# Carpetas (una por línea) que YA se revisaron por completo en una
+# corrida anterior -- en la siguiente corrida se OMITEN por completo
+# (ni Drive ni Gmail), para no repetir horas de trabajo ya hecho. Un
+# proceso "con radicado" se marca aquí apenas termina su búsqueda en
+# Drive (haya encontrado algo o no); uno "terminado" solo se marca
+# cuando SÍ se encontró el documento que lo termina -- si quedó
+# pendiente, se vuelve a intentar en la próxima corrida. No se marca
+# nada mientras MODO_PRUEBA esté activo (una simulación no debe hacer
+# que la próxima corrida real se salte procesos sin haberlos tocado de
+# verdad). Para forzar que se revise todo de nuevo, borra este archivo.
+ARCHIVO_PROCESADOS = os.path.join(os.path.dirname(__file__), "clasificar_procesos_ejecutivos_revisados.txt")
+
 # True (por defecto): no crea carpetas ni descarga nada, solo busca y
 # muestra qué haría. False: aplica los cambios de verdad.
 MODO_PRUEBA = True
 
 # True (por defecto): ademas de Drive, busca en TODO tu Gmail (via IMAP,
 # usando credenciales_sgde.txt -- ver README) tutelas, derechos de
-# peticion y correos de cobro relacionados con cada proceso. Si ese
+# peticion y pagos oficiosos relacionados con cada proceso. Si ese
 # archivo de credenciales no existe, esta busqueda se omite sola, sin
 # error.
 BUSCAR_EN_CORREO = True
@@ -174,13 +186,27 @@ PALABRAS_TIPO_INFORMACION_FUERTES = [
     "TUTELA",
 ]
 
-# Frases que identifican un correo/documento de COBRO (a un banco, EPS,
-# municipio, etc, reclamando el pago de la obligación) -- cuenta igual
-# que una tutela o un derecho de petición como "información no procesal".
-PALABRAS_CORREO_DE_COBRO = [
-    "COBRO PREJURIDICO", "CUENTA DE COBRO", "ESTADO DE CUENTA",
-    "RECORDATORIO DE PAGO", "REQUERIMIENTO DE PAGO", "NOTIFICACION DE COBRO",
-    "GESTION DE COBRO", "COBRO DE CARTERA", "COBRO ADMINISTRATIVO",
+# Frases que identifican un pago oficioso -- lo ÚNICO más, aparte de
+# petición/tutela, que cuenta como "información no procesal".
+PALABRAS_PAGO_OFICIOSO = [
+    "PAGO OFICIOSO",
+    "PAGOS OFICIOSOS",
+    "PAGO DE MANERA OFICIOSA",
+]
+
+# Si el NOMBRE del archivo/asunto trae cualquiera de estas frases, es
+# un documento procesal (demanda, memorial, solicitud dirigida al
+# juzgado, mandamiento, etc) -- se descarta como información no
+# procesal aunque en algún lado de su contenido mencione de pasada una
+# tutela/petición (ej. narrando el historial del proceso). El nombre
+# del archivo es una señal mucho más confiable que rastrear la palabra
+# en las paginas de un PDF largo -- ver es_informacion_no_procesal.
+PALABRAS_PROCESAL_EXCLUIR = [
+    "DEMANDA", "MEMORIAL", "MANDAMIENTO", "CONTESTACION",
+    "RECURSO DE REPOSICION", "RECURSO DE APELACION", "EXCEPCIONES",
+    "TRASLADO", "SENTENCIA", "LIQUIDACION DE CREDITO",
+    "SOLICITUD DE CONCILIACION", "SOLICITA REQUERIR", "SOLICITUD DE REQUERIR",
+    "REQUERIMIENTO", "MEDIDA CAUTELAR", "EMBARGO", "SECUESTRO", "PODER",
 ]
 
 # Frases que dan a entender que el proceso judicial NO sigue su curso
@@ -470,7 +496,13 @@ _CACHE_CONTENIDO_ARCHIVO = {}
 
 
 def _info_documento(servicio, archivo):
-    """Contenido normalizado (nombre + texto de PDF/DOCX si aplica) -- cacheado por ID de archivo."""
+    """
+    (nombre_normalizado, contenido_normalizado) -- nombre_normalizado es
+    SOLO el nombre del archivo (señal mas confiable para clasificar el
+    TIPO de documento); contenido_normalizado es nombre + texto de PDF/
+    DOCX si aplica (para buscar el tipo tambien dentro del documento).
+    Cacheado por ID de archivo.
+    """
     archivo_id = archivo.get("id")
     if archivo_id in _CACHE_CONTENIDO_ARCHIVO:
         return _CACHE_CONTENIDO_ARCHIVO[archivo_id]
@@ -479,11 +511,13 @@ def _info_documento(servicio, archivo):
     texto = ""
     if Path(nombre).suffix.lower() in buscador.EXTENSIONES_CONTENIDO_DRIVE:
         texto = buscador._texto_de_archivo_drive(servicio, archivo)
+    nombre_norm = buscador._normalizar_para_comparar(nombre)
     contenido = buscador._normalizar_para_comparar(nombre + " " + texto)
+    resultado = (nombre_norm, contenido)
 
     if archivo_id:
-        _CACHE_CONTENIDO_ARCHIVO[archivo_id] = contenido
-    return contenido
+        _CACHE_CONTENIDO_ARCHIVO[archivo_id] = resultado
+    return resultado
 
 
 def _archivo_es_seguro(nombre_carpeta, archivo, contenido_normalizado, demandados):
@@ -509,17 +543,37 @@ def _archivo_es_seguro(nombre_carpeta, archivo, contenido_normalizado, demandado
     return True, "ok"
 
 
-def es_informacion_no_procesal(contenido_normalizado):
+def es_informacion_no_procesal(nombre_normalizado, contenido_normalizado):
     """
-    True si el contenido (nombre/texto de un documento, o asunto/cuerpo
-    de un correo) parece ser una tutela, un derecho de petición, o un
-    correo/documento de cobro.
+    Rigurosa a propósito: el documento debe SER una tutela, un derecho
+    de petición, o un pago oficioso -- no basta con que lo MENCIONE de
+    pasada dentro de un documento largo (ej. una demanda que narra en
+    su historial que "el demandado interpuso una tutela"). En orden:
+
+    1. El NOMBRE del archivo/asunto ya lo dice (ej. "DERECHO DE
+       PETICION ADRESS.pdf") -- señal confiable, se acepta directo.
+    2. El nombre trae una marca clara de ser un documento procesal
+       (demanda, memorial, solicitud al juzgado, mandamiento, etc, ver
+       PALABRAS_PROCESAL_EXCLUIR) -- se descarta, aunque el contenido
+       mencione de pasada una tutela/petición/pago oficioso.
+    3. Sin marca clara en el nombre: se acepta solo si la frase
+       aparece cerca del INICIO del contenido (los primeros ~400
+       caracteres -- normalmente el propio encabezado/título del
+       documento), no en cualquier parte de un documento de varias
+       páginas.
     """
-    if any(frase in contenido_normalizado for frase in PALABRAS_TIPO_INFORMACION_FUERTES):
-        return True, "peticion o tutela"
-    if any(frase in contenido_normalizado for frase in PALABRAS_CORREO_DE_COBRO):
-        return True, "correo de cobro"
-    return False, "no parece una tutela, un derecho de peticion ni un correo de cobro"
+    palabras_objetivo = PALABRAS_TIPO_INFORMACION_FUERTES + PALABRAS_PAGO_OFICIOSO
+
+    if any(frase in nombre_normalizado for frase in palabras_objetivo):
+        return True, "tutela/derecho de peticion/pago oficioso (nombre del archivo)"
+
+    if any(marca in nombre_normalizado for marca in PALABRAS_PROCESAL_EXCLUIR):
+        return False, "el nombre indica que es un documento procesal (demanda/memorial/solicitud/etc), no informacion no procesal"
+
+    if any(frase in contenido_normalizado[:400] for frase in palabras_objetivo):
+        return True, "tutela/derecho de peticion/pago oficioso (encabezado del contenido)"
+
+    return False, "no parece una tutela, un derecho de peticion, ni un pago oficioso"
 
 
 def es_auto_terminador(contenido_normalizado):
@@ -549,7 +603,7 @@ def buscar_correo_informacion_no_procesal(usuario: str, app_password: str, termi
     mensajes") los correos que mencionen 'termino'. A diferencia de esa
     función (que solo mira enlaces de Drive y adjuntos .zip), esta
     devuelve TODO lo que hace falta para clasificar un correo como
-    tutela/derecho de petición/correo de cobro: asunto, cuerpo de texto
+    tutela/derecho de petición/pago oficioso: asunto, cuerpo de texto
     (HTML ya limpiado), y CUALQUIER adjunto (no solo .zip). Devuelve
     [{"asunto", "cuerpo", "adjuntos": [(nombre, bytes), ...], "fecha"}, ...].
     """
@@ -606,7 +660,7 @@ def _guardar_correo(correo: dict, destino: Path) -> int:
     Guarda los adjuntos PDF/DOCX del correo (extrayendo los de dentro
     de un .zip si aplica). Si no trae ningun adjunto util, guarda el
     asunto + cuerpo como un .txt simple, para no perder la informacion
-    (ej. un correo de cobro en texto plano, sin adjuntos).
+    (ej. un correo de pago oficioso en texto plano, sin adjuntos).
     """
     _crear_carpeta(destino)
     guardados = 0
@@ -634,9 +688,9 @@ def buscar_correo_global_informacion_no_procesal(usuario: str, app_password: str
     """
     Busca en TODO Gmail, UNA SOLA VEZ para toda la corrida (no una vez
     por proceso), los correos que mencionen alguna de las frases de
-    PALABRAS_TIPO_INFORMACION_FUERTES o PALABRAS_CORREO_DE_COBRO --
+    PALABRAS_TIPO_INFORMACION_FUERTES o PALABRAS_PAGO_OFICIOSO --
     exactamente las que usa es_informacion_no_procesal. Se busca por
-    TIPO de correo (tutela/derecho de peticion/cobro), no por radicado:
+    TIPO de correo (tutela/derecho de peticion/pago oficioso), no por radicado:
     un correo de este tipo no siempre menciona el radicado exacto tal
     como Gmail lo indexaria, así que primero se encuentra por su
     contenido y DESPUES se empareja con el proceso correcto por
@@ -645,7 +699,7 @@ def buscar_correo_global_informacion_no_procesal(usuario: str, app_password: str
     (sin duplicados, [{"asunto", "cuerpo", "adjuntos", "fecha"}, ...]).
     """
     vistos = {}
-    for frase in PALABRAS_TIPO_INFORMACION_FUERTES + PALABRAS_CORREO_DE_COBRO:
+    for frase in PALABRAS_TIPO_INFORMACION_FUERTES + PALABRAS_PAGO_OFICIOSO:
         try:
             correos = buscar_correo_informacion_no_procesal(usuario, app_password, frase)
         except Exception as error:
@@ -659,7 +713,7 @@ def buscar_correo_global_informacion_no_procesal(usuario: str, app_password: str
 def _indexar_procesos_para_correo(procesos):
     """
     Indices para emparejar un correo (encontrado por TIPO: tutela/
-    peticion/cobro) con el/los proceso(s) al que corresponde, por
+    peticion/pago oficioso) con el/los proceso(s) al que corresponde, por
     radicado, por cuenta, o por palabra significativa del nombre del
     demandado. Un mismo correo puede corresponder a mas de un proceso
     (ej. un proceso "acumulado" con varias cuentas bajo un radicado).
@@ -719,10 +773,11 @@ def procesar_correos_no_procesal(correos, procesos_con_radicado, carpetas_existe
     adjuntados = 0
 
     for correo in correos:
+        asunto_norm = buscador._normalizar_para_comparar(correo["asunto"])
         contenido_norm = buscador._normalizar_para_comparar(
             correo["asunto"] + " " + correo["cuerpo"] + " " + " ".join(n for n, _ in correo["adjuntos"])
         )
-        es_no_procesal, motivo = es_informacion_no_procesal(contenido_norm)
+        es_no_procesal, motivo = es_informacion_no_procesal(asunto_norm, contenido_norm)
         if not es_no_procesal:
             continue
 
@@ -829,6 +884,22 @@ def _listar_carpetas_existentes():
     }
 
 
+def _cargar_procesados_anteriormente() -> set:
+    """Carpetas ya revisadas por completo en una corrida anterior (ver ARCHIVO_PROCESADOS) -- se omiten esta vez."""
+    if not os.path.exists(ARCHIVO_PROCESADOS):
+        return set()
+    with open(ARCHIVO_PROCESADOS, encoding="utf-8") as f:
+        return {linea.strip() for linea in f if linea.strip()}
+
+
+def _marcar_como_procesado(nombre_carpeta: str):
+    """Registra 'nombre_carpeta' como ya revisada, para que la proxima corrida la omita. No hace nada en MODO_PRUEBA."""
+    if MODO_PRUEBA:
+        return
+    with open(ARCHIVO_PROCESADOS, "a", encoding="utf-8") as f:
+        f.write(nombre_carpeta + "\n")
+
+
 def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
     _crear_carpeta(destino)
     nombre_seguro = organizador.sanear_nombre(archivo["name"])
@@ -859,13 +930,13 @@ def procesar_con_radicado(servicio, proceso):
 
     subidos = 0
     for archivo, carpeta in archivos:
-        contenido_norm = _info_documento(servicio, archivo)
+        nombre_norm, contenido_norm = _info_documento(servicio, archivo)
         seguro, motivo = _archivo_es_seguro(carpeta.get("name", ""), archivo, contenido_norm, proceso["demandados"])
         if not seguro:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
 
-        es_no_procesal, motivo = es_informacion_no_procesal(contenido_norm)
+        es_no_procesal, motivo = es_informacion_no_procesal(nombre_norm, contenido_norm)
         if not es_no_procesal:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
@@ -884,8 +955,14 @@ def procesar_con_radicado(servicio, proceso):
         )
 
 
-def procesar_terminado(servicio, proceso, pendientes):
-    """La carpeta ya se creo antes (ver crear_todas_las_carpetas)."""
+def procesar_terminado(servicio, proceso, pendientes) -> bool:
+    """
+    La carpeta ya se creo antes (ver crear_todas_las_carpetas). Devuelve
+    True si se encontro el documento que termina el proceso (para que
+    procesar() lo marque como revisado y no lo vuelva a buscar en la
+    proxima corrida) -- si queda pendiente, devuelve False para que se
+    reintente la proxima vez.
+    """
     numero, estado, radicado = proceso["numero"], proceso["estado"], proceso["radicado"]
     nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
@@ -893,13 +970,13 @@ def procesar_terminado(servicio, proceso, pendientes):
     if not _terminos_busqueda(radicado, proceso["cuentas"]):
         pendientes.append(proceso)
         logging.warning("Proceso %s (%s): no hay radicado ni cuenta valida para buscar en Drive, queda pendiente.", numero, estado)
-        return
+        return False
 
     archivos = _buscar_archivos(servicio, radicado, proceso["cuentas"])
 
     encontrado = False
     for archivo, carpeta in archivos:
-        contenido_norm = _info_documento(servicio, archivo)
+        _nombre_norm, contenido_norm = _info_documento(servicio, archivo)
         seguro, motivo = _archivo_es_seguro(carpeta.get("name", ""), archivo, contenido_norm, proceso["demandados"])
         if not seguro:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
@@ -919,6 +996,8 @@ def procesar_terminado(servicio, proceso, pendientes):
     if not encontrado:
         pendientes.append(proceso)
         logging.warning("Proceso %s (%s): no se encontro el documento que termina el proceso, queda pendiente.", numero, estado)
+
+    return encontrado
 
 
 # ==================== Orquestacion ====================
@@ -954,7 +1033,7 @@ def procesar():
         else:
             logging.info(
                 "[Correo] Credenciales encontradas (%s) -- se buscara en Gmail por tutela/derecho de peticion/"
-                "correo de cobro (no por radicado), y se emparejara cada correo con su proceso al final.",
+                "pago oficioso (no por radicado), y se emparejara cada correo con su proceso al final.",
                 credenciales_correo[0],
             )
 
@@ -968,9 +1047,27 @@ def procesar():
     crear_todas_las_carpetas(con_radicado, carpetas_existentes, "Carpetas de activos/suspendidos/reorganizacion/remitida/etc")
     crear_todas_las_carpetas(terminados, carpetas_existentes, "Carpetas de terminados (pago/auto/contrato/no inicio)")
 
-    for proceso in con_radicado:
+    # Procesos que ya se revisaron por completo en una corrida anterior
+    # (ver ARCHIVO_PROCESADOS) -- se omiten esta vez, ni Drive ni Gmail,
+    # para no repetir horas de trabajo ya hecho. Se calcula UNA vez al
+    # principio (no se actualiza a mitad de esta corrida) para que el
+    # paso de Gmail siga cubriendo los procesos que se acaban de revisar
+    # en Drive en esta MISMA corrida.
+    ya_procesados = _cargar_procesados_anteriormente()
+    if ya_procesados:
+        logging.info(
+            "[Retomar] %d carpeta(s) ya se revisaron en una corrida anterior -- se omiten esta vez "
+            "(borra %s si quieres que se revisen todas de nuevo).",
+            len(ya_procesados), ARCHIVO_PROCESADOS,
+        )
+
+    con_radicado_pendiente = [p for p in con_radicado if p["nombre_carpeta"] not in ya_procesados]
+    terminados_pendiente = [p for p in terminados if p["nombre_carpeta"] not in ya_procesados]
+
+    for proceso in con_radicado_pendiente:
         try:
             procesar_con_radicado(servicio, proceso)
+            _marcar_como_procesado(proceso["nombre_carpeta"])
         except Exception as error:
             logging.error("[Error] Proceso %s (fila(s) %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], ", ".join(str(f) for f in proceso["filas_excel"]), error)
 
@@ -978,17 +1075,19 @@ def procesar():
         try:
             correos = buscar_correo_global_informacion_no_procesal(*credenciales_correo)
             logging.info(
-                "[Correo] %d correo(s) de tutela/derecho de peticion/cobro encontrados en todo Gmail -- "
+                "[Correo] %d correo(s) de tutela/derecho de peticion/pago oficioso encontrados en todo Gmail -- "
                 "emparejando con los procesos...", len(correos),
             )
-            procesar_correos_no_procesal(correos, con_radicado, carpetas_existentes)
+            procesar_correos_no_procesal(correos, con_radicado_pendiente, carpetas_existentes)
         except Exception as error:
             logging.error("[Correo] Fallo la busqueda global en Gmail, se omite: %s", error)
 
     pendientes = []
-    for proceso in terminados:
+    for proceso in terminados_pendiente:
         try:
-            procesar_terminado(servicio, proceso, pendientes)
+            encontrado = procesar_terminado(servicio, proceso, pendientes)
+            if encontrado:
+                _marcar_como_procesado(proceso["nombre_carpeta"])
         except Exception as error:
             logging.error("[Error] Proceso %s (fila(s) %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], ", ".join(str(f) for f in proceso["filas_excel"]), error)
 

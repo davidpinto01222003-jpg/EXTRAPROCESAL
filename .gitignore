@@ -3,4 +3,5 @@ __pycache__/
 *.log
 credenciales_sgde.txt
 expedientes_procesados.txt
+clasificar_procesos_ejecutivos_revisados.txt
 _tmp_descargas_sgde/
