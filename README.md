@@ -917,6 +917,33 @@ Respeta `MODO_PRUEBA` (por defecto `True`): en modo prueba solo busca y
 clasifica, mostrando qué subiría y a qué carpeta, sin crear carpetas ni
 descargar nada todavía.
 
+## Limpiar y terminar de nombrar las carpetas de procesos ejecutivos
+
+`limpiar_carpetas_procesos_ejecutivos.py` (o su iniciador
+`limpiar_carpetas_ejecutivos.bat`) hace dos limpiezas en la misma
+`CARPETA_PROCESOS` que usa `clasificar_procesos_ejecutivos.py` (reutiliza
+la misma lectura del Excel, mismas reglas de nombre):
+
+1. **Renombra** las carpetas que quedaron con **solo el número** (ej.
+   `"245."` o `"245"`, sin radicado ni ESTADO PROCESAL) al nombre que
+   les corresponde hoy según el Excel -- `"<numero>. <radicado>"` si ya
+   lo tiene, o `"<numero>. <ESTADO PROCESAL>"` si no, tanto para activos
+   como para terminados. Si el número es ambiguo (aparece con radicados
+   distintos en el Excel), se omite y se reporta para que lo revises a
+   mano.
+2. **Borra** las carpetas de procesos **activos** (todo lo que no es
+   `TERMINADO*`/`NO INICIO` -- activo, suspendido, en reorganización,
+   remitida a castigo/prepago, etc) que estén **completamente vacías**
+   (sin ningún archivo adentro, ni en subcarpetas). Los procesos
+   **terminados nunca se tocan aquí, estén vacíos o no** -- para esos ya
+   existe `terminados_sin_auto_pendientes.csv`, que es la lista correcta
+   de qué falta descargar a mano.
+
+⚠️ Borrar una carpeta es **irreversible**. Respeta `MODO_PRUEBA` (por
+defecto `True`): revisa el log primero, y solo cambia `MODO_PRUEBA =
+False` cuando estés segura de que la lista de carpetas a borrar/renombrar
+es la correcta.
+
 ## Comparar Excel vs disco (solo un reporte de lo que falta o sobra)
 
 `comparar_excel_disco.py` (o su iniciador `comparar_excel_disco.bat`)
