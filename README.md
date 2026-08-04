@@ -971,8 +971,18 @@ fila por proceso: `No.`, `Estado`, `Radicado`, `Demandante` (siempre
 ESSA/Electrificadora de Santander -- no hay columna de demandante en el
 Excel porque siempre es la misma parte) y `Demandado(s)`. Un proceso
 "acumulado" (varias cuentas bajo el mismo radicado) sale en una sola
-fila, con todos sus demandados juntos. No crea, renombra ni borra
-ninguna carpeta -- solo genera el CSV.
+fila, con todos sus demandados juntos.
+
+Además genera `terminados_auto_pago_importar.xlsx`, listo para
+importar a un sistema propio: una fila por caso, dos columnas --
+`radicado` y `correo del responsable` (esta última siempre **vacía**;
+si tu sistema no reconoce el correo como de tu firma, simplemente crea
+el caso sin asignar). Los procesos que todavía no tienen radicado no
+salen en este archivo (no hay como importarlos sin radicado) -- quedan
+avisados en el log para que los completes a mano.
+
+No crea, renombra ni borra ninguna carpeta -- solo genera los dos
+reportes.
 
 ## Comparar Excel vs disco (solo un reporte de lo que falta o sobra)
 
