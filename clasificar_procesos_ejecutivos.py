@@ -760,6 +760,37 @@ def _crear_carpeta(destino: Path):
     os.makedirs(organizador._ruta_larga_segura(str(destino)), exist_ok=True)
 
 
+def crear_todas_las_carpetas(procesos, carpetas_existentes, etiqueta):
+    """
+    Crea de una vez TODAS las carpetas que hagan falta para 'procesos'
+    (activos/suspendidos/etc, o terminados) -- se corre ANTES de
+    empezar a buscar documentos en Drive/Gmail para que las 1223
+    carpetas queden visibles en el disco desde el principio, en vez de
+    ir apareciendo intercaladas a medida que el script busca contenido
+    (que puede tardar horas para los ~925 procesos con radicado).
+    """
+    creadas = 0
+    for proceso in procesos:
+        nombre_carpeta = proceso["nombre_carpeta"]
+        if nombre_carpeta in carpetas_existentes:
+            continue
+        destino = Path(CARPETA_PROCESOS) / nombre_carpeta
+        if MODO_PRUEBA:
+            logging.info(
+                "[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.",
+                proceso["numero"], proceso["estado"], proceso["fila_excel"], nombre_carpeta,
+            )
+        else:
+            _crear_carpeta(destino)
+            carpetas_existentes.add(nombre_carpeta)
+            logging.info(
+                "[Creada] Proceso %s (%s, fila %s): carpeta '%s'.",
+                proceso["numero"], proceso["estado"], proceso["fila_excel"], nombre_carpeta,
+            )
+        creadas += 1
+    logging.info("%s: %d carpeta(s) %s.", etiqueta, creadas, "simuladas (MODO_PRUEBA activo)" if MODO_PRUEBA else "creadas")
+
+
 def _listar_carpetas_existentes():
     carpeta_raiz = Path(CARPETA_PROCESOS)
     _crear_carpeta(carpeta_raiz)
@@ -783,24 +814,17 @@ def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
 # ==================== Procesamiento por fila ====================
 
 
-def procesar_con_radicado(servicio, proceso, carpetas_existentes):
+def procesar_con_radicado(servicio, proceso):
     """
     Filas que NO son terminadas (activo, suspendido, reorganizacion,
-    remitida a castigo/prepago, etc). La busqueda en Gmail para estas
-    filas NO se hace aqui -- se hace UNA vez para todas al final, ver
+    remitida a castigo/prepago, etc). La carpeta ya se creo antes (ver
+    crear_todas_las_carpetas). La busqueda en Gmail para estas filas
+    tampoco se hace aqui -- se hace UNA vez para todas al final, ver
     procesar_correos_no_procesal.
     """
     numero, radicado = proceso["numero"], proceso["radicado"]
     nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
-
-    if nombre_carpeta not in carpetas_existentes:
-        if MODO_PRUEBA:
-            logging.info("[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.", numero, proceso["estado"], proceso["fila_excel"], nombre_carpeta)
-        else:
-            _crear_carpeta(destino)
-            carpetas_existentes.add(nombre_carpeta)
-            logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, proceso["estado"], proceso["fila_excel"], nombre_carpeta)
 
     archivos = _buscar_archivos(servicio, radicado, proceso["cuentas"])
 
@@ -831,18 +855,11 @@ def procesar_con_radicado(servicio, proceso, carpetas_existentes):
         )
 
 
-def procesar_terminado(servicio, proceso, carpetas_existentes, pendientes):
+def procesar_terminado(servicio, proceso, pendientes):
+    """La carpeta ya se creo antes (ver crear_todas_las_carpetas)."""
     numero, estado, radicado = proceso["numero"], proceso["estado"], proceso["radicado"]
     nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
-
-    if nombre_carpeta not in carpetas_existentes:
-        if MODO_PRUEBA:
-            logging.info("[SIMULACION] Proceso %s (%s, fila %s): se crearia la carpeta '%s'.", numero, estado, proceso["fila_excel"], nombre_carpeta)
-        else:
-            _crear_carpeta(destino)
-            carpetas_existentes.add(nombre_carpeta)
-            logging.info("[Creada] Proceso %s (%s, fila %s): carpeta '%s'.", numero, estado, proceso["fila_excel"], nombre_carpeta)
 
     if not _terminos_busqueda(radicado, proceso["cuentas"]):
         pendientes.append(proceso)
@@ -914,9 +931,17 @@ def procesar():
 
     carpetas_existentes = _listar_carpetas_existentes()
 
+    # Se crean TODAS las carpetas de una vez, antes de ponerse a buscar
+    # contenido -- para que las 1223 queden visibles en el disco desde
+    # el principio, en vez de ir apareciendo intercaladas a medida que
+    # el script busca documentos (que puede tardar horas para los
+    # procesos con radicado antes de siquiera llegar a los terminados).
+    crear_todas_las_carpetas(con_radicado, carpetas_existentes, "Carpetas de activos/suspendidos/reorganizacion/remitida/etc")
+    crear_todas_las_carpetas(terminados, carpetas_existentes, "Carpetas de terminados (pago/auto/contrato/no inicio)")
+
     for proceso in con_radicado:
         try:
-            procesar_con_radicado(servicio, proceso, carpetas_existentes)
+            procesar_con_radicado(servicio, proceso)
         except Exception as error:
             logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
 
@@ -934,7 +959,7 @@ def procesar():
     pendientes = []
     for proceso in terminados:
         try:
-            procesar_terminado(servicio, proceso, carpetas_existentes, pendientes)
+            procesar_terminado(servicio, proceso, pendientes)
         except Exception as error:
             logging.error("[Error] Proceso %s (fila %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], proceso["fila_excel"], error)
 
