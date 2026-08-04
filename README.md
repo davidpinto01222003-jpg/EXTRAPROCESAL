@@ -879,6 +879,20 @@ quedó pendiente (no se encontró el documento que lo termina) **no**
 queda marcado, así que se reintenta en cada corrida hasta que aparezca.
 Si quieres forzar que se revise todo de nuevo, borra ese archivo.
 
+**Velocidad**: casi todo el tiempo se va esperando la respuesta de
+Google Drive (red), no procesando en tu computador -- por eso el script
+busca varios procesos **al mismo tiempo** (`NUM_HILOS`, por defecto 8 a
+la vez) en vez de uno por uno, lo que reduce el tiempo total casi en esa
+misma proporción. Además, cuando el **nombre** de un archivo ya alcanza
+para descartarlo (ej. `"DEMANDA EJECUTIVA.pdf"`), ni siquiera se
+descarga ni se lee su contenido -- eso evita el paso más lento
+(descargar + extraer texto de PDF/DOCX) para la mayoría de los
+documentos de cada carpeta, que normalmente son procesales y no
+información no procesal. Si tu internet aguanta y quieres que vaya más
+rápido todavía, puedes subir `NUM_HILOS` (ej. `15` o `20`); si prefieres
+verlo avanzar de a uno (más fácil de leer en el log, o si notas errores
+de conexión), bájalo a `1`.
+
 Antes de usarlo, edita al inicio del script:
 
 - `RUTA_EXCEL_CONTROL`: ruta a `3. CONTROL PROCESOS EJECUTIVOS
@@ -892,6 +906,9 @@ Antes de usarlo, edita al inicio del script:
   disco externo.
 - `BUSCAR_EN_CORREO`: ponlo en `False` si no quieres que también
   busque en Gmail (solo Drive).
+- `NUM_HILOS`: cuántos procesos se buscan en Drive al mismo tiempo (por
+  defecto `8`). Súbelo si quieres que vaya más rápido y tu internet
+  aguanta, o bájalo a `1` para verlo avanzar de a uno.
 
 Las filas sin `ESTADO PROCESAL` diligenciado todavía no se pueden
 organizar -- quedan reportadas en el log.

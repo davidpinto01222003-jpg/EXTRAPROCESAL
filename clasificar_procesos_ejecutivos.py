@@ -88,6 +88,13 @@ búsqueda en correo simplemente se omite, ver `BUSCAR_EN_CORREO`).
 Respeta MODO_PRUEBA (por defecto True): en modo prueba solo BUSCA y
 CLASIFICA, mostrando qué subiría y a qué carpeta, sin crear carpetas ni
 descargar nada todavía.
+
+Rendimiento: la mayor parte del tiempo se va esperando la red (Google
+Drive), no la CPU, así que este script busca varios procesos EN
+PARALELO (ver NUM_HILOS, por defecto 8 a la vez) en vez de uno por uno.
+Además, cuando el NOMBRE de un archivo ya alcanza para descartarlo (ej.
+"DEMANDA EJECUTIVA.pdf"), ni siquiera se descarga ni se lee su contenido
+-- ver `_decision_solo_por_nombre`.
 """
 
 import csv
@@ -97,7 +104,9 @@ import io
 import logging
 import os
 import re
+import threading
 import zipfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import openpyxl
@@ -172,6 +181,18 @@ MODO_PRUEBA = True
 # archivo de credenciales no existe, esta busqueda se omite sola, sin
 # error.
 BUSCAR_EN_CORREO = True
+
+# Cuantos procesos se buscan en Google Drive AL MISMO TIEMPO (en hilos
+# separados). Casi todo el tiempo de este script se va esperando la
+# respuesta de la API de Drive (red), no procesando en la CPU -- por
+# eso buscar varios procesos a la vez (en vez de uno por uno) reduce el
+# tiempo total casi en la misma proporcion que NUM_HILOS, sin sobrecargar
+# tu computador. 8 es un valor conservador frente al limite de la API de
+# Drive (miles de solicitudes por minuto); puedes subirlo (ej. 15-20) si
+# tu internet aguanta y quieres que vaya mas rapido todavia, o bajarlo a
+# 1 para volver al comportamiento anterior (uno por uno, mas facil de
+# leer en el log).
+NUM_HILOS = 8
 
 # --------------------- Palabras clave de clasificación ---------------------
 
@@ -395,6 +416,21 @@ def autenticar_drive_o_none():
         return None
 
 
+# El cliente de Google Drive (via httplib2) NO es seguro para compartir
+# entre varios hilos al mismo tiempo -- cada hilo necesita su PROPIO
+# objeto de servicio. El hilo principal ya se autentico antes de lanzar
+# los hilos (asi el token ya quedo valido/renovado en disco, ver
+# procesar()), asi que cada hilo solo necesita leerlo de nuevo: no
+# dispara otro refresh ni el flujo de login.
+_hilo_local = threading.local()
+
+
+def _servicio_del_hilo():
+    if not hasattr(_hilo_local, "servicio"):
+        _hilo_local.servicio = buscador.autenticar_drive()
+    return _hilo_local.servicio
+
+
 def _terminos_busqueda(radicado, cuentas):
     terminos = []
     if radicado:
@@ -543,6 +579,29 @@ def _archivo_es_seguro(nombre_carpeta, archivo, contenido_normalizado, demandado
     return True, "ok"
 
 
+def _decision_solo_por_nombre(nombre_normalizado):
+    """
+    Intenta decidir es_informacion_no_procesal SOLO con el nombre del
+    archivo/asunto, SIN mirar el contenido -- devuelve (True, motivo) o
+    (False, motivo) si el nombre ya alcanza para decidir (tiers 1 y 2),
+    o None si hace falta revisar el contenido (tier 3). Se usa para
+    evitar DESCARGAR y leer el contenido de archivos que el nombre ya
+    descarta (ej. "DEMANDA EJECUTIVA.pdf") -- con carpetas de decenas de
+    documentos por proceso, esto ahorra la mayor parte del trabajo
+    pesado (descargar + extraer texto de PDF/DOCX), que es lo que mas
+    tiempo toma.
+    """
+    palabras_objetivo = PALABRAS_TIPO_INFORMACION_FUERTES + PALABRAS_PAGO_OFICIOSO
+
+    if any(frase in nombre_normalizado for frase in palabras_objetivo):
+        return True, "tutela/derecho de peticion/pago oficioso (nombre del archivo)"
+
+    if any(marca in nombre_normalizado for marca in PALABRAS_PROCESAL_EXCLUIR):
+        return False, "el nombre indica que es un documento procesal (demanda/memorial/solicitud/etc), no informacion no procesal"
+
+    return None
+
+
 def es_informacion_no_procesal(nombre_normalizado, contenido_normalizado):
     """
     Rigurosa a propósito: el documento debe SER una tutela, un derecho
@@ -562,14 +621,11 @@ def es_informacion_no_procesal(nombre_normalizado, contenido_normalizado):
        documento), no en cualquier parte de un documento de varias
        páginas.
     """
+    decision = _decision_solo_por_nombre(nombre_normalizado)
+    if decision is not None:
+        return decision
+
     palabras_objetivo = PALABRAS_TIPO_INFORMACION_FUERTES + PALABRAS_PAGO_OFICIOSO
-
-    if any(frase in nombre_normalizado for frase in palabras_objetivo):
-        return True, "tutela/derecho de peticion/pago oficioso (nombre del archivo)"
-
-    if any(marca in nombre_normalizado for marca in PALABRAS_PROCESAL_EXCLUIR):
-        return False, "el nombre indica que es un documento procesal (demanda/memorial/solicitud/etc), no informacion no procesal"
-
     if any(frase in contenido_normalizado[:400] for frase in palabras_objetivo):
         return True, "tutela/derecho de peticion/pago oficioso (encabezado del contenido)"
 
@@ -892,12 +948,22 @@ def _cargar_procesados_anteriormente() -> set:
         return {linea.strip() for linea in f if linea.strip()}
 
 
+_lock_archivo_procesados = threading.Lock()
+
+
 def _marcar_como_procesado(nombre_carpeta: str):
-    """Registra 'nombre_carpeta' como ya revisada, para que la proxima corrida la omita. No hace nada en MODO_PRUEBA."""
+    """
+    Registra 'nombre_carpeta' como ya revisada, para que la proxima
+    corrida la omita. No hace nada en MODO_PRUEBA. Con hilos en paralelo
+    (ver NUM_HILOS) varios procesos pueden terminar casi al mismo
+    tiempo, asi que el escribir al archivo va protegido con un lock para
+    que dos hilos no se pisen escribiendo a la vez.
+    """
     if MODO_PRUEBA:
         return
-    with open(ARCHIVO_PROCESADOS, "a", encoding="utf-8") as f:
-        f.write(nombre_carpeta + "\n")
+    with _lock_archivo_procesados:
+        with open(ARCHIVO_PROCESADOS, "a", encoding="utf-8") as f:
+            f.write(nombre_carpeta + "\n")
 
 
 def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
@@ -914,14 +980,17 @@ def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
 # ==================== Procesamiento por fila ====================
 
 
-def procesar_con_radicado(servicio, proceso):
+def procesar_con_radicado(proceso):
     """
     Filas que NO son terminadas (activo, suspendido, reorganizacion,
     remitida a castigo/prepago, etc). La carpeta ya se creo antes (ver
     crear_todas_las_carpetas). La busqueda en Gmail para estas filas
     tampoco se hace aqui -- se hace UNA vez para todas al final, ver
-    procesar_correos_no_procesal.
+    procesar_correos_no_procesal. Corre en un hilo propio (ver
+    _servicio_del_hilo) para que varios procesos se busquen en Drive al
+    mismo tiempo -- ver NUM_HILOS.
     """
+    servicio = _servicio_del_hilo()
     numero, radicado = proceso["numero"], proceso["radicado"]
     nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
@@ -930,13 +999,21 @@ def procesar_con_radicado(servicio, proceso):
 
     subidos = 0
     for archivo, carpeta in archivos:
+        nombre_norm = buscador._normalizar_para_comparar(archivo.get("name", ""))
+        decision_por_nombre = _decision_solo_por_nombre(nombre_norm)
+        if decision_por_nombre is not None and decision_por_nombre[0] is False:
+            # El nombre ya lo descarta (demanda/memorial/etc) -- ni
+            # siquiera hace falta descargarlo para saberlo.
+            logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, decision_por_nombre[1])
+            continue
+
         nombre_norm, contenido_norm = _info_documento(servicio, archivo)
         seguro, motivo = _archivo_es_seguro(carpeta.get("name", ""), archivo, contenido_norm, proceso["demandados"])
         if not seguro:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
 
-        es_no_procesal, motivo = es_informacion_no_procesal(nombre_norm, contenido_norm)
+        es_no_procesal, motivo = decision_por_nombre if decision_por_nombre is not None else es_informacion_no_procesal(nombre_norm, contenido_norm)
         if not es_no_procesal:
             logging.info("   (se omite '%s' del proceso %s: %s)", archivo["name"], numero, motivo)
             continue
@@ -955,14 +1032,16 @@ def procesar_con_radicado(servicio, proceso):
         )
 
 
-def procesar_terminado(servicio, proceso, pendientes) -> bool:
+def procesar_terminado(proceso, pendientes) -> bool:
     """
     La carpeta ya se creo antes (ver crear_todas_las_carpetas). Devuelve
     True si se encontro el documento que termina el proceso (para que
     procesar() lo marque como revisado y no lo vuelva a buscar en la
     proxima corrida) -- si queda pendiente, devuelve False para que se
-    reintente la proxima vez.
+    reintente la proxima vez. Corre en un hilo propio (ver
+    _servicio_del_hilo) -- ver NUM_HILOS.
     """
+    servicio = _servicio_del_hilo()
     numero, estado, radicado = proceso["numero"], proceso["estado"], proceso["radicado"]
     nombre_carpeta = proceso["nombre_carpeta"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
@@ -1064,12 +1143,20 @@ def procesar():
     con_radicado_pendiente = [p for p in con_radicado if p["nombre_carpeta"] not in ya_procesados]
     terminados_pendiente = [p for p in terminados if p["nombre_carpeta"] not in ya_procesados]
 
-    for proceso in con_radicado_pendiente:
+    def _tarea_con_radicado(proceso):
         try:
-            procesar_con_radicado(servicio, proceso)
+            procesar_con_radicado(proceso)
             _marcar_como_procesado(proceso["nombre_carpeta"])
         except Exception as error:
             logging.error("[Error] Proceso %s (fila(s) %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], ", ".join(str(f) for f in proceso["filas_excel"]), error)
+
+    if con_radicado_pendiente:
+        logging.info(
+            "Buscando en Drive %d proceso(s) (hasta %d a la vez, ver NUM_HILOS)...",
+            len(con_radicado_pendiente), NUM_HILOS,
+        )
+        with ThreadPoolExecutor(max_workers=NUM_HILOS) as pool:
+            list(pool.map(_tarea_con_radicado, con_radicado_pendiente))
 
     if credenciales_correo:
         try:
@@ -1083,13 +1170,22 @@ def procesar():
             logging.error("[Correo] Fallo la busqueda global en Gmail, se omite: %s", error)
 
     pendientes = []
-    for proceso in terminados_pendiente:
+
+    def _tarea_terminado(proceso):
         try:
-            encontrado = procesar_terminado(servicio, proceso, pendientes)
+            encontrado = procesar_terminado(proceso, pendientes)
             if encontrado:
                 _marcar_como_procesado(proceso["nombre_carpeta"])
         except Exception as error:
             logging.error("[Error] Proceso %s (fila(s) %s) fallo y se omite -- se sigue con el resto: %s", proceso["numero"], ", ".join(str(f) for f in proceso["filas_excel"]), error)
+
+    if terminados_pendiente:
+        logging.info(
+            "Buscando en Drive %d proceso(s) terminado(s) (hasta %d a la vez, ver NUM_HILOS)...",
+            len(terminados_pendiente), NUM_HILOS,
+        )
+        with ThreadPoolExecutor(max_workers=NUM_HILOS) as pool:
+            list(pool.map(_tarea_terminado, terminados_pendiente))
 
     if pendientes:
         with open(ARCHIVO_PENDIENTES_TERMINADOS, "w", newline="", encoding="utf-8-sig") as f:
