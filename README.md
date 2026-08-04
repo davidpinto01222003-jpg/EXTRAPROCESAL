@@ -958,6 +958,22 @@ defecto `True`): revisa el log primero, y solo cambia `MODO_PRUEBA =
 False` cuando estés segura de que la lista de carpetas a borrar/renombrar
 es la correcta.
 
+## Listar terminados por auto o por pago (partes y radicado)
+
+`listar_terminados_auto_pago.py` (o su iniciador
+`listar_terminados_auto_pago.bat`) es un reporte de **solo lectura**:
+lee el mismo Excel que `clasificar_procesos_ejecutivos.py` (hoja
+`ACTIVOS`, con el mismo arrastre de los procesos "acumulados") y filtra
+los procesos cuyo `ESTADO PROCESAL` es exactamente `TERMINADO POR AUTO`
+o `TERMINADO POR PAGO` -- **no** incluye `TERMINADO POR CONTRATO`/
+`PREPAGO` ni `NO INICIO`. Genera `terminados_auto_pago.csv` con una
+fila por proceso: `No.`, `Estado`, `Radicado`, `Demandante` (siempre
+ESSA/Electrificadora de Santander -- no hay columna de demandante en el
+Excel porque siempre es la misma parte) y `Demandado(s)`. Un proceso
+"acumulado" (varias cuentas bajo el mismo radicado) sale en una sola
+fila, con todos sus demandados juntos. No crea, renombra ni borra
+ninguna carpeta -- solo genera el CSV.
+
 ## Comparar Excel vs disco (solo un reporte de lo que falta o sobra)
 
 `comparar_excel_disco.py` (o su iniciador `comparar_excel_disco.bat`)
