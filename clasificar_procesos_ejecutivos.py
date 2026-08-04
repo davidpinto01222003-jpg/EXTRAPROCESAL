@@ -651,6 +651,39 @@ def _texto_plano_html(texto: str) -> str:
     return re.sub(r"<[^>]+>", " ", texto or "")
 
 
+def _leer_correo(mail, id_correo):
+    """
+    Descarga y parsea UN correo (por su id de IMAP) sobre una conexion
+    'mail' YA CONECTADA y con un buzon ya seleccionado -- separado de
+    buscar_correo_informacion_no_procesal para que otros scripts (ej.
+    clasificar_por_demandado.py, que hace muchas busquedas sobre la
+    MISMA conexion en vez de abrir una por termino) puedan reutilizar
+    el mismo parseo de MIME sin duplicarlo. Devuelve {"asunto",
+    "cuerpo", "adjuntos": [(nombre, bytes), ...], "fecha"}, o None si
+    no se pudo descargar.
+    """
+    typ, msg_datos = mail.fetch(id_correo, "(RFC822)")
+    if typ != "OK" or not msg_datos or not msg_datos[0]:
+        return None
+    mensaje = email.message_from_bytes(msg_datos[0][1])
+    asunto = buscador._decodificar_asunto(mensaje.get("Subject", ""))
+    fecha_correo = buscador._fecha_del_correo(mensaje)
+    cuerpo = ""
+    adjuntos = []
+    for parte in mensaje.walk():
+        nombre_adjunto = parte.get_filename()
+        if nombre_adjunto:
+            contenido = parte.get_payload(decode=True)
+            if contenido:
+                adjuntos.append((organizador.sanear_nombre(nombre_adjunto), contenido))
+        elif parte.get_content_type() in ("text/html", "text/plain"):
+            texto_bruto = parte.get_payload(decode=True)
+            if texto_bruto:
+                texto = texto_bruto.decode(parte.get_content_charset() or "utf-8", errors="ignore")
+                cuerpo += _texto_plano_html(texto) + " "
+    return {"asunto": asunto, "cuerpo": cuerpo, "adjuntos": adjuntos, "fecha": fecha_correo}
+
+
 def buscar_correo_informacion_no_procesal(usuario: str, app_password: str, termino: str):
     """
     Busca en TODO el Gmail (via X-GM-RAW, igual que buscar_en_correo de
@@ -671,26 +704,9 @@ def buscar_correo_informacion_no_procesal(usuario: str, app_password: str, termi
         if typ != "OK" or not datos or not datos[0]:
             return resultados
         for id_correo in datos[0].split():
-            typ, msg_datos = mail.fetch(id_correo, "(RFC822)")
-            if typ != "OK" or not msg_datos or not msg_datos[0]:
-                continue
-            mensaje = email.message_from_bytes(msg_datos[0][1])
-            asunto = buscador._decodificar_asunto(mensaje.get("Subject", ""))
-            fecha_correo = buscador._fecha_del_correo(mensaje)
-            cuerpo = ""
-            adjuntos = []
-            for parte in mensaje.walk():
-                nombre_adjunto = parte.get_filename()
-                if nombre_adjunto:
-                    contenido = parte.get_payload(decode=True)
-                    if contenido:
-                        adjuntos.append((organizador.sanear_nombre(nombre_adjunto), contenido))
-                elif parte.get_content_type() in ("text/html", "text/plain"):
-                    texto_bruto = parte.get_payload(decode=True)
-                    if texto_bruto:
-                        texto = texto_bruto.decode(parte.get_content_charset() or "utf-8", errors="ignore")
-                        cuerpo += _texto_plano_html(texto) + " "
-            resultados.append({"asunto": asunto, "cuerpo": cuerpo, "adjuntos": adjuntos, "fecha": fecha_correo})
+            correo = _leer_correo(mail, id_correo)
+            if correo is not None:
+                resultados.append(correo)
     return resultados
 
 
