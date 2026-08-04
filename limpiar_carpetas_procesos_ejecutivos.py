@@ -3,16 +3,31 @@ Limpia y termina de nombrar las carpetas de CARPETA_PROCESOS (la misma
 carpeta que usa clasificar_procesos_ejecutivos.py) en dos pasos
 independientes, ambos respetando MODO_PRUEBA:
 
-1. RENOMBRA las carpetas que quedaron con SOLO el número de proceso
-   como nombre (ej. "245." o "245", sin radicado ni ESTADO PROCESAL) al
-   nombre que les corresponde HOY según el Excel -- "<numero>.
-   <radicado>" si ya tiene radicado, o "<numero>. <ESTADO PROCESAL>" si
-   todavía no (exactamente la misma regla que usa
-   clasificar_procesos_ejecutivos.clasificar_procesos, para activos y
-   para terminados por igual). Si el número es ambiguo (aparece en más
-   de una carpeta de trabajo distinta -- ej. el mismo número con
-   radicados diferentes en el Excel), se omite y se reporta para
-   revisar a mano: no hay forma segura de saber a cuál le corresponde.
+1. CONSOLIDA, por número de proceso, todas las carpetas "de trabajo"
+   que haya en el disco para ese número (ej. una vieja "1055. ACTIVO"
+   de cuando todavía no tenía radicado, y una nueva "1055. <radicado>"
+   ya con el radicado -- o una vieja "1051. ACTIVO" y una nueva "1051.
+   TERMINADO POR PAGO" porque el proceso cambió de estado) contra el
+   nombre que le corresponde HOY según el Excel -- "<numero>. <radicado>"
+   si ya tiene radicado, o "<numero>. <ESTADO PROCESAL>" si todavía no
+   (misma regla que usa clasificar_procesos_ejecutivos.clasificar_procesos,
+   para activos y para terminados por igual). Esto cubre tanto las
+   carpetas que quedaron con SOLO el número (ej. "245." o "245") como
+   las que quedaron con un nombre VIEJO que ya no corresponde al estado
+   o radicado actual del proceso:
+     - Si la carpeta con el nombre correcto YA EXISTE en el disco: la
+       carpeta vieja/suelta se BORRA si está completamente vacía (ya
+       quedó reemplazada por la correcta), o se reporta para revisión
+       manual si todavía tiene contenido adentro (no se combina solo,
+       para no arriesgar mezclar archivos de dos carpetas a ciegas).
+     - Si la carpeta con el nombre correcto NO existe todavía: la
+       carpeta vieja/suelta se RENOMBRA directo al nombre correcto
+       (tenga o no contenido, no se pierde nada).
+   Si el número es ambiguo (aparece en más de una carpeta de trabajo
+   POSIBLE según el Excel -- ej. el mismo número con radicados
+   distintos), o si hay más de una carpeta vieja candidata sin ninguna
+   forma segura de saber cuál corresponde, se omite y se reporta para
+   revisar a mano.
 
 2. BORRA las carpetas de procesos ACTIVOS -- es decir, todo lo que NO
    es "terminado"/"no inicio" (activo, suspendido, en reorganización,
@@ -53,9 +68,13 @@ MODO_PRUEBA = True
 
 # ===========================================================================
 
-# Una carpeta "solo con el número" -- ej. "245." o "245" (con o sin el
-# punto, con o sin espacios al final), sin radicado ni ESTADO PROCESAL.
-PATRON_SOLO_NUMERO = re.compile(r"^(\d+)\.?\s*$")
+# Reconoce CUALQUIER carpeta "de trabajo" de un proceso por su número
+# inicial -- "245", "245.", "245. ACTIVO", "245. <radicado>", etc (el
+# numero de proceso nunca pasa de unos pocos miles, por eso se limita a
+# 1-5 digitos -- asi no se confunde por error una carpeta que sea SOLO
+# un radicado de 23 digitos, sin el "numero. " por delante, con un
+# numero de proceso).
+PATRON_CARPETA_DE_PROCESO = re.compile(r"^(\d{1,5})(?:\.(?:\s+(.*))?)?$")
 
 
 def configurar_logging():
@@ -90,56 +109,109 @@ def _nombre_correcto_por_numero(con_radicado, terminados):
     return por_numero, ambiguos
 
 
-def renombrar_carpetas_solo_numero(carpeta_raiz, nombre_correcto_por_numero, ambiguos):
-    renombradas = 0
+def _agrupar_carpetas_por_numero(carpeta_raiz):
+    """{numero: [carpeta, ...]} -- TODAS las carpetas de primer nivel que reconoce PATRON_CARPETA_DE_PROCESO, agrupadas por su numero de proceso."""
+    grupos = {}
     try:
         carpetas = sorted(carpeta_raiz.iterdir(), key=lambda p: p.name)
     except OSError as error:
         logging.error("[Disco] No se pudo leer %s: %s", carpeta_raiz, error)
-        return renombradas
+        return grupos
 
     for carpeta in carpetas:
         if not carpeta.is_dir() or carpeta.name in cruce_excel.CARPETAS_A_IGNORAR:
             continue
-        coincide = PATRON_SOLO_NUMERO.match(carpeta.name)
+        coincide = PATRON_CARPETA_DE_PROCESO.match(carpeta.name)
         if not coincide:
             continue
         numero = int(coincide.group(1))
+        grupos.setdefault(numero, []).append(carpeta)
+    return grupos
 
+
+def consolidar_carpetas_por_numero(carpeta_raiz, nombre_correcto_por_numero, ambiguos):
+    """
+    Para cada numero de proceso con nombre correcto conocido: borra las
+    carpetas VIEJAS/sueltas que ya quedaron reemplazadas por la correcta
+    (si estan vacias), renombra la unica carpeta vieja a la correcta
+    (si la correcta todavia no existe), y reporta cualquier caso
+    ambiguo o con contenido para revision manual -- ver docstring del
+    modulo. Devuelve (renombradas, borradas, reportadas).
+    """
+    grupos = _agrupar_carpetas_por_numero(carpeta_raiz)
+
+    renombradas = 0
+    borradas = 0
+    reportadas = 0
+
+    for numero, carpetas in sorted(grupos.items()):
         if numero in ambiguos:
             logging.warning(
-                "[Ambiguo] '%s' no se renombra: el proceso %s tiene mas de una carpeta de trabajo posible "
-                "en el Excel (radicados distintos) -- revisalo a mano.",
-                carpeta.name, numero,
+                "[Ambiguo] Proceso %s: no se toca ninguna de sus carpetas (%s) -- tiene mas de una carpeta "
+                "de trabajo posible en el Excel (radicados distintos), revisalo a mano.",
+                numero, ", ".join(c.name for c in carpetas),
             )
+            reportadas += 1
             continue
 
         nombre_correcto = nombre_correcto_por_numero.get(numero)
         if not nombre_correcto:
             logging.warning(
-                "[Sin dato] '%s' no se renombra: el proceso %s no aparece en el Excel (o todavia no tiene "
-                "ESTADO PROCESAL diligenciado).", carpeta.name, numero,
+                "[Sin dato] Proceso %s: no se toca su carpeta (%s) -- no aparece en el Excel (o todavia no "
+                "tiene ESTADO PROCESAL diligenciado).", numero, ", ".join(c.name for c in carpetas),
             )
+            reportadas += 1
             continue
 
-        if nombre_correcto == carpeta.name:
+        correcta = next((c for c in carpetas if c.name == nombre_correcto), None)
+        viejas = [c for c in carpetas if c is not correcta]
+
+        if correcta is not None:
+            for vieja in viejas:
+                if cruce_excel.contar_archivos(vieja) != 0:
+                    logging.warning(
+                        "[Conflicto] Proceso %s: '%s' quedo vieja (la carpeta correcta ya es '%s'), pero "
+                        "todavia tiene contenido adentro -- se omite, revisala a mano.",
+                        numero, vieja.name, nombre_correcto,
+                    )
+                    reportadas += 1
+                    continue
+                if MODO_PRUEBA:
+                    logging.info(
+                        "[SIMULACION] Se borraria '%s' (proceso %s -- vieja y vacia, ya reemplazada por '%s').",
+                        vieja.name, numero, nombre_correcto,
+                    )
+                    borradas += 1
+                    continue
+                try:
+                    shutil.rmtree(base.organizador._ruta_larga_segura(str(vieja)))
+                    borradas += 1
+                    logging.info(
+                        "[Borrada] '%s' (proceso %s -- vieja y vacia, ya reemplazada por '%s').",
+                        vieja.name, numero, nombre_correcto,
+                    )
+                except OSError as error:
+                    logging.warning("   (no se pudo borrar '%s': %s)", vieja.name, error)
             continue
 
-        destino = carpeta_raiz / nombre_correcto
-        if destino.exists():
+        if len(viejas) > 1:
             logging.warning(
-                "[Conflicto] '%s' deberia renombrarse a '%s' pero esa carpeta ya existe -- se omite, revisa "
-                "a mano (puede que haya contenido repartido entre las dos).", carpeta.name, nombre_correcto,
+                "[Ambiguo] Proceso %s: hay %d carpetas sueltas (%s) y ninguna se llama todavia '%s' -- no se "
+                "sabe cual renombrar, revisalo a mano.",
+                numero, len(viejas), ", ".join(c.name for c in viejas), nombre_correcto,
             )
+            reportadas += 1
             continue
 
+        vieja = viejas[0]
         if MODO_PRUEBA:
-            logging.info("[SIMULACION] '%s'  ->  '%s'", carpeta.name, nombre_correcto)
+            logging.info("[SIMULACION] '%s'  ->  '%s'", vieja.name, nombre_correcto)
         else:
-            carpeta.rename(destino)
-            logging.info("[Renombrada] '%s'  ->  '%s'", carpeta.name, nombre_correcto)
+            vieja.rename(carpeta_raiz / nombre_correcto)
+            logging.info("[Renombrada] '%s'  ->  '%s'", vieja.name, nombre_correcto)
         renombradas += 1
-    return renombradas
+
+    return renombradas, borradas, reportadas
 
 
 def borrar_carpetas_activas_vacias(carpeta_raiz, con_radicado):
@@ -190,12 +262,14 @@ def procesar():
         logging.error("No existe la carpeta configurada en CARPETA_PROCESOS: %s", carpeta_raiz)
         return
 
-    logging.info("Paso 1: renombrando carpetas que quedaron solo con el numero...")
+    logging.info("Paso 1: consolidando carpetas sueltas/viejas contra el nombre correcto de cada proceso...")
     nombre_correcto_por_numero, ambiguos = _nombre_correcto_por_numero(con_radicado, terminados)
-    renombradas = renombrar_carpetas_solo_numero(carpeta_raiz, nombre_correcto_por_numero, ambiguos)
+    renombradas, borradas_viejas, reportadas = consolidar_carpetas_por_numero(carpeta_raiz, nombre_correcto_por_numero, ambiguos)
     logging.info(
-        "Paso 1: %d carpeta(s) %s.", renombradas,
-        "simuladas para renombrar (MODO_PRUEBA activo)" if MODO_PRUEBA else "renombradas",
+        "Paso 1: %d carpeta(s) %s, %d carpeta(s) vieja(s) vacia(s) %s, %d caso(s) reportado(s) para revisar a mano.",
+        renombradas, "simuladas para renombrar (MODO_PRUEBA activo)" if MODO_PRUEBA else "renombradas",
+        borradas_viejas, "simuladas para borrar (MODO_PRUEBA activo)" if MODO_PRUEBA else "borradas",
+        reportadas,
     )
 
     logging.info(

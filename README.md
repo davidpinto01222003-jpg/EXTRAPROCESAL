@@ -924,13 +924,27 @@ descargar nada todavía.
 `CARPETA_PROCESOS` que usa `clasificar_procesos_ejecutivos.py` (reutiliza
 la misma lectura del Excel, mismas reglas de nombre):
 
-1. **Renombra** las carpetas que quedaron con **solo el número** (ej.
-   `"245."` o `"245"`, sin radicado ni ESTADO PROCESAL) al nombre que
-   les corresponde hoy según el Excel -- `"<numero>. <radicado>"` si ya
-   lo tiene, o `"<numero>. <ESTADO PROCESAL>"` si no, tanto para activos
-   como para terminados. Si el número es ambiguo (aparece con radicados
-   distintos en el Excel), se omite y se reporta para que lo revises a
-   mano.
+1. **Consolida**, por número de proceso, cualquier carpeta que haya
+   quedado suelta o vieja frente al nombre que le corresponde **hoy**
+   según el Excel -- `"<numero>. <radicado>"` si ya lo tiene, o
+   `"<numero>. <ESTADO PROCESAL>"` si no, tanto para activos como para
+   terminados. Cubre dos casos:
+   - Carpetas con **solo el número** (ej. `"245."` o `"245"`, sin
+     radicado ni ESTADO PROCESAL).
+   - Carpetas con un nombre **viejo que ya no corresponde** (ej.
+     `"1055. ACTIVO"` de cuando el proceso todavía no tenía radicado, y
+     ya existe `"1055. <radicado>"`; o `"1051. ACTIVO"` de cuando el
+     proceso seguía activo, y ya existe `"1051. TERMINADO POR PAGO"`
+     porque cambió de estado).
+
+   Si la carpeta con el nombre correcto **ya existe**, la vieja se
+   **borra** (si está completamente vacía) o se **reporta** para
+   revisión manual (si todavía tiene contenido adentro -- nunca se
+   mezcla solo). Si la correcta **no existe todavía**, la vieja se
+   **renombra** directo a la correcta (con o sin contenido, no se
+   pierde nada). Si el número es ambiguo (radicados distintos en el
+   Excel) o hay más de una carpeta vieja candidata sin forma segura de
+   saber cuál es, se omite y se reporta para que lo revises a mano.
 2. **Borra** las carpetas de procesos **activos** (todo lo que no es
    `TERMINADO*`/`NO INICIO` -- activo, suspendido, en reorganización,
    remitida a castigo/prepago, etc) que estén **completamente vacías**
