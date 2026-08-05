@@ -856,10 +856,48 @@ _PATRON_FECHA_CIERRE = re.compile(
 )
 
 
+# El PDF extrae el texto respetando el SALTO DE LINEA VISUAL del
+# documento (el "word wrap" de cada renglon impreso), no las oraciones
+# reales -- una frase del membrete/firma puede quedar partida justo a
+# la mitad (ej. "...Municipio de Puerto\nWilches (S). ,"), y como
+# _PATRON_MEMBRETE_JUZGADO/_PATRON_FECHA_CIERRE trabajan LINEA POR
+# LINEA (delimitadas por "\n"), la mitad que cae en el renglon
+# siguiente se escapaba del filtro -- "WILCHES" sobrevivia solo,
+# separado de "PUERTO", y terminaba pareciendo un demandado real. Por
+# eso ANTES de aplicar esos dos filtros se unen los saltos de linea
+# "sueltos" (los que van DENTRO de un mismo parrafo) en un espacio.
+# Se deja INTACTO el salto de linea (no se une) en dos casos, para no
+# pegar por error dos cosas que NO son el mismo parrafo:
+#   - Una linea en blanco (separador real de parrafo).
+#   - Una linea siguiente que empieza como una ETIQUETA de campo (ej.
+#     "RADICADO:", "DEMANDANTE:", "DEMANDADO:", "CONSTANCIA:") -- estos
+#     campos suelen venir uno debajo del otro sin linea en blanco entre
+#     ellos, y unirlos con el parrafo de arriba (que a veces SI
+#     contiene "JUZGADO" en su propio texto) terminaba borrando por
+#     error el campo DEMANDADO/RADICADO real del documento.
+#
+# Esta union SOLO se aplica antes de _PATRON_MEMBRETE_JUZGADO (que es
+# el que de verdad la necesita) -- _PATRON_FECHA_CIERRE se aplica ANTES
+# de unir nada, sobre el texto tal cual lo separa el PDF en renglones:
+# si se uniera primero, la fecha de cierre podia "alcanzar hacia atras"
+# por encima de un salto de linea real y borrar de paso el nombre del
+# demandado que estuviera juntico arriba (ej. "DEMANDADO: MUNICIPIO...\n
+# CANTAGALLO, DIEZ DE JULIO DE 2025." -- unido en una sola linea, el
+# patron de fecha alcanzaba a comerse tambien el nombre del demandado).
+_PATRON_SALTO_DE_LINEA_SUELTO = re.compile(
+    r"\n(?!\s*\n)(?!\s*[A-ZÑ][A-ZÑ .]{1,25}:)"
+)
+
+
+def _unir_lineas_de_un_mismo_parrafo(texto: str) -> str:
+    return _PATRON_SALTO_DE_LINEA_SUELTO.sub(" ", texto)
+
+
 def _quitar_membrete_juzgado(texto_normalizado: str) -> str:
-    """Quita el membrete/direccion/contacto del juzgado y la fecha de cierre/firma (ambos suelen traer el nombre del MUNICIPIO, no del demandado) -- ver _PATRON_MEMBRETE_JUZGADO y _PATRON_FECHA_CIERRE."""
-    sin_membrete = _PATRON_MEMBRETE_JUZGADO.sub(" ", texto_normalizado)
-    return _PATRON_FECHA_CIERRE.sub(" ", sin_membrete)
+    """Quita la fecha de cierre/firma, y el membrete/direccion/contacto del juzgado (ambos suelen traer el nombre del MUNICIPIO, no del demandado) -- ver _PATRON_FECHA_CIERRE y _PATRON_MEMBRETE_JUZGADO."""
+    sin_fecha_cierre = _PATRON_FECHA_CIERRE.sub(" ", texto_normalizado)
+    texto_unido = _unir_lineas_de_un_mismo_parrafo(sin_fecha_cierre)
+    return _PATRON_MEMBRETE_JUZGADO.sub(" ", texto_unido)
 
 
 def _palabra_demandado_coincide(texto_normalizado, palabra):

@@ -874,7 +874,12 @@ final de cualquier auto, y casi siempre incluyen el nombre del
 **municipio** donde queda el juzgado (ej. "JUZGADO PROMISCUO MUNICIPAL
 DE CANTAGALLO, BOLIVAR" al inicio, y "CANTAGALLO, DIEZ (10) DE JULIO DE
 2025" al firmar), que por pura coincidencia puede ser el demandado de
-OTRO proceso sin ninguna relación con ese documento. Ya sin esas dos
+OTRO proceso sin ninguna relación con ese documento. El membrete se
+reconoce aunque el PDF lo parta a la mitad por su propio salto de línea
+visual (ej. "...Municipio de Puerto\nWilches (S)." -- el nombre del
+municipio quedaría partido en dos renglones del texto extraído, pero
+igual se reconoce completo, sin confundir esa unión con un campo real
+como "DEMANDADO:" que venga justo debajo). Ya sin esas dos
 cosas, el demandado solo se
 busca en los primeros `VENTANA_DEMANDADO_CARACTERES` del texto que
 queda (el encabezado/carátula real, donde Colombia identifica las
@@ -1012,7 +1017,11 @@ carpeta del proceso que le corresponde, en dos pasos:
    el demandado es "ALBERTO SUAREZ" y el archivo lo menciona, se mueve
    a `"<numero>. <radicado o ESTADO>"`. No hay restricción de tipo de
    documento aquí -- se asume que ya es información extraprocesal
-   porque tú la descargaste a propósito. Por defecto
+   porque tú la descargaste a propósito, y por eso este paso busca
+   entre **todos** los procesos del Excel, activos y **terminados**
+   (a diferencia del paso 2, que solo busca entre los activos) --
+   también puedes soltar aquí el auto que termina un proceso ya
+   terminado (ej. un desistimiento tácito). Por defecto
    (`SOLO_DESCARGAS_DE_HOY = True`) **solo revisa lo creado o
    modificado hoy** -- una carpeta de Descargas normal acumula años de
    archivos de todo tipo (demandas, autos viejos, etc, no solo lo que

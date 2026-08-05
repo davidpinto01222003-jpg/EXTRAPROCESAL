@@ -11,7 +11,12 @@ entidad a la que se envió) por proceso, en dos pasos independientes
    clasificar_procesos_ejecutivos.py) -- se asume que ya es información
    extraprocesal porque tú la descargaste a propósito; el único
    trabajo de este script es encontrar a qué proceso corresponde. Por
-   defecto (SOLO_DESCARGAS_DE_HOY) solo revisa los archivos creados o
+   la misma razón, este paso busca entre TODOS los procesos del Excel,
+   ACTIVOS y TERMINADOS (a diferencia del paso 2, que solo busca entre
+   los activos) -- también puedes soltar aquí el auto que termina un
+   proceso ya terminado (ej. un desistimiento tácito), no solo
+   información extraprocesal de un proceso activo. Por defecto
+   (SOLO_DESCARGAS_DE_HOY) solo revisa los archivos creados o
    modificados HOY -- una carpeta de Descargas normal acumula años de
    archivos de todo tipo (demandas, autos, etc, no solo lo que bajaste
    hoy), y no tiene sentido volver a revisarlos en cada corrida.
@@ -76,11 +81,12 @@ evita diluirla con texto de más.
 
 Reutiliza toda la lectura del Excel y las carpetas de
 clasificar_procesos_ejecutivos.py (misma hoja ACTIVOS, mismo
-CARPETA_PROCESOS) -- solo considera procesos ACTIVOS (todo lo que no
-es terminado/no inicio), igual que la regla de "información no
-procesal" del resto del proyecto. Requiere las mismas credenciales
-credenciales_sgde.txt para Gmail (ver README) -- si no existe, el
-paso 2 se omite solo, sin error.
+CARPETA_PROCESOS). El paso 2 (Gmail) SÍ se restringe solo a procesos
+ACTIVOS (todo lo que no es terminado/no inicio), igual que la regla de
+"información no procesal" del resto del proyecto -- ahí solo se
+descarga tutela/petición/pago oficioso, que no aplica a un proceso ya
+terminado. Requiere las mismas credenciales credenciales_sgde.txt para
+Gmail (ver README) -- si no existe, el paso 2 se omite solo, sin error.
 """
 
 import datetime
@@ -545,9 +551,10 @@ def procesar():
         return
 
     procesos = base.leer_procesos_control()
-    con_radicado, _terminados, _sin_estado = base.clasificar_procesos(procesos)
+    con_radicado, terminados, _sin_estado = base.clasificar_procesos(procesos)
     logging.info(
-        "Excel: %d proceso(s) activo/suspendido/reorganizacion/remitida/etc para cruzar.", len(con_radicado),
+        "Excel: %d proceso(s) activo/suspendido/reorganizacion/remitida/etc, %d terminado(s) para cruzar.",
+        len(con_radicado), len(terminados),
     )
 
     carpeta_raiz = Path(base.CARPETA_PROCESOS)
@@ -555,10 +562,17 @@ def procesar():
         logging.error("No existe la carpeta configurada en CARPETA_PROCESOS: %s", carpeta_raiz)
         return
 
-    indices = base._indexar_procesos_para_correo(con_radicado)
+    # Paso 1 (carpeta de descargas) NO tiene restriccion de tipo -- vale
+    # tanto para informacion extraprocesal de un proceso activo como
+    # para el auto que termina un proceso YA terminado (ej. un
+    # "desistimiento tacito"), asi que busca entre TODOS los procesos,
+    # activos y terminados. El correo (paso 2) SI sigue restringido a
+    # activos, porque ahi solo se descarga tutela/peticion/pago
+    # oficioso -- eso no aplica a procesos ya terminados.
+    indices_descargas = base._indexar_procesos_para_correo(con_radicado + terminados)
 
     logging.info("Paso 1: clasificando los archivos de %s...", CARPETA_DESCARGAS_MANUAL)
-    movidos, sin_coincidencia, ambiguos = clasificar_carpeta_descargas(indices, carpeta_raiz)
+    movidos, sin_coincidencia, ambiguos = clasificar_carpeta_descargas(indices_descargas, carpeta_raiz)
     logging.info(
         "Paso 1: %d archivo(s) %s, %d sin ninguna coincidencia, %d ambiguo(s) (mas de un proceso posible).",
         movidos, "simulados para mover (MODO_PRUEBA activo)" if MODO_PRUEBA else "movidos",
