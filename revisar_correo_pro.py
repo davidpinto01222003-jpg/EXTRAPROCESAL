@@ -171,9 +171,36 @@ MAX_MINUTOS_POR_CORRIDA = 30
 EMPEZAR_POR_LOS_MAS_NUEVOS = True
 
 # Cuantos correos se bajan por cada peticion a Gmail. Bajarlos de a
-# muchos es mucho mas rapido que de a uno, pero pedir demasiados de
-# golpe puede hacer que la peticion tarde mas del limite de tiempo.
-TAMANO_LOTE_DESCARGA = 20
+# varios es mas rapido que de a uno, pero pedir demasiados de golpe
+# hace que la peticion tarde MAS del limite de tiempo y la conexion se
+# caiga: en un caso real, pedir 20 correos con adjuntos escaneados
+# tardaba mas de 60s y Gmail cortaba. 5 es un punto medio seguro.
+TAMANO_LOTE_DESCARGA = 5
+
+# True (por defecto): en vez de bajar TODOS los correos de la ventana
+# de fechas, se le pide a Gmail que devuelva solo los que ya mencionan
+# alguna de las FRASES_EXTRAPROCESALES (en el asunto o en el texto).
+#
+# Sin esto, dos años de correo eran 25.134 mensajes en un caso real --
+# bajarlos todos completos satura la conexion y tomaria decenas de
+# corridas. Filtrando de entrada quedan unos cientos: los que de verdad
+# interesan. Son ~8 consultas a Gmail en total, no una por termino del
+# Excel (eso era lo que fallaba antes).
+#
+# Solo aplica si SOLO_INFORMACION_EXTRAPROCESAL esta en True (si
+# quieres TODO, no hay por que acotar). Ponlo en False para revisar
+# todos los correos de la ventana, sabiendo que sera mucho mas lento.
+ACOTAR_POR_TIPO_EN_GMAIL = True
+
+# Frases que se le piden a Gmail para acotar (ver ACOTAR_POR_TIPO_EN_GMAIL).
+# A proposito son TROZOS de palabra, no la palabra completa, para que
+# una sola sirva para todas sus variantes y no dependa de las tildes
+# (la busqueda de IMAP es por subcadena):
+#   "PETICI"   -> PETICION, PETICIÓN, PETICIONES, "respuesta a su peticion"...
+#   "OFICIOSO" -> PAGO OFICIOSO, PAGOS OFICIOSOS, "pago de manera oficiosa"
+#   "TUTELA"   -> TUTELA, ACCION DE TUTELA
+#   "PQR"      -> PQR, PQRS, PQRSD (como se rotulan las respuestas)
+FRASES_EXTRAPROCESALES = ["PETICI", "TUTELA", "OFICIOSO", "PQR"]
 
 # Limite de tiempo (segundos) para CUALQUIER operacion contra Gmail.
 # Se aplica por DUPLICADO: al socket, y con un limite "duro" aparte
@@ -408,6 +435,31 @@ def conectar(usuario, app_password):
     return mail, uidvalidity
 
 
+def _conectar_o_none(credenciales, uidvalidity_esperado):
+    """
+    Reconecta y comprueba que el buzon siga siendo "el mismo" (que no
+    haya cambiado el UIDVALIDITY). Devuelve (conexion, uidvalidity), o
+    (None, None) si no se pudo reconectar o si el buzon cambio -- en
+    ese caso el que llama debe detenerse: los UIDs que quedaban
+    pendientes ya no se refieren a los mismos correos.
+    """
+    mail, uidvalidity_nuevo = conectar(*credenciales)
+    if mail is None:
+        logging.error(
+            "[Correo] No se pudo reconectar -- se detiene aqui. Lo revisado queda guardado; vuelve a correr "
+            "el script para seguir donde se quedo."
+        )
+        return None, None
+    if uidvalidity_nuevo and uidvalidity_esperado and uidvalidity_nuevo != uidvalidity_esperado:
+        logging.error(
+            "[Correo] Gmail cambio el identificador del buzon a mitad de la corrida -- se detiene aqui por "
+            "seguridad (los UIDs pendientes ya no son de fiar). Vuelve a correr el script."
+        )
+        cerrar(mail)
+        return None, None
+    return mail, uidvalidity_nuevo
+
+
 def cerrar(mail):
     """
     Cierra la sesion sin arriesgarse a colgar el programa: si la
@@ -429,20 +481,59 @@ def cerrar(mail):
 
 def listar_uids(mail):
     """
-    Pide los UIDs de los correos de los ultimos DIAS_HACIA_ATRAS dias.
+    Pide los UIDs de los correos a revisar, en UN PUÑADO de consultas
+    (no una por termino del Excel -- eso es lo que hacia fallar al
+    enfoque anterior).
 
-    Es la UNICA consulta que se le hace a Gmail en toda la corrida, y a
-    proposito es la mas basica del protocolo: una busqueda por FECHA
-    (SINCE), que es IMAP estandar de toda la vida, en ASCII puro, sin
-    extensiones de Gmail (X-GM-RAW), sin acentos y sin combinar nada
-    con OR. Justamente lo contrario de las miles de busquedas por
-    nombre/radicado que hacian fallar al enfoque anterior.
+    Con ACOTAR_POR_TIPO_EN_GMAIL (por defecto) NO se piden los correos
+    de toda la ventana de fechas, sino solo los que ya mencionan alguna
+    de las FRASES_EXTRAPROCESALES en su ASUNTO o en su TEXTO. La razon
+    es puramente practica y salio de un caso real: dos años de correo
+    eran 25.134 mensajes, y bajarlos TODOS completos (con adjuntos
+    escaneados) satura la conexion -- Gmail termina cortandola. Filtrando
+    de entrada por tipo quedan unos cientos: los que de verdad
+    interesan, y se bajan sin problema.
+
+    Cada consulta es lo mas basico del protocolo: SINCE (fecha) +
+    SUBJECT/TEXT (una frase), IMAP4rev1 estandar, en ASCII puro, sin
+    extensiones de Gmail (X-GM-RAW), sin acentos y sin combinar nada con
+    OR. Son ~8 consultas en total, no 4242.
+
+    Si una consulta falla, se registra y se sigue con las demas: es
+    preferible revisar de menos que no revisar nada.
     """
     desde = (datetime.date.today() - datetime.timedelta(days=DIAS_HACIA_ATRAS)).strftime("%d-%b-%Y")
-    typ, datos = _con_limite_de_tiempo(mail, mail.uid, "SEARCH", None, "SINCE", desde)
-    if typ != "OK" or not datos or not datos[0]:
-        return []
-    return [int(u) for u in datos[0].split() if u.isdigit()]
+
+    def _buscar(*criterios):
+        typ, datos = _con_limite_de_tiempo(mail, mail.uid, "SEARCH", None, *criterios)
+        if typ != "OK" or not datos or not datos[0]:
+            return []
+        return [int(u) for u in datos[0].split() if u.isdigit()]
+
+    if not (ACOTAR_POR_TIPO_EN_GMAIL and SOLO_INFORMACION_EXTRAPROCESAL):
+        logging.info("[Correo] Pidiendo TODOS los correos de los ultimos %d dia(s)...", DIAS_HACIA_ATRAS)
+        return _buscar("SINCE", desde)
+
+    encontrados = set()
+    # El ASUNTO primero (es lo mas rapido del lado del servidor y lo
+    # que trae la mayoria), y despues el TEXTO completo, que ademas
+    # atrapa los correos con asunto generico ("Notificacion 12345")
+    # cuyo cuerpo si dice de que se trata.
+    for campo in ("SUBJECT", "TEXT"):
+        for frase in FRASES_EXTRAPROCESALES:
+            try:
+                nuevos = _buscar("SINCE", desde, campo, frase)
+            except Exception as error:
+                logging.warning(
+                    "   [Correo] Fallo la busqueda %s '%s' (%s) -- se sigue con las demas.", campo, frase, error,
+                )
+                continue
+            antes = len(encontrados)
+            encontrados.update(nuevos)
+            logging.info(
+                "[Correo] %s '%s': %d correo(s) (%d nuevos).", campo, frase, len(nuevos), len(encontrados) - antes,
+            )
+    return sorted(encontrados)
 
 
 _PATRON_UID_EN_RESPUESTA = re.compile(rb"UID\s+(\d+)")
@@ -756,7 +847,12 @@ def procesar():
     revisados = cargar_progreso(uidvalidity)
 
     try:
-        logging.info("[Correo] Pidiendo la lista de correos de los ultimos %d dia(s)...", DIAS_HACIA_ATRAS)
+        if ACOTAR_POR_TIPO_EN_GMAIL and SOLO_INFORMACION_EXTRAPROCESAL:
+            logging.info(
+                "[Correo] Pidiendo a Gmail SOLO los correos extraprocesales de los ultimos %d dia(s) "
+                "(%d frase(s) x asunto y texto = %d consulta(s), no una por proceso)...",
+                DIAS_HACIA_ATRAS, len(FRASES_EXTRAPROCESALES), len(FRASES_EXTRAPROCESALES) * 2,
+            )
         try:
             uids = listar_uids(mail)
         except Exception as error:
@@ -850,19 +946,8 @@ def procesar():
                         error, reconexiones, MAX_RECONEXIONES, procesados_en_esta_corrida,
                     )
                     cerrar(mail)
-                    mail, uidvalidity_nuevo = conectar(*credenciales)
+                    mail, _uidvalidity_nuevo = _conectar_o_none(credenciales, uidvalidity)
                     if mail is None:
-                        logging.error(
-                            "[Correo] No se pudo reconectar -- se detiene aqui. Lo revisado queda guardado; "
-                            "vuelve a correr el script para seguir."
-                        )
-                        return
-                    if uidvalidity_nuevo and uidvalidity and uidvalidity_nuevo != uidvalidity:
-                        logging.error(
-                            "[Correo] Gmail cambio el identificador del buzon a mitad de la corrida -- se "
-                            "detiene aqui por seguridad (los UIDs pendientes ya no son de fiar). Vuelve a "
-                            "correr el script."
-                        )
                         return
 
             if lote_abandonado:
@@ -870,6 +955,21 @@ def procesar():
                 # correos en silencio es el peor resultado posible.
                 # Quedan pendientes y se reintentan en la proxima
                 # corrida (donde quizas la conexion este mejor).
+                #
+                # Pero SI hay que reconectar antes de seguir: esta
+                # conexion acaba de fallar 4 veces seguidas, y si el
+                # fallo fue un corte a mitad de una descarga, quedan
+                # datos del correo a medio leer en la conexion. Seguir
+                # usandola hace que la SIGUIENTE orden lea esa basura
+                # como si fuera respuesta del servidor -- en el log
+                # real se vio exactamente eso: "unexpected response:
+                # b'Delivered-To: ...'". Con una conexion nueva se
+                # arranca limpio.
+                logging.info("[Correo] Se descarta la conexion (quedo en mal estado) y se abre una nueva...")
+                cerrar(mail)
+                mail, _uidvalidity_nuevo = _conectar_o_none(credenciales, uidvalidity)
+                if mail is None:
+                    return
                 continue
 
             for uid in lote:

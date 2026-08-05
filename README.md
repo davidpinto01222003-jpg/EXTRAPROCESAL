@@ -1224,10 +1224,20 @@ arregla de raíz:
 | Si Gmail corta | Se pierde todo | Reconecta y sigue donde iba |
 
 Es decir: **no se le pregunta nada a Gmail** sobre demandados,
-radicados ni cuentas. Se bajan los correos de una ventana de fechas
-**una sola vez**, y toda la comparación contra el Excel se hace
+radicados ni cuentas. Toda la comparación contra el Excel se hace
 localmente. Comparar 4242 términos contra un texto es instantáneo en
 memoria; lo imposible era preguntarlo 4242 veces por internet.
+
+Lo único que se le pide a Gmail es acotar **por tipo**: unas 8
+consultas (`SUBJECT` y `TEXT` de "PETICI", "TUTELA", "OFICIOSO",
+"PQR" -- `FRASES_EXTRAPROCESALES`). En un caso real, 2 años de correo
+eran **25.134 mensajes**: bajarlos todos completos satura la conexión y
+tomaría decenas de corridas. Acotando así quedan unos cientos -- los
+que de verdad interesan. Son trozos de palabra a propósito, para que
+una sola sirva para todas las variantes sin depender de las tildes
+(`PETICI` encuentra PETICION, PETICIÓN, PETICIONES y "respuesta a su
+petición"). Si prefieres revisar *todos* los correos de la ventana,
+pon `ACOTAR_POR_TIPO_EN_GMAIL = False` (será mucho más lento).
 
 ### Qué tiene de "modo pro"
 
