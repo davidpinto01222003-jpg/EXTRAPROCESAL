@@ -1025,11 +1025,15 @@ entre varios, se deja intacto y queda registrado en un CSV para que lo
 revises a mano -- nunca se adivina: `clasificar_por_demandado_sin_coincidencia.csv`
 (archivos de la carpeta de descargas sin ningún proceso posible),
 `clasificar_por_demandado_ambiguos.csv` (archivos con más de un proceso
-posible), y `clasificar_por_demandado_correo_sin_coincidencia.csv`
-(correos que sí eran tutela/petición/pago oficioso pero no
-coincidieron con ningún proceso activo conocido). Si YA se encuentra el
-proceso, la carpeta se **crea sola** si todavía no existe -- no hace
-falta haberla creado antes.
+posible -- incluye una columna "Por que coincidio cada uno" con el
+motivo EXACTO de cada candidato: si fue por radicado, por cuenta, y/o
+cuál demandado específico con qué palabras, para poder confirmar la
+causa real en vez de adivinarla), y
+`clasificar_por_demandado_correo_sin_coincidencia.csv` (correos que sí
+eran tutela/petición/pago oficioso pero no coincidieron con ningún
+proceso activo conocido). Si YA se encuentra el proceso, la carpeta se
+**crea sola** si todavía no existe -- no hace falta haberla creado
+antes.
 
 Para que sea lo más **rápido y preciso** posible, el paso 1 primero
 prueba la coincidencia SOLO con el **nombre** del archivo (sin abrir

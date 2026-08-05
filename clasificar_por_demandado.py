@@ -54,7 +54,12 @@ adivina. Si coincide con MÁS de uno (ej. dos procesos activos contra el
 mismo demandado), primero se intenta desambiguar por el RADICADO: si el
 texto menciona el radicado específico de UNO SOLO de los candidatos, se
 usa ese (ver _desambiguar_por_radicado); si sigue sin poder decidirse,
-recién ahí se deja intacto y queda en ARCHIVO_AMBIGUOS.
+recién ahí se deja intacto y queda en ARCHIVO_AMBIGUOS -- junto con el
+MOTIVO exacto de cada coincidencia (ver _motivo_coincidencia: si fue
+por radicado, por cuenta, y/o cuál demandado exacto con qué palabras),
+para poder diagnosticar de verdad la causa (ej. confirmar si el dato de
+DEMANDADO de ese proceso en el Excel está bien diligenciado o no) en
+vez de tener que adivinarla.
 
 Rendimiento y precisión (paso 1): para cada archivo primero se prueba
 la coincidencia SOLO con su NOMBRE (rápido, sin abrir nada) -- solo si
@@ -215,18 +220,51 @@ def _procesos_para_archivo(ruta, indices):
     coincidencia nueva, o -- si ya habia varias candidatas -- un
     radicado especifico que desambigue cual de ellas es la correcta
     (ver _desambiguar_por_radicado).
+
+    Devuelve (coincidencias, texto_usado) -- 'texto_usado' es el texto
+    normalizado que de verdad se uso para decidir (solo el nombre, o
+    nombre+contenido), para poder diagnosticar despues POR QUE cada
+    proceso coincidio (ver _motivo_coincidencia).
     """
     nombre_norm = buscador._normalizar_para_comparar(ruta.name)
     coincidencias = base._procesos_que_coinciden_con_correo(nombre_norm, indices)
     if len(coincidencias) == 1:
-        return coincidencias
+        return coincidencias, nombre_norm
 
     texto = _texto_de_archivo(ruta)
     contenido_norm = buscador._normalizar_para_comparar(ruta.name + " " + texto)
     coincidencias_contenido = base._procesos_que_coinciden_con_correo(contenido_norm, indices)
 
     candidatos = coincidencias_contenido if coincidencias_contenido else coincidencias
-    return _desambiguar_por_radicado(contenido_norm, candidatos)
+    return _desambiguar_por_radicado(contenido_norm, candidatos), contenido_norm
+
+
+def _motivo_coincidencia(texto_normalizado, proceso):
+    """
+    Diagnostico: POR QUE 'proceso' aparece entre las coincidencias de
+    'texto_normalizado' -- coincidio su radicado, su cuenta, y/o cual(es)
+    de sus demandados (con las palabras exactas que coincidieron). Se
+    usa solo al reportar un caso ambiguo, para poder ver en el
+    log/CSV la razon EXACTA de cada coincidencia -- por ejemplo, para
+    confirmar si el dato de DEMANDADO en el Excel para ese proceso esta
+    bien diligenciado o no, en vez de tener que adivinarlo.
+    """
+    motivos = []
+    radicado = proceso.get("radicado")
+    if radicado:
+        terminos = [radicado] + buscador.radicados_cortos(radicado)
+        if any(buscador._nombre_coincide(texto_normalizado, t) for t in terminos):
+            motivos.append(f"radicado={radicado}")
+    for cuenta in proceso.get("cuentas", []):
+        if buscador._cuenta_es_valida_para_buscar(cuenta) and buscador._nombre_coincide(texto_normalizado, cuenta):
+            motivos.append(f"cuenta={cuenta}")
+    for demandado in proceso.get("demandados", []):
+        palabras = buscador._palabras_significativas(demandado)
+        if len(palabras) >= base.MIN_PALABRAS_DEMANDADO_PARA_CRUZAR and all(
+            base._palabra_demandado_coincide(texto_normalizado, p) for p in palabras
+        ):
+            motivos.append(f"demandado='{demandado}'")
+    return "; ".join(motivos) if motivos else "razon desconocida (revisa manualmente)"
 
 
 def clasificar_carpeta_descargas(indices, carpeta_raiz):
@@ -248,18 +286,21 @@ def clasificar_carpeta_descargas(indices, carpeta_raiz):
             omitidos_por_fecha += 1
             continue
 
-        coincidencias = _procesos_para_archivo(ruta, indices)
+        coincidencias, texto_usado = _procesos_para_archivo(ruta, indices)
 
         if not coincidencias:
             sin_coincidencia.append(ruta.name)
             continue
 
         if len(coincidencias) > 1:
+            detalle = "; ".join(
+                f"{p['numero']} ({_motivo_coincidencia(texto_usado, p)})" for p in coincidencias
+            )
             numeros = ", ".join(str(p["numero"]) for p in coincidencias)
-            ambiguos.append((ruta.name, numeros))
+            ambiguos.append((ruta.name, numeros, detalle))
             logging.warning(
-                "[Ambiguo] '%s' coincide con mas de un proceso activo (%s) -- se deja donde esta, revisalo a mano.",
-                ruta.name, numeros,
+                "[Ambiguo] '%s' coincide con mas de un proceso activo -- se deja donde esta, revisalo a mano: %s",
+                ruta.name, detalle,
             )
             continue
 
@@ -454,7 +495,7 @@ def procesar():
     ):
         logging.info("[Reporte] %d archivo(s) sin coincidencia guardados en: %s", len(sin_coincidencia), ARCHIVO_SIN_COINCIDENCIA)
     if ambiguos and cruce_excel._escribir_csv_tolerante(
-        ARCHIVO_AMBIGUOS, ["Archivo", "Procesos posibles"], ambiguos, "Ambiguos (descargas)",
+        ARCHIVO_AMBIGUOS, ["Archivo", "Procesos posibles", "Por que coincidio cada uno"], ambiguos, "Ambiguos (descargas)",
     ):
         logging.info("[Reporte] %d archivo(s) ambiguo(s) guardados en: %s", len(ambiguos), ARCHIVO_AMBIGUOS)
 
