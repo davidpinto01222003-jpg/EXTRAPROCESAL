@@ -690,6 +690,45 @@ def enlace_de(item) -> str:
 # ==================== Correo (Gmail) ====================
 
 
+_PATRON_LIST_CARPETA = re.compile(rb'^\((?P<flags>[^)]*)\)\s+"[^"]*"\s+(?P<nombre>.+)$')
+
+
+def seleccionar_todos_los_correos(mail) -> bool:
+    """
+    Selecciona la carpeta de Gmail que contiene TODOS los correos (la
+    que en la interfaz en ingles se llama "All Mail"). No basta con
+    seleccionar '"[Gmail]/All Mail"' a secas: si la cuenta tiene el
+    idioma de Gmail en español (o cualquier otro que no sea ingles) esa
+    carpeta no existe con ese nombre exacto y el SELECT falla en
+    silencio -- imaplib se queda en el estado AUTH y CUALQUIER SEARCH
+    posterior revienta con "command SEARCH illegal in state AUTH, only
+    allowed in states SELECTED", para TODOS los lotes sin excepcion
+    (asi se ve en los logs cuando la cuenta de Gmail esta en español).
+    Por eso primero se intenta el nombre en ingles (el mas comun) y,
+    si falla, se busca la carpeta por su atributo especial \\All (RFC
+    6154) en vez de adivinar el nombre traducido. Devuelve True si
+    logro seleccionar alguna carpeta de todos los correos.
+    """
+    typ, _ = mail.select('"[Gmail]/All Mail"', readonly=True)
+    if typ == "OK":
+        return True
+    typ, datos = mail.list()
+    if typ != "OK":
+        return False
+    for linea in datos:
+        if not linea:
+            continue
+        coincidencia = _PATRON_LIST_CARPETA.match(linea)
+        if not coincidencia or b"\\All" not in coincidencia.group("flags"):
+            continue
+        nombre = coincidencia.group("nombre").decode("utf-8", errors="ignore").strip()
+        if not (nombre.startswith('"') and nombre.endswith('"')):
+            nombre = f'"{nombre}"'
+        typ, _ = mail.select(nombre, readonly=True)
+        return typ == "OK"
+    return False
+
+
 def _decodificar_asunto(asunto_crudo: str) -> str:
     partes = decode_header(asunto_crudo or "")
     return "".join(
@@ -723,7 +762,9 @@ def buscar_en_correo(usuario: str, app_password: str, termino: str):
     resultados = []
     with imaplib.IMAP4_SSL("imap.gmail.com") as mail:
         mail.login(usuario, app_password)
-        mail.select('"[Gmail]/All Mail"', readonly=True)
+        if not seleccionar_todos_los_correos(mail):
+            logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda.")
+            return resultados
         typ, datos = mail.search(None, "X-GM-RAW", f'"{termino}"')
         if typ != "OK" or not datos or not datos[0]:
             return resultados

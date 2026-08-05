@@ -459,7 +459,9 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
     vistos = {}
     with imaplib.IMAP4_SSL("imap.gmail.com") as mail:
         mail.login(usuario, app_password)
-        mail.select('"[Gmail]/All Mail"', readonly=True)
+        if not buscador.seleccionar_todos_los_correos(mail):
+            logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda en correo.")
+            return []
 
         for lote in _lotes(terminos, TAMANO_LOTE_CORREO):
             consulta = "(" + " OR ".join(f'"{t.replace(chr(34), "")}"' for t in lote) + ")"

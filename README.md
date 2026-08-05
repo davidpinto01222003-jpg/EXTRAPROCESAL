@@ -1039,6 +1039,15 @@ carpeta del proceso que le corresponde, en dos pasos:
    descarta aunque mencione la tutela/petición de pasada; también
    exige que el correo mencione a ESSA/Electrificadora de Santander.
 
+   Para poder buscar necesita seleccionar la carpeta de Gmail que
+   contiene **todos** los correos. Si tu cuenta de Gmail está en
+   español (o cualquier idioma que no sea inglés), esa carpeta no se
+   llama `"[Gmail]/All Mail"` sino su traducción (ej. `"[Gmail]/Todos"`)
+   -- el programa primero intenta el nombre en inglés y, si no existe,
+   la encuentra automáticamente buscando la carpeta especial marcada
+   como "todos los correos" (sin importar cómo se llame en tu idioma),
+   así que no tienes que cambiar nada a mano.
+
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
 para emparejar su búsqueda global de correo: coincide su **radicado**,
