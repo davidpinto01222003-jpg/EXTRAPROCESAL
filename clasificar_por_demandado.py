@@ -33,8 +33,12 @@ entidad a la que se envió) por proceso, en dos pasos independientes
 En AMBOS pasos, a qué proceso corresponde un documento/correo se
 decide con la MISMA regla que usa clasificar_procesos_ejecutivos.py
 para emparejar el correo global con un proceso: coincide su radicado,
-su cuenta, O el nombre de su demandado -- basta con que coincida
-CUALQUIERA de los tres, no hace falta que coincidan todos (ver
+su cuenta, O el demandado COMPLETO (todas sus palabras significativas,
+no basta con una sola -- ver MIN_PALABRAS_DEMANDADO_PARA_CRUZAR en ese
+mismo script; evita que una palabra suelta/generica de un demandado mal
+diligenciado en el Excel "coincida" con archivos que no tienen nada que
+ver) -- basta con que coincida CUALQUIERA de los tres, no hace falta
+que coincidan todos (ver
 clasificar_procesos_ejecutivos._procesos_que_coinciden_con_correo). Si
 YA se encuentra el proceso, la carpeta se CREA sola si todavía no
 existe (mismo nombre "<numero>. <radicado o ESTADO>" que usa

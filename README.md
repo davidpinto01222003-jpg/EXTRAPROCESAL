@@ -846,11 +846,17 @@ cuenta de cada proceso, uno por uno), en Gmail la búsqueda es **al
 revés**: se busca **una sola vez para toda la corrida** por tutela/
 derecho de petición/pago oficioso directamente (no por radicado), y
 **cada correo encontrado se empareja después con el proceso correcto**
-si coincide su radicado, su cuenta, **o** el nombre de su demandado
-(con que coincida cualquiera de los tres alcanza -- no hace falta que
-coincidan los tres). Esto encuentra correos que una búsqueda por
-radicado se perdería (ej. un derecho de petición que en el cuerpo solo
-menciona el nombre del demandado o la cuenta, no el radicado exacto).
+si coincide su radicado, su cuenta, **o** el demandado (con que
+coincida cualquiera de los tres alcanza -- no hace falta que coincidan
+los tres). Esto encuentra correos que una búsqueda por radicado se
+perdería (ej. un derecho de petición que en el cuerpo solo menciona el
+nombre del demandado o la cuenta, no el radicado exacto). Para el
+demandado se exige que coincidan **todas** sus palabras significativas
+(nombre y apellido, no solo una) y que sean al menos dos -- un nombre
+mal diligenciado en el Excel que se reduzca a una sola palabra genérica
+(ej. "ANEXOS") no se usa para cruzar, porque esa palabra sola puede
+aparecer por casualidad en archivos/correos de decenas de procesos que
+no tienen nada que ver.
 Un mismo correo puede terminar adjuntado a más de un proceso si aplica
 a varios (ej. un proceso "acumulado" con varias cuentas). Igual que en
 Drive, siempre se exige además que el correo mencione a ESSA/
@@ -992,11 +998,13 @@ carpeta del proceso que le corresponde, en dos pasos:
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
 para emparejar su búsqueda global de correo: coincide su **radicado**,
-su **cuenta**, **o** el nombre de su **demandado** -- basta con que
-coincida cualquiera de los tres, no hace falta que coincidan todos. No
-se limita al nombre exacto del demandado: si un documento no lo
-menciona pero sí su radicado o su cuenta, también se encuentra. Si un
-archivo/correo no coincide con ningún proceso activo, o coincide con
+su **cuenta**, **o** el **demandado completo** (todas sus palabras
+significativas -- no basta con una sola, ver
+`MIN_PALABRAS_DEMANDADO_PARA_CRUZAR`) -- basta con que coincida
+cualquiera de los tres, no hace falta que coincidan todos. No se limita
+al nombre exacto del demandado: si un documento no lo menciona pero sí
+su radicado o su cuenta, también se encuentra. Si un archivo/correo no
+coincide con ningún proceso activo, o coincide con
 más de uno (ej. dos procesos activos contra la misma persona), se deja
 intacto y queda registrado en un CSV para que lo revises a mano --
 nunca se adivina: `clasificar_por_demandado_sin_coincidencia.csv`

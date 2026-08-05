@@ -790,15 +790,28 @@ def buscar_correo_global_informacion_no_procesal(usuario: str, app_password: str
     return list(vistos.values())
 
 
+
+# Un demandado cuyo nombre se reduce a UNA sola palabra significativa
+# (tras quitar PALABRAS_GENERICAS_DEMANDADO) es una señal demasiado
+# debil para cruzar solo -- puede ser un dato mal diligenciado en el
+# Excel (ej. una palabra suelta en vez de un nombre completo), y
+# cualquier archivo/correo que por casualidad use esa misma palabra
+# (aunque sea un termino administrativo comun) terminaria
+# "coincidiendo" con ese proceso. Por eso el cruce por demandado exige
+# como minimo este numero de palabras significativas.
+MIN_PALABRAS_DEMANDADO_PARA_CRUZAR = 2
+
+
 def _indexar_procesos_para_correo(procesos):
     """
-    Indices para emparejar un correo (encontrado por TIPO: tutela/
-    peticion/pago oficioso) con el/los proceso(s) al que corresponde, por
-    radicado, por cuenta, o por palabra significativa del nombre del
-    demandado. Un mismo correo puede corresponder a mas de un proceso
-    (ej. un proceso "acumulado" con varias cuentas bajo un radicado).
+    Indices para emparejar un correo/archivo con el/los proceso(s) al
+    que corresponde, por radicado, por cuenta, o por el NOMBRE COMPLETO
+    (todas sus palabras significativas) del demandado. Un mismo correo
+    puede corresponder a mas de un proceso (ej. un proceso "acumulado"
+    con varias cuentas bajo un radicado, o el mismo demandado con mas
+    de un proceso activo).
     """
-    por_radicado, por_cuenta, por_palabra_demandado = {}, {}, {}
+    por_radicado, por_cuenta, por_demandado = {}, {}, {}
     for proceso in procesos:
         if proceso["radicado"]:
             por_radicado.setdefault(proceso["radicado"], []).append(proceso)
@@ -806,19 +819,26 @@ def _indexar_procesos_para_correo(procesos):
             if buscador._cuenta_es_valida_para_buscar(cuenta):
                 por_cuenta.setdefault(cuenta, []).append(proceso)
         for demandado in proceso["demandados"]:
-            for palabra in buscador._palabras_significativas(demandado):
-                por_palabra_demandado.setdefault(palabra, []).append(proceso)
-    return por_radicado, por_cuenta, por_palabra_demandado
+            palabras = frozenset(buscador._palabras_significativas(demandado))
+            if len(palabras) >= MIN_PALABRAS_DEMANDADO_PARA_CRUZAR:
+                por_demandado.setdefault(palabras, []).append(proceso)
+    return por_radicado, por_cuenta, por_demandado
 
 
 def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
     """
-    Devuelve los procesos (sin duplicados) a los que este correo
+    Devuelve los procesos (sin duplicados) a los que este correo/archivo
     corresponde: basta con que coincida el radicado, la cuenta, O el
-    nombre del demandado (cualquiera de los tres, no hace falta que
-    coincidan todos).
+    demandado (cualquiera de los tres, no hace falta que coincidan
+    todos). Para el DEMANDADO se exige que aparezcan TODAS sus palabras
+    significativas en el texto -- no basta con que coincida una sola
+    (ver MIN_PALABRAS_DEMANDADO_PARA_CRUZAR): un solo nombre corto o una
+    palabra suelta (ej. "ANEXOS", que puede aparecer literalmente en el
+    nombre de decenas de archivos que no tienen nada que ver con ese
+    demandado en particular) generaba coincidencias masivas y
+    completamente falsas cuando bastaba con una sola palabra.
     """
-    por_radicado, por_cuenta, por_palabra_demandado = indices
+    por_radicado, por_cuenta, por_demandado = indices
     encontrados = {}
 
     for radicado, procesos in por_radicado.items():
@@ -832,10 +852,10 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
             for proceso in procesos:
                 encontrados[proceso["nombre_carpeta"]] = proceso
 
-    palabras_en_correo = set(re.findall(r"[A-ZÑ]+", contenido_normalizado))
-    for palabra in palabras_en_correo:
-        for proceso in por_palabra_demandado.get(palabra, []):
-            encontrados[proceso["nombre_carpeta"]] = proceso
+    for palabras, procesos in por_demandado.items():
+        if all(buscador._nombre_coincide(contenido_normalizado, palabra) for palabra in palabras):
+            for proceso in procesos:
+                encontrados[proceso["nombre_carpeta"]] = proceso
 
     return list(encontrados.values())
 
