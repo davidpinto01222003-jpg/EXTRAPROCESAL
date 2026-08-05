@@ -146,6 +146,12 @@ MAX_RECONEXIONES_CORREO = 8
 # error ni progreso en el log.
 TIMEOUT_CORREO_SEGUNDOS = 30
 
+# Cada cuántos lotes se deja un aviso de "sigo trabajando" en el log
+# durante la búsqueda en Gmail. Con cientos de lotes, pasar varios
+# minutos sin NINGUNA línea nueva (porque todo va bien, simplemente
+# toma tiempo) se ve igual que el programa colgado.
+AVISO_PROGRESO_CORREO_LOTES = 10
+
 # True (por defecto): no mueve archivos ni descarga correos de verdad,
 # solo revisa y muestra qué haría.
 MODO_PRUEBA = True
@@ -567,9 +573,23 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
         logging.error("[Correo] Se omite la busqueda en correo.")
         return []
 
+    total_lotes = -(-len(terminos) // TAMANO_LOTE_CORREO)  # division hacia arriba, sin importar math
+    logging.info("[Correo] Buscando en %d lote(s) de hasta %d termino(s) cada uno...", total_lotes, TAMANO_LOTE_CORREO)
+
     reconexiones_usadas = 0
     try:
-        for lote in _lotes(terminos, TAMANO_LOTE_CORREO):
+        for indice_lote, lote in enumerate(_lotes(terminos, TAMANO_LOTE_CORREO), start=1):
+            # Aviso de progreso cada AVISO_PROGRESO_CORREO_LOTES lotes --
+            # sin esto, una busqueda de cientos de lotes no deja NINGUNA
+            # señal de vida en el log durante varios minutos seguidos
+            # (nada falla, simplemente toma tiempo), y eso se ve
+            # exactamente igual que "el programa esta colgado" aunque
+            # este avanzando bien.
+            if indice_lote > 1 and (indice_lote - 1) % AVISO_PROGRESO_CORREO_LOTES == 0:
+                logging.info(
+                    "[Correo] ...van %d/%d lote(s) revisados, %d correo(s) encontrados hasta el momento...",
+                    indice_lote - 1, total_lotes, len(vistos),
+                )
             consulta = "(" + " OR ".join(f'"{t.replace(chr(34), "")}"' for t in lote) + ")"
             while True:
                 try:

@@ -1083,6 +1083,15 @@ carpeta del proceso que le corresponde, en dos pasos:
    quede en el log dice exactamente en cuál paso se quedó, en vez de
    tener que adivinar.
 
+   Con cientos de lotes por revisar, una búsqueda que va perfectamente
+   bien puede pasar varios minutos SIN ninguna línea nueva en el log
+   (simplemente toma tiempo, nada falla) -- y eso se ve exactamente
+   igual que "el programa está colgado". Por eso ahora deja un aviso de
+   progreso cada `AVISO_PROGRESO_CORREO_LOTES` lotes (10 por defecto):
+   "...van N/M lotes revisados, X correo(s) encontrados hasta el
+   momento...", para que quede claro que sigue avanzando aunque no haya
+   pasado nada "que reportar".
+
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
 para emparejar su búsqueda global de correo: coincide su **radicado**,
