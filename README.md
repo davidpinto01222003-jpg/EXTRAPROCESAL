@@ -863,7 +863,15 @@ igual en miles de documentos sin relación entre sí (ej. "auto",
 "demanda", "medida", "cautelar", "anexos", "oficio" -- ver
 `PALABRAS_GENERICAS_DEMANDADO`): sin estos dos filtros, un demandado
 mal diligenciado (una frase administrativa en vez de un nombre real)
-generaba coincidencias masivas y completamente falsas.
+generaba coincidencias masivas y completamente falsas. Además, el
+demandado solo se busca en los primeros `VENTANA_DEMANDADO_CARACTERES`
+del documento (el encabezado/carátula, donde Colombia identifica las
+partes de cualquier proceso) -- **no** en el documento completo: un PDF
+largo puede mencionar otro nombre más adelante que no tiene nada que
+ver (ej. el nombre del municipio donde queda el JUZGADO que emite el
+documento, que por casualidad coincide con el demandado de OTRO
+proceso). El radicado y la cuenta sí se buscan en el documento
+completo, porque esas coincidencias ya son precisas por sí solas.
 Un mismo correo puede terminar adjuntado a más de un proceso si aplica
 a varios (ej. un proceso "acumulado" con varias cuentas). Igual que en
 Drive, siempre se exige además que el correo mencione a ESSA/
@@ -1027,8 +1035,9 @@ revises a mano -- nunca se adivina: `clasificar_por_demandado_sin_coincidencia.c
 `clasificar_por_demandado_ambiguos.csv` (archivos con más de un proceso
 posible -- incluye una columna "Por que coincidio cada uno" con el
 motivo EXACTO de cada candidato: si fue por radicado, por cuenta, y/o
-cuál demandado específico con qué palabras, para poder confirmar la
-causa real en vez de adivinarla), y
+cuál demandado específico, con un pedazo del texto donde apareció su
+nombre para ver el contexto real -- para poder confirmar la causa real
+en vez de adivinarla), y
 `clasificar_por_demandado_correo_sin_coincidencia.csv` (correos que sí
 eran tutela/petición/pago oficioso pero no coincidieron con ningún
 proceso activo conocido). Si YA se encuentra el proceso, la carpeta se

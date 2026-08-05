@@ -83,6 +83,7 @@ import datetime
 import imaplib
 import logging
 import os
+import re
 from pathlib import Path
 
 import clasificar_procesos_ejecutivos as base
@@ -239,15 +240,31 @@ def _procesos_para_archivo(ruta, indices):
     return _desambiguar_por_radicado(contenido_norm, candidatos), contenido_norm
 
 
+def _fragmento_contexto(texto: str, palabra: str, ventana: int = 50) -> str:
+    """Un pedazo de 'texto' alrededor de donde aparece 'palabra' (como palabra completa), para poder ver EN QUE CONTEXTO coincidio."""
+    coincidencia = re.search(rf"(?<![A-ZÑ]){re.escape(palabra)}(?![A-ZÑ])", texto)
+    if not coincidencia:
+        return ""
+    inicio = max(0, coincidencia.start() - ventana)
+    fin = min(len(texto), coincidencia.end() + ventana)
+    return f' ("...{texto[inicio:fin].strip()}...")'
+
+
 def _motivo_coincidencia(texto_normalizado, proceso):
     """
     Diagnostico: POR QUE 'proceso' aparece entre las coincidencias de
     'texto_normalizado' -- coincidio su radicado, su cuenta, y/o cual(es)
-    de sus demandados (con las palabras exactas que coincidieron). Se
+    de sus demandados (con las palabras exactas que coincidieron, y un
+    pedazo del texto donde aparecieron, para ver el contexto real). Se
     usa solo al reportar un caso ambiguo, para poder ver en el
     log/CSV la razon EXACTA de cada coincidencia -- por ejemplo, para
     confirmar si el dato de DEMANDADO en el Excel para ese proceso esta
-    bien diligenciado o no, en vez de tener que adivinarlo.
+    bien diligenciado, o si el documento simplemente menciona ese
+    nombre en otro contexto (ej. el nombre del JUZGADO), en vez de
+    tener que adivinarlo. Usa la misma "ventana" que la busqueda real
+    (solo el encabezado del documento para el demandado, ver
+    clasificar_procesos_ejecutivos.VENTANA_DEMANDADO_CARACTERES) para
+    que el diagnostico sea fiel a lo que de verdad decidio el cruce.
     """
     motivos = []
     radicado = proceso.get("radicado")
@@ -258,12 +275,14 @@ def _motivo_coincidencia(texto_normalizado, proceso):
     for cuenta in proceso.get("cuentas", []):
         if buscador._cuenta_es_valida_para_buscar(cuenta) and buscador._nombre_coincide(texto_normalizado, cuenta):
             motivos.append(f"cuenta={cuenta}")
+    encabezado = texto_normalizado[:base.VENTANA_DEMANDADO_CARACTERES]
     for demandado in proceso.get("demandados", []):
         palabras = buscador._palabras_significativas(demandado)
         if len(palabras) >= base.MIN_PALABRAS_DEMANDADO_PARA_CRUZAR and all(
-            base._palabra_demandado_coincide(texto_normalizado, p) for p in palabras
+            base._palabra_demandado_coincide(encabezado, p) for p in palabras
         ):
-            motivos.append(f"demandado='{demandado}'")
+            palabra_mas_larga = max(palabras, key=len)
+            motivos.append(f"demandado='{demandado}'{_fragmento_contexto(encabezado, palabra_mas_larga)}")
     return "; ".join(motivos) if motivos else "razon desconocida (revisa manualmente)"
 
 

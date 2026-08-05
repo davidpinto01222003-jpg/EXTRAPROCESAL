@@ -801,6 +801,19 @@ def buscar_correo_global_informacion_no_procesal(usuario: str, app_password: str
 # como minimo este numero de palabras significativas.
 MIN_PALABRAS_DEMANDADO_PARA_CRUZAR = 2
 
+# El nombre del demandado solo se busca en los primeros N caracteres
+# del contenido (encabezado/caratula del documento -- en Colombia
+# practicamente todo documento judicial identifica las partes ahi
+# mismo, al principio) -- NO en el documento completo. Un PDF largo
+# (o uno que junta varios casos en un solo archivo escaneado) puede
+# mencionar OTROS nombres mas adelante (ej. el nombre de un municipio
+# que tambien es el del JUZGADO que emite el documento, o un caso
+# distinto en las paginas siguientes) que no tienen nada que ver con
+# el demandado real de ESE documento. El radicado y la cuenta SI se
+# buscan en el documento completo (son coincidencias mucho mas
+# precisas por si solas, no hace falta restringirlas).
+VENTANA_DEMANDADO_CARACTERES = 3000
+
 
 def _palabra_demandado_coincide(texto_normalizado, palabra):
     """
@@ -846,12 +859,13 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
     corresponde: basta con que coincida el radicado, la cuenta, O el
     demandado (cualquiera de los tres, no hace falta que coincidan
     todos). Para el DEMANDADO se exige que aparezcan TODAS sus palabras
-    significativas en el texto -- no basta con que coincida una sola
-    (ver MIN_PALABRAS_DEMANDADO_PARA_CRUZAR): un solo nombre corto o una
-    palabra suelta (ej. "ANEXOS", que puede aparecer literalmente en el
-    nombre de decenas de archivos que no tienen nada que ver con ese
-    demandado en particular) generaba coincidencias masivas y
-    completamente falsas cuando bastaba con una sola palabra.
+    significativas, COMO PALABRA COMPLETA, dentro de los primeros
+    VENTANA_DEMANDADO_CARACTERES del texto (no en el documento
+    completo -- ver esa constante) -- no basta con que coincida una
+    sola palabra (ver MIN_PALABRAS_DEMANDADO_PARA_CRUZAR): un solo
+    nombre corto, una palabra suelta, o un documento largo que mencione
+    otro nombre mas adelante (ej. el del JUZGADO que emite el
+    documento) generaba coincidencias masivas y completamente falsas.
     """
     por_radicado, por_cuenta, por_demandado = indices
     encontrados = {}
@@ -867,8 +881,9 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
             for proceso in procesos:
                 encontrados[proceso["nombre_carpeta"]] = proceso
 
+    encabezado = contenido_normalizado[:VENTANA_DEMANDADO_CARACTERES]
     for palabras, procesos in por_demandado.items():
-        if all(_palabra_demandado_coincide(contenido_normalizado, palabra) for palabra in palabras):
+        if all(_palabra_demandado_coincide(encabezado, palabra) for palabra in palabras):
             for proceso in procesos:
                 encontrados[proceso["nombre_carpeta"]] = proceso
 
