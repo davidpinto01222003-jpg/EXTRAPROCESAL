@@ -1077,7 +1077,11 @@ carpeta del proceso que le corresponde, en dos pasos:
    siempre** -- se ve como el programa colgado, sin ningún error ni
    progreso en el log, justo después de avisar que iba a reconectar.
    Con el límite puesto, eso revienta a tiempo y dispara la reconexión
-   en vez de quedarse pegado.
+   en vez de quedarse pegado. Al reconectar, cada paso (conectar,
+   iniciar sesión, seleccionar la carpeta) deja su propia línea en el
+   log -- si alguna vez vuelve a "colgarse", el último mensaje que
+   quede en el log dice exactamente en cuál paso se quedó, en vez de
+   tener que adivinar.
 
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`

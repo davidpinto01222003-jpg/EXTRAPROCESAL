@@ -495,14 +495,22 @@ def _conectar_gmail(usuario, app_password):
     del try, asi que un fallo justo ahi tampoco se atrapaba.
     """
     try:
+        # Logs paso a paso: si algun dia esto se vuelve a "colgar", el
+        # ultimo mensaje que se alcance a ver en el log dice EXACTAMENTE
+        # en cual paso se quedo (conectar, iniciar sesion, o seleccionar
+        # la carpeta) en vez de tener que adivinar.
+        logging.info("[Correo] Conectando con Gmail (timeout %ds)...", TIMEOUT_CORREO_SEGUNDOS)
         mail = imaplib.IMAP4_SSL("imap.gmail.com", timeout=TIMEOUT_CORREO_SEGUNDOS)
+        logging.info("[Correo] Conectado -- iniciando sesion...")
         mail.login(usuario, app_password)
+        logging.info("[Correo] Sesion iniciada -- seleccionando la carpeta de correos...")
     except Exception as error:
         logging.error("[Correo] No se pudo conectar con Gmail: %s", error)
         return None
     if not buscador.seleccionar_todos_los_correos(mail):
         logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail.")
         return None
+    logging.info("[Correo] Carpeta seleccionada -- listo para seguir buscando.")
     return mail
 
 
