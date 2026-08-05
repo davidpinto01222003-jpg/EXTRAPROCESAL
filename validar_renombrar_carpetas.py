@@ -324,11 +324,12 @@ PATRON_RADICADO_EXACTO = re.compile(r"(?<!\d)\d{23}(?!\d)")
 # reportar posibles coincidencias -- nunca se usa para renombrar solo.
 PATRON_RADICADO_CERCANO = re.compile(r"(?<!\d)\d{21,24}(?!\d)")
 
-# Radicado escrito con separadores (ej. "68005-40-03-001-2023-00700"), tal
-# como a veces aparece DENTRO del texto de un documento (no en nombres de
-# carpeta). Solo se usa para la validacion de contenido.
+# Radicado escrito con separadores (ej. "68005-40-03-001-2023-00700", o con
+# puntos/espacios en vez de guiones), tal como a veces aparece DENTRO del
+# texto de un documento (no en nombres de carpeta). Solo se usa para la
+# validacion de contenido.
 PATRON_RADICADO_CON_SEPARADORES = re.compile(
-    r"(?<!\d)\d{5}[\s\-]?\d{2}[\s\-]?\d{2}[\s\-]?\d{3}[\s\-]?\d{4}[\s\-]?\d{5}[\s\-]?\d{2}(?!\d)"
+    r"(?<!\d)\d{5}[\s\-.]?\d{2}[\s\-.]?\d{2}[\s\-.]?\d{3}[\s\-.]?\d{4}[\s\-.]?\d{5}[\s\-.]?\d{2}(?!\d)"
 )
 
 EXTENSIONES_CONTENIDO = {".pdf", ".docx"}
@@ -779,9 +780,9 @@ def _texto_de_docx(ruta: Path) -> str:
 
 
 def _radicados_en_texto(texto: str):
-    """Todos los radicados de 23 digitos encontrados en un texto (no solo el primero)."""
+    """Todos los radicados de 23 digitos encontrados en un texto (no solo el primero) -- reconoce tanto el numero plano como el escrito con guiones/puntos/espacios entre los grupos."""
     encontrados = list(PATRON_RADICADO_EXACTO.findall(texto))
-    encontrados += [re.sub(r"[\s\-]", "", m) for m in PATRON_RADICADO_CON_SEPARADORES.findall(texto)]
+    encontrados += [re.sub(r"[\s\-.]", "", m) for m in PATRON_RADICADO_CON_SEPARADORES.findall(texto)]
     return encontrados
 
 

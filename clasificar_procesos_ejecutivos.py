@@ -905,7 +905,15 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
     Devuelve los procesos (sin duplicados) a los que este correo/archivo
     corresponde: basta con que coincida el radicado, la cuenta, O el
     demandado (cualquiera de los tres, no hace falta que coincidan
-    todos). Para el DEMANDADO se exige que aparezcan TODAS sus palabras
+    todos).
+
+    Para el RADICADO se reconoce tanto el número PLANO (23 dígitos
+    seguidos) como el escrito CON separadores (guiones, puntos, o
+    espacios entre sus grupos -- ej. "68001-40-03-001-2024-00050-00",
+    el formato más común dentro del texto de un documento real -- ver
+    cruce_excel._radicados_en_texto).
+
+    Para el DEMANDADO se exige que aparezcan TODAS sus palabras
     significativas, COMO PALABRA COMPLETA, dentro de los primeros
     VENTANA_DEMANDADO_CARACTERES del texto UNA VEZ QUITADO EL MEMBRETE
     DEL JUZGADO (ver _quitar_membrete_juzgado) -- no en el documento
@@ -920,9 +928,20 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
     por_radicado, por_cuenta, por_demandado = indices
     encontrados = {}
 
+    # El radicado dentro de un documento casi nunca aparece "plano" --
+    # normalmente trae guiones, puntos, o espacios entre sus grupos de
+    # digitos (ej. "68001-40-03-001-2024-00050-00"). cruce_excel._radicados_en_texto
+    # reconoce esa forma (y la plana) y devuelve el numero ya limpio de
+    # separadores, para poder comparar directo contra el radicado del
+    # Excel -- buscar la cadena plana tal cual, sin esto, se perdia
+    # cualquier radicado que el documento no repitiera exactamente sin
+    # separadores.
+    radicados_del_texto = set(cruce_excel._radicados_en_texto(contenido_normalizado))
     for radicado, procesos in por_radicado.items():
-        terminos = [radicado] + buscador.radicados_cortos(radicado)
-        if any(buscador._nombre_coincide(contenido_normalizado, t) for t in terminos):
+        coincide_radicado = radicado in radicados_del_texto or any(
+            buscador._nombre_coincide(contenido_normalizado, t) for t in buscador.radicados_cortos(radicado)
+        )
+        if coincide_radicado:
             for proceso in procesos:
                 encontrados[proceso["nombre_carpeta"]] = proceso
 

@@ -877,7 +877,11 @@ busca en los primeros `VENTANA_DEMANDADO_CARACTERES` del texto que
 queda (el encabezado/carátula real, donde Colombia identifica las
 partes de cualquier proceso) -- **no** en el documento completo. El
 radicado y la cuenta sí se buscan en el documento completo, porque esas
-coincidencias ya son precisas por sí solas.
+coincidencias ya son precisas por sí solas -- y reconocen el radicado
+tanto **plano** (23 dígitos seguidos) como escrito **con guiones,
+puntos, o espacios** entre sus grupos (ej.
+"68001-40-03-001-2024-00050-00"), que es como casi siempre aparece
+dentro del texto real de un documento.
 Un mismo correo puede terminar adjuntado a más de un proceso si aplica
 a varios (ej. un proceso "acumulado" con varias cuentas). Igual que en
 Drive, siempre se exige además que el correo mencione a ESSA/

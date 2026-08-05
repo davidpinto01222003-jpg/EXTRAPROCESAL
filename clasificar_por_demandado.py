@@ -181,26 +181,34 @@ def _texto_de_archivo(ruta: Path) -> str:
 def _desambiguar_por_radicado(texto_normalizado, coincidencias, contexto=""):
     """
     Si 'coincidencias' tiene mas de un proceso posible, intenta
-    reducirlo a UNO SOLO revisando si el RADICADO (o su forma corta) de
-    alguno de ellos aparece en el texto -- si trae el radicado
-    especifico de UN SOLO candidato, se usa ese en vez de quedar
-    ambiguo (ej. varios procesos con el mismo demandado -- si el
-    documento menciona el radicado exacto de uno de ellos, ya no hace
-    falta revisarlo a mano). Si el radicado de MAS de un candidato
-    aparece, o si no aparece ninguno (lo mas comun: un auto corto no
-    siempre repite su propio radicado en el texto), se deja igual
-    (sigue ambiguo, se reporta para revision manual). SIEMPRE deja en
-    el log si lo intento y por que no alcanzo, para que quede claro que
-    el radicado SI se revisa, aunque no siempre pueda desambiguar.
+    reducirlo a UNO SOLO revisando si el RADICADO (plano O con
+    guiones/puntos/espacios entre sus grupos -- ver
+    cruce_excel._radicados_en_texto -- o su forma corta) de alguno de
+    ellos aparece en el texto -- si trae el radicado especifico de UN
+    SOLO candidato, se usa ese en vez de quedar ambiguo (ej. varios
+    procesos con el mismo demandado -- si el documento menciona el
+    radicado exacto de uno de ellos, ya no hace falta revisarlo a
+    mano). Si el radicado de MAS de un candidato aparece, o si no
+    aparece ninguno (un auto puede no repetir su propio radicado en el
+    texto), se deja igual (sigue ambiguo, se reporta para revision
+    manual). SIEMPRE deja en el log si lo intento y por que no alcanzo,
+    para que quede claro que el radicado SI se revisa, aunque no
+    siempre pueda desambiguar.
     """
     if len(coincidencias) <= 1:
         return coincidencias
 
+    # El radicado dentro de un documento casi nunca aparece "plano" --
+    # normalmente trae guiones/puntos/espacios entre sus grupos (ej.
+    # "68001-40-03-001-2024-00050-00"). cruce_excel._radicados_en_texto
+    # reconoce esa forma (y la plana) y ya devuelve el numero limpio de
+    # separadores, listo para comparar contra el radicado del Excel.
+    radicados_del_texto = set(cruce_excel._radicados_en_texto(texto_normalizado))
     con_radicado_en_texto = [
         proceso for proceso in coincidencias
-        if proceso["radicado"] and any(
-            buscador._nombre_coincide(texto_normalizado, termino)
-            for termino in [proceso["radicado"]] + buscador.radicados_cortos(proceso["radicado"])
+        if proceso["radicado"] and (
+            proceso["radicado"] in radicados_del_texto
+            or any(buscador._nombre_coincide(texto_normalizado, t) for t in buscador.radicados_cortos(proceso["radicado"]))
         )
     ]
     if len(con_radicado_en_texto) == 1:
@@ -291,8 +299,11 @@ def _motivo_coincidencia(texto_normalizado, proceso):
     motivos = []
     radicado = proceso.get("radicado")
     if radicado:
-        terminos = [radicado] + buscador.radicados_cortos(radicado)
-        if any(buscador._nombre_coincide(texto_normalizado, t) for t in terminos):
+        radicados_del_texto = set(cruce_excel._radicados_en_texto(texto_normalizado))
+        coincide = radicado in radicados_del_texto or any(
+            buscador._nombre_coincide(texto_normalizado, t) for t in buscador.radicados_cortos(radicado)
+        )
+        if coincide:
             motivos.append(f"radicado={radicado}")
     for cuenta in proceso.get("cuentas", []):
         if buscador._cuenta_es_valida_para_buscar(cuenta) and buscador._nombre_coincide(texto_normalizado, cuenta):
