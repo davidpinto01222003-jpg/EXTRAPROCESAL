@@ -1048,21 +1048,28 @@ carpeta del proceso que le corresponde, en dos pasos:
    como "todos los correos" (sin importar cómo se llame en tu idioma),
    así que no tienes que cambiar nada a mano.
 
-   Los términos de búsqueda (nombres de demandado) se mandan a Gmail
-   **sin tildes/diacríticos** (ej. "PÉREZ" -> "PEREZ", "LANDÁZURI" ->
-   "LANDAZURI") -- Gmail busca igual sin distinguirlas, así que no se
-   pierde ningún resultado. Se hace así (en vez de mandar los bytes
-   UTF-8 originales) porque se probaron dos mecanismos que sí permiten
-   caracteres no-ASCII por protocolo y los dos tuvieron problemas
-   reales: un texto UTF-8 directo hacía que el servidor rechazara el
-   comando con "BAD Could not parse command" en algunos lotes: y el
-   "literal" de IMAP (pensado justo para esto) terminaba **colgando la
-   conexión sin ningún error** en ciertas redes/antivirus -- el
+   La consulta completa de cada lote (con paréntesis, la palabra `OR`,
+   y comillas anidadas para buscar frases exactas) se manda como **UN
+   SOLO argumento entre comillas** de IMAP, escapando las comillas que
+   ya trae adentro. Esto puede sonar como un detalle interno, pero fue
+   el bug real de fondo que costó más encontrar: `mail.search()` de la
+   librería de Python no agrega comillas por su cuenta, así que sin
+   este envoltorio el servidor leía el paréntesis inicial y la palabra
+   `OR` como **tokens sueltos de IMAP** en vez de como parte de un
+   único texto -- eso producía "SEARCH command error: BAD Could not
+   parse command" en **absolutamente todos los lotes** (no solo los
+   que tenían tildes), y tras suficientes errores seguidos Gmail
+   terminaba cortando la conexión entera con "Too many protocol
+   errors". Además, los términos se mandan **sin tildes/diacríticos**
+   (ej. "PÉREZ" -> "PEREZ") -- Gmail busca igual sin distinguirlas, así
+   que no se pierde ningún resultado, y así el texto es ASCII puro sin
+   depender de CHARSET ni de "literales" de IMAP (un mecanismo que sí
+   permite caracteres no-ASCII por protocolo, pero que demostró
+   colgar la conexión sin ningún error en ciertas redes/antivirus: el
    intercambio "esperar la confirmación del servidor y mandar el texto
    aparte" que exige un literal es un patrón de tráfico poco común que
-   algunos proxies no manejan bien. Con texto ASCII puro alcanza una
-   búsqueda normal y corriente, compatible en cualquier red. Si un lote
-   puntual falla, se salta y sigue con los demás.
+   algunos proxies no manejan bien). Si un lote puntual falla, se salta
+   y sigue con los demás.
 
    Con cientos de procesos activos son cientos de búsquedas seguidas
    sobre la misma conexión, y **Gmail la corta** si la nota con

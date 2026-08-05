@@ -757,13 +757,38 @@ def texto_para_busqueda_gmail(texto: str) -> str:
 
 def buscar_x_gm_raw(mail, consulta: str):
     """
-    Ejecuta 'SEARCH X-GM-RAW <consulta>' -- 'consulta' debe ser ASCII
-    puro (ver texto_para_busqueda_gmail) para que alcance con un
-    quoted-string normal de IMAP, sin depender de CHARSET ni de
-    literales (ver el porque en texto_para_busqueda_gmail). Devuelve
-    (typ, datos) igual que mail.search().
+    Ejecuta 'SEARCH X-GM-RAW <consulta>'. X-GM-RAW espera UN SOLO
+    astring (un quoted-string de IMAP) como argumento -- todo el texto
+    de 'consulta' (que puede traer parentesis, espacios, comillas
+    anidadas para busqueda de frase exacta, y la palabra OR SIN
+    comillas para combinar varios terminos) tiene que viajar COMO EL
+    CONTENIDO de un unico quoted-string, no como texto suelto en la
+    linea de comando.
+
+    Este fue el bug real de fondo (encontrado con un log real donde
+    TODOS los lotes, no solo los que tenian tildes, fallaban con
+    "SEARCH command error: BAD Could not parse command", hasta que
+    Gmail terminaba cortando la conexion entera con "Too many protocol
+    errors"): mail.search() de imaplib NO agrega comillas por su
+    cuenta, solo concatena los argumentos tal cual a la linea de
+    comando. Mandar 'consulta' sin envolverla en un quoted-string
+    propio (ej. '("PEREZ" OR "68001...")') hace que el servidor la lea
+    como VARIOS tokens IMAP sueltos (una lista entre parentesis, cada
+    termino como su propio quoted-string, la palabra OR como un atomo
+    sin comillas) en vez de como el UNICO argumento de texto que
+    X-GM-RAW espera -- de ahi el "Could not parse command", en
+    TODOS los lotes por igual (no dependia de las tildes en absoluto;
+    los fixes anteriores del literal/CHARSET arreglaban un problema
+    real pero distinto, y nunca llegaron a tocar este).
+
+    Arreglo: se envuelve TODA la consulta en un quoted-string de IMAP,
+    escapando las comillas y barras invertidas que ya trae adentro
+    (asi Gmail, del otro lado, la desescapa de vuelta al texto
+    original con sus propias comillas de frase exacta intactas).
+    Devuelve (typ, datos) igual que mail.search().
     """
-    return mail.search(None, "X-GM-RAW", consulta)
+    escapada = consulta.replace("\\", "\\\\").replace('"', '\\"')
+    return mail.search(None, "X-GM-RAW", f'"{escapada}"')
 
 
 def _decodificar_asunto(asunto_crudo: str) -> str:
