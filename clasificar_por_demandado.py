@@ -139,6 +139,13 @@ TAMANO_LOTE_CORREO = 15
 # antes de darse por vencido de verdad.
 MAX_RECONEXIONES_CORREO = 8
 
+# Límite (en segundos) para cualquier operación de red con Gmail
+# (conectar, login, buscar, descargar un correo). Sin esto, un socket
+# de Python espera una respuesta PARA SIEMPRE si la conexión queda en
+# un estado "a medias" -- se ve como el programa colgado, sin ningún
+# error ni progreso en el log.
+TIMEOUT_CORREO_SEGUNDOS = 30
+
 # True (por defecto): no mueve archivos ni descarga correos de verdad,
 # solo revisa y muestra qué haría.
 MODO_PRUEBA = True
@@ -473,10 +480,22 @@ def _conectar_gmail(usuario, app_password):
     de "todos los correos" -- usado tanto para la conexion inicial como
     para RECONECTAR si Gmail corta la conexion a mitad de la busqueda
     (ver buscar_correo_por_procesos). Devuelve la conexion lista para
-    usar, o None si el login o el select fallaron.
+    usar, o None si la conexion, el login, o el select fallaron.
+
+    CON TIMEOUT explicito (TIMEOUT_CORREO_SEGUNDOS): sin esto, un socket
+    de Python se queda esperando una respuesta PARA SIEMPRE si la
+    conexion queda en un estado "a medias" (ni cerrada del todo ni
+    respondiendo) -- que es justo lo que le pasa a veces a la conexion
+    vieja despues de que Gmail la corta. Eso se ve como el programa
+    "colgado" sin ningun error ni progreso en el log. Con el timeout, si
+    no hay respuesta a tiempo salta un error normal (que este mismo
+    fallo ya sabe manejar) en vez de quedarse esperando para siempre.
+    Ademas TODA la llamada va dentro del try -- antes "imaplib.IMAP4_SSL(...)"
+    (que ya intenta conectar/hacer el handshake TLS) quedaba POR FUERA
+    del try, asi que un fallo justo ahi tampoco se atrapaba.
     """
-    mail = imaplib.IMAP4_SSL("imap.gmail.com")
     try:
+        mail = imaplib.IMAP4_SSL("imap.gmail.com", timeout=TIMEOUT_CORREO_SEGUNDOS)
         mail.login(usuario, app_password)
     except Exception as error:
         logging.error("[Correo] No se pudo conectar con Gmail: %s", error)
@@ -485,6 +504,23 @@ def _conectar_gmail(usuario, app_password):
         logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail.")
         return None
     return mail
+
+
+def _cerrar_sesion_gmail(mail):
+    """
+    Intenta un LOGOUT limpio, pero sin arriesgarse a colgar el
+    programa: si la conexion ya quedo en un estado raro, un logout()
+    sin timeout se puede quedar esperando una respuesta que nunca
+    llega. Cualquier error (o timeout) se ignora -- ya no importa un
+    cierre prolijo, solo que no se cuelgue.
+    """
+    try:
+        sock = getattr(mail, "sock", None)
+        if sock is not None:
+            sock.settimeout(TIMEOUT_CORREO_SEGUNDOS)
+        mail.logout()
+    except Exception:
+        pass
 
 
 def buscar_correo_por_procesos(usuario, app_password, con_radicado):
@@ -549,10 +585,15 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                             if correo is not None:
                                 vistos[(correo["asunto"], correo["fecha"])] = correo
                     break  # lote resuelto (con o sin resultados) -- sigue al siguiente
-                except imaplib.IMAP4.abort as error:
+                except (imaplib.IMAP4.abort, OSError) as error:
                     # Error de CONEXION (no de un comando puntual) --
                     # Gmail cierra la conexion si la nota inactiva o
                     # con demasiadas busquedas/descargas seguidas.
+                    # OSError (incluye socket.timeout) tambien cuenta:
+                    # con TIMEOUT_CORREO_SEGUNDOS puesto en el socket,
+                    # una conexion que quedo "a medias" revienta con
+                    # esto en vez de colgarse para siempre esperando
+                    # una respuesta que nunca llega.
                     if reconexiones_usadas >= MAX_RECONEXIONES_CORREO:
                         logging.error(
                             "[Correo] Se perdio la conexion con Gmail (%s) y ya se intento reconectar %d vez/veces "
@@ -566,10 +607,7 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                         "(intento %d/%d) y sigue donde se quedo (van %d correo(s) encontrados)...",
                         error, reconexiones_usadas, MAX_RECONEXIONES_CORREO, len(vistos),
                     )
-                    try:
-                        mail.logout()
-                    except Exception:
-                        pass
+                    _cerrar_sesion_gmail(mail)
                     mail = _conectar_gmail(usuario, app_password)
                     if mail is None:
                         logging.error(
@@ -585,10 +623,7 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                     logging.error("[Correo] Fallo buscando el lote %s: %s", lote, error)
                     break
     finally:
-        try:
-            mail.logout()
-        except Exception:
-            pass
+        _cerrar_sesion_gmail(mail)
 
     return list(vistos.values())
 

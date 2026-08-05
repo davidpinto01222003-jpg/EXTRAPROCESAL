@@ -1070,6 +1070,15 @@ carpeta del proceso que le corresponde, en dos pasos:
    encontrado** en los lotes que sí funcionaron, así la conexión
    termine cortándose de forma definitiva.
 
+   Toda operación con Gmail tiene un **límite de tiempo**
+   (`TIMEOUT_CORREO_SEGUNDOS`, 30s por defecto): sin esto, si la
+   conexión queda en un estado "a medias" (ni cerrada del todo ni
+   respondiendo), Python se queda esperando una respuesta **para
+   siempre** -- se ve como el programa colgado, sin ningún error ni
+   progreso en el log, justo después de avisar que iba a reconectar.
+   Con el límite puesto, eso revienta a tiempo y dispara la reconexión
+   en vez de quedarse pegado.
+
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
 para emparejar su búsqueda global de correo: coincide su **radicado**,
