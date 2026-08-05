@@ -368,7 +368,10 @@ por este orden:
 1. El **radicado completo** de 23 dígitos -- si encuentra una
    coincidencia exacta, la descarga automático (tan específico que no
    hay riesgo real de confundirlo con otro caso).
-2. El **radicado corto** (ej. `2025-00456` o `2025-456`).
+2. El **radicado corto** (ej. `2025-00456`, `2025-456`,
+   `2025-00456-00`, o `2025-456-00` -- con o sin ceros a la izquierda
+   del consecutivo, y con o sin el consecutivo de instancia/reparto al
+   final, ver `radicados_cortos`).
 3. El número de **cuenta** -- solo si es lo bastante específica. Una
    cuenta vacía, `"0"`, o de muy pocos dígitos **no se busca**: como la
    búsqueda de Drive es aproximada, un término tan genérico coincidiría

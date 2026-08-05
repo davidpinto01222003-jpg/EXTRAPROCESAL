@@ -405,16 +405,25 @@ def leer_faltantes():
 def radicados_cortos(radicado: str):
     """
     Deriva los formatos "cortos" del radicado completo de 23 digitos
-    (ej. "2025-00456" y "2025-456"), a partir del año (digitos 13-16) y
-    el consecutivo (digitos 17-21) del radicado judicial colombiano.
+    (ej. "2025-00456", "2025-456", "2025-00456-00" y "2025-456-00"), a
+    partir del año (digitos 13-16), el consecutivo (digitos 17-21), y
+    el consecutivo de instancia/reparto (digitos 22-23, ej. "00" o
+    "01") del radicado judicial colombiano -- las cuatro son formas
+    validas de escribir el mismo radicado "corto" dentro de un
+    documento o correo.
     """
     if len(radicado) != 23 or not radicado.isdigit():
         return []
     anio = radicado[12:16]
     consecutivo_completo = radicado[16:21]
     consecutivo_sin_ceros = str(int(consecutivo_completo))
-    formatos = {f"{anio}-{consecutivo_completo}"}
-    formatos.add(f"{anio}-{consecutivo_sin_ceros}")
+    instancia = radicado[21:23]
+    formatos = {
+        f"{anio}-{consecutivo_completo}",
+        f"{anio}-{consecutivo_sin_ceros}",
+        f"{anio}-{consecutivo_completo}-{instancia}",
+        f"{anio}-{consecutivo_sin_ceros}-{instancia}",
+    }
     return sorted(formatos)
 
 
