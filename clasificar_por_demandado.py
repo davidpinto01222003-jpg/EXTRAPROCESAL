@@ -33,11 +33,15 @@ entidad a la que se envió) por proceso, en dos pasos independientes
    exige, igual que en el resto del proyecto, que el correo mencione a
    ESSA/Electrificadora de Santander.
 
-   En vez de abrir una conexión de Gmail por cada término (con cientos
-   de procesos activos eso tardaría horas), se abre UNA sola conexión
-   y se buscan todos los términos en LOTES combinados con OR (ver
-   TAMANO_LOTE_CORREO) -- Gmail permite eso mismo en su propia barra
-   de búsqueda.
+   Se abre UNA sola conexión para TODOS los términos (con cientos/miles
+   de procesos activos, abrir una conexión nueva por cada uno sería muy
+   lento) -- por defecto se busca de a UN término por vez
+   (TAMANO_LOTE_CORREO=1, la forma más simple y confiable: sin
+   paréntesis ni "OR" en la consulta), aunque también admite combinar
+   varios términos con OR en una sola búsqueda si se sube ese valor
+   (ver TAMANO_LOTE_CORREO). Si Gmail corta la conexión (pasa con
+   cientos/miles de búsquedas seguidas), se reconecta sola y sigue
+   donde se quedó (ver buscar_correo_por_procesos).
 
 En AMBOS pasos, a qué proceso corresponde un documento/correo se
 decide con la MISMA regla que usa clasificar_procesos_ejecutivos.py
@@ -124,10 +128,18 @@ SOLO_DESCARGAS_DE_HOY = True
 BUSCAR_EN_CORREO = True
 
 # Cuántos términos (demandados + radicados + cuentas) se combinan en
-# UNA sola búsqueda de Gmail (con OR) -- evita abrir una
-# conexión/búsqueda separada por cada uno de los cientos de términos
-# de los procesos activos, que sería muy lento.
-TAMANO_LOTE_CORREO = 15
+# UNA sola búsqueda de Gmail (con OR). En 1 -- una búsqueda por
+# término, sin combinar nada -- porque es el método MAS simple y
+# comprobado: no arma ningún paréntesis ni "OR" en la consulta, el
+# mismo patrón exacto que usa buscar_en_correo() (buscar_faltantes_en_drive.py)
+# en el resto del proyecto sin problemas. Poner esto en más de 1 vuelve
+# a armar consultas combinadas ("(\"term1\" OR \"term2\" OR ...)"), que
+# aunque ya se manda bien envuelta en un solo argumento de IMAP (ver
+# buscador.buscar_x_gm_raw), es una consulta mas compleja -- se
+# prefiere la forma mas simple posible aunque sea mas lenta (una
+# conexión persistente + reconexión automática hacen que igual sea
+# viable con cientos/miles de términos, ver buscar_correo_por_procesos).
+TAMANO_LOTE_CORREO = 1
 
 # Con cientos de procesos activos hay que hacer CIENTOS de búsquedas
 # (una por lote) sobre la MISMA conexión IMAP -- Gmail corta la
@@ -156,10 +168,13 @@ MAX_REINTENTOS_POR_LOTE = 3
 TIMEOUT_CORREO_SEGUNDOS = 30
 
 # Cada cuántos lotes se deja un aviso de "sigo trabajando" en el log
-# durante la búsqueda en Gmail. Con cientos de lotes, pasar varios
-# minutos sin NINGUNA línea nueva (porque todo va bien, simplemente
-# toma tiempo) se ve igual que el programa colgado.
-AVISO_PROGRESO_CORREO_LOTES = 10
+# durante la búsqueda en Gmail. Con TAMANO_LOTE_CORREO=1 son miles de
+# lotes (uno por término) -- avisar cada 10 saturaría el log con
+# cientos de líneas. Pasar varios minutos sin NINGUNA línea nueva
+# (porque todo va bien, simplemente toma tiempo) se ve igual que el
+# programa colgado, así que igual conviene un aviso periódico, solo
+# que más espaciado.
+AVISO_PROGRESO_CORREO_LOTES = 100
 
 # True (por defecto): no mueve archivos ni descarga correos de verdad,
 # solo revisa y muestra qué haría.
@@ -684,9 +699,15 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
             # Gmail busca igual sin distinguirlas, y asi alcanza un
             # quoted-string ASCII normal sin necesitar CHARSET ni
             # literales (ver el porque en esa funcion).
-            consulta = "(" + " OR ".join(
-                f'"{buscador.texto_para_busqueda_gmail(t).replace(chr(34), "")}"' for t in lote
-            ) + ")"
+            terminos_lote = [buscador.texto_para_busqueda_gmail(t).replace(chr(34), "") for t in lote]
+            if len(terminos_lote) == 1:
+                # Un solo termino -- SIN parentesis ni "OR", la forma
+                # mas simple posible (identica a buscar_en_correo() en
+                # buscar_faltantes_en_drive.py). Con TAMANO_LOTE_CORREO=1
+                # (el valor por defecto) siempre se cae en este caso.
+                consulta = f'"{terminos_lote[0]}"'
+            else:
+                consulta = "(" + " OR ".join(f'"{t}"' for t in terminos_lote) + ")"
             intentos_lote_actual = 0
             while True:
                 try:

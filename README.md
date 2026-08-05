@@ -1027,9 +1027,9 @@ carpeta del proceso que le corresponde, en dos pasos:
    archivos de todo tipo (demandas, autos viejos, etc, no solo lo que
    bajaste hoy); ponlo en `False` si alguna vez quieres que revise toda
    la carpeta sin importar la fecha.
-2. **Gmail**: busca en **todo** tu correo (en lotes combinados con
-   `OR`, una sola conexión -- no una por término, para que no tarde
-   horas con cientos de procesos activos) el nombre de cada demandado,
+2. **Gmail**: busca en **todo** tu correo (una sola conexión para
+   todos los términos -- no una conexión nueva por cada uno, para que
+   no tarde horas con miles de términos) el nombre de cada demandado,
    el radicado (y sus formas cortas), y la cuenta de cada proceso. Del
    resultado **solo descarga** lo que además sea un derecho de
    petición, una tutela, o un pago oficioso -- **tanto lo presentado
@@ -1048,18 +1048,31 @@ carpeta del proceso que le corresponde, en dos pasos:
    como "todos los correos" (sin importar cómo se llame en tu idioma),
    así que no tienes que cambiar nada a mano.
 
-   La consulta completa de cada lote (con paréntesis, la palabra `OR`,
-   y comillas anidadas para buscar frases exactas) se manda como **UN
-   SOLO argumento entre comillas** de IMAP, escapando las comillas que
-   ya trae adentro. Esto puede sonar como un detalle interno, pero fue
-   el bug real de fondo que costó más encontrar: `mail.search()` de la
+   Busca **de a un término por vez** (`TAMANO_LOTE_CORREO = 1`, el
+   valor por defecto) -- sin combinar varios términos en una sola
+   consulta con `OR`. Se eligió así, a propósito, después de que las
+   consultas combinadas dieran demasiados problemas reales distintos
+   (tildes, límites de protocolo, la conexión colgándose) para
+   confiar en ellas: buscar de a un término es el método más simple
+   posible, exactamente el mismo patrón que ya usa sin problemas
+   `buscar_en_correo()` en `buscar_faltantes_en_drive.py`. Es más
+   lento que combinar términos (miles de búsquedas en vez de
+   cientos), pero la conexión persistente + la reconexión automática
+   (ver más abajo) hacen que sea viable igual con miles de términos.
+   Si alguna vez hace falta más velocidad, `TAMANO_LOTE_CORREO` se
+   puede subir para volver a combinar varios términos por búsqueda --
+   la consulta completa (con paréntesis, la palabra `OR`, y comillas
+   anidadas para frases exactas) se manda como **UN SOLO argumento
+   entre comillas** de IMAP, escapando las comillas que ya trae
+   adentro. Esto puede sonar como un detalle interno, pero fue el bug
+   real de fondo que costó más encontrar: `mail.search()` de la
    librería de Python no agrega comillas por su cuenta, así que sin
    este envoltorio el servidor leía el paréntesis inicial y la palabra
    `OR` como **tokens sueltos de IMAP** en vez de como parte de un
    único texto -- eso producía "SEARCH command error: BAD Could not
-   parse command" en **absolutamente todos los lotes** (no solo los
-   que tenían tildes), y tras suficientes errores seguidos Gmail
-   terminaba cortando la conexión entera con "Too many protocol
+   parse command" en **absolutamente todos los lotes combinados** (no
+   solo los que tenían tildes), y tras suficientes errores seguidos
+   Gmail terminaba cortando la conexión entera con "Too many protocol
    errors". Además, los términos se mandan **sin tildes/diacríticos**
    (ej. "PÉREZ" -> "PEREZ") -- Gmail busca igual sin distinguirlas, así
    que no se pierde ningún resultado, y así el texto es ASCII puro sin
