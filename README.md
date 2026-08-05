@@ -982,7 +982,12 @@ carpeta del proceso que le corresponde, en dos pasos:
    el demandado es "ALBERTO SUAREZ" y el archivo lo menciona, se mueve
    a `"<numero>. <radicado o ESTADO>"`. No hay restricción de tipo de
    documento aquí -- se asume que ya es información extraprocesal
-   porque tú la descargaste a propósito.
+   porque tú la descargaste a propósito. Por defecto
+   (`SOLO_DESCARGAS_DE_HOY = True`) **solo revisa lo creado o
+   modificado hoy** -- una carpeta de Descargas normal acumula años de
+   archivos de todo tipo (demandas, autos viejos, etc, no solo lo que
+   bajaste hoy); ponlo en `False` si alguna vez quieres que revise toda
+   la carpeta sin importar la fecha.
 2. **Gmail**: busca en **todo** tu correo (en lotes combinados con
    `OR`, una sola conexión -- no una por término, para que no tarde
    horas con cientos de procesos activos) el nombre de cada demandado,

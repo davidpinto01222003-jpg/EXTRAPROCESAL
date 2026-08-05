@@ -10,7 +10,11 @@ entidad a la que se envió) por proceso, en dos pasos independientes
    ninguna restricción de TIPO de documento aquí (a diferencia de
    clasificar_procesos_ejecutivos.py) -- se asume que ya es información
    extraprocesal porque tú la descargaste a propósito; el único
-   trabajo de este script es encontrar a qué proceso corresponde.
+   trabajo de este script es encontrar a qué proceso corresponde. Por
+   defecto (SOLO_DESCARGAS_DE_HOY) solo revisa los archivos creados o
+   modificados HOY -- una carpeta de Descargas normal acumula años de
+   archivos de todo tipo (demandas, autos, etc, no solo lo que bajaste
+   hoy), y no tiene sentido volver a revisarlos en cada corrida.
 
 2. GMAIL: busca en TODO tu Gmail (no solo la bandeja de entrada) por
    el nombre de cada demandado, el radicado (y sus formas cortas), y
@@ -67,6 +71,7 @@ credenciales_sgde.txt para Gmail (ver README) -- si no existe, el
 paso 2 se omite solo, sin error.
 """
 
+import datetime
 import imaplib
 import logging
 import os
@@ -83,6 +88,15 @@ import procesos_juridicos as organizador
 # de que este script la reparta -- por defecto tu carpeta de Descargas
 # de Windows. Cambiala si usas otra carpeta.
 CARPETA_DESCARGAS_MANUAL = os.path.join(os.path.expanduser("~"), "Downloads")
+
+# True (por defecto): en la carpeta de descargas, SOLO revisa los
+# archivos modificados/descargados HOY -- una carpeta de Descargas
+# normal acumula años de archivos de todo tipo (demandas, autos,
+# mandamientos viejos, etc, no solo la información extraprocesal que
+# bajaste hoy), y no tiene sentido volver a revisarlos en cada corrida.
+# Ponlo en False si quieres que revise TODOS los archivos sin importar
+# la fecha.
+SOLO_DESCARGAS_DE_HOY = True
 
 # True (por defecto): además de la carpeta de descargas, busca en TODO
 # tu Gmail. Si no existe credenciales_sgde.txt, este paso se omite
@@ -130,6 +144,19 @@ def configurar_logging():
 # ==================== Paso 1: carpeta de descargas manuales ====================
 
 
+def _es_de_hoy(ruta: Path) -> bool:
+    """
+    True si 'ruta' se creo o se modifico HOY -- se revisan las dos
+    fechas (no solo una) porque algunos adjuntos de correo conservan la
+    fecha de modificacion ORIGINAL del remitente (no la de cuando tu lo
+    descargaste), mientras que la fecha de creacion en el disco si
+    refleja cuando el archivo llego a tu carpeta de Descargas.
+    """
+    hoy = datetime.date.today()
+    info = ruta.stat()
+    return hoy in (datetime.date.fromtimestamp(info.st_ctime), datetime.date.fromtimestamp(info.st_mtime))
+
+
 def _texto_de_archivo(ruta: Path) -> str:
     if ruta.suffix.lower() == ".pdf":
         return cruce_excel._texto_de_pdf(ruta)
@@ -174,9 +201,14 @@ def clasificar_carpeta_descargas(indices, carpeta_raiz):
     movidos = 0
     sin_coincidencia = []
     ambiguos = []
+    omitidos_por_fecha = 0
 
     for ruta in sorted(carpeta_descargas.rglob("*")):
         if not ruta.is_file() or ruta.suffix.lower() not in (".pdf", ".docx"):
+            continue
+
+        if SOLO_DESCARGAS_DE_HOY and not _es_de_hoy(ruta):
+            omitidos_por_fecha += 1
             continue
 
         coincidencias = _procesos_para_archivo(ruta, indices)
@@ -214,6 +246,12 @@ def clasificar_carpeta_descargas(indices, carpeta_raiz):
             movidos += 1
         except OSError as error:
             logging.warning("   (no se pudo mover '%s': %s)", ruta.name, error)
+
+    if SOLO_DESCARGAS_DE_HOY and omitidos_por_fecha:
+        logging.info(
+            "[Descargas] %d archivo(s) de otras fechas se omitieron (SOLO_DESCARGAS_DE_HOY activo) --"
+            " ponlo en False si quieres revisar TODA la carpeta.", omitidos_por_fecha,
+        )
 
     return movidos, sin_coincidencia, ambiguos
 
