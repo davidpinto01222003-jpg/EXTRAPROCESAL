@@ -497,13 +497,29 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                 # rechazar el comando con "SEARCH command error: BAD
                 # Could not parse command" en el lote que las tenga.
                 typ, datos = buscador.buscar_x_gm_raw(mail, consulta)
+                if typ != "OK" or not datos or not datos[0]:
+                    continue
+
+                # El FETCH de cada correo encontrado va DENTRO del mismo
+                # try que el SEARCH -- la conexion se puede caer aca
+                # igual de facil (o mas: hay un FETCH por cada correo
+                # encontrado, muchos mas viajes de ida y vuelta que un
+                # solo SEARCH por lote), y antes NO estaba protegido:
+                # un "socket error: EOF" a mitad de un FETCH se colaba
+                # sin que el "except imaplib.IMAP4.abort" de mas abajo
+                # lo viera, perdiendo la busqueda completa igual que el
+                # bug del LOGOUT.
+                for id_correo in datos[0].split():
+                    correo = base._leer_correo(mail, id_correo)
+                    if correo is not None:
+                        vistos[(correo["asunto"], correo["fecha"])] = correo
             except imaplib.IMAP4.abort as error:
                 # Error de CONEXION (no de un comando puntual) -- Gmail
                 # cierra la conexion si la nota inactiva o si hace
-                # demasiadas busquedas seguidas. Ya no sirve seguir
-                # probando lote por lote (todos fallarian igual), asi
-                # que se corta aqui mismo en vez de spamear un error
-                # por cada uno de los lotes que faltan.
+                # demasiadas busquedas/descargas seguidas. Ya no sirve
+                # seguir con los lotes que faltan (todos fallarian
+                # igual), asi que se corta aqui mismo en vez de spamear
+                # un error por cada uno.
                 logging.error(
                     "[Correo] Se perdio la conexion con Gmail a mitad de la busqueda (%s) -- se detiene aqui, "
                     "ya se guardaron los %d correo(s) encontrados hasta el momento.", error, len(vistos),
@@ -515,13 +531,6 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                 # no tumba la busqueda completa de los demas.
                 logging.error("[Correo] Fallo buscando el lote %s: %s", lote, error)
                 continue
-            if typ != "OK" or not datos or not datos[0]:
-                continue
-
-            for id_correo in datos[0].split():
-                correo = base._leer_correo(mail, id_correo)
-                if correo is not None:
-                    vistos[(correo["asunto"], correo["fecha"])] = correo
     finally:
         try:
             mail.logout()

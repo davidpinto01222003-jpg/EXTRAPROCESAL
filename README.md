@@ -1058,7 +1058,10 @@ carpeta del proceso que le corresponde, en dos pasos:
    se detiene ahí en vez de intentar los cientos de lotes que faltan
    uno por uno -- y en cualquier caso, los correos que **ya se habían
    encontrado** en los lotes que sí funcionaron **nunca se pierden**,
-   así la conexión termine cortándose de forma abrupta al final.
+   así la conexión termine cortándose de forma abrupta al final (esto
+   cubre tanto una búsqueda que falla como la descarga de un correo
+   puntual que falla a mitad de un lote -- Gmail puede cortar la
+   conexión en cualquiera de los dos momentos).
 
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
