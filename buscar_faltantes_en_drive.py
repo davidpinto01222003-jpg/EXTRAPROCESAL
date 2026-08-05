@@ -729,6 +729,30 @@ def seleccionar_todos_los_correos(mail) -> bool:
     return False
 
 
+def buscar_x_gm_raw(mail, consulta: str):
+    """
+    Ejecuta 'SEARCH X-GM-RAW <consulta>' mandando la consulta como un
+    LITERAL de IMAP ({n}<CRLF><bytes>) en vez de como quoted-string.
+    Un quoted-string de IMAP4rev1 (RFC 3501) solo permite texto de 7
+    bits (ASCII puro) -- si 'consulta' trae tilde/ñ (ej. un demandado
+    como "ADMINISTRACIÓN PUBLICA DEL MUNICIPIO DE LANDÁZURI"), el byte
+    UTF-8 de mas de 7 bits dentro del quoted-string revienta el parser
+    del SERVIDOR con "SEARCH command error: BAD Could not parse
+    command" -- y le pasa solo a ALGUNOS lotes (no a todos), lo que lo
+    hace parecer intermitente. El literal de IMAP no tiene esa
+    restriccion: acepta CUALQUIER octeto, asi que es la forma correcta
+    (no un parche) de mandar texto UTF-8 por IMAP sin depender de que
+    el servidor haya aceptado ENABLE UTF8=ACCEPT (RFC 6855, que Gmail
+    no soporta). Devuelve (typ, datos) igual que mail.search().
+    """
+    mail.literal = consulta.encode("utf-8")
+    try:
+        typ, dat = mail._simple_command("SEARCH", "X-GM-RAW")
+    finally:
+        mail.literal = None
+    return mail._untagged_response(typ, dat, "SEARCH")
+
+
 def _decodificar_asunto(asunto_crudo: str) -> str:
     partes = decode_header(asunto_crudo or "")
     return "".join(
@@ -765,10 +789,11 @@ def buscar_en_correo(usuario: str, app_password: str, termino: str):
         if not seleccionar_todos_los_correos(mail):
             logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda.")
             return resultados
-        # bytes UTF-8, no str -- imaplib codifica en ASCII cualquier
-        # argumento str (ver imaplib.IMAP4._command) y revienta con
-        # UnicodeEncodeError si 'termino' trae tilde/ñ.
-        typ, datos = mail.search(None, "X-GM-RAW", f'"{termino}"'.encode("utf-8"))
+        # Via literal de IMAP (ver buscar_x_gm_raw), no quoted-string --
+        # un quoted-string normal de IMAP solo admite ASCII de 7 bits y
+        # revienta (en Python, o del lado del servidor con BAD) si
+        # 'termino' trae tilde/ñ.
+        typ, datos = buscar_x_gm_raw(mail, f'"{termino}"')
         if typ != "OK" or not datos or not datos[0]:
             return resultados
         for id_correo in datos[0].split():

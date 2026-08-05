@@ -1049,8 +1049,11 @@ carpeta del proceso que le corresponde, en dos pasos:
    así que no tienes que cambiar nada a mano.
 
    Los términos de búsqueda (nombres de demandado) se mandan a Gmail
-   codificados en UTF-8, así que las tildes/ñ (ej. "PÉREZ", "MUÑOZ") no
-   revientan la búsqueda -- y si un lote en particular falla por
+   como un **literal de IMAP** (no como texto normal), así que las
+   tildes/ñ (ej. "PÉREZ", "MUÑOZ", "LANDÁZURI") nunca revientan la
+   búsqueda -- ni del lado de Python ni del lado del servidor (un
+   texto/quoted-string de IMAP solo admite ASCII de 7 bits; el literal
+   sí acepta cualquier caracter). Si un lote en particular falla por
    cualquier otro motivo, se salta y sigue con los demás en vez de
    abortar toda la búsqueda de correo.
 

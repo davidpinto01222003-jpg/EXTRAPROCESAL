@@ -479,16 +479,16 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
         for lote in _lotes(terminos, TAMANO_LOTE_CORREO):
             consulta = "(" + " OR ".join(f'"{t.replace(chr(34), "")}"' for t in lote) + ")"
             try:
-                # imaplib codifica en ASCII cualquier argumento tipo str
-                # (ver imaplib.IMAP4._command) -- un termino con tilde/ñ
-                # (nombres de demandado como "PÉREZ" o "MUÑOZ") revienta
-                # con UnicodeEncodeError, que NO es un imaplib.IMAP4.error
-                # y por eso no lo atrapaba el except de abajo: se colaba
-                # hasta afuera del "with" y abortaba TODOS los lotes que
-                # faltaban, no solo el que tenia el caracter problematico.
-                # Pasando bytes UTF-8 en vez de str, imaplib los manda tal
-                # cual sin intentar re-codificarlos a ASCII.
-                typ, datos = mail.search(None, "X-GM-RAW", consulta.encode("utf-8"))
+                # Via literal de IMAP (ver buscador.buscar_x_gm_raw), no
+                # quoted-string: un quoted-string normal de IMAP solo
+                # admite ASCII de 7 bits -- un termino con tilde/ñ (ej.
+                # "PÉREZ", "MUÑOZ", "LANDÁZURI") revienta ahi, ya sea del
+                # lado de Python (UnicodeEncodeError) o del servidor
+                # ("SEARCH command error: BAD Could not parse command",
+                # que le pasa solo a ALGUNOS lotes, no a todos -- por
+                # eso parece intermitente). El literal de IMAP acepta
+                # cualquier octeto sin esa restriccion.
+                typ, datos = buscador.buscar_x_gm_raw(mail, consulta)
             except Exception as error:
                 # Cualquier error de UN lote (no solo imaplib.IMAP4.error)
                 # se salta y sigue con el siguiente -- un solo lote raro
