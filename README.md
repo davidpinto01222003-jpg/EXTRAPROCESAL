@@ -1245,23 +1245,39 @@ y no se diluya entre el texto de los otros adjuntos.
 
 ### Se puede hacer por partes
 
-Lleva un archivo de control (`revisar_correo_pro_progreso.json`) con
-los correos ya revisados:
+Viene configurado para revisar los **últimos 730 días (2 años)**
+(`DIAS_HACIA_ATRAS`). Una ventana así **no** hace que la corrida sea
+eterna, porque va por partes: lleva un archivo de control
+(`revisar_correo_pro_progreso.json`) con los correos ya revisados.
 
 - Si lo **cortas** a la mitad, se cae la luz, o Gmail te corta la
   conexión, la próxima corrida **sigue donde se quedó**.
-- Por corrida revisa como máximo `MAX_CORREOS_POR_CORRIDA` (400 por
-  defecto) y **siempre termina** en un rato razonable. Si falta más, lo
-  dice en el log: basta volver a correrlo.
+- Cada corrida se cierra sola por **cantidad**
+  (`MAX_CORREOS_POR_CORRIDA`, 500) **o por tiempo**
+  (`MAX_MINUTOS_POR_CORRIDA`, 30 min) -- lo que ocurra primero. El tope
+  por tiempo importa porque los correos son muy desiguales: 500 de
+  texto se revisan en minutos, pero 500 con escaneos pesados pueden
+  tardar horas.
+- Siempre avanza **al menos un grupo** por corrida, aunque el tope de
+  tiempo ya esté cumplido -- así nunca te quedas corriéndolo sin que
+  avance nada.
+- Empieza por los **más nuevos** (`EMPEZAR_POR_LOS_MAS_NUEVOS`): con 2
+  años de correo, lo primero que queda clasificado es lo más reciente,
+  que suele ser lo más urgente.
+- El log te dice cuántas corridas faltan aproximadamente para ponerte
+  al día. Una vez al día, cuando ya no queden pendientes, cada corrida
+  revisa solo lo nuevo y termina en segundos.
 
 ### Ajustes principales (al inicio del archivo)
 
 - `MODO_PRUEBA` (por defecto `True`): primero muestra en el log qué
   haría, **sin descargar ni guardar nada**. Cuando se vea bien, ponlo
   en `False`.
-- `DIAS_HACIA_ATRAS` (90): cuántos días hacia atrás revisar. Súbelo
-  para una puesta al día grande (ej. `365`), bájalo para el día a día.
-- `MAX_CORREOS_POR_CORRIDA` (400), `TAMANO_LOTE_DESCARGA` (20).
+- `DIAS_HACIA_ATRAS` (730 = 2 años): cuántos días hacia atrás revisar.
+- `MAX_CORREOS_POR_CORRIDA` (500) y `MAX_MINUTOS_POR_CORRIDA` (30):
+  cuándo se cierra cada corrida. Súbelos para avanzar más de una vez,
+  bájalos si prefieres corridas más cortas.
+- `EMPEZAR_POR_LOS_MAS_NUEVOS` (`True`), `TAMANO_LOTE_DESCARGA` (20).
 - `LEER_TEXTO_DE_ADJUNTOS` (`True`): ponlo en `False` si quieres que
   vaya más rápido y te conformas con asunto/cuerpo/nombre del adjunto.
 - `SOLO_INFORMACION_EXTRAPROCESAL` (`False`): en `True` se queda solo

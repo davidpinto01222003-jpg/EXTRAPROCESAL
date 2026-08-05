@@ -121,6 +121,7 @@ import logging
 import os
 import re
 import threading
+import time
 from pathlib import Path
 
 import clasificar_procesos_ejecutivos as base
@@ -135,16 +136,39 @@ import procesos_juridicos as organizador
 # bien, cambia esto a False para que lo haga de verdad.
 MODO_PRUEBA = True
 
-# Cuantos dias hacia atras revisar. 90 = los ultimos 3 meses. Subelo
-# para una puesta al dia grande (ej. 365) o bajalo para el dia a dia
-# (ej. 7). No revisa correos mas viejos que esto.
-DIAS_HACIA_ATRAS = 90
+# Cuantos dias hacia atras revisar. 730 = los ultimos 2 años. No revisa
+# correos mas viejos que esto.
+#
+# Una ventana grande NO hace que la corrida sea eterna: el script va
+# POR PARTES (ver MAX_CORREOS_POR_CORRIDA y MAX_MINUTOS_POR_CORRIDA) y
+# recuerda lo ya revisado, asi que la puesta al dia de 2 años se hace
+# en varias corridas y cada una termina en un rato acotado. Una vez al
+# dia, cuando ya no queden pendientes, cada corrida solo revisa lo
+# nuevo (unos pocos correos) y termina en segundos.
+DIAS_HACIA_ATRAS = 730
 
 # Maximo de correos a revisar POR CORRIDA. Es lo que garantiza que el
 # script SIEMPRE termine en un rato razonable: si quedan mas, lo dice
 # en el log y basta volver a correrlo (retoma solo donde se quedo, ver
 # ARCHIVO_PROGRESO). Subelo si quieres avanzar mas por corrida.
-MAX_CORREOS_POR_CORRIDA = 400
+MAX_CORREOS_POR_CORRIDA = 500
+
+# Ademas del tope por cantidad, un tope por TIEMPO: la corrida se
+# cierra ordenadamente al pasar estos minutos, aunque no haya llegado
+# a MAX_CORREOS_POR_CORRIDA. Hace falta porque los correos son MUY
+# desiguales: 500 correos de texto se revisan en minutos, pero 500 con
+# adjuntos escaneados pesados pueden tardar horas. Asi cada corrida
+# dura lo que tu decidas, y el resto queda para la siguiente (nunca se
+# pierde nada, ver ARCHIVO_PROGRESO). Ponlo en 0 para no limitar por
+# tiempo.
+MAX_MINUTOS_POR_CORRIDA = 30
+
+# True (por defecto): empieza por los correos MAS NUEVOS y va hacia
+# atras. Con una ventana grande (ej. 730 dias = 2 años) esto importa:
+# si son miles de correos y necesitas varias corridas, conviene que lo
+# primero que quede clasificado sea lo mas reciente -- que casi siempre
+# es lo mas urgente. Ponlo en False para ir del mas viejo al mas nuevo.
+EMPEZAR_POR_LOS_MAS_NUEVOS = True
 
 # Cuantos correos se bajan por cada peticion a Gmail. Bajarlos de a
 # muchos es mucho mas rapido que de a uno, pero pedir demasiados de
@@ -687,9 +711,15 @@ def procesar():
             return
 
         pendientes = [u for u in uids if u not in revisados]
+        # El UID crece con el tiempo, asi que ordenar al reves = del
+        # correo mas nuevo al mas viejo (ver EMPEZAR_POR_LOS_MAS_NUEVOS).
+        if EMPEZAR_POR_LOS_MAS_NUEVOS:
+            pendientes.sort(reverse=True)
         logging.info(
-            "[Correo] %d correo(s) en la ventana de fechas; %d ya revisados en corridas anteriores; "
-            "quedan %d por revisar.", len(uids), len(uids) - len(pendientes), len(pendientes),
+            "[Correo] %d correo(s) en la ventana de %d dia(s); %d ya revisados en corridas anteriores; "
+            "quedan %d por revisar (empezando por los mas %s).",
+            len(uids), DIAS_HACIA_ATRAS, len(uids) - len(pendientes), len(pendientes),
+            "nuevos" if EMPEZAR_POR_LOS_MAS_NUEVOS else "viejos",
         )
         if not pendientes:
             logging.info("[Correo] No hay nada nuevo que revisar. Todo al dia.")
@@ -697,16 +727,41 @@ def procesar():
 
         de_esta_corrida = pendientes[:MAX_CORREOS_POR_CORRIDA]
         if len(pendientes) > len(de_esta_corrida):
+            corridas_estimadas = -(-len(pendientes) // MAX_CORREOS_POR_CORRIDA)  # division hacia arriba
             logging.info(
-                "[Correo] Esta corrida revisa %d (el maximo por corrida, ver MAX_CORREOS_POR_CORRIDA); los "
-                "otros %d quedan para la proxima -- vuelve a correr el script y sigue donde se quedo.",
-                len(de_esta_corrida), len(pendientes) - len(de_esta_corrida),
+                "[Correo] Esta corrida revisa hasta %d correo(s) (tope por cantidad: MAX_CORREOS_POR_CORRIDA; "
+                "tope por tiempo: %s). Quedan %d para las proximas -- son unas %d corrida(s) mas para ponerte "
+                "al dia; vuelve a correr el script las veces que haga falta, siempre sigue donde se quedo.",
+                len(de_esta_corrida),
+                f"{MAX_MINUTOS_POR_CORRIDA} min" if MAX_MINUTOS_POR_CORRIDA else "sin tope",
+                len(pendientes) - len(de_esta_corrida), corridas_estimadas,
             )
 
         reconexiones = 0
         procesados_en_esta_corrida = 0
+        comenzo_en = time.monotonic()
 
         for inicio in range(0, len(de_esta_corrida), TAMANO_LOTE_DESCARGA):
+            # Tope por TIEMPO: se revisa ANTES de empezar cada grupo,
+            # nunca a mitad de uno, para cerrar siempre en un punto
+            # limpio (con el progreso guardado y sin correos a medias).
+            #
+            # El PRIMER grupo siempre se procesa (inicio > 0), pase lo
+            # que pase con el reloj: si no, un tope de tiempo demasiado
+            # bajo -- o una maquina muy lenta -- haria que cada corrida
+            # terminara sin revisar ni un solo correo, y el usuario
+            # correria el script una y otra vez sin avanzar NUNCA.
+            if MAX_MINUTOS_POR_CORRIDA and inicio > 0:
+                minutos = (time.monotonic() - comenzo_en) / 60
+                if minutos >= MAX_MINUTOS_POR_CORRIDA:
+                    logging.info(
+                        "[Correo] Se cumplieron los %d minuto(s) de esta corrida (MAX_MINUTOS_POR_CORRIDA) -- "
+                        "se cierra aqui con %d correo(s) revisados. Lo que falta queda guardado: vuelve a "
+                        "correr el script para seguir donde se quedo.",
+                        MAX_MINUTOS_POR_CORRIDA, procesados_en_esta_corrida,
+                    )
+                    break
+
             lote = de_esta_corrida[inicio:inicio + TAMANO_LOTE_DESCARGA]
             intentos = 0
             mensajes = None
