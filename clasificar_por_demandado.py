@@ -2,7 +2,10 @@
 Clasifica información extraprocesal (derecho de petición, tutela, y
 pago oficioso -- tanto lo presentado como las RESPUESTAS que da la
 entidad a la que se envió) por proceso, en dos pasos independientes
-(ambos respetan MODO_PRUEBA):
+(ambos respetan MODO_PRUEBA). El Paso 2 (Gmail) está DESACTIVADO por
+defecto (BUSCAR_EN_CORREO = False) -- el Paso 1 (carpeta de descargas)
+siempre corre solo, rápido y sin depender de la red/antivirus de cada
+equipo; activa BUSCAR_EN_CORREO si también quieres que busque en Gmail:
 
 1. CARPETA DE DESCARGAS MANUALES (CARPETA_DESCARGAS_MANUAL, por
    defecto tu carpeta "Downloads"): revisa cada PDF/DOCX que haya ahí y
@@ -122,10 +125,19 @@ CARPETA_DESCARGAS_MANUAL = os.path.join(os.path.expanduser("~"), "Downloads")
 # la fecha.
 SOLO_DESCARGAS_DE_HOY = True
 
-# True (por defecto): además de la carpeta de descargas, busca en TODO
-# tu Gmail. Si no existe credenciales_sgde.txt, este paso se omite
-# solo, sin error.
-BUSCAR_EN_CORREO = True
+# False (por defecto): SOLO clasifica la carpeta de descargas (Paso 1),
+# sin buscar en Gmail (Paso 2). Se puso en False porque, en la practica,
+# el Paso 2 puede quedar a merced de la red/antivirus de cada equipo --
+# si Gmail no responde ni siquiera a una busqueda simple (pasa con
+# antivirus que interceptan el correo, ej. el "email shield" de Avast/
+# Kaspersky/ESET/McAfee), el Paso 2 tarda mucho reintentando sin exito.
+# El Paso 1 (que es el que de verdad importa: clasificar lo que TU ya
+# descargaste) siempre corre igual, rapido, sin depender de esto.
+# Ponlo en True si quieres activar tambien la busqueda en Gmail (o si
+# ya confirmaste que tu red la deja pasar bien). Si no existe
+# credenciales_sgde.txt, el Paso 2 se omite solo de todas formas, sin
+# error, asi este en True o False.
+BUSCAR_EN_CORREO = False
 
 # Cuántos términos (demandados + radicados + cuentas) se combinan en
 # UNA sola búsqueda de Gmail (con OR). En 1 -- una búsqueda por
@@ -904,6 +916,10 @@ def procesar():
         logging.info("[Reporte] %d archivo(s) ambiguo(s) guardados en: %s", len(ambiguos), ARCHIVO_AMBIGUOS)
 
     if not BUSCAR_EN_CORREO:
+        logging.info(
+            "Paso 2 desactivado (BUSCAR_EN_CORREO = False) -- solo se reviso la carpeta de descargas. Cambia "
+            "BUSCAR_EN_CORREO = True al inicio de este script si tambien quieres buscar en Gmail."
+        )
         return
 
     credenciales = organizador.leer_credenciales()

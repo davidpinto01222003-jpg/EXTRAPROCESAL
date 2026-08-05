@@ -1009,7 +1009,10 @@ es la correcta.
 
 `clasificar_por_demandado.py` (o su iniciador
 `clasificar_por_demandado.bat`) reparte información extraprocesal a la
-carpeta del proceso que le corresponde, en dos pasos:
+carpeta del proceso que le corresponde, en dos pasos. **El paso 2
+(Gmail) está desactivado por defecto** (`BUSCAR_EN_CORREO = False`,
+ver más abajo) -- el paso 1 (carpeta de descargas) siempre corre solo,
+rápido y sin depender de que Gmail responda bien desde tu red/equipo.
 
 1. **Carpeta de descargas manuales** (`CARPETA_DESCARGAS_MANUAL`, por
    defecto tu carpeta "Downloads"): revisa cada PDF/DOCX que haya ahí y
@@ -1027,9 +1030,13 @@ carpeta del proceso que le corresponde, en dos pasos:
    archivos de todo tipo (demandas, autos viejos, etc, no solo lo que
    bajaste hoy); ponlo en `False` si alguna vez quieres que revise toda
    la carpeta sin importar la fecha.
-2. **Gmail**: busca en **todo** tu correo (una sola conexión para
-   todos los términos -- no una conexión nueva por cada uno, para que
-   no tarde horas con miles de términos) el nombre de cada demandado,
+2. **Gmail** (`BUSCAR_EN_CORREO`, **`False` por defecto** -- ponlo en
+   `True` si quieres activarlo, o si ya confirmaste que tu red/antivirus
+   no bloquea las búsquedas IMAP; ver la nota de la búsqueda envuelta
+   en un solo argumento y de a un término más abajo): busca en **todo**
+   tu correo (una sola conexión para todos los términos -- no una
+   conexión nueva por cada uno, para que no tarde horas con miles de
+   términos) el nombre de cada demandado,
    el radicado (y sus formas cortas), y la cuenta de cada proceso. Del
    resultado **solo descarga** lo que además sea un derecho de
    petición, una tutela, o un pago oficioso -- **tanto lo presentado
