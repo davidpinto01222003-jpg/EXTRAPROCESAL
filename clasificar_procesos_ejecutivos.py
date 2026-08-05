@@ -802,6 +802,21 @@ def buscar_correo_global_informacion_no_procesal(usuario: str, app_password: str
 MIN_PALABRAS_DEMANDADO_PARA_CRUZAR = 2
 
 
+def _palabra_demandado_coincide(texto_normalizado, palabra):
+    """
+    True si 'palabra' aparece en 'texto_normalizado' como PALABRA
+    COMPLETA (no pegada a otras letras) -- a diferencia de
+    buscador._nombre_coincide (que solo protege límites de DIGITOS, no
+    de letras, porque para radicados/cuentas eso es lo que hace falta),
+    esto evita que una palabra del demandado "encaje" por casualidad
+    DENTRO de un nombre de archivo sin espacios (ej. "AUTO" adentro de
+    "11AUTOTERMINAPROCESO.pdf", que no tiene relación con ningún
+    demandado que se llame o incluya "AUTO").
+    """
+    patron = re.compile(rf"(?<![A-ZÑ]){re.escape(palabra)}(?![A-ZÑ])")
+    return patron.search(texto_normalizado) is not None
+
+
 def _indexar_procesos_para_correo(procesos):
     """
     Indices para emparejar un correo/archivo con el/los proceso(s) al
@@ -853,7 +868,7 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
                 encontrados[proceso["nombre_carpeta"]] = proceso
 
     for palabras, procesos in por_demandado.items():
-        if all(buscador._nombre_coincide(contenido_normalizado, palabra) for palabra in palabras):
+        if all(_palabra_demandado_coincide(contenido_normalizado, palabra) for palabra in palabras):
             for proceso in procesos:
                 encontrados[proceso["nombre_carpeta"]] = proceso
 

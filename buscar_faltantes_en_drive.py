@@ -245,6 +245,25 @@ PALABRAS_GENERICAS_DEMANDADO = {
     "educativa", "colegio", "escuela", "fundacion", "corporacion",
     "de", "del", "la", "el", "los", "las", "y", "san", "santa",
     "sa", "esp", "ltda", "s", "a", "eu", "sas", "e", "contra",
+    # Vocabulario administrativo/judicial generico -- aparece por igual
+    # en el nombre de miles de documentos de casos completamente
+    # distintos (ej. "AUTO ACEPTA RETIRO DE LA DEMANDA...", "MEDIDA
+    # CAUTELAR...", "OFICIO INSTRUMENTOS PUBLICOS..."), asi que NO
+    # sirve para identificar quien es el demandado. Sin este filtro, un
+    # demandado cuyo dato quedo mal diligenciado en el Excel (una frase
+    # administrativa en vez de un nombre real) terminaba "coincidiendo"
+    # con decenas de procesos sin relacion alguna.
+    "auto", "autos", "proceso", "procesos", "demanda", "demandas",
+    "mandamiento", "ejecutivo", "ejecutiva", "termina", "terminacion",
+    "terminado", "retiro", "acepta", "aceptar", "aprueba", "medida",
+    "medidas", "cautelar", "cautelares", "decreta", "decreto", "anexo",
+    "anexos", "oficio", "oficios", "instrumentos", "publico", "publicos",
+    "comunica", "comunicando", "remision", "notificacion", "notifica",
+    "memorial", "traslado", "sentencia", "liquidacion", "credito",
+    "conciliacion", "requerimiento", "embargo", "secuestro", "poder",
+    "excepciones", "recurso", "reposicion", "apelacion", "contestacion",
+    "desistimiento", "archiva", "declara", "costas", "nulidad",
+    "alegar", "rechaza", "orip",
 }
 
 # Minimo de letras para que una palabra del DEMANDADO cuente como

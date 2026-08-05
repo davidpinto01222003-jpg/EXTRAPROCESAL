@@ -47,11 +47,14 @@ clasificar_procesos_ejecutivos._procesos_que_coinciden_con_correo). Si
 YA se encuentra el proceso, la carpeta se CREA sola si todavía no
 existe (mismo nombre "<numero>. <radicado o ESTADO>" que usa
 clasificar_procesos_ejecutivos.py) -- no hace falta haberla creado
-antes. Si un archivo/correo no coincide con ningún proceso activo, o
-coincide con más de uno (ej. dos procesos activos contra la misma
-persona), se deja intacto y queda registrado en un CSV
-(ARCHIVO_SIN_COINCIDENCIA / ARCHIVO_AMBIGUOS / ARCHIVO_CORREO_SIN_COINCIDENCIA)
-para que lo revises a mano -- nunca se adivina.
+antes. Si un archivo/correo no coincide con ningún proceso activo, se
+deja intacto y queda registrado en un CSV (ARCHIVO_SIN_COINCIDENCIA /
+ARCHIVO_CORREO_SIN_COINCIDENCIA) para que lo revises a mano -- nunca se
+adivina. Si coincide con MÁS de uno (ej. dos procesos activos contra el
+mismo demandado), primero se intenta desambiguar por el RADICADO: si el
+texto menciona el radicado específico de UNO SOLO de los candidatos, se
+usa ese (ver _desambiguar_por_radicado); si sigue sin poder decidirse,
+recién ahí se deja intacto y queda en ARCHIVO_AMBIGUOS.
 
 Rendimiento y precisión (paso 1): para cada archivo primero se prueba
 la coincidencia SOLO con su NOMBRE (rápido, sin abrir nada) -- solo si
@@ -165,31 +168,65 @@ def _texto_de_archivo(ruta: Path) -> str:
     return ""
 
 
+def _desambiguar_por_radicado(texto_normalizado, coincidencias):
+    """
+    Si 'coincidencias' tiene mas de un proceso posible, intenta
+    reducirlo a UNO SOLO revisando si el RADICADO (o su forma corta) de
+    alguno de ellos aparece en el texto -- si trae el radicado
+    especifico de UN SOLO candidato, se usa ese en vez de quedar
+    ambiguo (ej. varios procesos con demandado "AUTO ACEPTA RETIRO..."
+    -- si el documento menciona el radicado exacto de uno de ellos, ya
+    no hace falta revisarlo a mano). Si el radicado de MAS de un
+    candidato aparece, o si no aparece ninguno, se deja igual (sigue
+    ambiguo, se reporta para revision manual).
+    """
+    if len(coincidencias) <= 1:
+        return coincidencias
+
+    con_radicado_en_texto = [
+        proceso for proceso in coincidencias
+        if proceso["radicado"] and any(
+            buscador._nombre_coincide(texto_normalizado, termino)
+            for termino in [proceso["radicado"]] + buscador.radicados_cortos(proceso["radicado"])
+        )
+    ]
+    if len(con_radicado_en_texto) == 1:
+        return con_radicado_en_texto
+    return coincidencias
+
+
 def _procesos_para_archivo(ruta, indices):
     """
     Encuentra los procesos que coinciden con 'ruta', priorizando
     SOLO el nombre del archivo (rapido, sin abrir nada) antes de leer
-    su contenido: si el nombre YA alcanza para decidir (0 o varios
-    procesos coinciden), no hace falta descargar/leer el PDF/DOCX --
-    eso ahorra la parte mas lenta (extraer texto) para la mayoria de
-    los archivos con un nombre descriptivo (ej. "peticion alberto
-    suarez.pdf"). Ademas es mas PRECISO: el contenido completo de un
-    documento largo puede coincidir por casualidad con mas procesos de
-    los que el nombre por si solo sugeriria (nunca con MENOS -- el
-    contenido normalizado siempre incluye el nombre), asi que si el
-    nombre ya da una unica coincidencia clara, usar esa es mas
-    confiable que diluirla con el resto del texto. Solo se lee el
-    contenido cuando el nombre NO da ninguna coincidencia (0), para
-    intentar encontrarla ahi.
+    su contenido: si el nombre YA da una unica coincidencia clara, no
+    hace falta descargar/leer el PDF/DOCX -- eso ahorra la parte mas
+    lenta (extraer texto) para la mayoria de los archivos con un
+    nombre descriptivo (ej. "peticion alberto suarez.pdf"). Ademas es
+    mas PRECISO: el contenido completo de un documento largo puede
+    coincidir por casualidad con mas procesos de los que el nombre por
+    si solo sugeriria (nunca con MENOS -- el contenido normalizado
+    siempre incluye el nombre), asi que si el nombre ya da una unica
+    coincidencia clara, usar esa es mas confiable que diluirla con el
+    resto del texto.
+
+    Si el nombre NO da ninguna coincidencia, o queda AMBIGUO (varios
+    procesos posibles), se lee el contenido: puede aportar una
+    coincidencia nueva, o -- si ya habia varias candidatas -- un
+    radicado especifico que desambigue cual de ellas es la correcta
+    (ver _desambiguar_por_radicado).
     """
     nombre_norm = buscador._normalizar_para_comparar(ruta.name)
     coincidencias = base._procesos_que_coinciden_con_correo(nombre_norm, indices)
-    if coincidencias:
+    if len(coincidencias) == 1:
         return coincidencias
 
     texto = _texto_de_archivo(ruta)
     contenido_norm = buscador._normalizar_para_comparar(ruta.name + " " + texto)
-    return base._procesos_que_coinciden_con_correo(contenido_norm, indices)
+    coincidencias_contenido = base._procesos_que_coinciden_con_correo(contenido_norm, indices)
+
+    candidatos = coincidencias_contenido if coincidencias_contenido else coincidencias
+    return _desambiguar_por_radicado(contenido_norm, candidatos)
 
 
 def clasificar_carpeta_descargas(indices, carpeta_raiz):
@@ -338,6 +375,7 @@ def procesar_correos(correos, con_radicado, carpeta_raiz):
             continue
 
         procesos_coincidentes = base._procesos_que_coinciden_con_correo(contenido_norm, indices)
+        procesos_coincidentes = _desambiguar_por_radicado(contenido_norm, procesos_coincidentes)
         if not procesos_coincidentes:
             fecha_texto = correo["fecha"].isoformat() if correo["fecha"] else ""
             sin_proceso.append((correo["asunto"], fecha_texto, motivo))

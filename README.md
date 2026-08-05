@@ -854,9 +854,16 @@ nombre del demandado o la cuenta, no el radicado exacto). Para el
 demandado se exige que coincidan **todas** sus palabras significativas
 (nombre y apellido, no solo una) y que sean al menos dos -- un nombre
 mal diligenciado en el Excel que se reduzca a una sola palabra genérica
-(ej. "ANEXOS") no se usa para cruzar, porque esa palabra sola puede
-aparecer por casualidad en archivos/correos de decenas de procesos que
-no tienen nada que ver.
+no se usa para cruzar, y además esas palabras deben aparecer como
+palabra COMPLETA en el texto (no pegadas dentro de otra palabra más
+larga, ej. "AUTO" no cuenta si aparece dentro de
+"AUTOTERMINAPROCESO.pdf"). Tampoco cuentan como palabra significativa
+los términos administrativos/judiciales genéricos que aparecen por
+igual en miles de documentos sin relación entre sí (ej. "auto",
+"demanda", "medida", "cautelar", "anexos", "oficio" -- ver
+`PALABRAS_GENERICAS_DEMANDADO`): sin estos dos filtros, un demandado
+mal diligenciado (una frase administrativa en vez de un nombre real)
+generaba coincidencias masivas y completamente falsas.
 Un mismo correo puede terminar adjuntado a más de un proceso si aplica
 a varios (ej. un proceso "acumulado" con varias cuentas). Igual que en
 Drive, siempre se exige además que el correo mencione a ESSA/
@@ -1008,11 +1015,14 @@ significativas -- no basta con una sola, ver
 `MIN_PALABRAS_DEMANDADO_PARA_CRUZAR`) -- basta con que coincida
 cualquiera de los tres, no hace falta que coincidan todos. No se limita
 al nombre exacto del demandado: si un documento no lo menciona pero sí
-su radicado o su cuenta, también se encuentra. Si un archivo/correo no
-coincide con ningún proceso activo, o coincide con
-más de uno (ej. dos procesos activos contra la misma persona), se deja
-intacto y queda registrado en un CSV para que lo revises a mano --
-nunca se adivina: `clasificar_por_demandado_sin_coincidencia.csv`
+su radicado o su cuenta, también se encuentra. Si un archivo/correo
+coincide con **más de un** proceso (ej. dos procesos activos contra el
+mismo demandado), primero se intenta desambiguar por el **radicado**:
+si el texto menciona el radicado específico de uno solo de los
+candidatos, se usa ese en vez de quedar ambiguo. Si un archivo/correo
+no coincide con ningún proceso activo, o sigue sin poder decidirse
+entre varios, se deja intacto y queda registrado en un CSV para que lo
+revises a mano -- nunca se adivina: `clasificar_por_demandado_sin_coincidencia.csv`
 (archivos de la carpeta de descargas sin ningún proceso posible),
 `clasificar_por_demandado_ambiguos.csv` (archivos con más de un proceso
 posible), y `clasificar_por_demandado_correo_sin_coincidencia.csv`
