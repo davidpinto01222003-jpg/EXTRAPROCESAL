@@ -1071,17 +1071,22 @@ carpeta del proceso que le corresponde, en dos pasos:
    termine cortándose de forma definitiva.
 
    Toda operación con Gmail tiene un **límite de tiempo**
-   (`TIMEOUT_CORREO_SEGUNDOS`, 30s por defecto): sin esto, si la
-   conexión queda en un estado "a medias" (ni cerrada del todo ni
-   respondiendo), Python se queda esperando una respuesta **para
-   siempre** -- se ve como el programa colgado, sin ningún error ni
-   progreso en el log, justo después de avisar que iba a reconectar.
-   Con el límite puesto, eso revienta a tiempo y dispara la reconexión
-   en vez de quedarse pegado. Al reconectar, cada paso (conectar,
-   iniciar sesión, seleccionar la carpeta) deja su propia línea en el
-   log -- si alguna vez vuelve a "colgarse", el último mensaje que
-   quede en el log dice exactamente en cuál paso se quedó, en vez de
-   tener que adivinar.
+   (`TIMEOUT_CORREO_SEGUNDOS`, 30s por defecto), aplicado por
+   **DUPLICADO**: el timeout normal del socket, y un límite duro
+   independiente corriendo cada búsqueda en un hilo aparte. Esto porque
+   el timeout del socket depende de que Python detecte "no llegó nada
+   en N segundos" -- en algunos entornos (antivirus/proxy corporativo
+   en el medio, ciertas particularidades de Windows) esa señal puede no
+   llegarle nunca a Python, y ahí el programa se queda colgado DE
+   VERDAD, sin ningún error ni progreso en el log, sin que el timeout
+   del socket lo salve. El límite duro no depende de eso: corta la
+   espera de todas formas después de `TIMEOUT_CORREO_SEGUNDOS`
+   segundos, sin importar la causa, y fuerza el cierre de la conexión
+   para intentar liberarla. Al reconectar, cada paso (conectar, iniciar
+   sesión, seleccionar la carpeta) deja su propia línea en el log -- si
+   alguna vez vuelve a "colgarse", el último mensaje que quede en el
+   log dice exactamente en cuál paso se quedó, en vez de tener que
+   adivinar.
 
    Con cientos de lotes por revisar, una búsqueda que va perfectamente
    bien puede pasar varios minutos SIN ninguna línea nueva en el log

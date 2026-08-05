@@ -94,6 +94,7 @@ import imaplib
 import logging
 import os
 import re
+import threading
 from pathlib import Path
 
 import clasificar_procesos_ejecutivos as base
@@ -537,6 +538,76 @@ def _cerrar_sesion_gmail(mail):
         pass
 
 
+def _con_limite_de_tiempo_duro(mail, funcion, *args, **kwargs):
+    """
+    Ejecuta 'funcion' en un hilo DAEMON aparte con un limite duro de
+    TIMEOUT_CORREO_SEGUNDOS -- una SEGUNDA linea de defensa ademas del
+    timeout que ya tiene el socket (ver TIMEOUT_CORREO_SEGUNDOS en
+    _conectar_gmail). El timeout del socket depende de que Python
+    detecte "no llego nada en N segundos"; en la practica eso puede NO
+    dispararse en ciertos entornos (antivirus/proxy corporativo
+    interceptando la conexion, particularidades de Windows, etc), y
+    ahi el programa se queda "colgado" de verdad SIN que el timeout del
+    socket lo salve -- que es justo lo que se vio en un log real: la
+    conexion se establecio bien, pero la primera busqueda se quedo
+    pegada sin ningun error ni progreso, mucho mas alla de los 30s.
+
+    Este limite es independiente de eso: corre 'funcion' en un hilo
+    aparte y espera COMO MUCHO TIMEOUT_CORREO_SEGUNDOS segundos. Si no
+    termino a tiempo, fuerza el cierre del socket (para intentar
+    liberar el hilo bloqueado) y sigue de largo sin esperarlo mas --
+    se usa un hilo DAEMON a proposito: si el cierre del socket NO
+    alcanza a desbloquearlo (puede pasar), un hilo daemon NUNCA
+    impide que el programa termine, a diferencia de otros mecanismos
+    (ej. concurrent.futures.ThreadPoolExecutor) que sí esperan a sus
+    hilos internos al salir.
+
+    Relanza cualquier excepcion de 'funcion' tal cual; si se agota el
+    tiempo, levanta TimeoutError (subclase de OSError -- el mismo
+    except que ya maneja la reconexion en buscar_correo_por_procesos
+    lo atrapa sin necesitar un caso aparte).
+    """
+    resultado = {}
+
+    def _ejecutar():
+        try:
+            resultado["valor"] = funcion(*args, **kwargs)
+        except BaseException as error:
+            resultado["error"] = error
+
+    hilo = threading.Thread(target=_ejecutar, daemon=True)
+    hilo.start()
+    hilo.join(timeout=TIMEOUT_CORREO_SEGUNDOS)
+    if hilo.is_alive():
+        try:
+            sock = getattr(mail, "sock", None)
+            if sock is not None:
+                sock.close()
+        except Exception:
+            pass
+        raise TimeoutError(
+            f"Gmail no respondio en {TIMEOUT_CORREO_SEGUNDOS}s (limite duro, no fue el timeout normal del socket)"
+        )
+    if "error" in resultado:
+        raise resultado["error"]
+    return resultado.get("valor")
+
+
+def _buscar_y_leer_un_lote(mail, consulta, vistos):
+    """
+    Busca UN lote (SEARCH X-GM-RAW) y lee (FETCH) cada correo que
+    encuentre, agregandolo a 'vistos' -- separado en su propia funcion
+    para poder correrlo dentro de _con_limite_de_tiempo_duro (ver
+    buscar_correo_por_procesos).
+    """
+    typ, datos = buscador.buscar_x_gm_raw(mail, consulta)
+    if typ == "OK" and datos and datos[0]:
+        for id_correo in datos[0].split():
+            correo = base._leer_correo(mail, id_correo)
+            if correo is not None:
+                vistos[(correo["asunto"], correo["fecha"])] = correo
+
+
 def buscar_correo_por_procesos(usuario, app_password, con_radicado):
     """
     UNA sola conexion IMAP para TODOS los procesos activos -- busca,
@@ -600,18 +671,17 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                     # interpretando esos octetos como si fueran ASCII y
                     # rechazar el comando con "SEARCH command error: BAD
                     # Could not parse command" en el lote que las tenga.
-                    typ, datos = buscador.buscar_x_gm_raw(mail, consulta)
-                    if typ == "OK" and datos and datos[0]:
-                        # El FETCH de cada correo encontrado va DENTRO
-                        # del mismo try que el SEARCH -- la conexion se
-                        # puede caer aca igual de facil (o mas: hay un
-                        # FETCH por cada correo encontrado, muchos mas
-                        # viajes de ida y vuelta que un solo SEARCH por
-                        # lote).
-                        for id_correo in datos[0].split():
-                            correo = base._leer_correo(mail, id_correo)
-                            if correo is not None:
-                                vistos[(correo["asunto"], correo["fecha"])] = correo
+                    #
+                    # Corre DENTRO de _con_limite_de_tiempo_duro -- el
+                    # FETCH de cada correo encontrado va incluido (la
+                    # conexion se puede caer ahi igual de facil, o mas:
+                    # hay un FETCH por cada correo encontrado). Esto es
+                    # una SEGUNDA linea de defensa ademas del timeout
+                    # del propio socket: si ese timeout no llega a
+                    # dispararse por algun motivo del entorno (ver
+                    # _con_limite_de_tiempo_duro), este limite duro
+                    # igual garantiza que no se quede colgado.
+                    _con_limite_de_tiempo_duro(mail, _buscar_y_leer_un_lote, mail, consulta, vistos)
                     break  # lote resuelto (con o sin resultados) -- sigue al siguiente
                 except (imaplib.IMAP4.abort, OSError) as error:
                     # Error de CONEXION (no de un comando puntual) --
