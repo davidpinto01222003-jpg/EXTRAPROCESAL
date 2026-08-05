@@ -836,9 +836,30 @@ _PATRON_MEMBRETE_JUZGADO = re.compile(
 )
 
 
+_MESES_ESPANOL = (
+    "ENERO|FEBRERO|MARZO|ABRIL|MAYO|JUNIO|JULIO|AGOSTO|SEPTIEMBRE|OCTUBRE|NOVIEMBRE|DICIEMBRE"
+)
+
+# La FECHA DE CIERRE/FIRMA de un auto colombiano casi siempre se
+# escribe "<MUNICIPIO donde queda el juzgado>, <dia> DE <mes> DE
+# <anio>" (ej. "SABANA DE TORRES, DIEZ (10) DE JULIO DE 2025" o
+# "PUERTO WILCHES (S), 20 DE JUNIO DE 2023") -- es la MISMA trampa que
+# el membrete (el nombre del municipio, no del demandado), pero
+# aparece al FINAL del documento en vez de al principio. Se reconoce
+# por el patron fijo "DE <mes> DE" (los 12 meses son una lista
+# cerrada) y se quita el nombre del lugar justo antes de la coma.
+_PATRON_FECHA_CIERRE = re.compile(
+    rf"[A-ZÑ][A-ZÑ ]{{1,35}}(?:\s*\([A-ZÑ]\))?,\s*"
+    rf"(?:[A-ZÑ()0-9\s]{{0,25}}\bDE\s+)?"
+    rf"(?:{_MESES_ESPANOL})\s+DE\s+"
+    rf"[A-ZÑ()0-9\s]{{0,25}}"
+)
+
+
 def _quitar_membrete_juzgado(texto_normalizado: str) -> str:
-    """Quita las lineas que son membrete/direccion/contacto del juzgado (ver _PATRON_MEMBRETE_JUZGADO) -- nunca cuentan como demandado."""
-    return _PATRON_MEMBRETE_JUZGADO.sub(" ", texto_normalizado)
+    """Quita el membrete/direccion/contacto del juzgado y la fecha de cierre/firma (ambos suelen traer el nombre del MUNICIPIO, no del demandado) -- ver _PATRON_MEMBRETE_JUZGADO y _PATRON_FECHA_CIERRE."""
+    sin_membrete = _PATRON_MEMBRETE_JUZGADO.sub(" ", texto_normalizado)
+    return _PATRON_FECHA_CIERRE.sub(" ", sin_membrete)
 
 
 def _palabra_demandado_coincide(texto_normalizado, palabra):

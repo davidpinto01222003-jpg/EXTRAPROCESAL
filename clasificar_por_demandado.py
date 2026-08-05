@@ -51,12 +51,16 @@ antes. Si un archivo/correo no coincide con ningún proceso activo, se
 deja intacto y queda registrado en un CSV (ARCHIVO_SIN_COINCIDENCIA /
 ARCHIVO_CORREO_SIN_COINCIDENCIA) para que lo revises a mano -- nunca se
 adivina. Si coincide con MÁS de uno (ej. dos procesos activos contra el
-mismo demandado), primero se intenta desambiguar por el RADICADO: si el
+mismo demandado), SIEMPRE se intenta desambiguar por el RADICADO: si el
 texto menciona el radicado específico de UNO SOLO de los candidatos, se
-usa ese (ver _desambiguar_por_radicado); si sigue sin poder decidirse,
-recién ahí se deja intacto y queda en ARCHIVO_AMBIGUOS -- junto con el
-MOTIVO exacto de cada coincidencia (ver _motivo_coincidencia: si fue
-por radicado, por cuenta, y/o cuál demandado exacto con qué palabras),
+usa ese (ver _desambiguar_por_radicado) -- y el intento (haya
+funcionado o no) SIEMPRE queda en el log con el prefijo "[Radicado]",
+para que quede claro que sí se revisó aunque no siempre alcance a
+desambiguar (un auto corto no siempre repite su propio radicado en el
+texto). Si sigue sin poder decidirse, recién ahí se deja intacto y
+queda en ARCHIVO_AMBIGUOS -- junto con el MOTIVO exacto de cada
+coincidencia (ver _motivo_coincidencia: si fue por radicado, por
+cuenta, y/o cuál demandado exacto con qué palabras),
 para poder diagnosticar de verdad la causa (ej. confirmar si el dato de
 DEMANDADO de ese proceso en el Excel está bien diligenciado o no) en
 vez de tener que adivinarla.
@@ -174,17 +178,20 @@ def _texto_de_archivo(ruta: Path) -> str:
     return ""
 
 
-def _desambiguar_por_radicado(texto_normalizado, coincidencias):
+def _desambiguar_por_radicado(texto_normalizado, coincidencias, contexto=""):
     """
     Si 'coincidencias' tiene mas de un proceso posible, intenta
     reducirlo a UNO SOLO revisando si el RADICADO (o su forma corta) de
     alguno de ellos aparece en el texto -- si trae el radicado
     especifico de UN SOLO candidato, se usa ese en vez de quedar
-    ambiguo (ej. varios procesos con demandado "AUTO ACEPTA RETIRO..."
-    -- si el documento menciona el radicado exacto de uno de ellos, ya
-    no hace falta revisarlo a mano). Si el radicado de MAS de un
-    candidato aparece, o si no aparece ninguno, se deja igual (sigue
-    ambiguo, se reporta para revision manual).
+    ambiguo (ej. varios procesos con el mismo demandado -- si el
+    documento menciona el radicado exacto de uno de ellos, ya no hace
+    falta revisarlo a mano). Si el radicado de MAS de un candidato
+    aparece, o si no aparece ninguno (lo mas comun: un auto corto no
+    siempre repite su propio radicado en el texto), se deja igual
+    (sigue ambiguo, se reporta para revision manual). SIEMPRE deja en
+    el log si lo intento y por que no alcanzo, para que quede claro que
+    el radicado SI se revisa, aunque no siempre pueda desambiguar.
     """
     if len(coincidencias) <= 1:
         return coincidencias
@@ -197,7 +204,22 @@ def _desambiguar_por_radicado(texto_normalizado, coincidencias):
         )
     ]
     if len(con_radicado_en_texto) == 1:
+        logging.info(
+            "   [Radicado] '%s': de %d proceso(s) posibles por demandado, el radicado del texto senala al proceso "
+            "%s -- ya no queda ambiguo.", contexto, len(coincidencias), con_radicado_en_texto[0]["numero"],
+        )
         return con_radicado_en_texto
+
+    if con_radicado_en_texto:
+        logging.info(
+            "   [Radicado] '%s': el texto menciona el radicado de %d de los %d candidatos -- sigue ambiguo, no se "
+            "puede elegir uno solo.", contexto, len(con_radicado_en_texto), len(coincidencias),
+        )
+    else:
+        logging.info(
+            "   [Radicado] '%s': no se encontro el radicado de NINGUNO de los %d candidatos en el texto -- sigue "
+            "ambiguo (el documento no repite su propio radicado).", contexto, len(coincidencias),
+        )
     return coincidencias
 
 
@@ -237,7 +259,7 @@ def _procesos_para_archivo(ruta, indices):
     coincidencias_contenido = base._procesos_que_coinciden_con_correo(contenido_norm, indices)
 
     candidatos = coincidencias_contenido if coincidencias_contenido else coincidencias
-    return _desambiguar_por_radicado(contenido_norm, candidatos), contenido_norm
+    return _desambiguar_por_radicado(contenido_norm, candidatos, contexto=ruta.name), contenido_norm
 
 
 def _fragmento_contexto(texto: str, palabra: str, ventana: int = 50) -> str:
@@ -435,7 +457,7 @@ def procesar_correos(correos, con_radicado, carpeta_raiz):
             continue
 
         procesos_coincidentes = base._procesos_que_coinciden_con_correo(contenido_norm, indices)
-        procesos_coincidentes = _desambiguar_por_radicado(contenido_norm, procesos_coincidentes)
+        procesos_coincidentes = _desambiguar_por_radicado(contenido_norm, procesos_coincidentes, contexto=correo["asunto"])
         if not procesos_coincidentes:
             fecha_texto = correo["fecha"].isoformat() if correo["fecha"] else ""
             sin_proceso.append((correo["asunto"], fecha_texto, motivo))

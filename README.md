@@ -865,12 +865,14 @@ igual en miles de documentos sin relación entre sí (ej. "auto",
 mal diligenciado (una frase administrativa en vez de un nombre real)
 generaba coincidencias masivas y completamente falsas. Además, antes
 de buscar se **quita el membrete del juzgado** (su propio nombre y
-dirección/correo del despacho, ver `_quitar_membrete_juzgado`) -- ese
-membrete es literalmente lo primero que trae cualquier auto, y casi
-siempre incluye el nombre del **municipio** donde queda el juzgado
-(ej. "JUZGADO PROMISCUO MUNICIPAL DE CANTAGALLO, BOLIVAR"), que por
-pura coincidencia puede ser el demandado de OTRO proceso sin ninguna
-relación con ese documento. Ya sin el membrete, el demandado solo se
+dirección/correo del despacho) **y la fecha de cierre/firma** (ver
+`_quitar_membrete_juzgado`) -- ambos son literalmente el principio y el
+final de cualquier auto, y casi siempre incluyen el nombre del
+**municipio** donde queda el juzgado (ej. "JUZGADO PROMISCUO MUNICIPAL
+DE CANTAGALLO, BOLIVAR" al inicio, y "CANTAGALLO, DIEZ (10) DE JULIO DE
+2025" al firmar), que por pura coincidencia puede ser el demandado de
+OTRO proceso sin ninguna relación con ese documento. Ya sin esas dos
+cosas, el demandado solo se
 busca en los primeros `VENTANA_DEMANDADO_CARACTERES` del texto que
 queda (el encabezado/carátula real, donde Colombia identifica las
 partes de cualquier proceso) -- **no** en el documento completo. El
@@ -1029,9 +1031,13 @@ cualquiera de los tres, no hace falta que coincidan todos. No se limita
 al nombre exacto del demandado: si un documento no lo menciona pero sí
 su radicado o su cuenta, también se encuentra. Si un archivo/correo
 coincide con **más de un** proceso (ej. dos procesos activos contra el
-mismo demandado), primero se intenta desambiguar por el **radicado**:
-si el texto menciona el radicado específico de uno solo de los
-candidatos, se usa ese en vez de quedar ambiguo. Si un archivo/correo
+mismo demandado), **siempre** se intenta desambiguar por el
+**radicado**: si el texto menciona el radicado específico de uno solo
+de los candidatos, se usa ese en vez de quedar ambiguo -- y el intento
+(funcione o no) siempre queda en el log con el prefijo `[Radicado]`,
+para que sea claro que sí se revisó (un auto corto no siempre repite su
+propio radicado en el texto, así que no siempre alcanza para
+desambiguar). Si un archivo/correo
 no coincide con ningún proceso activo, o sigue sin poder decidirse
 entre varios, se deja intacto y queda registrado en un CSV para que lo
 revises a mano -- nunca se adivina: `clasificar_por_demandado_sin_coincidencia.csv`
