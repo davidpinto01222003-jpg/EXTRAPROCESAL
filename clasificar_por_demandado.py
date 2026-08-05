@@ -140,6 +140,14 @@ TAMANO_LOTE_CORREO = 15
 # antes de darse por vencido de verdad.
 MAX_RECONEXIONES_CORREO = 8
 
+# Si un lote puntual sigue fallando incluso con conexiones NUEVAS (no
+# es la conexión, es algo de ESE lote en particular -- ver el log real
+# donde el mismo lote se colgaba una y otra vez pese a reconectar cada
+# vez), después de esta cantidad de intentos se SALTA ese lote en vez
+# de seguir gastando ahí los reintentos de MAX_RECONEXIONES_CORREO,
+# que le hacen falta al resto de los cientos de lotes.
+MAX_REINTENTOS_POR_LOTE = 3
+
 # Límite (en segundos) para cualquier operación de red con Gmail
 # (conectar, login, buscar, descargar un correo). Sin esto, un socket
 # de Python espera una respuesta PARA SIEMPRE si la conexión queda en
@@ -506,16 +514,27 @@ def _conectar_gmail(usuario, app_password):
         # ultimo mensaje que se alcance a ver en el log dice EXACTAMENTE
         # en cual paso se quedo (conectar, iniciar sesion, o seleccionar
         # la carpeta) en vez de tener que adivinar.
+        #
+        # TODO este bloque -- incluyendo seleccionar_todos_los_correos,
+        # que internamente puede hacer mail.select()/mail.list() -- va
+        # DENTRO del mismo try. Antes esa llamada quedaba POR FUERA: si
+        # la conexion se caia justo ahi (ej. "command: LIST => socket
+        # error: EOF", visto en un log real durante un reintento de
+        # reconexion), la excepcion NO se atrapaba aca, se colaba hacia
+        # arriba sin control, y terminaba en el catch-all de
+        # procesar_correos() -- perdiendo TODOS los correos ya
+        # encontrados y saltandose el resto de los reintentos de
+        # MAX_RECONEXIONES_CORREO de golpe.
         logging.info("[Correo] Conectando con Gmail (timeout %ds)...", TIMEOUT_CORREO_SEGUNDOS)
         mail = imaplib.IMAP4_SSL("imap.gmail.com", timeout=TIMEOUT_CORREO_SEGUNDOS)
         logging.info("[Correo] Conectado -- iniciando sesion...")
         mail.login(usuario, app_password)
         logging.info("[Correo] Sesion iniciada -- seleccionando la carpeta de correos...")
+        if not buscador.seleccionar_todos_los_correos(mail):
+            logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail.")
+            return None
     except Exception as error:
         logging.error("[Correo] No se pudo conectar con Gmail: %s", error)
-        return None
-    if not buscador.seleccionar_todos_los_correos(mail):
-        logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail.")
         return None
     logging.info("[Correo] Carpeta seleccionada -- listo para seguir buscando.")
     return mail
@@ -668,6 +687,7 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
             consulta = "(" + " OR ".join(
                 f'"{buscador.texto_para_busqueda_gmail(t).replace(chr(34), "")}"' for t in lote
             ) + ")"
+            intentos_lote_actual = 0
             while True:
                 try:
                     # 'consulta' ya viene sin tildes (texto_para_busqueda_gmail),
@@ -704,6 +724,22 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                     # una conexion que quedo "a medias" revienta con
                     # esto en vez de colgarse para siempre esperando
                     # una respuesta que nunca llega.
+                    intentos_lote_actual += 1
+                    if intentos_lote_actual > MAX_REINTENTOS_POR_LOTE:
+                        # Este lote puntual sigue fallando SIEMPRE,
+                        # incluso con conexiones nuevas -- no es un
+                        # problema de la conexion (esa se reconecto
+                        # bien cada vez), es algo de ESTE lote. Se
+                        # salta para no gastar ahi todo el presupuesto
+                        # de reconexiones que le hace falta al resto de
+                        # los lotes que faltan.
+                        logging.error(
+                            "[Correo] El lote %s sigue fallando despues de %d intento(s), incluso reconectando "
+                            "(%s) -- se SALTA este lote y sigue con el siguiente (revisa a mano si alguno de "
+                            "esos terminos tiene algo raro). Van %d correo(s) encontrados hasta el momento.",
+                            lote, intentos_lote_actual, error, len(vistos),
+                        )
+                        break
                     if reconexiones_usadas >= MAX_RECONEXIONES_CORREO:
                         logging.error(
                             "[Correo] Se perdio la conexion con Gmail (%s) y ya se intento reconectar %d vez/veces "

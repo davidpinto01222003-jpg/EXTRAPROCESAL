@@ -1078,7 +1078,13 @@ carpeta del proceso que le corresponde, en dos pasos:
    los reintentos la conexión sigue sin poder recuperarse, se rinde de
    forma prolija: nunca se pierden los correos que **ya se habían
    encontrado** en los lotes que sí funcionaron, así la conexión
-   termine cortándose de forma definitiva.
+   termine cortándose de forma definitiva. Si un lote puntual sigue
+   fallando SIEMPRE, incluso con conexiones nuevas cada vez (no es la
+   conexión, es algo de ESE lote en particular), después de
+   `MAX_REINTENTOS_POR_LOTE` intentos se lo **salta** (avisando qué
+   términos traía, para revisarlos a mano) en vez de gastar ahí todo el
+   presupuesto de reconexiones que le hace falta al resto de los
+   cientos de lotes que quedan por revisar.
 
    Toda operación con Gmail tiene un **límite de tiempo**
    (`TIMEOUT_CORREO_SEGUNDOS`, 30s por defecto), aplicado por
