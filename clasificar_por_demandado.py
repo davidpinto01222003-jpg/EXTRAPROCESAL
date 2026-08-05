@@ -470,7 +470,17 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
     logging.info("[Correo] %d termino(s) distinto(s) para buscar (demandados + radicados + cuentas).", len(terminos))
 
     vistos = {}
-    with imaplib.IMAP4_SSL("imap.gmail.com") as mail:
+    # OJO: NO se usa "with imaplib.IMAP4_SSL(...) as mail:" -- si Gmail
+    # corta la conexion (pasa despues de muchos lotes seguidos, ver
+    # abajo), el LOGOUT implicito del "with" al salir revienta con un
+    # error de socket, y esa excepcion REEMPLAZA cualquier "return" que
+    # hubiera adentro del bloque -- se perdian TODOS los correos ya
+    # encontrados en los lotes que si funcionaron, sin ningun aviso mas
+    # alla de "Fallo la busqueda en Gmail, se omite". Con try/finally,
+    # el LOGOUT se intenta iguial pero si falla se ignora, y lo que ya
+    # se encontro en 'vistos' siempre se devuelve.
+    mail = imaplib.IMAP4_SSL("imap.gmail.com")
+    try:
         mail.login(usuario, app_password)
         if not buscador.seleccionar_todos_los_correos(mail):
             logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda en correo.")
@@ -479,20 +489,30 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
         for lote in _lotes(terminos, TAMANO_LOTE_CORREO):
             consulta = "(" + " OR ".join(f'"{t.replace(chr(34), "")}"' for t in lote) + ")"
             try:
-                # Via literal de IMAP (ver buscador.buscar_x_gm_raw), no
-                # quoted-string: un quoted-string normal de IMAP solo
-                # admite ASCII de 7 bits -- un termino con tilde/ñ (ej.
-                # "PÉREZ", "MUÑOZ", "LANDÁZURI") revienta ahi, ya sea del
-                # lado de Python (UnicodeEncodeError) o del servidor
-                # ("SEARCH command error: BAD Could not parse command",
-                # que le pasa solo a ALGUNOS lotes, no a todos -- por
-                # eso parece intermitente). El literal de IMAP acepta
-                # cualquier octeto sin esa restriccion.
+                # Via literal de IMAP + CHARSET UTF-8 (ver
+                # buscador.buscar_x_gm_raw) -- el literal por si solo
+                # evita el error de PYTHON al codificar tildes/ñ, pero
+                # sin declarar el CHARSET el SERVIDOR puede seguir
+                # interpretando esos octetos como si fueran ASCII y
+                # rechazar el comando con "SEARCH command error: BAD
+                # Could not parse command" en el lote que las tenga.
                 typ, datos = buscador.buscar_x_gm_raw(mail, consulta)
+            except imaplib.IMAP4.abort as error:
+                # Error de CONEXION (no de un comando puntual) -- Gmail
+                # cierra la conexion si la nota inactiva o si hace
+                # demasiadas busquedas seguidas. Ya no sirve seguir
+                # probando lote por lote (todos fallarian igual), asi
+                # que se corta aqui mismo en vez de spamear un error
+                # por cada uno de los lotes que faltan.
+                logging.error(
+                    "[Correo] Se perdio la conexion con Gmail a mitad de la busqueda (%s) -- se detiene aqui, "
+                    "ya se guardaron los %d correo(s) encontrados hasta el momento.", error, len(vistos),
+                )
+                break
             except Exception as error:
-                # Cualquier error de UN lote (no solo imaplib.IMAP4.error)
-                # se salta y sigue con el siguiente -- un solo lote raro
-                # no puede tumbar la busqueda completa de los demas.
+                # Cualquier otro error de UN lote puntual (ej. BAD de
+                # un solo comando) se salta y sigue con el siguiente --
+                # no tumba la busqueda completa de los demas.
                 logging.error("[Correo] Fallo buscando el lote %s: %s", lote, error)
                 continue
             if typ != "OK" or not datos or not datos[0]:
@@ -502,6 +522,11 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                 correo = base._leer_correo(mail, id_correo)
                 if correo is not None:
                     vistos[(correo["asunto"], correo["fecha"])] = correo
+    finally:
+        try:
+            mail.logout()
+        except Exception:
+            pass
 
     return list(vistos.values())
 

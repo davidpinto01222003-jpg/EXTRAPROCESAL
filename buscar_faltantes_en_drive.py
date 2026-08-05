@@ -731,23 +731,28 @@ def seleccionar_todos_los_correos(mail) -> bool:
 
 def buscar_x_gm_raw(mail, consulta: str):
     """
-    Ejecuta 'SEARCH X-GM-RAW <consulta>' mandando la consulta como un
-    LITERAL de IMAP ({n}<CRLF><bytes>) en vez de como quoted-string.
-    Un quoted-string de IMAP4rev1 (RFC 3501) solo permite texto de 7
-    bits (ASCII puro) -- si 'consulta' trae tilde/ñ (ej. un demandado
-    como "ADMINISTRACIÓN PUBLICA DEL MUNICIPIO DE LANDÁZURI"), el byte
-    UTF-8 de mas de 7 bits dentro del quoted-string revienta el parser
-    del SERVIDOR con "SEARCH command error: BAD Could not parse
-    command" -- y le pasa solo a ALGUNOS lotes (no a todos), lo que lo
-    hace parecer intermitente. El literal de IMAP no tiene esa
-    restriccion: acepta CUALQUIER octeto, asi que es la forma correcta
-    (no un parche) de mandar texto UTF-8 por IMAP sin depender de que
-    el servidor haya aceptado ENABLE UTF8=ACCEPT (RFC 6855, que Gmail
-    no soporta). Devuelve (typ, datos) igual que mail.search().
+    Ejecuta 'SEARCH CHARSET UTF-8 X-GM-RAW <consulta>' mandando la
+    consulta como un LITERAL de IMAP ({n}<CRLF><bytes>) en vez de como
+    quoted-string, Y declarando explicitamente CHARSET UTF-8. Son DOS
+    problemas distintos, no uno solo:
+    - Un quoted-string de IMAP4rev1 (RFC 3501) solo permite texto de 7
+      bits (ASCII puro) -- si 'consulta' trae tilde/ñ, el byte UTF-8 de
+      mas de 7 bits ahi revienta el parser del servidor. El LITERAL no
+      tiene esa restriccion de sintaxis: acepta cualquier octeto.
+    - Pero el literal por si solo NO le dice al servidor QUE charset
+      son esos octetos -- sin CHARSET explicito, el default de IMAP es
+      US-ASCII (RFC 3501 6.4.4), asi que el servidor puede seguir
+      interpretando mal el texto e igual rechazar el comando con
+      "SEARCH command error: BAD Could not parse command" en el lote
+      que tenga tildes/ñ (le pasa solo a ALGUNOS lotes, no a todos, lo
+      que lo hace parecer intermitente). Declarando CHARSET UTF-8 se
+      arreglan los dos problemas a la vez, sin depender de que el
+      servidor haya aceptado ENABLE UTF8=ACCEPT (RFC 6855, que Gmail no
+      soporta). Devuelve (typ, datos) igual que mail.search().
     """
     mail.literal = consulta.encode("utf-8")
     try:
-        typ, dat = mail._simple_command("SEARCH", "X-GM-RAW")
+        typ, dat = mail._simple_command("SEARCH", "CHARSET", "UTF-8", "X-GM-RAW")
     finally:
         mail.literal = None
     return mail._untagged_response(typ, dat, "SEARCH")
@@ -784,12 +789,20 @@ def buscar_en_correo(usuario: str, app_password: str, termino: str):
     encabezado "Date" reconocible).
     """
     resultados = []
-    with imaplib.IMAP4_SSL("imap.gmail.com") as mail:
+    # NO se usa "with imaplib.IMAP4_SSL(...) as mail:" -- si Gmail corta
+    # la conexion, el LOGOUT implicito del "with" al salir revienta con
+    # un error de socket, y esa excepcion reemplaza el "return" de mas
+    # abajo, perdiendo los resultados ya encontrados sin ningun aviso.
+    # Con try/finally el LOGOUT se intenta igual pero si falla se
+    # ignora, y lo que ya se encontro en 'resultados' siempre se
+    # devuelve.
+    mail = imaplib.IMAP4_SSL("imap.gmail.com")
+    try:
         mail.login(usuario, app_password)
         if not seleccionar_todos_los_correos(mail):
             logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda.")
             return resultados
-        # Via literal de IMAP (ver buscar_x_gm_raw), no quoted-string --
+        # Via literal de IMAP + CHARSET UTF-8 (ver buscar_x_gm_raw) --
         # un quoted-string normal de IMAP solo admite ASCII de 7 bits y
         # revienta (en Python, o del lado del servidor con BAD) si
         # 'termino' trae tilde/ñ.
@@ -818,6 +831,11 @@ def buscar_en_correo(usuario: str, app_password: str, termino: str):
                     if contenido:
                         adjuntos_zip.append((organizador.sanear_nombre(nombre_adjunto), contenido))
             resultados.append((asunto, enlaces_drive, adjuntos_zip, fecha_correo))
+    finally:
+        try:
+            mail.logout()
+        except Exception:
+            pass
     return resultados
 
 

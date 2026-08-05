@@ -1049,13 +1049,16 @@ carpeta del proceso que le corresponde, en dos pasos:
    así que no tienes que cambiar nada a mano.
 
    Los términos de búsqueda (nombres de demandado) se mandan a Gmail
-   como un **literal de IMAP** (no como texto normal), así que las
-   tildes/ñ (ej. "PÉREZ", "MUÑOZ", "LANDÁZURI") nunca revientan la
-   búsqueda -- ni del lado de Python ni del lado del servidor (un
-   texto/quoted-string de IMAP solo admite ASCII de 7 bits; el literal
-   sí acepta cualquier caracter). Si un lote en particular falla por
-   cualquier otro motivo, se salta y sigue con los demás en vez de
-   abortar toda la búsqueda de correo.
+   como un **literal de IMAP con CHARSET UTF-8** (no como texto
+   normal), así que las tildes/ñ (ej. "PÉREZ", "MUÑOZ", "LANDÁZURI")
+   nunca revientan la búsqueda -- ni del lado de Python ni del lado del
+   servidor. Si un lote puntual falla, se salta y sigue con los demás;
+   si se **pierde la conexión** con Gmail a mitad de la búsqueda (pasa
+   si nota la conexión inactiva o con demasiadas búsquedas seguidas),
+   se detiene ahí en vez de intentar los cientos de lotes que faltan
+   uno por uno -- y en cualquier caso, los correos que **ya se habían
+   encontrado** en los lotes que sí funcionaron **nunca se pierden**,
+   así la conexión termine cortándose de forma abrupta al final.
 
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
