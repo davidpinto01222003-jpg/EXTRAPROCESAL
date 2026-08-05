@@ -209,10 +209,20 @@ CARPETA_PROCESOS = base.CARPETA_PROCESOS
 # coincidieron con ningun proceso, para revisarlos a mano.
 CARPETA_SIN_CLASIFICAR = "_SIN CLASIFICAR - REVISAR A MANO"
 
-# False (por defecto): guarda TODO correo que coincida con algun
-# proceso. En True se queda solo con lo que ademas sea tutela / derecho
-# de peticion / pago oficioso (ver clasificar_procesos_ejecutivos.es_informacion_no_procesal).
-SOLO_INFORMACION_EXTRAPROCESAL = False
+# True (por defecto): guarda SOLO informacion EXTRAPROCESAL, que es lo
+# que se necesita:
+#     derecho de peticion / peticion / PQR-PQRS-PQRSD,
+#     LAS RESPUESTAS a esos derechos de peticion,
+#     tutela / accion de tutela,
+#     pago oficioso.
+# Todo lo demas (demandas, memoriales, mandamientos, sentencias,
+# embargos... ver PALABRAS_PROCESAL_EXCLUIR) se omite aunque coincida
+# con un proceso. Ver es_extraprocesal aqui abajo y
+# clasificar_procesos_ejecutivos.es_informacion_no_procesal.
+#
+# Ponlo en False si alguna vez quieres bajar TODO lo que coincida con
+# un proceso, sin filtrar por tipo.
+SOLO_INFORMACION_EXTRAPROCESAL = True
 
 # False (por defecto): no exige que el correo mencione a ESSA. Ponlo en
 # True si tu Gmail mezcla correos de otros clientes y quieres filtrar.
@@ -548,41 +558,73 @@ def leer_correo(mensaje):
     return {"asunto": asunto, "cuerpo": cuerpo, "adjuntos": adjuntos, "fecha": fecha}
 
 
-def textos_para_emparejar(correo):
+def analizar_correo(correo):
     """
-    Los distintos textos contra los que se va a buscar el
-    radicado/cuenta/demandado, CADA UNO POR SEPARADO:
+    Prepara, UNA SOLA VEZ, las piezas del correo que hacen falta tanto
+    para saber DE QUE TIPO es como para saber A QUE PROCESO va. Cada
+    pieza es un par (titulo, texto):
 
-      1. asunto + cuerpo + nombres de los adjuntos
-      2. el texto de adentro de cada adjunto PDF/DOCX, uno por uno
+      1. el asunto  ->  asunto + cuerpo
+      2. cada adjunto  ->  su nombre + el texto de adentro del PDF/DOCX
 
-    Se hace por separado -- y no todo pegado -- a proposito: el nombre
-    del demandado se busca en el ENCABEZADO del texto (los primeros
-    caracteres, ver _procesos_que_coinciden_con_correo), que es donde
-    de verdad esta en un documento judicial ("DEMANDADO: ..."). Si se
-    pegara todo en un solo texto gigante, el encabezado del segundo
-    adjunto en adelante quedaria fuera de esa ventana y esos
-    documentos no se podrian emparejar por demandado.
+    Se devuelven POR SEPARADO -- y no todo pegado en un texto gigante --
+    porque las dos revisiones miran solo el ENCABEZADO del texto:
+
+    * el DEMANDADO se busca en los primeros caracteres (ver
+      _procesos_que_coinciden_con_correo), que es donde de verdad esta
+      en un documento judicial ("DEMANDADO: ...");
+    * el TIPO de documento se decide por el titulo, o por el inicio del
+      contenido (ver es_informacion_no_procesal).
+
+    Si se pegara todo junto, el encabezado del segundo adjunto en
+    adelante quedaria fuera de esas ventanas y esos documentos no se
+    podrian ni emparejar ni reconocer. Ademas leer el texto de un PDF
+    es lo mas lento de todo, asi que se hace aqui una vez y se
+    reutiliza en las dos revisiones.
     """
-    textos = []
-    cabecera = correo["asunto"] + " " + correo["cuerpo"] + " " + " ".join(n for n, _ in correo["adjuntos"])
-    textos.append(buscador._normalizar_para_comparar(cabecera))
+    piezas = []
+    titulo_correo = buscador._normalizar_para_comparar(correo["asunto"])
+    cuerpo = buscador._normalizar_para_comparar(
+        correo["asunto"] + " " + correo["cuerpo"] + " " + " ".join(n for n, _ in correo["adjuntos"])
+    )
+    piezas.append((titulo_correo, cuerpo))
     for nombre, contenido in correo["adjuntos"]:
+        nombre_norm = buscador._normalizar_para_comparar(nombre)
         texto = texto_de_adjunto(nombre, contenido)
-        if texto.strip():
-            textos.append(buscador._normalizar_para_comparar(nombre + "\n" + texto))
-    return textos
+        piezas.append((nombre_norm, buscador._normalizar_para_comparar(nombre + "\n" + texto)))
+    return piezas
 
 
-def procesos_del_correo(correo, indices):
+def es_extraprocesal(piezas):
+    """
+    True si el correo ES informacion extraprocesal: un derecho de
+    peticion / peticion / PQR, una RESPUESTA a uno de ellos, una
+    tutela, o un pago oficioso.
+
+    Se revisa cada pieza POR SEPARADO (el asunto por un lado, y el
+    nombre + contenido de CADA adjunto por otro): basta con que UNA lo
+    sea. Esto importa de verdad -- un correo con asunto generico
+    ("Notificacion 12345") pero con "RESPUESTA DERECHO DE PETICION.pdf"
+    adjunto SI es lo que buscamos, y mirando solo el asunto (o todo el
+    texto pegado, donde el nombre del adjunto queda enterrado despues
+    de un cuerpo largo) se perderia.
+    """
+    for titulo, contenido in piezas:
+        es_del_tipo, motivo = base.es_informacion_no_procesal(titulo, contenido)
+        if es_del_tipo:
+            return True, motivo
+    return False, "no es tutela, ni derecho de peticion (ni su respuesta), ni pago oficioso"
+
+
+def procesos_del_correo(piezas, indices):
     """
     Todos los procesos con los que este correo coincide, buscando en
-    cada uno de sus textos por separado (ver textos_para_emparejar) y
-    juntando los resultados sin repetir.
+    cada pieza por separado (ver analizar_correo) y juntando los
+    resultados sin repetir.
     """
     encontrados = {}
-    for texto in textos_para_emparejar(correo):
-        for proceso in base._procesos_que_coinciden_con_correo(texto, indices):
+    for _titulo, contenido in piezas:
+        for proceso in base._procesos_que_coinciden_con_correo(contenido, indices):
             encontrados[proceso["nombre_carpeta"]] = proceso
     return list(encontrados.values())
 
@@ -623,45 +665,56 @@ def revisar_correo(correo, indices, resumen, filas_reporte, filas_sin_coincidenc
     que hay que reportar queda en 'resumen' y en las listas de filas.
     """
     asunto = correo["asunto"] or "(sin asunto)"
+    # Se prepara UNA sola vez (leer el texto de los PDF es lo mas
+    # lento) y se reutiliza para las dos revisiones: tipo y proceso.
+    piezas = analizar_correo(correo)
+    motivo_tipo = ""
 
-    if SOLO_INFORMACION_EXTRAPROCESAL or EXIGIR_MENCION_ESSA:
-        todo_el_texto = " ".join(textos_para_emparejar(correo))
-        if SOLO_INFORMACION_EXTRAPROCESAL:
-            asunto_norm = buscador._normalizar_para_comparar(asunto)
-            es_extraprocesal, _motivo = base.es_informacion_no_procesal(asunto_norm, todo_el_texto)
-            if not es_extraprocesal:
-                resumen["descartados_por_tipo"] += 1
-                return
-        if EXIGIR_MENCION_ESSA:
-            if not any(buscador._nombre_coincide(todo_el_texto, t) for t in buscador.TERMINOS_DEMANDANTE_VALIDO):
-                resumen["descartados_por_essa"] += 1
-                return
+    if SOLO_INFORMACION_EXTRAPROCESAL:
+        es_del_tipo, motivo_tipo = es_extraprocesal(piezas)
+        if not es_del_tipo:
+            resumen["descartados_por_tipo"] += 1
+            return
 
-    procesos = procesos_del_correo(correo, indices)
+    if EXIGIR_MENCION_ESSA:
+        todo_el_texto = " ".join(contenido for _titulo, contenido in piezas)
+        if not any(buscador._nombre_coincide(todo_el_texto, t) for t in buscador.TERMINOS_DEMANDANTE_VALIDO):
+            resumen["descartados_por_essa"] += 1
+            return
+
+    procesos = procesos_del_correo(piezas, indices)
     fecha_texto = correo["fecha"].isoformat() if correo["fecha"] else ""
+    detalle_tipo = f" ({motivo_tipo})" if motivo_tipo else ""
 
     if not procesos:
         resumen["sin_coincidencia"] += 1
-        filas_sin_coincidencia.append((asunto, fecha_texto, len(correo["adjuntos"])))
+        filas_sin_coincidencia.append((asunto, fecha_texto, motivo_tipo, len(correo["adjuntos"])))
         if MODO_PRUEBA:
-            logging.info("[SIMULACION] Sin coincidencia: '%s' -> iria a '%s'.", asunto, CARPETA_SIN_CLASIFICAR)
+            logging.info(
+                "[SIMULACION] Sin coincidencia: '%s'%s -> iria a '%s'.",
+                asunto, detalle_tipo, CARPETA_SIN_CLASIFICAR,
+            )
             return
         guardados = guardar_sin_clasificar(correo)
-        logging.info("[Sin coincidencia] '%s' -> %d archivo(s) en '%s'.", asunto, guardados, CARPETA_SIN_CLASIFICAR)
+        logging.info(
+            "[Sin coincidencia] '%s'%s -> %d archivo(s) en '%s'.",
+            asunto, detalle_tipo, guardados, CARPETA_SIN_CLASIFICAR,
+        )
         return
 
     for proceso in procesos:
-        filas_reporte.append((asunto, fecha_texto, proceso["numero"], proceso["nombre_carpeta"]))
+        filas_reporte.append((asunto, fecha_texto, motivo_tipo, proceso["numero"], proceso["nombre_carpeta"]))
         if MODO_PRUEBA:
             logging.info(
-                "[SIMULACION] '%s' -> proceso %s ('%s').", asunto, proceso["numero"], proceso["nombre_carpeta"],
+                "[SIMULACION] '%s'%s -> proceso %s ('%s').",
+                asunto, detalle_tipo, proceso["numero"], proceso["nombre_carpeta"],
             )
             resumen["clasificados"] += 1
             continue
         guardados = guardar_en_proceso(correo, proceso)
         logging.info(
-            "[Clasificado] '%s' -> proceso %s ('%s'), %d archivo(s).",
-            asunto, proceso["numero"], proceso["nombre_carpeta"], guardados,
+            "[Clasificado] '%s'%s -> proceso %s ('%s'), %d archivo(s).",
+            asunto, detalle_tipo, proceso["numero"], proceso["nombre_carpeta"], guardados,
         )
         resumen["clasificados"] += 1
 
@@ -868,11 +921,13 @@ def procesar():
         )
 
     if filas_reporte and cruce_excel._escribir_csv_tolerante(
-        ARCHIVO_REPORTE, ["Asunto", "Fecha", "Proceso", "Carpeta"], filas_reporte, "Clasificados (correo)",
+        ARCHIVO_REPORTE, ["Asunto", "Fecha", "Por que es extraprocesal", "Proceso", "Carpeta"],
+        filas_reporte, "Clasificados (correo)",
     ):
         logging.info("[Reporte] %d fila(s) guardadas en: %s", len(filas_reporte), ARCHIVO_REPORTE)
     if filas_sin_coincidencia and cruce_excel._escribir_csv_tolerante(
-        ARCHIVO_SIN_COINCIDENCIA, ["Asunto", "Fecha", "Adjuntos"], filas_sin_coincidencia, "Sin coincidencia (correo)",
+        ARCHIVO_SIN_COINCIDENCIA, ["Asunto", "Fecha", "Por que es extraprocesal", "Adjuntos"],
+        filas_sin_coincidencia, "Sin coincidencia (correo)",
     ):
         logging.info("[Reporte] %d fila(s) guardadas en: %s", len(filas_sin_coincidencia), ARCHIVO_SIN_COINCIDENCIA)
 

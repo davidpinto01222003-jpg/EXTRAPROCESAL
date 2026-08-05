@@ -202,9 +202,22 @@ NUM_HILOS = 8
 # una palabra demasiado común dentro de cualquier memorial procesal
 # ("se solicita...") y generaba muchas imprecisiones.
 PALABRAS_TIPO_INFORMACION_FUERTES = [
+    # "PETICION" a secas cubre, de una sola vez, todas las formas en
+    # que aparece: "DERECHO DE PETICION", "DERECHOS DE PETICION",
+    # "PETICIONES", y -- lo importante -- las RESPUESTAS ("RESPUESTA AL
+    # DERECHO DE PETICION", "EN RESPUESTA A SU PETICION", "RTA PETICION"),
+    # que tambien son informacion extraprocesal y hay que guardar.
+    # Los dos primeros se dejan escritos aunque queden cubiertos por
+    # "PETICION", para que se lea de un vistazo que es lo que se busca.
     "DERECHO DE PETICION",
+    "DERECHOS DE PETICION",
+    "PETICION",
     "ACCION DE TUTELA",
     "TUTELA",
+    # PQR / PQRS / PQRSD -- como se rotulan en Colombia las peticiones
+    # y, sobre todo, LAS RESPUESTAS a un derecho de peticion ("Respuesta
+    # PQRSD No. 12345"). "PQR" alcanza para las tres formas.
+    "PQR",
 ]
 
 # Frases que identifican un pago oficioso -- lo ÚNICO más, aparte de

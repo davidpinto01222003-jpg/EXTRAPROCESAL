@@ -1243,6 +1243,32 @@ texto), para que el nombre del demandado se busque en el *encabezado*
 de cada documento -- que es donde de verdad está (`DEMANDADO: ...`) --
 y no se diluya entre el texto de los otros adjuntos.
 
+### Qué se guarda (solo información extraprocesal)
+
+Por defecto (`SOLO_INFORMACION_EXTRAPROCESAL = True`) se queda
+**únicamente** con:
+
+- **derecho de petición** / **petición** / **PQR, PQRS, PQRSD**
+- **las respuestas** a esos derechos de petición (así vengan rotuladas
+  como "Respuesta a su petición", "RTA petición", "Respuesta PQRSD…")
+- **tutela** / acción de tutela
+- **pago oficioso**
+
+Todo lo demás se omite aunque coincida con un proceso: demandas,
+memoriales, mandamientos, sentencias, liquidaciones, embargos, medidas
+cautelares, etc. (`PALABRAS_PROCESAL_EXCLUIR` en
+`clasificar_procesos_ejecutivos.py`).
+
+El tipo se decide mirando **el asunto y cada adjunto por separado** --
+no todo el texto pegado. Esto importa: un correo con asunto genérico
+("Notificación 12345") pero con `RESPUESTA DERECHO DE PETICION.pdf`
+adjunto **sí** se guarda, cuando mirando solo el asunto (o el texto
+completo, donde el nombre del adjunto queda enterrado después de un
+cuerpo largo) se habría perdido.
+
+En el log y en el CSV queda **por qué** se consideró extraprocesal cada
+correo, para poder revisarlo.
+
 ### Se puede hacer por partes
 
 Viene configurado para revisar los **últimos 730 días (2 años)**
@@ -1280,8 +1306,10 @@ eterna, porque va por partes: lleva un archivo de control
 - `EMPEZAR_POR_LOS_MAS_NUEVOS` (`True`), `TAMANO_LOTE_DESCARGA` (20).
 - `LEER_TEXTO_DE_ADJUNTOS` (`True`): ponlo en `False` si quieres que
   vaya más rápido y te conformas con asunto/cuerpo/nombre del adjunto.
-- `SOLO_INFORMACION_EXTRAPROCESAL` (`False`): en `True` se queda solo
-  con tutela / derecho de petición / pago oficioso.
+- `SOLO_INFORMACION_EXTRAPROCESAL` (**`True`** por defecto): se queda
+  solo con información extraprocesal (ver el detalle abajo). Ponlo en
+  `False` si alguna vez quieres bajar *todo* lo que coincida con un
+  proceso, sin filtrar por tipo.
 - `EXIGIR_MENCION_ESSA` (`False`): en `True` descarta lo que no
   mencione a ESSA.
 
