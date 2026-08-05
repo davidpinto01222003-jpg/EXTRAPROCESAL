@@ -765,7 +765,10 @@ def buscar_en_correo(usuario: str, app_password: str, termino: str):
         if not seleccionar_todos_los_correos(mail):
             logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda.")
             return resultados
-        typ, datos = mail.search(None, "X-GM-RAW", f'"{termino}"')
+        # bytes UTF-8, no str -- imaplib codifica en ASCII cualquier
+        # argumento str (ver imaplib.IMAP4._command) y revienta con
+        # UnicodeEncodeError si 'termino' trae tilde/ñ.
+        typ, datos = mail.search(None, "X-GM-RAW", f'"{termino}"'.encode("utf-8"))
         if typ != "OK" or not datos or not datos[0]:
             return resultados
         for id_correo in datos[0].split():

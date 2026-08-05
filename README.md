@@ -1048,6 +1048,12 @@ carpeta del proceso que le corresponde, en dos pasos:
    como "todos los correos" (sin importar cómo se llame en tu idioma),
    así que no tienes que cambiar nada a mano.
 
+   Los términos de búsqueda (nombres de demandado) se mandan a Gmail
+   codificados en UTF-8, así que las tildes/ñ (ej. "PÉREZ", "MUÑOZ") no
+   revientan la búsqueda -- y si un lote en particular falla por
+   cualquier otro motivo, se salta y sigue con los demás en vez de
+   abortar toda la búsqueda de correo.
+
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
 para emparejar su búsqueda global de correo: coincide su **radicado**,
@@ -1059,9 +1065,15 @@ al nombre exacto del demandado: si un documento no lo menciona pero sí
 su radicado o su cuenta, también se encuentra. Si un archivo/correo
 coincide con **más de un** proceso (ej. dos procesos activos contra el
 mismo demandado), **siempre** se intenta desambiguar por el
-**radicado**: si el texto menciona el radicado específico de uno solo
-de los candidatos, se usa ese en vez de quedar ambiguo -- y el intento
-(funcione o no) siempre queda en el log con el prefijo `[Radicado]`,
+**radicado**: primero se busca el radicado **completo** (23 dígitos) de
+cada candidato -- si aparece el de uno solo, se usa ese de inmediato,
+aunque el texto también mencione, por pura coincidencia, la **forma
+corta** (año-consecutivo) de otro candidato (dos juzgados distintos
+pueden repetir el mismo año-consecutivo; solo cambia el código del
+juzgado o la instancia, algo que la forma corta no distingue). Solo si
+ningún candidato tiene su radicado completo en el texto se recurre a la
+forma corta como último recurso. El intento (funcione o no) siempre
+queda en el log con el prefijo `[Radicado]`,
 para que sea claro que sí se revisó (un auto corto no siempre repite su
 propio radicado en el texto, así que no siempre alcanza para
 desambiguar). Si un archivo/correo

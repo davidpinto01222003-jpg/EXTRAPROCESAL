@@ -187,14 +187,16 @@ def _texto_de_archivo(ruta: Path) -> str:
 def _desambiguar_por_radicado(texto_normalizado, coincidencias, contexto=""):
     """
     Si 'coincidencias' tiene mas de un proceso posible, intenta
-    reducirlo a UNO SOLO revisando si el RADICADO (plano O con
-    guiones/puntos/espacios entre sus grupos -- ver
-    cruce_excel._radicados_en_texto -- o su forma corta) de alguno de
-    ellos aparece en el texto -- si trae el radicado especifico de UN
-    SOLO candidato, se usa ese en vez de quedar ambiguo (ej. varios
-    procesos con el mismo demandado -- si el documento menciona el
-    radicado exacto de uno de ellos, ya no hace falta revisarlo a
-    mano). Si el radicado de MAS de un candidato aparece, o si no
+    reducirlo a UNO SOLO revisando el RADICADO. Primero busca el
+    radicado COMPLETO (plano O con guiones/puntos/espacios entre sus
+    grupos -- ver cruce_excel._radicados_en_texto): si el radicado
+    exacto de UN SOLO candidato aparece, se usa ese de inmediato, aunque
+    el texto TAMBIEN contenga -- por pura coincidencia -- la forma
+    CORTA de otro candidato (dos juzgados distintos pueden repetir el
+    mismo año-consecutivo, solo cambia el codigo del juzgado o la
+    instancia). Solo si NINGUN candidato tiene su radicado completo en
+    el texto se recurre a la forma corta como ultimo recurso. Si el
+    radicado (completo o corto) de MAS de un candidato aparece, o si no
     aparece ninguno (un auto puede no repetir su propio radicado en el
     texto), se deja igual (sigue ambiguo, se reporta para revision
     manual). SIEMPRE deja en el log si lo intento y por que no alcanzo,
@@ -210,11 +212,22 @@ def _desambiguar_por_radicado(texto_normalizado, coincidencias, contexto=""):
     # reconoce esa forma (y la plana) y ya devuelve el numero limpio de
     # separadores, listo para comparar contra el radicado del Excel.
     radicados_del_texto = set(cruce_excel._radicados_en_texto(texto_normalizado))
-    con_radicado_en_texto = [
+
+    # El radicado COMPLETO (23 digitos) es la señal mas fuerte -- se
+    # revisa primero y, si señala a UN solo candidato, se usa ese aunque
+    # el texto TAMBIEN contenga, por pura coincidencia, la forma CORTA
+    # de otro candidato: dos juzgados distintos pueden repetir el mismo
+    # año-consecutivo (solo cambia el codigo del juzgado o la
+    # instancia), asi que una forma corta compartida no puede pesar
+    # igual que el radicado completo y exacto de un candidato.
+    con_radicado_exacto = [
         proceso for proceso in coincidencias
-        if proceso["radicado"] and (
-            proceso["radicado"] in radicados_del_texto
-            or any(buscador._nombre_coincide(texto_normalizado, t) for t in buscador.radicados_cortos(proceso["radicado"]))
+        if proceso["radicado"] and proceso["radicado"] in radicados_del_texto
+    ]
+    con_radicado_en_texto = con_radicado_exacto or [
+        proceso for proceso in coincidencias
+        if proceso["radicado"] and any(
+            buscador._nombre_coincide(texto_normalizado, t) for t in buscador.radicados_cortos(proceso["radicado"])
         )
     ]
     if len(con_radicado_en_texto) == 1:
@@ -466,8 +479,20 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
         for lote in _lotes(terminos, TAMANO_LOTE_CORREO):
             consulta = "(" + " OR ".join(f'"{t.replace(chr(34), "")}"' for t in lote) + ")"
             try:
-                typ, datos = mail.search(None, "X-GM-RAW", consulta)
-            except imaplib.IMAP4.error as error:
+                # imaplib codifica en ASCII cualquier argumento tipo str
+                # (ver imaplib.IMAP4._command) -- un termino con tilde/ñ
+                # (nombres de demandado como "PÉREZ" o "MUÑOZ") revienta
+                # con UnicodeEncodeError, que NO es un imaplib.IMAP4.error
+                # y por eso no lo atrapaba el except de abajo: se colaba
+                # hasta afuera del "with" y abortaba TODOS los lotes que
+                # faltaban, no solo el que tenia el caracter problematico.
+                # Pasando bytes UTF-8 en vez de str, imaplib los manda tal
+                # cual sin intentar re-codificarlos a ASCII.
+                typ, datos = mail.search(None, "X-GM-RAW", consulta.encode("utf-8"))
+            except Exception as error:
+                # Cualquier error de UN lote (no solo imaplib.IMAP4.error)
+                # se salta y sigue con el siguiente -- un solo lote raro
+                # no puede tumbar la busqueda completa de los demas.
                 logging.error("[Correo] Fallo buscando el lote %s: %s", lote, error)
                 continue
             if typ != "OK" or not datos or not datos[0]:
