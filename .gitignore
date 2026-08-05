@@ -4,4 +4,6 @@ __pycache__/
 credenciales_sgde.txt
 expedientes_procesados.txt
 clasificar_procesos_ejecutivos_revisados.txt
+revisar_correo_pro_progreso.json
+revisar_correo_pro_progreso.json.tmp
 _tmp_descargas_sgde/

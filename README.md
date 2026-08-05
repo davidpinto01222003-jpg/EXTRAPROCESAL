@@ -1194,6 +1194,112 @@ proyecto. Reutiliza la misma lectura del Excel, el mismo
 y las mismas credenciales `credenciales_sgde.txt` para Gmail (ver más
 abajo). Respeta `MODO_PRUEBA` (por defecto `True`).
 
+## Revisar el correo en MODO PRO y repartirlo por proceso ⭐
+
+`revisar_correo_pro.py` (o su iniciador `revisar_correo_pro.bat`) es la
+forma **recomendada** de sacarle provecho al correo: revisa tu Gmail y
+deja cada correo en la carpeta del proceso que le corresponde --
+comparando contra el Excel por **demandado**, **radicado** o **número
+de cuenta**. Lo que no coincide con ningún proceso **no se pierde**: se
+guarda en `_SIN CLASIFICAR - REVISAR A MANO` (una subcarpeta por
+correo) para que lo revises a mano.
+
+### Por qué este sí funciona (y el paso 2 de `clasificar_por_demandado.py` no)
+
+El planteamiento anterior le **preguntaba a Gmail una vez por cada
+término del Excel**: "¿tienes correos que digan DAVID CAICEDO?", "¿y
+68001400302120180078701?", "¿y 2018-00787?"... con ~650 procesos
+activos eso son **más de 4000 búsquedas seguidas**. Ningún servidor de
+correo aguanta eso de un mismo cliente -- de ahí venían *todos* los
+síntomas: `Could not parse command`, `Too many protocol errors`,
+`socket error: EOF`, y el programa colgado.
+
+Este script **invierte** el planteamiento, que es lo único que lo
+arregla de raíz:
+
+| | Antes | Ahora |
+|---|---|---|
+| Preguntas a Gmail | **4242** (una por término) | **1** (una por fecha) |
+| Dónde se compara | En el servidor de Gmail | **En tu PC**, en memoria |
+| Si Gmail corta | Se pierde todo | Reconecta y sigue donde iba |
+
+Es decir: **no se le pregunta nada a Gmail** sobre demandados,
+radicados ni cuentas. Se bajan los correos de una ventana de fechas
+**una sola vez**, y toda la comparación contra el Excel se hace
+localmente. Comparar 4242 términos contra un texto es instantáneo en
+memoria; lo imposible era preguntarlo 4242 veces por internet.
+
+### Qué tiene de "modo pro"
+
+No se conforma con el asunto. De cada correo revisa el **asunto**, el
+**cuerpo**, el **nombre** de cada adjunto, y -- esto es lo importante
+-- el **texto de adentro de cada PDF/DOCX adjunto**
+(`LEER_TEXTO_DE_ADJUNTOS`). Un auto casi nunca trae el radicado en el
+asunto del correo: lo trae impreso dentro del PDF. Sin leer el PDF, ese
+correo jamás se podría emparejar.
+
+Además compara **cada adjunto por separado** (no todo pegado en un solo
+texto), para que el nombre del demandado se busque en el *encabezado*
+de cada documento -- que es donde de verdad está (`DEMANDADO: ...`) --
+y no se diluya entre el texto de los otros adjuntos.
+
+### Se puede hacer por partes
+
+Lleva un archivo de control (`revisar_correo_pro_progreso.json`) con
+los correos ya revisados:
+
+- Si lo **cortas** a la mitad, se cae la luz, o Gmail te corta la
+  conexión, la próxima corrida **sigue donde se quedó**.
+- Por corrida revisa como máximo `MAX_CORREOS_POR_CORRIDA` (400 por
+  defecto) y **siempre termina** en un rato razonable. Si falta más, lo
+  dice en el log: basta volver a correrlo.
+
+### Ajustes principales (al inicio del archivo)
+
+- `MODO_PRUEBA` (por defecto `True`): primero muestra en el log qué
+  haría, **sin descargar ni guardar nada**. Cuando se vea bien, ponlo
+  en `False`.
+- `DIAS_HACIA_ATRAS` (90): cuántos días hacia atrás revisar. Súbelo
+  para una puesta al día grande (ej. `365`), bájalo para el día a día.
+- `MAX_CORREOS_POR_CORRIDA` (400), `TAMANO_LOTE_DESCARGA` (20).
+- `LEER_TEXTO_DE_ADJUNTOS` (`True`): ponlo en `False` si quieres que
+  vaya más rápido y te conformas con asunto/cuerpo/nombre del adjunto.
+- `SOLO_INFORMACION_EXTRAPROCESAL` (`False`): en `True` se queda solo
+  con tutela / derecho de petición / pago oficioso.
+- `EXIGIR_MENCION_ESSA` (`False`): en `True` descarta lo que no
+  mencione a ESSA.
+
+### Por qué no se traba
+
+Cada punto corresponde a un fallo real que se vio en la práctica:
+
+- **Doble límite de tiempo** en toda operación de red: el del socket, y
+  uno "duro" (un hilo aparte que corta pase lo que pase). Este último
+  hace falta porque en equipos con **antivirus que inspecciona el
+  correo** (Avast/Kaspersky/ESET/McAfee) el límite normal del socket
+  *no se dispara* y el programa se queda muerto sin dar ni un error.
+- **Reconecta** hasta `MAX_RECONEXIONES` veces y retoma exactamente
+  donde iba.
+- **Usa UID, no número de orden**: el "número" de un correo cambia si
+  llegan o se borran mensajes mientras el script corre -- reconectar
+  con números de orden te hace saltar o repetir correos en silencio.
+  También verifica el `UIDVALIDITY` del buzón: si Gmail lo cambia, el
+  progreso se descarta solo (avisando) en vez de dar por revisados
+  correos equivocados.
+- **Un correo dañado no tumba la corrida**: cada correo se procesa
+  aislado (MIME roto, PDF corrupto, nombre de archivo imposible).
+- **Nunca pierde correos en silencio**: si un grupo falla incluso
+  reconectando, se salta para no frenar la corrida pero **no** se da
+  por revisado -- queda pendiente para la próxima.
+- **Guarda el avance cada `GUARDAR_PROGRESO_CADA_N`** correos, no solo
+  al final, y de forma atómica (un corte de luz no corrompe el
+  archivo de progreso).
+- **Se ve que está vivo**: deja un aviso de avance cada
+  `AVISO_PROGRESO_CADA_N` correos.
+
+Necesita `credenciales_sgde.txt` (las mismas de siempre, contraseña de
+aplicación de Gmail -- ver más abajo).
+
 ## Listar terminados por auto o por pago (partes y radicado)
 
 `listar_terminados_auto_pago.py` (o su iniciador
