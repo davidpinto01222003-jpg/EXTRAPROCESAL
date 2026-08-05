@@ -332,6 +332,16 @@ PATRON_RADICADO_CON_SEPARADORES = re.compile(
     r"(?<!\d)\d{5}[\s\-.]?\d{2}[\s\-.]?\d{2}[\s\-.]?\d{3}[\s\-.]?\d{4}[\s\-.]?\d{5}[\s\-.]?\d{2}(?!\d)"
 )
 
+# Radicado con un separador SUELTO entre CADA digito (no solo entre sus
+# grupos) -- tipico de un sello/tabla escaneada donde el PDF extrae cada
+# digito con un espacio de mas (ej. "6 8 0 0 1 4 0 0 3 0 0 1 ..."), algo
+# que PATRON_RADICADO_CON_SEPARADORES no reconoce porque solo admite UN
+# separador por grupo, no uno por digito. Es el patron mas permisivo de
+# los tres -- por eso solo se usa DESPUES de los otros dos.
+PATRON_RADICADO_DIGITO_A_DIGITO = re.compile(
+    r"(?<!\d)" + r"[\s\-.]?".join([r"\d"] * 23) + r"(?!\d)"
+)
+
 EXTENSIONES_CONTENIDO = {".pdf", ".docx"}
 
 # ===========================================================================
@@ -780,10 +790,17 @@ def _texto_de_docx(ruta: Path) -> str:
 
 
 def _radicados_en_texto(texto: str):
-    """Todos los radicados de 23 digitos encontrados en un texto (no solo el primero) -- reconoce tanto el numero plano como el escrito con guiones/puntos/espacios entre los grupos."""
-    encontrados = list(PATRON_RADICADO_EXACTO.findall(texto))
-    encontrados += [re.sub(r"[\s\-.]", "", m) for m in PATRON_RADICADO_CON_SEPARADORES.findall(texto)]
-    return encontrados
+    """
+    Todos los radicados de 23 digitos encontrados en un texto (sin
+    duplicados) -- reconoce el numero plano, el escrito con
+    guiones/puntos/espacios entre sus grupos, e incluso con un
+    separador suelto entre CADA digito (tipico de un sello/tabla
+    escaneada, ver PATRON_RADICADO_DIGITO_A_DIGITO).
+    """
+    encontrados = set(PATRON_RADICADO_EXACTO.findall(texto))
+    encontrados |= {re.sub(r"[\s\-.]", "", m) for m in PATRON_RADICADO_CON_SEPARADORES.findall(texto)}
+    encontrados |= {re.sub(r"[\s\-.]", "", m) for m in PATRON_RADICADO_DIGITO_A_DIGITO.findall(texto)}
+    return list(encontrados)
 
 
 def radicados_encontrados_en_carpeta(carpeta: Path, max_archivos_contenido: int) -> Counter:

@@ -223,10 +223,16 @@ def _desambiguar_por_radicado(texto_normalizado, coincidencias, contexto=""):
             "   [Radicado] '%s': el texto menciona el radicado de %d de los %d candidatos -- sigue ambiguo, no se "
             "puede elegir uno solo.", contexto, len(con_radicado_en_texto), len(coincidencias),
         )
+    elif radicados_del_texto:
+        logging.info(
+            "   [Radicado] '%s': el texto SI trae radicado(s) (%s), pero ninguno coincide con los %d candidatos "
+            "por demandado -- sigue ambiguo (revisa si alguno de esos radicados deberia estar en el Excel).",
+            contexto, ", ".join(sorted(radicados_del_texto)), len(coincidencias),
+        )
     else:
         logging.info(
-            "   [Radicado] '%s': no se encontro el radicado de NINGUNO de los %d candidatos en el texto -- sigue "
-            "ambiguo (el documento no repite su propio radicado).", contexto, len(coincidencias),
+            "   [Radicado] '%s': no se encontro NINGUN radicado en el texto -- sigue ambiguo.%s",
+            contexto, _fragmento_radicado_en_texto(texto_normalizado),
         )
     return coincidencias
 
@@ -278,6 +284,22 @@ def _fragmento_contexto(texto: str, palabra: str, ventana: int = 50) -> str:
     inicio = max(0, coincidencia.start() - ventana)
     fin = min(len(texto), coincidencia.end() + ventana)
     return f' ("...{texto[inicio:fin].strip()}...")'
+
+
+def _fragmento_radicado_en_texto(texto: str, ventana: int = 80) -> str:
+    """
+    Un pedazo de 'texto' alrededor de la palabra "RADICADO" (o "RAD.",
+    abreviatura comun) -- se usa SOLO como diagnostico, cuando ni
+    siquiera se reconocio ningun radicado de 23 digitos en el texto,
+    para poder ver como esta escrito de verdad ahi (y ajustar el
+    reconocimiento si hace falta) en vez de seguir adivinando.
+    """
+    coincidencia = re.search(r"RADICAD[OA]|\bRAD\.?\s*(?:NO|N)\b", texto)
+    if not coincidencia:
+        return ""
+    inicio = max(0, coincidencia.start() - 10)
+    fin = min(len(texto), coincidencia.end() + ventana)
+    return f' Texto cerca de "radicado": "...{texto[inicio:fin].strip()}..."'
 
 
 def _motivo_coincidencia(texto_normalizado, proceso):

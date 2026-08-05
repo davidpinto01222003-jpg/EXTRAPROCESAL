@@ -883,8 +883,10 @@ radicado y la cuenta sí se buscan en el documento completo, porque esas
 coincidencias ya son precisas por sí solas -- y reconocen el radicado
 tanto **plano** (23 dígitos seguidos) como escrito **con guiones,
 puntos, o espacios** entre sus grupos (ej.
-"68001-40-03-001-2024-00050-00"), que es como casi siempre aparece
-dentro del texto real de un documento.
+"68001-40-03-001-2024-00050-00"), **o incluso con un separador entre
+CADA dígito** (ej. "6 8 0 0 1 4 0 0..."), típico de un sello o tabla
+escaneada donde el PDF extrae cada dígito con un espacio de más -- ver
+`_radicados_en_texto`.
 Un mismo correo puede terminar adjuntado a más de un proceso si aplica
 a varios (ej. un proceso "acumulado" con varias cuentas). Igual que en
 Drive, siempre se exige además que el correo mencione a ESSA/
