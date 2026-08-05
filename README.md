@@ -863,15 +863,19 @@ igual en miles de documentos sin relación entre sí (ej. "auto",
 "demanda", "medida", "cautelar", "anexos", "oficio" -- ver
 `PALABRAS_GENERICAS_DEMANDADO`): sin estos dos filtros, un demandado
 mal diligenciado (una frase administrativa en vez de un nombre real)
-generaba coincidencias masivas y completamente falsas. Además, el
-demandado solo se busca en los primeros `VENTANA_DEMANDADO_CARACTERES`
-del documento (el encabezado/carátula, donde Colombia identifica las
-partes de cualquier proceso) -- **no** en el documento completo: un PDF
-largo puede mencionar otro nombre más adelante que no tiene nada que
-ver (ej. el nombre del municipio donde queda el JUZGADO que emite el
-documento, que por casualidad coincide con el demandado de OTRO
-proceso). El radicado y la cuenta sí se buscan en el documento
-completo, porque esas coincidencias ya son precisas por sí solas.
+generaba coincidencias masivas y completamente falsas. Además, antes
+de buscar se **quita el membrete del juzgado** (su propio nombre y
+dirección/correo del despacho, ver `_quitar_membrete_juzgado`) -- ese
+membrete es literalmente lo primero que trae cualquier auto, y casi
+siempre incluye el nombre del **municipio** donde queda el juzgado
+(ej. "JUZGADO PROMISCUO MUNICIPAL DE CANTAGALLO, BOLIVAR"), que por
+pura coincidencia puede ser el demandado de OTRO proceso sin ninguna
+relación con ese documento. Ya sin el membrete, el demandado solo se
+busca en los primeros `VENTANA_DEMANDADO_CARACTERES` del texto que
+queda (el encabezado/carátula real, donde Colombia identifica las
+partes de cualquier proceso) -- **no** en el documento completo. El
+radicado y la cuenta sí se buscan en el documento completo, porque esas
+coincidencias ya son precisas por sí solas.
 Un mismo correo puede terminar adjuntado a más de un proceso si aplica
 a varios (ej. un proceso "acumulado" con varias cuentas). Igual que en
 Drive, siempre se exige además que el correo mencione a ESSA/

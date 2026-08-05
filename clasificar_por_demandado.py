@@ -275,7 +275,7 @@ def _motivo_coincidencia(texto_normalizado, proceso):
     for cuenta in proceso.get("cuentas", []):
         if buscador._cuenta_es_valida_para_buscar(cuenta) and buscador._nombre_coincide(texto_normalizado, cuenta):
             motivos.append(f"cuenta={cuenta}")
-    encabezado = texto_normalizado[:base.VENTANA_DEMANDADO_CARACTERES]
+    encabezado = base._quitar_membrete_juzgado(texto_normalizado)[:base.VENTANA_DEMANDADO_CARACTERES]
     for demandado in proceso.get("demandados", []):
         palabras = buscador._palabras_significativas(demandado)
         if len(palabras) >= base.MIN_PALABRAS_DEMANDADO_PARA_CRUZAR and all(

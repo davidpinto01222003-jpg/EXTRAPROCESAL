@@ -814,6 +814,32 @@ MIN_PALABRAS_DEMANDADO_PARA_CRUZAR = 2
 # precisas por si solas, no hace falta restringirlas).
 VENTANA_DEMANDADO_CARACTERES = 3000
 
+# El MEMBRETE del juzgado (su propio nombre y direccion -- ej. "JUZGADO
+# PROMISCUO MUNICIPAL DE CANTAGALLO, BOLIVAR", seguido de la
+# direccion/telefono/correo del despacho) es literalmente lo PRIMERO
+# que traen estos documentos, antes incluso de identificar a las
+# partes -- y casi siempre incluye el nombre del MUNICIPIO donde queda
+# el juzgado, que puede coincidir por pura casualidad con el demandado
+# de OTRO proceso (ej. un auto del "Juzgado de Cantagallo" que no es
+# contra el Municipio de Cantagallo, sino contra otra persona, pero
+# menciona "Cantagallo" en su propio membrete). Por eso estas lineas se
+# quitan ANTES de buscar el demandado -- nunca deben contar como si
+# fueran parte del proceso.
+_PATRON_MEMBRETE_JUZGADO = re.compile(
+    r"(?:^|\n)[^\n]*(?:"
+    r"JUZGADO|RAMA JUDICIAL|CONSEJO SECCIONAL DE LA JUDICATURA|"
+    r"@CENDOJ|RAMAJUDICIAL\.GOV\.CO|"
+    r"\b(?:CARRERA|CALLE|AVENIDA|TRANSVERSAL|DIAGONAL|BARRIO)\b[^\n]*\d|"
+    r"\bTELEFONO\b|\bCORREO\s*:"
+    r")[^\n]*",
+    re.IGNORECASE,
+)
+
+
+def _quitar_membrete_juzgado(texto_normalizado: str) -> str:
+    """Quita las lineas que son membrete/direccion/contacto del juzgado (ver _PATRON_MEMBRETE_JUZGADO) -- nunca cuentan como demandado."""
+    return _PATRON_MEMBRETE_JUZGADO.sub(" ", texto_normalizado)
+
 
 def _palabra_demandado_coincide(texto_normalizado, palabra):
     """
@@ -860,12 +886,15 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
     demandado (cualquiera de los tres, no hace falta que coincidan
     todos). Para el DEMANDADO se exige que aparezcan TODAS sus palabras
     significativas, COMO PALABRA COMPLETA, dentro de los primeros
-    VENTANA_DEMANDADO_CARACTERES del texto (no en el documento
-    completo -- ver esa constante) -- no basta con que coincida una
-    sola palabra (ver MIN_PALABRAS_DEMANDADO_PARA_CRUZAR): un solo
-    nombre corto, una palabra suelta, o un documento largo que mencione
-    otro nombre mas adelante (ej. el del JUZGADO que emite el
-    documento) generaba coincidencias masivas y completamente falsas.
+    VENTANA_DEMANDADO_CARACTERES del texto UNA VEZ QUITADO EL MEMBRETE
+    DEL JUZGADO (ver _quitar_membrete_juzgado) -- no en el documento
+    completo, y sin contar el nombre/dirección/correo del despacho que
+    emite el documento. Sin esto, el nombre del MUNICIPIO donde queda
+    el juzgado (que casi siempre aparece en su propio membrete, ej.
+    "JUZGADO PROMISCUO MUNICIPAL DE CANTAGALLO, BOLIVAR") se confundía
+    con el demandado de OTRO proceso que sí tenga ese municipio como
+    demandado real, aunque el documento no tuviera nada que ver con él
+    -- generaba coincidencias masivas y completamente falsas.
     """
     por_radicado, por_cuenta, por_demandado = indices
     encontrados = {}
@@ -881,7 +910,7 @@ def _procesos_que_coinciden_con_correo(contenido_normalizado, indices):
             for proceso in procesos:
                 encontrados[proceso["nombre_carpeta"]] = proceso
 
-    encabezado = contenido_normalizado[:VENTANA_DEMANDADO_CARACTERES]
+    encabezado = _quitar_membrete_juzgado(contenido_normalizado)[:VENTANA_DEMANDADO_CARACTERES]
     for palabras, procesos in por_demandado.items():
         if all(_palabra_demandado_coincide(encabezado, palabra) for palabra in palabras):
             for proceso in procesos:
