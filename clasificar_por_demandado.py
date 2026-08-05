@@ -128,6 +128,17 @@ BUSCAR_EN_CORREO = True
 # de los procesos activos, que sería muy lento.
 TAMANO_LOTE_CORREO = 15
 
+# Con cientos de procesos activos hay que hacer CIENTOS de búsquedas
+# (una por lote) sobre la MISMA conexión IMAP -- Gmail corta la
+# conexión si la nota con demasiadas búsquedas/descargas seguidas en
+# poco tiempo (proteccion propia de Gmail contra scripts, no depende
+# de nada que puedas configurar en el codigo). Cuando eso pasa, en vez
+# de rendirse a mitad de camino, se abre una conexión NUEVA (login +
+# seleccionar la carpeta otra vez) y se sigue justo donde se quedó --
+# esto es cuántas veces se reintenta reconectar en TODA la búsqueda
+# antes de darse por vencido de verdad.
+MAX_RECONEXIONES_CORREO = 8
+
 # True (por defecto): no mueve archivos ni descarga correos de verdad,
 # solo revisa y muestra qué haría.
 MODO_PRUEBA = True
@@ -456,6 +467,26 @@ def _terminos_de_busqueda(con_radicado):
     return terminos
 
 
+def _conectar_gmail(usuario, app_password):
+    """
+    Abre una conexion IMAP nueva, hace login, y selecciona la carpeta
+    de "todos los correos" -- usado tanto para la conexion inicial como
+    para RECONECTAR si Gmail corta la conexion a mitad de la busqueda
+    (ver buscar_correo_por_procesos). Devuelve la conexion lista para
+    usar, o None si el login o el select fallaron.
+    """
+    mail = imaplib.IMAP4_SSL("imap.gmail.com")
+    try:
+        mail.login(usuario, app_password)
+    except Exception as error:
+        logging.error("[Correo] No se pudo conectar con Gmail: %s", error)
+        return None
+    if not buscador.seleccionar_todos_los_correos(mail):
+        logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail.")
+        return None
+    return mail
+
+
 def buscar_correo_por_procesos(usuario, app_password, con_radicado):
     """
     UNA sola conexion IMAP para TODOS los procesos activos -- busca,
@@ -465,72 +496,94 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
     proceso corresponde cada uno se decide despues, con la misma regla
     de coincidencia que el resto del proyecto (ver
     clasificar_procesos_ejecutivos._procesos_que_coinciden_con_correo).
+
+    Con cientos de procesos activos son CIENTOS de busquedas seguidas
+    sobre la MISMA conexion -- Gmail la corta si la nota con demasiadas
+    busquedas/descargas seguidas en poco tiempo (proteccion propia de
+    Gmail, no depende de nada configurable aqui). Cuando eso pasa, en
+    vez de rendirse a mitad de camino, se RECONECTA (login + seleccionar
+    la carpeta otra vez) y se reintenta el MISMO lote que se estaba
+    procesando -- asi la busqueda completa los 100% de los terminos en
+    vez de quedarse solo con los que alcanzo a revisar antes del primer
+    corte (ver MAX_RECONEXIONES_CORREO para el limite de reintentos).
     """
     terminos = _terminos_de_busqueda(con_radicado)
     logging.info("[Correo] %d termino(s) distinto(s) para buscar (demandados + radicados + cuentas).", len(terminos))
 
     vistos = {}
     # OJO: NO se usa "with imaplib.IMAP4_SSL(...) as mail:" -- si Gmail
-    # corta la conexion (pasa despues de muchos lotes seguidos, ver
-    # abajo), el LOGOUT implicito del "with" al salir revienta con un
-    # error de socket, y esa excepcion REEMPLAZA cualquier "return" que
-    # hubiera adentro del bloque -- se perdian TODOS los correos ya
-    # encontrados en los lotes que si funcionaron, sin ningun aviso mas
-    # alla de "Fallo la busqueda en Gmail, se omite". Con try/finally,
-    # el LOGOUT se intenta iguial pero si falla se ignora, y lo que ya
-    # se encontro en 'vistos' siempre se devuelve.
-    mail = imaplib.IMAP4_SSL("imap.gmail.com")
-    try:
-        mail.login(usuario, app_password)
-        if not buscador.seleccionar_todos_los_correos(mail):
-            logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda en correo.")
-            return []
+    # corta la conexion, el LOGOUT implicito del "with" al salir
+    # revienta con un error de socket, y esa excepcion REEMPLAZA
+    # cualquier "return" que hubiera adentro del bloque -- se perdian
+    # TODOS los correos ya encontrados en los lotes que si funcionaron.
+    # Con try/finally, el LOGOUT se intenta igual pero si falla se
+    # ignora, y lo que ya se encontro en 'vistos' siempre se devuelve.
+    mail = _conectar_gmail(usuario, app_password)
+    if mail is None:
+        logging.error("[Correo] Se omite la busqueda en correo.")
+        return []
 
+    reconexiones_usadas = 0
+    try:
         for lote in _lotes(terminos, TAMANO_LOTE_CORREO):
             consulta = "(" + " OR ".join(f'"{t.replace(chr(34), "")}"' for t in lote) + ")"
-            try:
-                # Via literal de IMAP + CHARSET UTF-8 (ver
-                # buscador.buscar_x_gm_raw) -- el literal por si solo
-                # evita el error de PYTHON al codificar tildes/ñ, pero
-                # sin declarar el CHARSET el SERVIDOR puede seguir
-                # interpretando esos octetos como si fueran ASCII y
-                # rechazar el comando con "SEARCH command error: BAD
-                # Could not parse command" en el lote que las tenga.
-                typ, datos = buscador.buscar_x_gm_raw(mail, consulta)
-                if typ != "OK" or not datos or not datos[0]:
-                    continue
-
-                # El FETCH de cada correo encontrado va DENTRO del mismo
-                # try que el SEARCH -- la conexion se puede caer aca
-                # igual de facil (o mas: hay un FETCH por cada correo
-                # encontrado, muchos mas viajes de ida y vuelta que un
-                # solo SEARCH por lote), y antes NO estaba protegido:
-                # un "socket error: EOF" a mitad de un FETCH se colaba
-                # sin que el "except imaplib.IMAP4.abort" de mas abajo
-                # lo viera, perdiendo la busqueda completa igual que el
-                # bug del LOGOUT.
-                for id_correo in datos[0].split():
-                    correo = base._leer_correo(mail, id_correo)
-                    if correo is not None:
-                        vistos[(correo["asunto"], correo["fecha"])] = correo
-            except imaplib.IMAP4.abort as error:
-                # Error de CONEXION (no de un comando puntual) -- Gmail
-                # cierra la conexion si la nota inactiva o si hace
-                # demasiadas busquedas/descargas seguidas. Ya no sirve
-                # seguir con los lotes que faltan (todos fallarian
-                # igual), asi que se corta aqui mismo en vez de spamear
-                # un error por cada uno.
-                logging.error(
-                    "[Correo] Se perdio la conexion con Gmail a mitad de la busqueda (%s) -- se detiene aqui, "
-                    "ya se guardaron los %d correo(s) encontrados hasta el momento.", error, len(vistos),
-                )
-                break
-            except Exception as error:
-                # Cualquier otro error de UN lote puntual (ej. BAD de
-                # un solo comando) se salta y sigue con el siguiente --
-                # no tumba la busqueda completa de los demas.
-                logging.error("[Correo] Fallo buscando el lote %s: %s", lote, error)
-                continue
+            while True:
+                try:
+                    # Via literal de IMAP + CHARSET UTF-8 (ver
+                    # buscador.buscar_x_gm_raw) -- el literal por si solo
+                    # evita el error de PYTHON al codificar tildes/ñ, pero
+                    # sin declarar el CHARSET el SERVIDOR puede seguir
+                    # interpretando esos octetos como si fueran ASCII y
+                    # rechazar el comando con "SEARCH command error: BAD
+                    # Could not parse command" en el lote que las tenga.
+                    typ, datos = buscador.buscar_x_gm_raw(mail, consulta)
+                    if typ == "OK" and datos and datos[0]:
+                        # El FETCH de cada correo encontrado va DENTRO
+                        # del mismo try que el SEARCH -- la conexion se
+                        # puede caer aca igual de facil (o mas: hay un
+                        # FETCH por cada correo encontrado, muchos mas
+                        # viajes de ida y vuelta que un solo SEARCH por
+                        # lote).
+                        for id_correo in datos[0].split():
+                            correo = base._leer_correo(mail, id_correo)
+                            if correo is not None:
+                                vistos[(correo["asunto"], correo["fecha"])] = correo
+                    break  # lote resuelto (con o sin resultados) -- sigue al siguiente
+                except imaplib.IMAP4.abort as error:
+                    # Error de CONEXION (no de un comando puntual) --
+                    # Gmail cierra la conexion si la nota inactiva o
+                    # con demasiadas busquedas/descargas seguidas.
+                    if reconexiones_usadas >= MAX_RECONEXIONES_CORREO:
+                        logging.error(
+                            "[Correo] Se perdio la conexion con Gmail (%s) y ya se intento reconectar %d vez/veces "
+                            "sin exito -- se detiene aqui, ya se guardaron los %d correo(s) encontrados hasta el "
+                            "momento.", error, reconexiones_usadas, len(vistos),
+                        )
+                        return list(vistos.values())
+                    reconexiones_usadas += 1
+                    logging.warning(
+                        "[Correo] Se perdio la conexion con Gmail a mitad de la busqueda (%s) -- reconectando "
+                        "(intento %d/%d) y sigue donde se quedo (van %d correo(s) encontrados)...",
+                        error, reconexiones_usadas, MAX_RECONEXIONES_CORREO, len(vistos),
+                    )
+                    try:
+                        mail.logout()
+                    except Exception:
+                        pass
+                    mail = _conectar_gmail(usuario, app_password)
+                    if mail is None:
+                        logging.error(
+                            "[Correo] No se pudo reconectar -- se detiene aqui, ya se guardaron los %d "
+                            "correo(s) encontrados hasta el momento.", len(vistos),
+                        )
+                        return list(vistos.values())
+                    # vuelve a intentar EL MISMO lote con la conexion nueva
+                except Exception as error:
+                    # Cualquier otro error de UN lote puntual (ej. BAD
+                    # de un solo comando) se salta y sigue con el
+                    # siguiente -- no tumba la busqueda completa.
+                    logging.error("[Correo] Fallo buscando el lote %s: %s", lote, error)
+                    break
     finally:
         try:
             mail.logout()

@@ -1052,16 +1052,23 @@ carpeta del proceso que le corresponde, en dos pasos:
    como un **literal de IMAP con CHARSET UTF-8** (no como texto
    normal), así que las tildes/ñ (ej. "PÉREZ", "MUÑOZ", "LANDÁZURI")
    nunca revientan la búsqueda -- ni del lado de Python ni del lado del
-   servidor. Si un lote puntual falla, se salta y sigue con los demás;
-   si se **pierde la conexión** con Gmail a mitad de la búsqueda (pasa
-   si nota la conexión inactiva o con demasiadas búsquedas seguidas),
-   se detiene ahí en vez de intentar los cientos de lotes que faltan
-   uno por uno -- y en cualquier caso, los correos que **ya se habían
-   encontrado** en los lotes que sí funcionaron **nunca se pierden**,
-   así la conexión termine cortándose de forma abrupta al final (esto
-   cubre tanto una búsqueda que falla como la descarga de un correo
-   puntual que falla a mitad de un lote -- Gmail puede cortar la
-   conexión en cualquiera de los dos momentos).
+   servidor. Si un lote puntual falla, se salta y sigue con los demás.
+
+   Con cientos de procesos activos son cientos de búsquedas seguidas
+   sobre la misma conexión, y **Gmail la corta** si la nota con
+   demasiadas búsquedas/descargas seguidas en poco tiempo (protección
+   propia de Gmail contra scripts, no depende de nada configurable acá
+   -- no tiene que ver con limitar la búsqueda a los últimos años ni
+   nada parecido). Cuando eso pasa (a mitad de una búsqueda o a mitad
+   de la descarga de un correo puntual), el programa **reconecta solo**
+   (login + volver a seleccionar la carpeta) y sigue justo donde se
+   quedó, hasta `MAX_RECONEXIONES_CORREO` veces -- así la búsqueda
+   completa los 100% de los términos en vez de quedarse solo con los
+   que alcanzó a revisar antes del primer corte. Si después de agotar
+   los reintentos la conexión sigue sin poder recuperarse, se rinde de
+   forma prolija: nunca se pierden los correos que **ya se habían
+   encontrado** en los lotes que sí funcionaron, así la conexión
+   termine cortándose de forma definitiva.
 
 En **ambos** pasos, a qué proceso corresponde un archivo/correo se
 decide con la misma regla que usa `clasificar_procesos_ejecutivos.py`
