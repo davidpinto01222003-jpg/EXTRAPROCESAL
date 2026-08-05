@@ -661,16 +661,28 @@ def buscar_correo_por_procesos(usuario, app_password, con_radicado):
                     "[Correo] ...van %d/%d lote(s) revisados, %d correo(s) encontrados hasta el momento...",
                     indice_lote - 1, total_lotes, len(vistos),
                 )
-            consulta = "(" + " OR ".join(f'"{t.replace(chr(34), "")}"' for t in lote) + ")"
+            # Sin tildes (ver buscador.texto_para_busqueda_gmail) --
+            # Gmail busca igual sin distinguirlas, y asi alcanza un
+            # quoted-string ASCII normal sin necesitar CHARSET ni
+            # literales (ver el porque en esa funcion).
+            consulta = "(" + " OR ".join(
+                f'"{buscador.texto_para_busqueda_gmail(t).replace(chr(34), "")}"' for t in lote
+            ) + ")"
             while True:
                 try:
-                    # Via literal de IMAP + CHARSET UTF-8 (ver
-                    # buscador.buscar_x_gm_raw) -- el literal por si solo
-                    # evita el error de PYTHON al codificar tildes/ñ, pero
-                    # sin declarar el CHARSET el SERVIDOR puede seguir
-                    # interpretando esos octetos como si fueran ASCII y
-                    # rechazar el comando con "SEARCH command error: BAD
-                    # Could not parse command" en el lote que las tenga.
+                    # 'consulta' ya viene sin tildes (texto_para_busqueda_gmail),
+                    # asi que alcanza un SEARCH normal (ver
+                    # buscador.buscar_x_gm_raw) sin CHARSET ni
+                    # literales -- un termino con tilde/ñ demostro DOS
+                    # problemas distintos con esos mecanismos: el
+                    # quoted-string normal de IMAP revienta con BAD si
+                    # de todas formas le llegan bytes no-ASCII, y el
+                    # literal (que si acepta cualquier octeto por
+                    # protocolo) se colgaba sin ningun error en ciertas
+                    # redes/antivirus -- el intercambio "esperar el '+'
+                    # de continuacion" que exige un literal es un
+                    # patron de trafico que algunos proxies no manejan
+                    # bien.
                     #
                     # Corre DENTRO de _con_limite_de_tiempo_duro -- el
                     # FETCH de cada correo encontrado va incluido (la

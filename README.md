@@ -1049,10 +1049,20 @@ carpeta del proceso que le corresponde, en dos pasos:
    así que no tienes que cambiar nada a mano.
 
    Los términos de búsqueda (nombres de demandado) se mandan a Gmail
-   como un **literal de IMAP con CHARSET UTF-8** (no como texto
-   normal), así que las tildes/ñ (ej. "PÉREZ", "MUÑOZ", "LANDÁZURI")
-   nunca revientan la búsqueda -- ni del lado de Python ni del lado del
-   servidor. Si un lote puntual falla, se salta y sigue con los demás.
+   **sin tildes/diacríticos** (ej. "PÉREZ" -> "PEREZ", "LANDÁZURI" ->
+   "LANDAZURI") -- Gmail busca igual sin distinguirlas, así que no se
+   pierde ningún resultado. Se hace así (en vez de mandar los bytes
+   UTF-8 originales) porque se probaron dos mecanismos que sí permiten
+   caracteres no-ASCII por protocolo y los dos tuvieron problemas
+   reales: un texto UTF-8 directo hacía que el servidor rechazara el
+   comando con "BAD Could not parse command" en algunos lotes: y el
+   "literal" de IMAP (pensado justo para esto) terminaba **colgando la
+   conexión sin ningún error** en ciertas redes/antivirus -- el
+   intercambio "esperar la confirmación del servidor y mandar el texto
+   aparte" que exige un literal es un patrón de tráfico poco común que
+   algunos proxies no manejan bien. Con texto ASCII puro alcanza una
+   búsqueda normal y corriente, compatible en cualquier red. Si un lote
+   puntual falla, se salta y sigue con los demás.
 
    Con cientos de procesos activos son cientos de búsquedas seguidas
    sobre la misma conexión, y **Gmail la corta** si la nota con

@@ -729,33 +729,41 @@ def seleccionar_todos_los_correos(mail) -> bool:
     return False
 
 
+def texto_para_busqueda_gmail(texto: str) -> str:
+    """
+    Convierte 'texto' a ASCII puro para mandarlo en una busqueda de
+    Gmail por IMAP: quita tildes/diacriticos (ej. "PÉREZ" -> "PEREZ",
+    "LANDÁZURI" -> "LANDAZURI") y descarta cualquier caracter que
+    todavia no sea ASCII despues de eso. Gmail busca SIN distinguir
+    tildes de todas formas (buscar "PEREZ" tambien encuentra "PÉREZ"),
+    asi que esto no pierde ningun resultado.
+
+    Se hace ASI (en vez de mandar los bytes UTF-8 directo, con o sin
+    el mecanismo de "literal" de IMAP) porque un termino con tilde/ñ
+    demostro dos problemas DISTINTOS en la practica: un quoted-string
+    normal de IMAP solo admite ASCII de 7 bits y el servidor lo
+    rechaza con "BAD Could not parse command"; y el literal de IMAP
+    (que si admite cualquier octeto por protocolo) terminaba
+    colgandose sin ningun error en ciertas redes/antivirus -- el
+    intercambio "esperar el '+' de continuacion y mandar los bytes
+    aparte" que exige un literal es un patron de trafico poco comun
+    que algunos proxies/antivirus no manejan bien. Con texto ASCII
+    puro alcanza un quoted-string comun y corriente, sin necesitar
+    ninguno de los dos mecanismos.
+    """
+    sin_tildes = "".join(c for c in unicodedata.normalize("NFKD", texto or "") if not unicodedata.combining(c))
+    return sin_tildes.encode("ascii", errors="ignore").decode("ascii")
+
+
 def buscar_x_gm_raw(mail, consulta: str):
     """
-    Ejecuta 'SEARCH CHARSET UTF-8 X-GM-RAW <consulta>' mandando la
-    consulta como un LITERAL de IMAP ({n}<CRLF><bytes>) en vez de como
-    quoted-string, Y declarando explicitamente CHARSET UTF-8. Son DOS
-    problemas distintos, no uno solo:
-    - Un quoted-string de IMAP4rev1 (RFC 3501) solo permite texto de 7
-      bits (ASCII puro) -- si 'consulta' trae tilde/ñ, el byte UTF-8 de
-      mas de 7 bits ahi revienta el parser del servidor. El LITERAL no
-      tiene esa restriccion de sintaxis: acepta cualquier octeto.
-    - Pero el literal por si solo NO le dice al servidor QUE charset
-      son esos octetos -- sin CHARSET explicito, el default de IMAP es
-      US-ASCII (RFC 3501 6.4.4), asi que el servidor puede seguir
-      interpretando mal el texto e igual rechazar el comando con
-      "SEARCH command error: BAD Could not parse command" en el lote
-      que tenga tildes/ñ (le pasa solo a ALGUNOS lotes, no a todos, lo
-      que lo hace parecer intermitente). Declarando CHARSET UTF-8 se
-      arreglan los dos problemas a la vez, sin depender de que el
-      servidor haya aceptado ENABLE UTF8=ACCEPT (RFC 6855, que Gmail no
-      soporta). Devuelve (typ, datos) igual que mail.search().
+    Ejecuta 'SEARCH X-GM-RAW <consulta>' -- 'consulta' debe ser ASCII
+    puro (ver texto_para_busqueda_gmail) para que alcance con un
+    quoted-string normal de IMAP, sin depender de CHARSET ni de
+    literales (ver el porque en texto_para_busqueda_gmail). Devuelve
+    (typ, datos) igual que mail.search().
     """
-    mail.literal = consulta.encode("utf-8")
-    try:
-        typ, dat = mail._simple_command("SEARCH", "CHARSET", "UTF-8", "X-GM-RAW")
-    finally:
-        mail.literal = None
-    return mail._untagged_response(typ, dat, "SEARCH")
+    return mail.search(None, "X-GM-RAW", consulta)
 
 
 def _decodificar_asunto(asunto_crudo: str) -> str:
@@ -802,11 +810,10 @@ def buscar_en_correo(usuario: str, app_password: str, termino: str):
         if not seleccionar_todos_los_correos(mail):
             logging.error("[Correo] No se pudo seleccionar la carpeta de 'Todos los correos' de Gmail -- se omite la busqueda.")
             return resultados
-        # Via literal de IMAP + CHARSET UTF-8 (ver buscar_x_gm_raw) --
-        # un quoted-string normal de IMAP solo admite ASCII de 7 bits y
-        # revienta (en Python, o del lado del servidor con BAD) si
-        # 'termino' trae tilde/ñ.
-        typ, datos = buscar_x_gm_raw(mail, f'"{termino}"')
+        # Sin tildes (ver texto_para_busqueda_gmail) -- Gmail busca
+        # igual sin distinguirlas, y asi alcanza un quoted-string ASCII
+        # normal sin necesitar CHARSET ni literales.
+        typ, datos = buscar_x_gm_raw(mail, f'"{texto_para_busqueda_gmail(termino)}"')
         if typ != "OK" or not datos or not datos[0]:
             return resultados
         for id_correo in datos[0].split():
