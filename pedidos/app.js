@@ -115,6 +115,8 @@ function estadoInicial() {
     config: {
       negocio: 'Mi distribución',
       contacto: '',
+      logo: '',            // foto de perfil, guardada como data URI
+      configurado: false,  // ya paso por la pantalla de bienvenida
       moneda: 'COP',
       locale: 'es-CO',
       consecutivo: 1
@@ -285,6 +287,139 @@ function barra(titulo, sub, acciones) {
   $('#appbar-sub').textContent = sub || '';
   $('#appbar-actions').innerHTML = (acciones || [])
     .map(a => `<button type="button" data-act="${a.act}">${esc(a.txt)}</button>`).join('');
+  $('#appbar-logo').innerHTML = marcaHTML();
+  $('#appbar-logo').title = S.config.negocio || '';
+}
+ACC.irAjustes = () => irA('ajustes');
+
+/* --------------------------------------------- identidad de la empresa */
+
+/** Iniciales para cuando todavia no hay foto: "Distribuidora David" -> DD */
+function iniciales(nombre) {
+  const p = String(nombre || '').trim().split(/\s+/).filter(Boolean);
+  if (!p.length) return '·';
+  return ((p[0][0] || '') + (p[1] ? p[1][0] : '')).toUpperCase();
+}
+function marcaHTML() {
+  return S.config.logo
+    ? `<img src="${S.config.logo}" alt="">`
+    : esc(iniciales(S.config.negocio));
+}
+
+/** Achica la foto antes de guardarla: el almacenamiento del navegador es
+ *  pequeño y una foto de camara moderna no cabe. */
+function procesarFoto(archivo, listo) {
+  if (!archivo) return;
+  if (!/^image\//.test(archivo.type)) { toast('Elige una imagen'); return; }
+  const lector = new FileReader();
+  lector.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 420;
+      const escala = Math.min(1, MAX / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * escala));
+      const h = Math.max(1, Math.round(img.height * escala));
+      const lienzo = document.createElement('canvas');
+      lienzo.width = w; lienzo.height = h;
+      const ctx = lienzo.getContext('2d');
+      ctx.fillStyle = '#ffffff';          // fondo para logos con transparencia
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      listo(lienzo.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => toast('No se pudo leer esa imagen');
+    img.src = lector.result;
+  };
+  lector.onerror = () => toast('No se pudo leer el archivo');
+  lector.readAsDataURL(archivo);
+}
+
+/* ------------------------------------------------ pantalla de bienvenida */
+
+function abrirBienvenida() {
+  abrirModal(`<div class="modal" id="modal-bienvenida">
+    <div class="modal-head"><h2>Bienvenido</h2></div>
+    <div class="modal-body">
+      <div class="card"><div class="card-body">
+        <p class="small muted" style="margin-top:0">Ponle el nombre y la cara de tu negocio.
+          Aparecerán al abrir la app y en cada factura que entregues.</p>
+
+        <div class="avatar-fila">
+          <div class="avatar" id="bv-avatar">${marcaHTML()}</div>
+          <div>
+            <button class="btn btn-sm" data-act="elegirFoto">Elegir foto</button>
+            <div class="small muted" style="margin-top:4px">Tu logo o una foto. Opcional.</div>
+          </div>
+        </div>
+
+        <div class="field"><label for="bv-negocio">Nombre de la empresa</label>
+          <input id="bv-negocio" type="text" placeholder="Ej: Distribuidora David"
+                 value="${esc(S.config.negocio === 'Mi distribución' ? '' : S.config.negocio)}"></div>
+        <div class="field"><label for="bv-contacto">Teléfono o NIT (opcional)</label>
+          <input id="bv-contacto" type="text" value="${esc(S.config.contacto)}"></div>
+
+        <button class="btn btn-primary btn-block" data-act="terminarBienvenida">Empezar</button>
+      </div></div>
+      <p class="small muted" style="text-align:center">Todo esto se puede cambiar después en Ajustes.</p>
+    </div>
+  </div>`);
+}
+
+ACC.elegirFoto = () => {
+  let inp = $('#selector-foto');
+  if (!inp) {
+    inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.id = 'selector-foto';
+    inp.hidden = true;
+    inp.addEventListener('change', () => {
+      procesarFoto(inp.files && inp.files[0], dataUri => {
+        S.config.logo = dataUri;
+        guardar();
+        $$('#bv-avatar, #aj-avatar').forEach(a => { a.innerHTML = marcaHTML(); });
+        $('#appbar-logo').innerHTML = marcaHTML();
+        toast('Foto guardada');
+      });
+      inp.value = '';
+    });
+    document.body.appendChild(inp);
+  }
+  inp.click();
+};
+
+ACC.quitarFoto = () => {
+  S.config.logo = '';
+  guardar();
+  render();
+  $('#appbar-logo').innerHTML = marcaHTML();
+  toast('Foto quitada');
+};
+
+ACC.terminarBienvenida = () => {
+  const nombre = $('#bv-negocio').value.trim();
+  if (!nombre) { toast('Escribe el nombre de tu empresa'); $('#bv-negocio').focus(); return; }
+  S.config.negocio = nombre;
+  S.config.contacto = $('#bv-contacto').value.trim();
+  S.config.configurado = true;
+  guardar();
+  cerrarModal();
+  render();
+  toast('Listo, ' + nombre);
+};
+
+/* Pantalla de entrada: se ve un momento al abrir la app. */
+function mostrarEntrada() {
+  const sp = $('#splash');
+  $('#splash-logo').innerHTML = marcaHTML();
+  $('#splash-nombre').textContent = S.config.negocio || '';
+  sp.hidden = false;
+  const irse = () => {
+    sp.classList.add('se-va');
+    setTimeout(() => { sp.hidden = true; sp.classList.remove('se-va'); }, 380);
+  };
+  sp.addEventListener('click', irse, { once: true });
+  setTimeout(irse, 1100);
 }
 
 /* =======================================================================
@@ -345,7 +480,10 @@ VISTAS.pedidos = function () {
              Toca <b>+ Nuevo pedido</b> para registrar el primero.</div>`}
     </div>
 
-    ${lista.length ? `<button class="btn btn-block" data-act="verCargueDelDia">Ver qué subir al camión</button>` : ''}
+    ${lista.length ? `<div class="btn-row">
+      <button class="btn btn-primary" data-act="verCuentaDia">Cuenta del día</button>
+      <button class="btn" data-act="verCargueDelDia">Qué subir al camión</button>
+    </div>` : ''}
   `;
 };
 
@@ -364,7 +502,7 @@ $('#fab').addEventListener('click', () => abrirEditorPedido(null));
 let borrador = null;   // { id, num, fecha, cliente, nota, items: Map(prodId -> cant), estado }
 let editorFiltro = { texto: '', categoria: 'todas' };
 
-function abrirEditorPedido(id, reemplazar) {
+function abrirEditorPedido(id, reemplazar, clientePrefijado) {
   const existente = id ? S.pedidos.find(p => p.id === id) : null;
   borrador = existente
     ? {
@@ -373,7 +511,7 @@ function abrirEditorPedido(id, reemplazar) {
         items: new Map(existente.items.map(i => [i.prodId, i.cant]))
       }
     : {
-        id: null, num: null, fecha: uiFecha, cliente: '', nota: '',
+        id: null, num: null, fecha: uiFecha, cliente: clientePrefijado || '', nota: '',
         estado: 'pendiente', items: new Map()
       };
   editorFiltro = { texto: '', categoria: 'todas' };
@@ -406,7 +544,7 @@ function pintarEditor() {
   return `
   <div class="modal" id="modal-pedido">
     <div class="modal-head">
-      <button type="button" data-act="cerrarModal">Cancelar</button>
+      <button type="button" data-act="cerrarSubmodal">Cancelar</button>
       <h2>${borrador.id ? 'Editar pedido' : 'Nuevo pedido'}</h2>
     </div>
     <div class="modal-body">
@@ -599,12 +737,19 @@ ACC.guardarPedido = () => {
    FACTURA / DETALLE DEL PEDIDO
    ======================================================================= */
 
+function encabezadoMarca() {
+  return `<div class="factura-marca">
+      <div class="factura-logo">${marcaHTML()}</div>
+      <div><h3>${esc(S.config.negocio || 'Mi distribución')}</h3>
+        ${S.config.contacto ? `<div class="small muted">${esc(S.config.contacto)}</div>` : ''}</div>
+    </div>`;
+}
+
 function facturaHTML(p) {
   const total = totalPedido(p);
   return `<div class="factura">
     <div class="factura-head">
-      <div><h3>${esc(S.config.negocio || 'Mi distribución')}</h3>
-        ${S.config.contacto ? `<div class="small muted">${esc(S.config.contacto)}</div>` : ''}</div>
+      ${encabezadoMarca()}
       <div class="meta"><b>Pedido N° ${p.num}</b><br>${fechaFactura(p.fecha)}<br>
         ${p.estado === 'entregado' ? 'ENTREGADO' : 'PENDIENTE'}</div>
     </div>
@@ -644,7 +789,7 @@ ACC.verPedido = el => {
   if (!p) return;
   const entregado = p.estado === 'entregado';
   abrirModal(`<div class="modal">
-    <div class="modal-head"><button type="button" data-act="cerrarModal">Cerrar</button><h2>Pedido N° ${p.num}</h2></div>
+    <div class="modal-head"><button type="button" data-act="cerrarSubmodal">Cerrar</button><h2>Pedido N° ${p.num}</h2></div>
     <div class="modal-body">
       ${facturaHTML(p)}
       <div class="btn-row" style="margin-top:14px">
@@ -694,6 +839,97 @@ ACC.imprimirFacturasDia = () => {
   if (!lista.length) return;
   imprimir(lista.map(facturaHTML).join(''));
 };
+
+/* =======================================================================
+   CUENTA DEL DIA - el cierre, tienda por tienda y producto por producto
+   ======================================================================= */
+
+function cuentaDiaHTML(fecha) {
+  const lista = pedidosDe(fecha, fecha);
+  const productos = totalesPorProducto(fecha, fecha);
+  const unidades = productos.reduce((s, t) => s + t.cant, 0);
+  const valor = lista.reduce((s, p) => s + totalPedido(p), 0);
+  const entregados = lista.filter(p => p.estado === 'entregado');
+  const cobrado = entregados.reduce((s, p) => s + totalPedido(p), 0);
+  const porCobrar = valor - cobrado;
+
+  return `<div class="factura">
+    <div class="factura-head">
+      ${encabezadoMarca()}
+      <div class="meta"><b>CUENTA DEL DÍA</b><br>${fechaFactura(fecha)}<br>${esc(fechaLarga(fecha))}</div>
+    </div>
+
+    <div class="doc-totales">
+      <div class="doc-tot"><span>Pedidos</span><b>${num(lista.length)}</b></div>
+      <div class="doc-tot"><span>Unidades</span><b>${num(unidades)}</b></div>
+      <div class="doc-tot"><span>Entregados</span><b>${num(entregados.length)}</b></div>
+    </div>
+
+    <div class="doc-seccion">Por tienda</div>
+    <table>
+      <thead><tr><th>N°</th><th>Tienda</th><th class="n">Und</th><th class="n">Valor</th><th>Estado</th></tr></thead>
+      <tbody>${lista.map(p => `<tr>
+        <td class="n">${p.num}</td>
+        <td>${esc(p.cliente)}</td>
+        <td class="n">${num(unidadesPedido(p))}</td>
+        <td class="n">${dinero(totalPedido(p))}</td>
+        <td>${p.estado === 'entregado' ? 'Entregado' : 'Pendiente'}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="2">TOTAL</td><td class="n">${num(unidades)}</td>
+        <td class="n">${dinero(valor)}</td><td></td></tr></tfoot>
+    </table>
+
+    <div class="doc-seccion">Por producto</div>
+    <table>
+      <thead><tr><th class="n">Cant</th><th>Producto</th><th class="n">Valor</th></tr></thead>
+      <tbody>${productos.map(t => `<tr>
+        <td class="n">${num(t.cant)}</td><td>${esc(t.nombre)}</td>
+        <td class="n">${dinero(t.valor)}</td></tr>`).join('')}</tbody>
+    </table>
+
+    <div class="doc-seccion">Caja</div>
+    <table>
+      <tbody>
+        <tr><td>Cobrado (pedidos entregados)</td><td class="n">${dinero(cobrado)}</td></tr>
+        <tr><td>Por cobrar (pendientes)</td><td class="n">${dinero(porCobrar)}</td></tr>
+      </tbody>
+    </table>
+
+    <div class="doc-gran-total"><span>TOTAL DEL DÍA</span><b>${dinero(valor)}</b></div>
+    <div class="factura-firma"><div>Elaborado por</div><div>Revisado por</div></div>
+  </div>`;
+}
+
+function textoCuentaDia(fecha) {
+  const lista = pedidosDe(fecha, fecha);
+  const productos = totalesPorProducto(fecha, fecha);
+  const valor = lista.reduce((s, p) => s + totalPedido(p), 0);
+  const l = [`*${S.config.negocio || 'Cuenta del día'}*`, `Cuenta del día — ${fechaFactura(fecha)}`, ''];
+  l.push('TIENDAS:');
+  for (const p of lista) {
+    l.push(`• ${p.cliente}: ${dinero(totalPedido(p))}${p.estado === 'entregado' ? '' : ' (pendiente)'}`);
+  }
+  l.push('', 'PRODUCTOS:');
+  for (const t of productos) l.push(`• ${t.cant} × ${t.nombre}`);
+  l.push('', `TOTAL DEL DÍA: ${dinero(valor)}`);
+  l.push(`${lista.length} pedido${lista.length === 1 ? '' : 's'} · ${num(productos.reduce((s, t) => s + t.cant, 0))} unidades`);
+  return l.join('\n');
+}
+
+ACC.verCuentaDia = () => {
+  if (!pedidosDe(uiFecha, uiFecha).length) { toast('Este día no tiene pedidos'); return; }
+  abrirModal(`<div class="modal">
+    <div class="modal-head"><button type="button" data-act="cerrarSubmodal">Cerrar</button><h2>Cuenta del día</h2></div>
+    <div class="modal-body">
+      ${cuentaDiaHTML(uiFecha)}
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn" data-act="compartirCuentaDia">Compartir</button>
+        <button class="btn" data-act="imprimirCuentaDia">Imprimir / PDF</button>
+      </div>
+    </div>
+  </div>`);
+};
+ACC.compartirCuentaDia = () => compartir('Cuenta del día', textoCuentaDia(uiFecha));
+ACC.imprimirCuentaDia = () => imprimir(cuentaDiaHTML(uiFecha));
 
 /* =======================================================================
    VISTA 2 - CARGUE DEL CAMION
@@ -1154,11 +1390,12 @@ function contenidoCatalogo() {
       .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
     contenido = lista.length
       ? `<ul class="list">${lista.map(c => {
-          const hist = S.pedidos.filter(p => norm(p.cliente) === norm(c.nombre) && p.estado !== 'anulado');
-          return `<li><button class="row" data-act="editarCliente" data-id="${c.id}">
+          const hist = pedidosDeCliente(c.nombre);
+          const gastado = hist.reduce((s, p) => s + totalPedido(p), 0);
+          return `<li><button class="row" data-act="verCliente" data-id="${c.id}">
             <div class="row-main"><div class="row-title">${esc(c.nombre)}</div>
-              <div class="row-sub">${esc(c.zona || 'Sin zona')}${c.telefono ? ' · ' + esc(c.telefono) : ''}</div></div>
-            <div class="row-end"><div class="row-sub">${num(hist.length)} pedido${hist.length === 1 ? '' : 's'}</div></div>
+              <div class="row-sub">${esc(c.zona || 'Sin zona')} · ${num(hist.length)} factura${hist.length === 1 ? '' : 's'}</div></div>
+            <div class="row-end"><div class="row-amount">${dinero(gastado)}</div></div>
           </button></li>`;
         }).join('')}</ul>`
       : `<div class="empty"><strong>Sin clientes</strong>Se agregan solos al guardar un pedido nuevo.</div>`;
@@ -1197,7 +1434,7 @@ ACC.catBuscar = el => {
 
 function formProducto(p) {
   return `<div class="modal">
-    <div class="modal-head"><button type="button" data-act="cerrarModal">Cancelar</button>
+    <div class="modal-head"><button type="button" data-act="cerrarSubmodal">Cancelar</button>
       <h2>${p ? 'Editar producto' : 'Nuevo producto'}</h2></div>
     <div class="modal-body"><div class="card"><div class="card-body">
       <div class="field"><label for="p-nombre">Nombre</label>
@@ -1249,9 +1486,12 @@ ACC.borrarProducto = el => {
   toast('Producto eliminado');
 };
 
-function formCliente(c) {
+function formCliente(c, desdeDetalle) {
+  const cancelar = desdeDetalle
+    ? `data-act="volverCliente" data-id="${c.id}"`
+    : `data-act="cerrarSubmodal"`;
   return `<div class="modal">
-    <div class="modal-head"><button type="button" data-act="cerrarModal">Cancelar</button>
+    <div class="modal-head"><button type="button" ${cancelar}>Cancelar</button>
       <h2>${c ? 'Editar cliente' : 'Nuevo cliente'}</h2></div>
     <div class="modal-body"><div class="card"><div class="card-body">
       <div class="field"><label for="c-nombre">Tienda o persona</label>
@@ -1260,23 +1500,137 @@ function formCliente(c) {
         <input id="c-zona" type="text" value="${esc(c ? c.zona : '')}" placeholder="Ej: Centro"></div>
       <div class="field"><label for="c-tel">Teléfono</label>
         <input id="c-tel" type="tel" value="${esc(c ? c.telefono : '')}"></div>
-      <button class="btn btn-primary btn-block" data-act="guardarCliente" data-id="${c ? c.id : ''}">Guardar</button>
+      <button class="btn btn-primary btn-block" data-act="guardarCliente"
+              data-id="${c ? c.id : ''}" data-volver="${desdeDetalle ? '1' : ''}">Guardar</button>
       ${c ? `<button class="btn btn-danger btn-block" style="margin-top:8px" data-act="borrarCliente" data-id="${c.id}">Eliminar</button>` : ''}
     </div></div></div>
   </div>`;
 }
 
 ACC.nuevoCliente = () => abrirModal(formCliente(null));
-ACC.editarCliente = el => abrirModal(formCliente(S.clientes.find(c => c.id === el.dataset.id)));
+ACC.editarCliente = el => abrirModal(
+  formCliente(S.clientes.find(c => c.id === el.dataset.id), el.dataset.desde === 'detalle'),
+  el.dataset.desde === 'detalle' ? 'reemplazo' : undefined
+);
+
+/* -------------------------------------------------- historial por tienda */
+
+const pedidosDeCliente = nombre => S.pedidos
+  .filter(p => norm(p.cliente) === norm(nombre) && p.estado !== 'anulado')
+  .sort((a, b) => b.fecha.localeCompare(a.fecha) || b.creado - a.creado);
+
+function abrirDetalleCliente(id, reemplazar) {
+  const c = S.clientes.find(x => x.id === id);
+  if (!c) return;
+  const hist = pedidosDeCliente(c.nombre);
+  const total = hist.reduce((s, p) => s + totalPedido(p), 0);
+  const pendiente = hist.filter(p => p.estado !== 'entregado').reduce((s, p) => s + totalPedido(p), 0);
+  const unidades = hist.reduce((s, p) => s + unidadesPedido(p), 0);
+
+  // que le gusta comprar a esta tienda
+  const favoritos = new Map();
+  for (const p of hist) for (const i of p.items) {
+    favoritos.set(i.nombre, (favoritos.get(i.nombre) || 0) + i.cant);
+  }
+  const top = Array.from(favoritos.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  const filas = hist.map(p => `<li><button class="row" data-act="verPedido" data-id="${p.id}">
+      <div class="row-main">
+        <div class="row-title">${esc(fechaLarga(p.fecha))}</div>
+        <div class="row-sub">Factura N° ${p.num} · ${num(unidadesPedido(p))} und ·
+          <span class="badge ${p.estado === 'entregado' ? 'badge-ok' : 'badge-pend'}">
+            ${p.estado === 'entregado' ? 'Entregado' : 'Pendiente'}</span></div>
+      </div>
+      <div class="row-end"><div class="row-amount">${dinero(totalPedido(p))}</div></div>
+    </button></li>`).join('');
+
+  abrirModal(`<div class="modal">
+    <div class="modal-head"><button type="button" data-act="cerrarSubmodal">Cerrar</button>
+      <h2>${esc(c.nombre)}</h2></div>
+    <div class="modal-body">
+      <div class="card"><div class="card-body">
+        <div class="row-sub" style="margin-bottom:10px">
+          ${esc(c.zona || 'Sin zona')}${c.telefono ? ' · ' + esc(c.telefono) : ''}</div>
+        <div class="kpis" style="margin-bottom:0">
+          <div class="kpi"><div class="kpi-label">Facturas</div><div class="kpi-value num">${num(hist.length)}</div></div>
+          <div class="kpi"><div class="kpi-label">Unidades</div><div class="kpi-value num">${num(unidades)}</div></div>
+          <div class="kpi"><div class="kpi-label">Total comprado</div><div class="kpi-value num">${dinero(total)}</div></div>
+          <div class="kpi"><div class="kpi-label">Por cobrar</div>
+            <div class="kpi-value num">${dinero(pendiente)}</div>
+            <div class="kpi-note">${pendiente ? 'pedidos sin entregar' : 'al día'}</div></div>
+        </div>
+      </div></div>
+
+      ${top.length ? `<div class="card">
+        <div class="card-head"><h2>Lo que más lleva</h2></div>
+        <div class="card-body">${top.map(([nom, cant]) =>
+          `<div class="bar-h-label"><span>${esc(nom)}</span><b>${num(cant)}</b></div>`).join('')}</div>
+      </div>` : ''}
+
+      <div class="card">
+        <div class="card-head"><h2>Facturas de esta tienda</h2><span class="small muted">${num(hist.length)}</span></div>
+        ${hist.length ? `<ul class="list">${filas}</ul>`
+          : `<div class="empty"><strong>Todavía no le has vendido</strong>Toma el primer pedido desde aquí.</div>`}
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" data-act="pedidoParaCliente" data-nombre="${esc(c.nombre)}">Nuevo pedido</button>
+        <button class="btn" data-act="editarCliente" data-id="${c.id}" data-desde="detalle">Editar datos</button>
+      </div>
+      ${hist.length ? `<div class="btn-row" style="margin-top:8px">
+        <button class="btn" data-act="compartirCuentaCliente" data-id="${c.id}">Compartir estado de cuenta</button>
+        <button class="btn" data-act="imprimirFacturasCliente" data-id="${c.id}">Imprimir sus facturas</button>
+      </div>` : ''}
+    </div>
+  </div>`, reemplazar ? 'reemplazo' : undefined);
+}
+
+ACC.verCliente = el => abrirDetalleCliente(el.dataset.id);
+ACC.volverCliente = el => abrirDetalleCliente(el.dataset.id, true);
+
+ACC.pedidoParaCliente = el => abrirEditorPedido(null, true, el.dataset.nombre);
+
+ACC.compartirCuentaCliente = el => {
+  const c = S.clientes.find(x => x.id === el.dataset.id);
+  const hist = pedidosDeCliente(c.nombre);
+  const total = hist.reduce((s, p) => s + totalPedido(p), 0);
+  const pend = hist.filter(p => p.estado !== 'entregado');
+  const l = [`*${S.config.negocio || ''}*`.trim(), `Estado de cuenta — ${c.nombre}`, ''];
+  for (const p of hist.slice(0, 20)) {
+    l.push(`${fechaFactura(p.fecha)} · N° ${p.num} · ${dinero(totalPedido(p))}` +
+      (p.estado === 'entregado' ? '' : ' (pendiente)'));
+  }
+  l.push('', `Total comprado: ${dinero(total)}`);
+  if (pend.length) l.push(`Por cobrar: ${dinero(pend.reduce((s, p) => s + totalPedido(p), 0))}`);
+  compartir('Estado de cuenta', l.join('\n'));
+};
+
+ACC.imprimirFacturasCliente = el => {
+  const c = S.clientes.find(x => x.id === el.dataset.id);
+  const hist = pedidosDeCliente(c.nombre);
+  if (!hist.length) return;
+  imprimir(hist.map(facturaHTML).join(''));
+};
 
 ACC.guardarCliente = el => {
   const nombre = $('#c-nombre').value.trim();
   if (!nombre) { toast('Escribe el nombre'); return; }
   const datos = { nombre, zona: $('#c-zona').value.trim(), telefono: $('#c-tel').value.trim() };
-  if (el.dataset.id) Object.assign(S.clientes.find(c => c.id === el.dataset.id), datos);
-  else S.clientes.push({ id: uid(), ...datos });
-  guardar(); cerrarModal(); render();
+  if (el.dataset.id) {
+    const c = S.clientes.find(x => x.id === el.dataset.id);
+    // si le cambio el nombre, sus facturas viejas lo siguen
+    if (norm(c.nombre) !== norm(nombre)) {
+      for (const p of S.pedidos) if (norm(p.cliente) === norm(c.nombre)) p.cliente = nombre;
+    }
+    Object.assign(c, datos);
+  } else {
+    S.clientes.push({ id: uid(), ...datos });
+  }
+  guardar();
+  render();
   toast('Cliente guardado');
+  if (el.dataset.volver) abrirDetalleCliente(el.dataset.id, true);
+  else cerrarModal();
 };
 
 ACC.borrarCliente = el => {
@@ -1330,6 +1684,16 @@ VISTAS.ajustes = function () {
     <div class="card">
       <div class="card-head"><h2>Mi negocio</h2></div>
       <div class="card-body">
+        <div class="avatar-fila">
+          <div class="avatar" id="aj-avatar">${marcaHTML()}</div>
+          <div>
+            <div class="btn-row">
+              <button class="btn btn-sm" data-act="elegirFoto">${S.config.logo ? 'Cambiar foto' : 'Poner foto'}</button>
+              ${S.config.logo ? `<button class="btn btn-sm" data-act="quitarFoto">Quitar</button>` : ''}
+            </div>
+            <div class="small muted" style="margin-top:4px">Sale al abrir la app y en las facturas.</div>
+          </div>
+        </div>
         <div class="field"><label for="a-negocio">Nombre (sale en la factura)</label>
           <input id="a-negocio" type="text" value="${esc(S.config.negocio)}" data-in="cfgNegocio"></div>
         <div class="field"><label for="a-contacto">Teléfono o NIT</label>
@@ -1381,7 +1745,11 @@ VISTAS.ajustes = function () {
   pintarBotonInstalar();
 };
 
-ACC.cfgNegocio  = el => { S.config.negocio = el.value; guardar(); };
+ACC.cfgNegocio  = el => {
+  S.config.negocio = el.value;
+  guardar();
+  if (!S.config.logo) $('#appbar-logo').innerHTML = marcaHTML();   // iniciales al vuelo
+};
 ACC.cfgContacto = el => { S.config.contacto = el.value; guardar(); };
 ACC.cfgMoneda   = el => { S.config.moneda = el.value; guardar(); render(); };
 
@@ -1417,6 +1785,7 @@ ACC.borrarTodo = () => {
   localStorage.removeItem(DB_KEY);
   guardar(); render();
   toast('Todo borrado');
+  abrirBienvenida();
 };
 
 /* --- instalacion de la PWA */
@@ -1458,13 +1827,19 @@ function retroceder(n) {
   setTimeout(() => { ignorarPop = false; }, 500);   // red de seguridad
 }
 
-/** modo: undefined = pantalla nueva · 'sub' = encima de otra · 'reemplazo' = cambia el contenido */
+/** modo: undefined = pantalla nueva · 'sub' = encima de otra · 'reemplazo' = cambia la de arriba.
+ *  Si ya hay una pantalla abierta, la nueva siempre se apila encima: al cerrarla
+ *  se vuelve a la anterior (de la factura al historial de la tienda, por ejemplo). */
 function abrirModal(html, modo) {
   const raiz = $('#modal-root');
-  if (modo === 'sub') raiz.insertAdjacentHTML('beforeend', html);
-  else raiz.innerHTML = html;
-  if (modo !== 'reemplazo') history.pushState({ modal: raiz.children.length }, '');
   document.body.style.overflow = 'hidden';
+  if (modo === 'reemplazo' && raiz.lastElementChild) {
+    raiz.lastElementChild.outerHTML = html;   // no toca el historial
+    return;
+  }
+  if (raiz.children.length) raiz.insertAdjacentHTML('beforeend', html);
+  else raiz.innerHTML = html;
+  history.pushState({ modal: raiz.children.length }, '');
 }
 function cerrarModal() {
   const abiertos = $('#modal-root').children.length;
@@ -1514,6 +1889,9 @@ window.addEventListener('afterprint', () => { $('#print-root').innerHTML = ''; }
 
 S = cargarEstado();
 irA('pedidos');
+
+if (S.config.configurado) mostrarEntrada();   // logo y nombre al abrir
+else abrirBienvenida();                       // primera vez: quien eres
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load', () => {

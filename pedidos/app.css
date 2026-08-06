@@ -78,6 +78,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--brand-ink);
 }
 .appbar-main { min-width: 0; flex: 1; }
+.appbar-logo {
+  flex: none; width: 40px; height: 40px; padding: 0;
+  border: 1.5px solid rgba(255,255,255,.45); border-radius: 11px;
+  background: rgba(255,255,255,.16); color: inherit;
+  font-size: 15px; font-weight: 700; letter-spacing: .02em;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; cursor: pointer;
+}
+.appbar-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .appbar h1 { font-size: 19px; }
 .appbar-sub { margin: 1px 0 0; font-size: 13px; opacity: .82; }
 .appbar-actions { display: flex; gap: 8px; flex: none; }
@@ -87,6 +96,36 @@ button, input, select, textarea { font: inherit; color: inherit; }
   cursor: pointer;
 }
 .appbar-actions button:active { background: rgba(255,255,255,.3); }
+
+/* ------------------------------------------------------ pantalla de entrada */
+
+#splash {
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  background: var(--brand); color: var(--brand-ink);
+  transition: opacity .35s;
+}
+#splash[hidden] { display: none; }
+#splash.se-va { opacity: 0; pointer-events: none; }
+.splash-logo {
+  width: 108px; height: 108px; border-radius: 26px;
+  background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.5);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  font-size: 38px; font-weight: 700;
+}
+.splash-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.splash-nombre { margin: 0; font-size: 20px; font-weight: 650; text-align: center; padding: 0 28px; }
+
+/* foto de perfil dentro de formularios y ajustes */
+.avatar-fila { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.avatar {
+  width: 74px; height: 74px; flex: none; border-radius: 18px;
+  background: var(--brand-soft); color: var(--brand);
+  border: 1px solid var(--line-strong);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  font-size: 26px; font-weight: 700;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* ---------------------------------------------------------------- vistas */
 
@@ -354,8 +393,43 @@ table.data tfoot td { font-weight: 700; border-bottom: 0; border-top: 2px solid 
 
 /* ---------------------------------------------------------------- factura */
 
-.factura { background: var(--card); color: var(--ink); padding: 18px; border-radius: var(--radius); border: 1px solid var(--line); }
-.factura-head { display: flex; justify-content: space-between; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 12px; }
+.factura {
+  background: var(--card); color: var(--ink); padding: 18px;
+  border-radius: var(--radius); border: 1px solid var(--line);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.factura-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 12px;
+}
+.factura-marca { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; }
+.factura-head .meta { flex: 0 0 auto; max-width: 46%; }
+.factura-head .meta b { white-space: nowrap; }
+.factura-logo {
+  width: 52px; height: 52px; flex: none; border-radius: 11px; overflow: hidden;
+  background: var(--brand-soft); color: var(--brand);
+  display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;
+}
+.factura-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* documento de cierre del dia */
+.doc-seccion {
+  margin: 18px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--line-strong);
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2);
+}
+.doc-totales { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+.doc-tot {
+  flex: 1 1 0; min-width: 0;
+  border: 1px solid var(--line-strong); border-radius: 10px; padding: 8px 10px;
+}
+.doc-tot span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-2); }
+.doc-tot b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.doc-gran-total {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  margin-top: 14px; padding-top: 10px; border-top: 2px solid var(--ink);
+  font-size: 18px; font-weight: 700;
+}
+.doc-gran-total b { font-variant-numeric: tabular-nums; }
 .factura-head h3 { font-size: 17px; }
 .factura-head .meta { text-align: right; font-size: 13px; color: var(--ink-2); }
 .factura-cliente { margin-bottom: 12px; font-size: 14px; }

@@ -13,14 +13,39 @@ que el teléfono guarda como si fuera una app.
 
 | Pantalla | Para qué sirve |
 |---|---|
-| **Pedidos** | Registrar un pedido en la puerta de la tienda: nombre del cliente y cantidades. Ves el total del día. |
+| **Pedidos** | Registrar un pedido en la puerta de la tienda: nombre del cliente y cantidades. Ves el total del día y generas la **cuenta del día**. |
 | **Cargue** | La respuesta a "¿qué subo al camión?": suma todos los pedidos y te da el total por producto, agrupado por categoría, con casillas para ir marcando lo que ya cargaste. |
 | **Reportes** | Cuánto vendiste por día, qué productos se mueven más, qué cliente compra más, y la **proyección** de la próxima semana y el próximo mes. Exporta a Excel (CSV). |
-| **Catálogo** | Tus productos (nombre, categoría, precio, unidad) y tu libreta de clientes. |
-| **Ajustes** | Nombre del negocio para la factura, moneda y respaldos. |
+| **Catálogo** | Tus productos (nombre, categoría, precio, unidad) y tus tiendas, cada una con **su historial de facturas**. |
+| **Ajustes** | Nombre y foto del negocio, moneda y respaldos. |
 
-Cada pedido genera una **factura** que se puede compartir por WhatsApp o imprimir
-(desde ahí también se guarda como PDF).
+### Tu empresa
+
+La primera vez que abres la app te pide el **nombre de la empresa** y una **foto
+de perfil** (tu logo o una foto). A partir de ahí:
+
+- se ven al abrir la app, en la pantalla de entrada;
+- el logo queda en la esquina de la barra superior (tócalo para ir a Ajustes);
+- **encabezan todas las facturas y la cuenta del día**.
+
+Se cambian cuando quieras en **Ajustes → Mi negocio**. La foto se achica sola
+antes de guardarse, para no llenar la memoria del teléfono.
+
+### Los tres documentos
+
+1. **Factura de cada pedido** — se guarda individualmente, con su número
+   consecutivo, cliente, productos y total. Se comparte por WhatsApp o se
+   imprime (desde ahí sale el PDF).
+2. **Cuenta del día** — el cierre. Botón *Cuenta del día* en la pantalla de
+   Pedidos: resumen del día, el detalle **por tienda** (cuánto compró cada una y
+   si quedó pendiente), el detalle **por producto**, cuánto cobraste y cuánto
+   queda por cobrar. Se genera para cualquier día: mueve la fecha y ahí está el
+   de esa jornada.
+3. **Historial por tienda** — en *Catálogo → Clientes*, toca una tienda: total
+   comprado, cuánto te debe, lo que más lleva, y **la lista de todas sus
+   facturas**, cada una abrible. Desde ahí puedes tomarle un pedido nuevo con el
+   nombre ya puesto, mandarle su estado de cuenta por WhatsApp o imprimir todas
+   sus facturas juntas.
 
 ---
 
@@ -52,16 +77,18 @@ requiere que la página venga de una dirección `https://`).
 
 ## Primeros pasos
 
-1. Abre **Catálogo** → *Cargar catálogo de ejemplo* (papas, cheetos, palomitas,
+1. Al abrirla por primera vez, pon el **nombre de tu empresa** y tu **foto**.
+   Eso es lo que verán tus clientes en las facturas.
+2. Abre **Catálogo** → *Cargar catálogo de ejemplo* (papas, cheetos, palomitas,
    gaseosas…) y edítalo: cambia nombres y precios por los tuyos, borra lo que no
    vendas y agrega lo que falte.
-2. En **Ajustes**, escribe el nombre de tu negocio y tu teléfono: eso sale en la
-   factura.
 3. Ya puedes tomar pedidos. En cada tienda: **+ Nuevo pedido** → escribe el
    nombre de la tienda → busca cada producto y toca **+** las veces que pidan →
    **Guardar**. La tienda queda guardada en la libreta para la próxima visita.
 4. Al terminar el recorrido, entra a **Cargue**: ahí está la lista de qué subir
    al camión. Puedes compartirla por WhatsApp o imprimirla.
+5. Al cerrar el día, **Pedidos → Cuenta del día**: el resumen de la jornada,
+   listo para compartir o guardar en PDF.
 
 ---
 
@@ -102,4 +129,5 @@ registrando pedidos empieza a ser útil.
 - `sw.js` — service worker (modo sin conexión). Al cambiar la app, sube el
   número de `VERSION` para que los teléfonos descarguen la versión nueva.
 - `manifest.webmanifest`, `icon*.png/svg` — para que se instale como app.
-- Los datos viven en `localStorage`, bajo la clave `gestor_pedidos_v1`.
+- Los datos viven en `localStorage`, bajo la clave `gestor_pedidos_v1`. La foto
+  de perfil se guarda ahí mismo como data URI JPEG (máximo 420 px de lado).
