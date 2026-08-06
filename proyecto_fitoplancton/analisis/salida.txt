@@ -1,0 +1,227 @@
+=== 0. CONTROL DE CALIDAD ===
+registros totales: 131
+sin indice (errores de hoja): 11
+indice fuera de 1 a 6: 8
+validos: 112
+    campana   estacion        br  temperatura  salinidad  turbidez
+  Seca 2021 SC-21-0113  9.520122        38.70       0.30    242.00
+  Seca 2021 SC-21-0163  0.666867        29.20      18.90      2.56
+  Seca 2021 SC-21-0165  0.715382        31.00      21.10      4.09
+  Seca 2021 SC-21-0231  8.350538        29.70      11.50     31.60
+  Seca 2022 SC-22-0121 10.201275        29.39      25.65    183.50
+  Seca 2022 SC-22-0122  8.368367        29.34      21.18     63.70
+  Seca 2022 SC-22-0127  6.539741        31.28      31.26     19.90
+Humeda 2023 SC-23-0522  6.432976        31.70       0.00     15.40
+
+temperatura fuera de 26 a 34 C:   campana   estacion  temperatura
+Seca 2021 SC-21-0113         38.7
+
+=== 1. CLASES DE TAMANO (sin filtro, como en el compendio) ===
+clase        Micro  Nano  Pico
+campana                       
+Humeda 2022     21     7     1
+Humeda 2023      6     2     7
+Seca 2021       13     5     6
+Seca 2022        6     8     9
+Seca 2023       22     4     3
+
+porcentajes por campana:
+/tmp/claude-0/-home-user-EXTRAPROCESAL/85bb4587-828c-5654-b9e1-8dcea31c6b7f/scratchpad/work/an/analisis.py:45: Pandas4Warning: Starting with pandas version 4.0 all arguments of sum will be keyword-only.
+  print((t.T / t.sum(1) * 100).T.round(1))
+clase        Micro  Nano  Pico
+campana                       
+Humeda 2022   72.4  24.1   3.4
+Humeda 2023   40.0  13.3  46.7
+Seca 2021     54.2  20.8  25.0
+Seca 2022     26.1  34.8  39.1
+Seca 2023     75.9  13.8  10.3
+
+=== clases con control de calidad aplicado ===
+clase_qc     Micro  Nano  Pico
+campana                       
+Humeda 2022     21     7     1
+Humeda 2023      6     2     6
+Seca 2021       11     5     4
+Seca 2022        6     8     6
+Seca 2023       22     4     3
+/tmp/claude-0/-home-user-EXTRAPROCESAL/85bb4587-828c-5654-b9e1-8dcea31c6b7f/scratchpad/work/an/analisis.py:49: Pandas4Warning: Starting with pandas version 4.0 all arguments of sum will be keyword-only.
+  print((tq.T / tq.sum(1) * 100).T.round(1))
+clase_qc     Micro  Nano  Pico
+campana                       
+Humeda 2022   72.4  24.1   3.4
+Humeda 2023   42.9  14.3  42.9
+Seca 2021     55.0  25.0  20.0
+Seca 2022     30.0  40.0  30.0
+Seca 2023     75.9  13.8  10.3
+
+por epoca (con QC):
+clase_qc  Micro  Nano  Pico
+epoca                      
+Humeda       27     9     7
+Seca         39    17    13
+/tmp/claude-0/-home-user-EXTRAPROCESAL/85bb4587-828c-5654-b9e1-8dcea31c6b7f/scratchpad/work/an/analisis.py:52: Pandas4Warning: Starting with pandas version 4.0 all arguments of sum will be keyword-only.
+  print(te); print((te.T/te.sum(1)*100).T.round(1))
+clase_qc  Micro  Nano  Pico
+epoca                      
+Humeda     62.8  20.9  16.3
+Seca       56.5  24.6  18.8
+
+coincidencia de clase entre 440/676 y 443/676: 85.8% (103 de 120)
+
+estaciones por zona: {'Alta influencia': 77, 'Baja influencia': 53}
+
+=== 2. ESTADISTICA DESCRIPTIVA (registros validos) ===
+            temperatura                                   salinidad                                  turbidez                                      br                               
+                  count   mean median   std    min    max     count   mean median   std    min   max    count   mean median    std   min    max count  mean median   std   min   max
+campana                                                                                                                                                                             
+Humeda 2022          29  30.79  30.70  0.63  30.10  32.80        29  21.19  19.30  6.68   7.80  34.6       29  14.90   5.30  18.88  0.50   92.2    29  2.20   2.01  0.53  1.45  4.04
+Humeda 2023          14  30.64  30.50  0.88  29.30  32.10        14  24.34  25.50  7.23  14.30  33.7       14   8.53   4.11  11.55  0.83   35.4    14  2.87   2.85  0.96  1.53  4.84
+Seca 2021            17  29.69  29.50  1.40  28.10  32.70        19  23.99  24.80  8.72   6.10  34.7       19   9.53   5.53  13.72  0.45   57.9    20  2.51   2.30  0.81  1.18  4.25
+Seca 2022            20  29.64  29.55  0.95  28.04  31.31        20  25.15  26.14  5.46  15.83  33.5       20   9.77   8.84   5.69  3.10   22.5    20  2.85   2.72  0.60  1.87  4.19
+Seca 2023            29  31.88  31.90  0.98  29.60  33.60        29  22.06  22.00  7.06   8.40  33.7       29   9.02   3.96  24.44  0.00  134.1    29  2.31   2.17  0.44  1.75  3.53
+
+global:
+       temperatura  salinidad  turbidez      br
+count       109.00     111.00    111.00  112.00
+mean         30.68      23.01     10.71    2.48
+std           1.28       7.08     17.36    0.69
+min          28.04       6.10      0.00    1.18
+25%          29.90      17.75      3.03    1.99
+50%          30.70      22.40      5.30    2.33
+75%          31.50      29.20     10.74    2.81
+max          33.60      34.70    134.10    4.84
+
+por epoca:
+       temperatura                     salinidad                     turbidez                         br                   
+             count   mean median   std     count   mean median   std    count   mean median    std count  mean median   std
+epoca                                                                                                                      
+Humeda          43  30.74   30.6  0.71        43  22.21  19.70  6.94       43  12.83   4.88  16.98    43  2.42   2.17  0.76
+Seca            66  30.64   30.8  1.54        68  23.51  23.05  7.18       68   9.38   5.52  17.59    69  2.52   2.39  0.64
+
+=== 3. SUPUESTOS ESTADISTICOS ===
+Shapiro-Wilk temperatura  n=109 W=0.986 p=0.2983 -> normal
+Shapiro-Wilk salinidad    n=111 W=0.966 p=0.0065 -> NO normal
+Shapiro-Wilk turbidez     n=111 W=0.528 p=0.0000 -> NO normal
+Shapiro-Wilk br           n=112 W=0.914 p=0.0000 -> NO normal
+
+Levene (epoca) temperatura  F=26.535 p=0.0000 -> NO homogenea
+Levene (epoca) salinidad    F=0.027 p=0.8700 -> homogenea
+Levene (epoca) turbidez     F=1.113 p=0.2938 -> homogenea
+Levene (epoca) br           F=0.462 p=0.4981 -> homogenea
+
+Levene (campana) temperatura  F=5.111 p=0.0008
+Levene (campana) salinidad    F=1.008 p=0.4065
+Levene (campana) turbidez     F=0.705 p=0.5902
+Levene (campana) br           F=3.048 p=0.0201
+
+=== 4. CORRELACIONES DE SPEARMAN (validos) ===
+
+--- todos los validos (n=112) ---
+  br vs temperatura  n=109 rho=-0.273 p=0.0041 | Pearson r=-0.229 p=0.0165
+  br vs salinidad    n=111 rho=+0.240 p=0.0111 | Pearson r=+0.169 p=0.0768
+  br vs turbidez     n=111 rho=+0.118 p=0.2173 | Pearson r=+0.070 p=0.4684
+
+--- epoca Humeda (n=43) ---
+  br vs temperatura  n= 43 rho=-0.210 p=0.1769 | Pearson r=-0.226 p=0.1454
+  br vs salinidad    n= 43 rho=+0.463 p=0.0018 | Pearson r=+0.482 p=0.0011
+  br vs turbidez     n= 43 rho=-0.008 p=0.9578 | Pearson r=+0.006 p=0.9696
+
+--- epoca Seca (n=69) ---
+  br vs temperatura  n= 66 rho=-0.326 p=0.0076 | Pearson r=-0.254 p=0.0397
+  br vs salinidad    n= 68 rho=-0.003 p=0.9809 | Pearson r=-0.061 p=0.6194
+  br vs turbidez     n= 68 rho=+0.206 p=0.0925 | Pearson r=+0.128 p=0.2974
+
+matriz de Spearman entre variables ambientales:
+             temperatura  salinidad  turbidez     br
+temperatura        1.000     -0.288     0.111 -0.273
+salinidad         -0.288      1.000    -0.385  0.240
+turbidez           0.111     -0.385     1.000  0.118
+br                -0.273      0.240     0.118  1.000
+
+br vs log10(turbidez): rho=+0.118 p=0.2173
+
+=== 5. PRUEBAS DE HIPOTESIS ===
+Mann-Whitney seca vs humeda (br): n1=69 n2=43 U=1740.0 p=0.1256
+   medianas: seca=2.387  humeda=2.165
+   tamano del efecto r=0.145
+
+Kruskal-Wallis entre las cinco campanas (br): H=19.238 gl=4 p=0.0007
+   medianas: {'Humeda 2022': 2.009, 'Humeda 2023': 2.85, 'Seca 2021': 2.301, 'Seca 2022': 2.723, 'Seca 2023': 2.172}
+
+   comparaciones por pares (Mann-Whitney, Bonferroni):
+     Humeda 2022  vs Humeda 2023  p=0.0165  p_ajustada=0.1651 
+     Humeda 2022  vs Seca 2021    p=0.1197  p_ajustada=1.0000 
+     Humeda 2022  vs Seca 2022    p=0.0001  p_ajustada=0.0013 *
+     Humeda 2022  vs Seca 2023    p=0.1663  p_ajustada=1.0000 
+     Humeda 2023  vs Seca 2021    p=0.2554  p_ajustada=1.0000 
+     Humeda 2023  vs Seca 2022    p=0.8749  p_ajustada=1.0000 
+     Humeda 2023  vs Seca 2023    p=0.0677  p_ajustada=0.6767 
+     Seca 2021    vs Seca 2022    p=0.0639  p_ajustada=0.6389 
+     Seca 2021    vs Seca 2023    p=0.4578  p_ajustada=1.0000 
+     Seca 2022    vs Seca 2023    p=0.0005  p_ajustada=0.0049 *
+
+Mann-Whitney seca vs humeda (temperatura): p=0.9481 medianas 30.80 / 30.60
+
+Mann-Whitney seca vs humeda (salinidad): p=0.1931 medianas 23.05 / 19.70
+
+Mann-Whitney seca vs humeda (turbidez): p=0.5113 medianas 5.52 / 4.88
+
+Mann-Whitney zona alta vs baja influencia (br): n1=65 n2=46 p=0.0041
+   medianas: alta=2.149 baja=2.588
+
+Chi cuadrado clase x epoca: chi2=0.431 gl=2 p=0.8062
+clase_qc  Micro  Nano  Pico
+epoca                      
+Humeda       27     9     7
+Seca         39    17    13
+frecuencias esperadas:
+ clase_qc  Micro  Nano  Pico
+epoca                      
+Humeda     25.3  10.0   7.7
+Seca       40.7  16.0  12.3
+
+=== 6. ANALISIS MULTIVARIADO ===
+n = 109
+varianza explicada: [40.2 29.2 18.6 12.1]
+acumulada: [ 40.2  69.4  87.9 100. ]
+
+cargas (correlacion variable componente):
+               CP1    CP2    CP3
+temperatura -0.623  0.433 -0.622
+salinidad    0.842  0.183 -0.069
+turbidez    -0.600 -0.658  0.183
+br           0.389 -0.716 -0.563
+
+conglomerados (Ward, k=3): medias por grupo
+       temperatura        salinidad        turbidez           br      
+             count   mean     count   mean    count   mean count  mean
+grupo3                                                                
+1               36  29.82        36  30.78       36   5.49    36  2.78
+2               21  31.07        21  15.69       21  34.47    21  2.84
+3               52  31.11        52  20.42       52   4.90    52  2.13
+
+composicion por epoca:
+epoca   Humeda  Seca
+grupo3              
+1           14    22
+2           10    11
+3           19    33
+
+clase dominante por grupo:
+clase_qc  Micro  Nano  Pico
+grupo3                     
+1            11    16     9
+2            10     4     7
+3            44     4     4
+
+correlacion cofenetica (Spearman): 0.483
+
+=== 7. MODELO DESCRIPTIVO PRELIMINAR ===
+n=109  R2=0.096  R2 ajustado=0.070  RMSE(log10)=0.106
+   intercepto       b=+0.8268  ee=0.2813  t=+2.94  p=0.0040
+   temperatura      b=-0.0176  ee=0.0086  t=-2.04  p=0.0438
+   salinidad        b=+0.0031  ee=0.0017  t=+1.79  p=0.0768
+   log10 turbidez   b=+0.0313  ee=0.0203  t=+1.54  p=0.1265
+   residuos Shapiro-Wilk W=0.968 p=0.0097
+
+figuras guardadas

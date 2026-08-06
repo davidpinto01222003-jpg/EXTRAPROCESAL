@@ -1,0 +1,37 @@
+n con espectro: 91  validos: 83
+
+medianas del indice segun el par de longitudes de onda (validos):
+       440/676  443/676  440/675  443/675  443/677
+count   83.000   83.000   83.000   83.000   83.000
+mean     2.541    2.503    2.492    2.455    2.522
+50%      2.418    2.362    2.383    2.286    2.373
+std      0.750    0.815    0.727    0.790    0.800
+min      1.180    1.195    1.188    1.202    1.185
+max      4.840    5.475    4.973    5.142    5.345
+
+concordancia de clase respecto al par 440/676 (validos):
+   443/676: 86.7%   cambios: 11 de 83
+   440/675: 96.4%   cambios: 3 de 83
+   443/675: 83.1%   cambios: 14 de 83
+   443/677: 86.7%   cambios: 11 de 83
+
+diferencia mediana absoluta frente a 440/676:
+   443/676: 0.0751
+   440/675: 0.0487
+   443/675: 0.1165
+   443/677: 0.0550
+
+correlacion cofenetica (Pearson) = 0.514
+
+fraccion ad/ap a 440 nm (control de calidad del aphy):
+count    91.000
+mean      0.528
+std       0.182
+min       0.002
+25%       0.419
+50%       0.519
+75%       0.642
+max       0.977
+estaciones con ad/ap > 0.9 (aphy residual, poco confiable): 1
+    campana   estacion  frac_ad  br440_compendio  turbidez
+Humeda 2022 SC-22-0444    0.977             4.04      24.4

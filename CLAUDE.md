@@ -7,3 +7,9 @@
   Sol 0024-23. Guardados a pedido del usuario el 2026-08-06. Son datos de referencia, no
   entran en los flujos jurídicos del repositorio. La estructura de hojas y columnas está
   documentada en `datos/espectros_cdom/README.md`.
+
+- `proyecto_fitoplancton/` — trabajo de apoyo al anteproyecto de maestría sobre el índice
+  Blue/Red en la Bahía de Cartagena (Omar Enrique Gamboa Posada). Contiene el informe de
+  avance entregado, las fuentes originales, las rutinas de análisis y las figuras. Ver
+  `proyecto_fitoplancton/README.md`. El usuario pidió que los documentos de este proyecto
+  se escriban sin guiones.
