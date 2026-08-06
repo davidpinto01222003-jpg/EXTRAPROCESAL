@@ -49,7 +49,7 @@ for c in pct.columns:
         if v > 6:
             ax[0].text(i, b + v / 2, f"{v:.0f}", ha="center", va="center", color="white", fontsize=8)
     bot = bot + pct[c].values
-ax[0].set_xticks(range(len(pct))); ax[0].set_xticklabels(etiq)
+ax[0].set_xticks(range(len(pct))); ax[0].set_xticklabels(etiq, fontsize=7.5)
 ax[0].set_ylabel("Porcentaje de estaciones")
 ax[0].set_title("a) Composición por clase de tamaño")
 ax[0].legend(fontsize=6.5, ncol=3, loc="lower center", bbox_to_anchor=(0.5, -0.30), frameon=False)
