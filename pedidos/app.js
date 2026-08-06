@@ -59,6 +59,66 @@ function finMes(iso) {
   return isoDe(new Date(d.getFullYear(), d.getMonth() + 1, 0));
 }
 
+/* --- periodos: dia, semana, mes y año se manejan igual en toda la app.
+   Un periodo es un tipo mas una fecha "ancla" que cae dentro de el. */
+
+function rangoPeriodo(tipo, ancla) {
+  const d = fechaDe(ancla);
+  switch (tipo) {
+    case 'semana': { const l = inicioSemana(ancla); return { desde: l, hasta: sumarDias(l, 6) }; }
+    case 'mes':    return { desde: inicioMes(ancla), hasta: finMes(ancla) };
+    case 'anio':   return { desde: `${d.getFullYear()}-01-01`, hasta: `${d.getFullYear()}-12-31` };
+    default:       return { desde: ancla, hasta: ancla };
+  }
+}
+
+function moverPeriodo(tipo, ancla, dir) {
+  const d = fechaDe(ancla);
+  switch (tipo) {
+    case 'semana': return sumarDias(inicioSemana(ancla), dir * 7);
+    case 'mes':    return isoDe(new Date(d.getFullYear(), d.getMonth() + dir, 1));
+    case 'anio':   return isoDe(new Date(d.getFullYear() + dir, 0, 1));
+    default:       return sumarDias(ancla, dir);
+  }
+}
+
+/** ¿el periodo que contiene esta ancla es el que estamos viviendo? */
+function periodoEsActual(tipo, ancla) {
+  return rangoPeriodo(tipo, ancla).desde === rangoPeriodo(tipo, hoyISO()).desde;
+}
+
+const cap = s => String(s).charAt(0).toUpperCase() + String(s).slice(1);
+
+/** Etiqueta corta, para el selector de periodo. */
+function etiquetaPeriodo(tipo, ancla) {
+  const d = fechaDe(ancla);
+  const r = rangoPeriodo(tipo, ancla);
+  const actual = periodoEsActual(tipo, ancla);
+  switch (tipo) {
+    case 'semana': return actual ? 'Esta semana' : `${fechaCorta(r.desde)} — ${fechaCorta(r.hasta)}`;
+    case 'mes':    return `${cap(MESES[d.getMonth()])} ${d.getFullYear()}`;
+    case 'anio':   return String(d.getFullYear());
+    default:       return etiquetaDia(ancla) || fechaCorta(ancla);
+  }
+}
+
+/** Etiqueta larga, para la barra de arriba y los documentos. */
+function subPeriodo(tipo, ancla) {
+  const d = fechaDe(ancla);
+  const r = rangoPeriodo(tipo, ancla);
+  switch (tipo) {
+    case 'semana': return `Del ${fechaCorta(r.desde)} al ${fechaCorta(r.hasta)}`;
+    case 'mes':    return `${cap(MESES[d.getMonth()])} de ${d.getFullYear()}`;
+    case 'anio':   return `Año ${d.getFullYear()}`;
+    default: {
+      const e = etiquetaDia(ancla);
+      return e ? `${e}, ${fechaLarga(ancla)}` : cap(fechaLarga(ancla));
+    }
+  }
+}
+
+const NOMBRE_TIPO = { dia: 'Día', semana: 'Semana', mes: 'Mes', anio: 'Año' };
+
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
   'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -209,6 +269,43 @@ function totalesPorCliente(desde, hasta) {
     mapa.set(clave, acc);
   }
   return Array.from(mapa.values()).sort((a, b) => b.valor - a.valor);
+}
+
+/** Serie para graficar y tabular: por dia, salvo en el año, que va por mes.
+ *  Devuelve siempre {clave, etiqueta, etiquetaLarga, pedidos, cant, valor}. */
+function serieDelPeriodo(tipo, desde, hasta) {
+  if (tipo === 'anio') return serieMensual(desde, hasta);
+  return serieDiaria(desde, hasta).map(d => ({
+    clave: d.fecha,
+    etiqueta: fechaCorta(d.fecha),
+    etiquetaLarga: cap(fechaLarga(d.fecha)),
+    pedidos: d.pedidos, cant: d.cant, valor: d.valor
+  }));
+}
+
+function serieMensual(desde, hasta) {
+  const acc = new Map();
+  for (const p of pedidosDe(desde, hasta)) {
+    const k = p.fecha.slice(0, 7);
+    const a = acc.get(k) || { pedidos: 0, cant: 0, valor: 0 };
+    a.pedidos++; a.cant += unidadesPedido(p); a.valor += totalPedido(p);
+    acc.set(k, a);
+  }
+  const salida = [];
+  const ini = fechaDe(desde), fin = fechaDe(hasta);
+  const cursor = new Date(ini.getFullYear(), ini.getMonth(), 1);
+  while (cursor <= fin) {
+    const k = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`;
+    const a = acc.get(k) || { pedidos: 0, cant: 0, valor: 0 };
+    salida.push({
+      clave: k,
+      etiqueta: MESES_C[cursor.getMonth()],
+      etiquetaLarga: `${cap(MESES[cursor.getMonth()])} ${cursor.getFullYear()}`,
+      ...a
+    });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return salida;
 }
 
 function serieDiaria(desde, hasta) {
@@ -426,72 +523,157 @@ function mostrarEntrada() {
    VISTA 1 - PEDIDOS DEL DIA
    ======================================================================= */
 
-let uiFecha = hoyISO();
+let uiFecha = hoyISO();   // fecha ancla del periodo que se esta viendo
+let uiTipo = 'dia';       // dia | semana | mes | anio
+
+/** Fecha que se propone al crear un pedido desde el periodo que se ve. */
+function fechaParaPedidoNuevo() {
+  if (uiTipo === 'dia') return uiFecha;
+  const { desde, hasta } = rangoPeriodo(uiTipo, uiFecha);
+  const h = hoyISO();
+  return (h >= desde && h <= hasta) ? h : desde;   // hoy si cae dentro; si no, el inicio
+}
+
+/** ‹ Etiqueta › con el subtitulo solo cuando aporta algo: "Agosto 2026" no
+ *  necesita explicacion, pero "Hoy" y "Esta semana" si dicen poco solos. */
+function navPeriodo(tipo, ancla, accMover, accHoy) {
+  const sub = (tipo === 'dia' || (tipo === 'semana' && periodoEsActual(tipo, ancla)))
+    ? subPeriodo(tipo, ancla) : '';
+  return `<div class="card"><div class="card-body periodo-nav">
+      <button class="btn btn-sm" data-act="${accMover}" data-dir="-1" aria-label="Anterior">‹</button>
+      <div class="periodo-titulo">
+        <b>${esc(etiquetaPeriodo(tipo, ancla))}</b>
+        ${sub ? `<span>${esc(sub)}</span>` : ''}
+      </div>
+      <button class="btn btn-sm" data-act="${accMover}" data-dir="1" aria-label="Siguiente">›</button>
+      ${!periodoEsActual(tipo, ancla) ? `<button class="btn btn-sm" data-act="${accHoy}">Hoy</button>` : ''}
+    </div></div>`;
+}
+
+function selectorPeriodo(tipo, ancla, accTipo, accMover, accHoy) {
+  return `<div class="chips">
+      ${Object.entries(NOMBRE_TIPO).map(([k, t]) => `<button class="chip ${tipo === k ? 'is-active' : ''}"
+        data-act="${accTipo}" data-k="${k}">${t}</button>`).join('')}
+    </div>
+    ${navPeriodo(tipo, ancla, accMover, accHoy)}`;
+}
+
+function filaPedido(p, conFecha) {
+  const entregado = p.estado === 'entregado';
+  return `<li><button class="row" data-act="verPedido" data-id="${p.id}">
+    <div class="row-main">
+      <div class="row-title">${esc(p.cliente)}</div>
+      <div class="row-sub">${conFecha ? esc(fechaCorta(p.fecha)) + ' · ' : ''}${num(unidadesPedido(p))} und ·
+        <span class="badge ${entregado ? 'badge-ok' : 'badge-pend'}">${entregado ? 'Entregado' : 'Pendiente'}</span>
+      </div>
+    </div>
+    <div class="row-end"><div class="row-amount">${dinero(totalPedido(p))}</div>
+      <div class="row-sub">#${p.num}</div></div>
+  </button></li>`;
+}
+
+/** La relación de pedidos del periodo. En día y semana se ven uno por uno;
+ *  en mes se agrupan por día; en año, por mes (tocar un mes lo abre). */
+function relacionPedidos(tipo, desde, hasta) {
+  const lista = pedidosDe(desde, hasta);
+  if (!lista.length) {
+    return `<div class="empty"><strong>No hay pedidos en este periodo</strong>
+      ${tipo === 'dia' ? 'Toca <b>+ Nuevo pedido</b> para registrar el primero.' : 'Prueba con otra fecha.'}</div>`;
+  }
+
+  if (tipo === 'dia') return `<ul class="list">${lista.map(p => filaPedido(p, false)).join('')}</ul>`;
+
+  if (tipo === 'anio') {
+    const meses = new Map();
+    for (const p of lista) {
+      const k = p.fecha.slice(0, 7);
+      const a = meses.get(k) || { clave: k, pedidos: 0, cant: 0, valor: 0 };
+      a.pedidos++; a.cant += unidadesPedido(p); a.valor += totalPedido(p);
+      meses.set(k, a);
+    }
+    const filas = Array.from(meses.values()).sort((a, b) => b.clave.localeCompare(a.clave));
+    return `<ul class="list">${filas.map(m => {
+      const d = fechaDe(m.clave + '-01');
+      return `<li><button class="row" data-act="abrirMes" data-f="${m.clave}-01">
+        <div class="row-main">
+          <div class="row-title">${cap(MESES[d.getMonth()])}</div>
+          <div class="row-sub">${num(m.pedidos)} pedido${m.pedidos === 1 ? '' : 's'} · ${num(m.cant)} und</div>
+        </div>
+        <div class="row-end"><div class="row-amount">${dinero(m.valor)}</div>
+          <div class="row-sub">ver el mes ›</div></div>
+      </button></li>`;
+    }).join('')}</ul>`;
+  }
+
+  // semana y mes: agrupados por dia, el mas reciente arriba
+  const dias = new Map();
+  for (const p of lista) {
+    if (!dias.has(p.fecha)) dias.set(p.fecha, []);
+    dias.get(p.fecha).push(p);
+  }
+  const fechas = Array.from(dias.keys()).sort((a, b) => b.localeCompare(a));
+  return fechas.map(f => {
+    const delDia = dias.get(f);
+    const val = delDia.reduce((s, p) => s + totalPedido(p), 0);
+    const und = delDia.reduce((s, p) => s + unidadesPedido(p), 0);
+    return `<div class="grupo-dia">
+        <button class="grupo-dia-cab" data-act="abrirDia" data-f="${f}">
+          <span>${cap(fechaLarga(f))}</span>
+          <span class="num">${num(delDia.length)} ped · ${num(und)} und · ${dinero(val)}</span>
+        </button>
+        <ul class="list">${delDia.map(p => filaPedido(p, false)).join('')}</ul>
+      </div>`;
+  }).join('');
+}
 
 VISTAS.pedidos = function () {
-  const etq = etiquetaDia(uiFecha);
-  barra('Pedidos', etq ? `${etq}, ${fechaLarga(uiFecha)}` : fechaLarga(uiFecha));
+  const { desde, hasta } = rangoPeriodo(uiTipo, uiFecha);
+  barra('Pedidos', subPeriodo(uiTipo, uiFecha));
   $('#fab').hidden = false;
 
-  const lista = pedidosDe(uiFecha, uiFecha);
+  const lista = pedidosDe(desde, hasta);
   const unidades = lista.reduce((s, p) => s + unidadesPedido(p), 0);
   const valor = lista.reduce((s, p) => s + totalPedido(p), 0);
-
-  const filas = lista.map(p => {
-    const entregado = p.estado === 'entregado';
-    return `<li><button class="row" data-act="verPedido" data-id="${p.id}">
-      <div class="row-main">
-        <div class="row-title">${esc(p.cliente)}</div>
-        <div class="row-sub">${p.items.length} producto${p.items.length === 1 ? '' : 's'} ·
-          ${num(unidadesPedido(p))} und ·
-          <span class="badge ${entregado ? 'badge-ok' : 'badge-pend'}">${entregado ? 'Entregado' : 'Pendiente'}</span>
-        </div>
-      </div>
-      <div class="row-end"><div class="row-amount">${dinero(totalPedido(p))}</div>
-        <div class="row-sub">#${p.num}</div></div>
-    </button></li>`;
-  }).join('');
+  const porCobrar = lista.filter(p => p.estado !== 'entregado').reduce((s, p) => s + totalPedido(p), 0);
+  const tiendas = new Set(lista.map(p => norm(p.cliente))).size;
 
   $('#view-pedidos').innerHTML = `
-    <div class="card">
-      <div class="card-body" style="display:flex;gap:8px;align-items:center">
-        <button class="btn btn-sm" data-act="diaAnterior" aria-label="Día anterior">‹</button>
-        <input type="date" value="${uiFecha}" data-ch="cambiarFecha" style="flex:1;min-height:44px;
-          padding:8px 10px;border:1px solid var(--line-strong);border-radius:11px;background:var(--surface)">
-        <button class="btn btn-sm" data-act="diaSiguiente" aria-label="Día siguiente">›</button>
-        ${uiFecha !== hoyISO() ? '<button class="btn btn-sm" data-act="irHoy">Hoy</button>' : ''}
-      </div>
-    </div>
+    ${selectorPeriodo(uiTipo, uiFecha, 'uiTipoPeriodo', 'uiMover', 'irHoy')}
 
     <div class="kpis">
-      <div class="kpi"><div class="kpi-label">Pedidos</div><div class="kpi-value num">${num(lista.length)}</div></div>
+      <div class="kpi"><div class="kpi-label">Pedidos</div><div class="kpi-value num">${num(lista.length)}</div>
+        <div class="kpi-note">${num(tiendas)} tienda${tiendas === 1 ? '' : 's'}</div></div>
       <div class="kpi"><div class="kpi-label">Unidades</div><div class="kpi-value num">${num(unidades)}</div></div>
-      <div class="kpi" style="grid-column:span 2"><div class="kpi-label">Valor del día</div>
-        <div class="kpi-value num">${dinero(valor)}</div></div>
+      <div class="kpi"><div class="kpi-label">Valor</div><div class="kpi-value num">${dinero(valor)}</div></div>
+      <div class="kpi"><div class="kpi-label">Por cobrar</div><div class="kpi-value num">${dinero(porCobrar)}</div>
+        <div class="kpi-note">${porCobrar ? 'sin entregar' : 'todo entregado'}</div></div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>Pedidos tomados</h2>
-        ${lista.length ? `<button class="btn btn-sm" data-act="imprimirFacturasDia">Imprimir todas</button>` : ''}
+      <div class="card-head"><h2>Relación de pedidos</h2>
+        ${lista.length && uiTipo === 'dia'
+          ? `<button class="btn btn-sm" data-act="imprimirFacturasDia">Imprimir todas</button>` : ''}
       </div>
-      ${lista.length
-        ? `<ul class="list">${filas}</ul>`
-        : `<div class="empty"><strong>No hay pedidos este día</strong>
-             Toca <b>+ Nuevo pedido</b> para registrar el primero.</div>`}
+      ${relacionPedidos(uiTipo, desde, hasta)}
     </div>
 
     ${lista.length ? `<div class="btn-row">
-      <button class="btn btn-primary" data-act="verCuentaDia">Cuenta del día</button>
-      <button class="btn" data-act="verCargueDelDia">Qué subir al camión</button>
+      <button class="btn btn-primary" data-act="verRelacion">${uiTipo === 'dia' ? 'Cuenta del día' : 'Relación en PDF'}</button>
+      <button class="btn" data-act="verCargueDelPeriodo">Qué subir al camión</button>
     </div>` : ''}
   `;
 };
 
-ACC.diaAnterior = () => { uiFecha = sumarDias(uiFecha, -1); render(); };
-ACC.diaSiguiente = () => { uiFecha = sumarDias(uiFecha, 1); render(); };
+ACC.uiTipoPeriodo = el => { uiTipo = el.dataset.k; render(); };
+ACC.uiMover = el => { uiFecha = moverPeriodo(uiTipo, uiFecha, Number(el.dataset.dir)); render(); };
 ACC.irHoy = () => { uiFecha = hoyISO(); render(); };
-ACC.cambiarFecha = el => { if (el.value) { uiFecha = el.value; render(); } };
-ACC.verCargueDelDia = () => { cargueRango = { desde: uiFecha, hasta: uiFecha, preset: 'dia' }; irA('cargue'); };
+ACC.abrirMes = el => { uiTipo = 'mes'; uiFecha = el.dataset.f; render(); };
+ACC.abrirDia = el => { uiTipo = 'dia'; uiFecha = el.dataset.f; render(); };
+ACC.verCargueDelPeriodo = () => {
+  const { desde, hasta } = rangoPeriodo(uiTipo, uiFecha);
+  cargueRango = { desde, hasta, preset: desde === hasta ? 'dia' : 'rango' };
+  irA('cargue');
+};
 
 $('#fab').addEventListener('click', () => abrirEditorPedido(null));
 
@@ -511,7 +693,7 @@ function abrirEditorPedido(id, reemplazar, clientePrefijado) {
         items: new Map(existente.items.map(i => [i.prodId, i.cant]))
       }
     : {
-        id: null, num: null, fecha: uiFecha, cliente: clientePrefijado || '', nota: '',
+        id: null, num: null, fecha: fechaParaPedidoNuevo(), cliente: clientePrefijado || '', nota: '',
         estado: 'pendiente', items: new Map()
       };
   editorFiltro = { texto: '', categoria: 'todas' };
@@ -844,28 +1026,53 @@ ACC.imprimirFacturasDia = () => {
    CUENTA DEL DIA - el cierre, tienda por tienda y producto por producto
    ======================================================================= */
 
-function cuentaDiaHTML(fecha) {
-  const lista = pedidosDe(fecha, fecha);
-  const productos = totalesPorProducto(fecha, fecha);
+const TITULO_DOC = { dia: 'CUENTA DEL DÍA', semana: 'RELACIÓN SEMANAL', mes: 'RELACIÓN MENSUAL', anio: 'RELACIÓN ANUAL' };
+
+/** Resumen por tienda: en un solo dia interesa cada pedido; en periodos
+ *  largos interesa cuanto compro cada tienda en total. */
+function resumenTiendas(desde, hasta) {
+  const mapa = new Map();
+  for (const p of pedidosDe(desde, hasta)) {
+    const k = norm(p.cliente);
+    const a = mapa.get(k) || { nombre: p.cliente, pedidos: 0, cant: 0, valor: 0, pendiente: 0 };
+    a.pedidos++;
+    a.cant += unidadesPedido(p);
+    a.valor += totalPedido(p);
+    if (p.estado !== 'entregado') a.pendiente += totalPedido(p);
+    mapa.set(k, a);
+  }
+  return Array.from(mapa.values()).sort((a, b) => b.valor - a.valor);
+}
+
+function relacionHTML(tipo, ancla) {
+  const { desde, hasta } = rangoPeriodo(tipo, ancla);
+  const unDia = desde === hasta;
+  const lista = pedidosDe(desde, hasta);
+  const productos = totalesPorProducto(desde, hasta);
   const unidades = productos.reduce((s, t) => s + t.cant, 0);
   const valor = lista.reduce((s, p) => s + totalPedido(p), 0);
   const entregados = lista.filter(p => p.estado === 'entregado');
   const cobrado = entregados.reduce((s, p) => s + totalPedido(p), 0);
-  const porCobrar = valor - cobrado;
+  const tiendas = resumenTiendas(desde, hasta);
+
+  // en periodos largos, la evolucion: por dia en semana/mes, por mes en año
+  const serie = unDia ? [] : serieDelPeriodo(tipo, desde, hasta).filter(x => x.pedidos);
 
   return `<div class="factura">
     <div class="factura-head">
       ${encabezadoMarca()}
-      <div class="meta"><b>CUENTA DEL DÍA</b><br>${fechaFactura(fecha)}<br>${esc(fechaLarga(fecha))}</div>
+      <div class="meta"><b>${TITULO_DOC[tipo]}</b><br>
+        ${unDia ? fechaFactura(desde) : `${fechaFactura(desde)}<br>al ${fechaFactura(hasta)}`}</div>
     </div>
 
     <div class="doc-totales">
       <div class="doc-tot"><span>Pedidos</span><b>${num(lista.length)}</b></div>
       <div class="doc-tot"><span>Unidades</span><b>${num(unidades)}</b></div>
-      <div class="doc-tot"><span>Entregados</span><b>${num(entregados.length)}</b></div>
+      <div class="doc-tot"><span>Tiendas</span><b>${num(tiendas.length)}</b></div>
     </div>
 
-    <div class="doc-seccion">Por tienda</div>
+    ${unDia ? `
+    <div class="doc-seccion">Pedidos del día</div>
     <table>
       <thead><tr><th>N°</th><th>Tienda</th><th class="n">Und</th><th class="n">Valor</th><th>Estado</th></tr></thead>
       <tbody>${lista.map(p => `<tr>
@@ -876,7 +1083,29 @@ function cuentaDiaHTML(fecha) {
         <td>${p.estado === 'entregado' ? 'Entregado' : 'Pendiente'}</td></tr>`).join('')}</tbody>
       <tfoot><tr><td colspan="2">TOTAL</td><td class="n">${num(unidades)}</td>
         <td class="n">${dinero(valor)}</td><td></td></tr></tfoot>
-    </table>
+    </table>` : `
+    <div class="doc-seccion">Por tienda</div>
+    <table>
+      <thead><tr><th>Tienda</th><th class="n">Ped</th><th class="n">Und</th><th class="n">Valor</th><th class="n">Debe</th></tr></thead>
+      <tbody>${tiendas.map(t => `<tr>
+        <td>${esc(t.nombre)}</td>
+        <td class="n">${num(t.pedidos)}</td>
+        <td class="n">${num(t.cant)}</td>
+        <td class="n">${dinero(t.valor)}</td>
+        <td class="n">${t.pendiente ? dinero(t.pendiente) : '—'}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>TOTAL</td><td class="n">${num(lista.length)}</td><td class="n">${num(unidades)}</td>
+        <td class="n">${dinero(valor)}</td><td class="n">${dinero(valor - cobrado)}</td></tr></tfoot>
+    </table>`}
+
+    ${serie.length ? `
+    <div class="doc-seccion">${tipo === 'anio' ? 'Mes a mes' : 'Día a día'}</div>
+    <table>
+      <thead><tr><th>${tipo === 'anio' ? 'Mes' : 'Día'}</th><th class="n">Ped</th>
+        <th class="n">Und</th><th class="n">Valor</th></tr></thead>
+      <tbody>${serie.map(d => `<tr><td>${esc(d.etiquetaLarga)}</td>
+        <td class="n">${num(d.pedidos)}</td><td class="n">${num(d.cant)}</td>
+        <td class="n">${dinero(d.valor)}</td></tr>`).join('')}</tbody>
+    </table>` : ''}
 
     <div class="doc-seccion">Por producto</div>
     <table>
@@ -890,46 +1119,56 @@ function cuentaDiaHTML(fecha) {
     <table>
       <tbody>
         <tr><td>Cobrado (pedidos entregados)</td><td class="n">${dinero(cobrado)}</td></tr>
-        <tr><td>Por cobrar (pendientes)</td><td class="n">${dinero(porCobrar)}</td></tr>
+        <tr><td>Por cobrar (pendientes)</td><td class="n">${dinero(valor - cobrado)}</td></tr>
       </tbody>
     </table>
 
-    <div class="doc-gran-total"><span>TOTAL DEL DÍA</span><b>${dinero(valor)}</b></div>
+    <div class="doc-gran-total"><span>TOTAL ${unDia ? 'DEL DÍA' : esc(subPeriodo(tipo, ancla).toUpperCase())}</span>
+      <b>${dinero(valor)}</b></div>
     <div class="factura-firma"><div>Elaborado por</div><div>Revisado por</div></div>
   </div>`;
 }
 
-function textoCuentaDia(fecha) {
-  const lista = pedidosDe(fecha, fecha);
-  const productos = totalesPorProducto(fecha, fecha);
+function textoRelacion(tipo, ancla) {
+  const { desde, hasta } = rangoPeriodo(tipo, ancla);
+  const unDia = desde === hasta;
+  const lista = pedidosDe(desde, hasta);
+  const productos = totalesPorProducto(desde, hasta);
   const valor = lista.reduce((s, p) => s + totalPedido(p), 0);
-  const l = [`*${S.config.negocio || 'Cuenta del día'}*`, `Cuenta del día — ${fechaFactura(fecha)}`, ''];
+  const l = [`*${S.config.negocio || ''}*`.trim(),
+    `${cap(TITULO_DOC[tipo].toLowerCase())} — ${subPeriodo(tipo, ancla)}`, ''];
   l.push('TIENDAS:');
-  for (const p of lista) {
-    l.push(`• ${p.cliente}: ${dinero(totalPedido(p))}${p.estado === 'entregado' ? '' : ' (pendiente)'}`);
+  if (unDia) {
+    for (const p of lista) l.push(`• ${p.cliente}: ${dinero(totalPedido(p))}${p.estado === 'entregado' ? '' : ' (pendiente)'}`);
+  } else {
+    for (const t of resumenTiendas(desde, hasta)) {
+      l.push(`• ${t.nombre}: ${num(t.pedidos)} ped · ${dinero(t.valor)}${t.pendiente ? ` (debe ${dinero(t.pendiente)})` : ''}`);
+    }
   }
   l.push('', 'PRODUCTOS:');
   for (const t of productos) l.push(`• ${t.cant} × ${t.nombre}`);
-  l.push('', `TOTAL DEL DÍA: ${dinero(valor)}`);
+  l.push('', `TOTAL: ${dinero(valor)}`);
   l.push(`${lista.length} pedido${lista.length === 1 ? '' : 's'} · ${num(productos.reduce((s, t) => s + t.cant, 0))} unidades`);
   return l.join('\n');
 }
 
-ACC.verCuentaDia = () => {
-  if (!pedidosDe(uiFecha, uiFecha).length) { toast('Este día no tiene pedidos'); return; }
+ACC.verRelacion = () => {
+  const { desde, hasta } = rangoPeriodo(uiTipo, uiFecha);
+  if (!pedidosDe(desde, hasta).length) { toast('Este periodo no tiene pedidos'); return; }
   abrirModal(`<div class="modal">
-    <div class="modal-head"><button type="button" data-act="cerrarSubmodal">Cerrar</button><h2>Cuenta del día</h2></div>
+    <div class="modal-head"><button type="button" data-act="cerrarSubmodal">Cerrar</button>
+      <h2>${uiTipo === 'dia' ? 'Cuenta del día' : 'Relación de pedidos'}</h2></div>
     <div class="modal-body">
-      ${cuentaDiaHTML(uiFecha)}
+      ${relacionHTML(uiTipo, uiFecha)}
       <div class="btn-row" style="margin-top:14px">
-        <button class="btn" data-act="compartirCuentaDia">Compartir</button>
-        <button class="btn" data-act="imprimirCuentaDia">Imprimir / PDF</button>
+        <button class="btn" data-act="compartirRelacion">Compartir</button>
+        <button class="btn" data-act="imprimirRelacion">Imprimir / PDF</button>
       </div>
     </div>
   </div>`);
 };
-ACC.compartirCuentaDia = () => compartir('Cuenta del día', textoCuentaDia(uiFecha));
-ACC.imprimirCuentaDia = () => imprimir(cuentaDiaHTML(uiFecha));
+ACC.compartirRelacion = () => compartir('Relación de pedidos', textoRelacion(uiTipo, uiFecha));
+ACC.imprimirRelacion = () => imprimir(relacionHTML(uiTipo, uiFecha));
 
 /* =======================================================================
    VISTA 2 - CARGUE DEL CAMION
@@ -1075,49 +1314,49 @@ ACC.imprimirCargue = () => {
    VISTA 3 - REPORTES Y PROYECCION
    ======================================================================= */
 
-let repPeriodo = 'semana';
-let repRango = { desde: inicioSemana(hoyISO()), hasta: hoyISO() };
+let repTipo = 'semana';      // dia | semana | mes | anio | rango
+let repAncla = hoyISO();
+let repRango = { desde: sumarDias(hoyISO(), -13), hasta: hoyISO() };
 let repVentana = 28;         // dias de historial para proyectar
 let repMetrica = 'unidades'; // unidades | valor
 
 function rangoDelPeriodo() {
-  const h = hoyISO();
-  switch (repPeriodo) {
-    case 'semana': return { desde: inicioSemana(h), hasta: h };
-    case 'mes':    return { desde: inicioMes(h), hasta: h };
-    case '30':     return { desde: sumarDias(h, -29), hasta: h };
-    case 'mesant': {
-      const finAnterior = sumarDias(inicioMes(h), -1);
-      return { desde: inicioMes(finAnterior), hasta: finAnterior };
-    }
-    default: return repRango;
-  }
+  return repTipo === 'rango' ? repRango : rangoPeriodo(repTipo, repAncla);
+}
+/** Los graficos del año van por mes; los demas por dia, salvo que el rango
+ *  elegido a mano sea tan largo que no quepan las barras. */
+function granularidadReporte() {
+  if (repTipo === 'anio') return 'anio';
+  const { desde, hasta } = rangoDelPeriodo();
+  return diasEntre(desde, hasta) > 92 ? 'anio' : 'dia';
 }
 
 VISTAS.reportes = function () {
   const { desde, hasta } = rangoDelPeriodo();
-  barra('Reportes', `${fechaCorta(desde)} — ${fechaCorta(hasta)}`);
+  barra('Reportes', repTipo === 'rango'
+    ? `${fechaCorta(desde)} — ${fechaCorta(hasta)}`
+    : subPeriodo(repTipo, repAncla));
   $('#fab').hidden = true;
 
   const pedidos = pedidosDe(desde, hasta);
   const productos = totalesPorProducto(desde, hasta);
   const clientes = totalesPorCliente(desde, hasta);
-  const serie = serieDiaria(desde, hasta);
+  const serie = serieDelPeriodo(granularidadReporte(), desde, hasta);
   const unidades = productos.reduce((s, t) => s + t.cant, 0);
   const valor = productos.reduce((s, t) => s + t.valor, 0);
   const ticket = pedidos.length ? valor / pedidos.length : 0;
 
   $('#view-reportes').innerHTML = `
     <div class="chips">
-      ${[['semana', 'Esta semana'], ['mes', 'Este mes'], ['30', 'Últimos 30 días'],
-         ['mesant', 'Mes pasado'], ['rango', 'Elegir fechas']]
-        .map(([k, t]) => `<button class="chip ${repPeriodo === k ? 'is-active' : ''}" data-act="repPeriodo" data-k="${k}">${t}</button>`).join('')}
+      ${Object.entries(NOMBRE_TIPO).map(([k, t]) => `<button class="chip ${repTipo === k ? 'is-active' : ''}"
+        data-act="repTipo" data-k="${k}">${t}</button>`).join('')}
+      <button class="chip ${repTipo === 'rango' ? 'is-active' : ''}" data-act="repTipo" data-k="rango">Fechas</button>
     </div>
 
-    ${repPeriodo === 'rango' ? `<div class="card"><div class="card-body field-row">
+    ${repTipo === 'rango' ? `<div class="card"><div class="card-body field-row">
       <div class="field"><label>Desde</label><input type="date" value="${desde}" data-ch="repDesde"></div>
       <div class="field"><label>Hasta</label><input type="date" value="${hasta}" data-ch="repHasta"></div>
-    </div></div>` : ''}
+    </div></div>` : navPeriodo(repTipo, repAncla, 'repMover', 'repHoy')}
 
     <div class="kpis">
       <div class="kpi"><div class="kpi-label">Pedidos</div><div class="kpi-value num">${num(pedidos.length)}</div></div>
@@ -1127,7 +1366,7 @@ VISTAS.reportes = function () {
     </div>
 
     ${pedidos.length ? `
-      ${tarjetaTendencia(serie)}
+      ${desde === hasta ? '' : tarjetaTendencia(serie)}
       ${tarjetaTopProductos(productos, unidades)}
       ${tarjetaProyeccion()}
       ${tarjetaClientes(clientes)}
@@ -1140,11 +1379,9 @@ VISTAS.reportes = function () {
   `;
 };
 
-ACC.repPeriodo = el => {
-  repPeriodo = el.dataset.k;
-  if (repPeriodo === 'rango' && !repRango.desde) repRango = { desde: sumarDias(hoyISO(), -13), hasta: hoyISO() };
-  render();
-};
+ACC.repTipo = el => { repTipo = el.dataset.k; render(); };
+ACC.repMover = el => { repAncla = moverPeriodo(repTipo, repAncla, Number(el.dataset.dir)); render(); };
+ACC.repHoy = () => { repAncla = hoyISO(); render(); };
 ACC.repDesde = el => { if (el.value) { repRango.desde = el.value; if (repRango.hasta < el.value) repRango.hasta = el.value; render(); } };
 ACC.repHasta = el => { if (el.value) { repRango.hasta = el.value; if (repRango.desde > el.value) repRango.desde = el.value; render(); } };
 ACC.repMetrica = el => { repMetrica = el.dataset.k; render(); };
@@ -1154,36 +1391,38 @@ ACC.repVentana = el => { repVentana = Number(el.dataset.k); render(); };
 
 function tarjetaTendencia(serie) {
   const campo = repMetrica === 'valor' ? 'valor' : 'cant';
+  const porMes = granularidadReporte() === 'anio';
   const max = Math.max(1, ...serie.map(d => d[campo]));
   const pico = serie.reduce((a, b) => (b[campo] > a[campo] ? b : a), serie[0]);
-  // con muchos dias no cabe una etiqueta por barra: se rotula solo el pico
+  // con muchas barras no cabe una etiqueta en cada una: se rotula solo el pico
   const paso = serie.length > 14 ? Math.ceil(serie.length / 7) : 1;
 
-  const barras = serie.map((d, i) => {
+  const barras = serie.map(d => {
     const v = d[campo];
     const alto = (v / max) * 100;
-    const esPico = v > 0 && d.fecha === pico.fecha;
+    const esPico = v > 0 && d.clave === pico.clave;
     return `<div class="bar-v ${v ? '' : 'is-zero'}" tabindex="0" data-act="tipDia"
-              data-f="${d.fecha}" data-c="${d.cant}" data-v="${d.valor}" data-p="${d.pedidos}">
+              data-f="${esc(d.etiquetaLarga)}" data-c="${d.cant}" data-v="${d.valor}" data-p="${d.pedidos}">
         ${esPico ? `<span class="bar-v-top">${campo === 'valor' ? dinero(v) : num(v)}</span>` : ''}
         <span class="bar-v-fill" style="height:${Math.max(alto, v ? 3 : 0.8)}%"></span>
       </div>`;
   }).join('');
 
-  const ejes = serie.map((d, i) => `<span>${i % paso === 0 ? esc(fechaCorta(d.fecha)) : ''}</span>`).join('');
+  const ejes = serie.map((d, i) => `<span>${i % paso === 0 ? esc(d.etiqueta) : ''}</span>`).join('');
 
   return `<div class="card">
-    <div class="card-head"><h2>Día a día</h2>
+    <div class="card-head"><h2>${porMes ? 'Mes a mes' : 'Día a día'}</h2>
       <div style="display:flex;gap:6px">
         <button class="chip ${repMetrica === 'unidades' ? 'is-active' : ''}" data-act="repMetrica" data-k="unidades">Unidades</button>
         <button class="chip ${repMetrica === 'valor' ? 'is-active' : ''}" data-act="repMetrica" data-k="valor">Ventas</button>
       </div>
     </div>
     <div class="chart">
-      <p class="chart-note">${repMetrica === 'valor' ? 'Ventas' : 'Unidades'} por día · máximo ${repMetrica === 'valor' ? dinero(max) : num(max)}</p>
+      <p class="chart-note">${repMetrica === 'valor' ? 'Ventas' : 'Unidades'} por ${porMes ? 'mes' : 'día'} ·
+        máximo ${repMetrica === 'valor' ? dinero(max) : num(max)}</p>
       <div class="bars-v">${barras}</div>
       <div class="bars-axis">${ejes}</div>
-      <p class="chart-tip" id="tip-dia">Toca una barra para ver el detalle del día.</p>
+      <p class="chart-tip" id="tip-dia">Toca una barra para ver el detalle.</p>
     </div>
   </div>`;
 }
@@ -1191,7 +1430,7 @@ function tarjetaTendencia(serie) {
 ACC.tipDia = el => {
   const t = $('#tip-dia');
   if (!t) return;
-  t.textContent = `${fechaLarga(el.dataset.f)}: ${num(el.dataset.c)} unidades · ` +
+  t.textContent = `${el.dataset.f}: ${num(el.dataset.c)} unidades · ` +
     `${dinero(Number(el.dataset.v))} · ${num(el.dataset.p)} pedido${el.dataset.p === '1' ? '' : 's'}`;
 };
 

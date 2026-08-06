@@ -153,6 +153,23 @@ button, input, select, textarea { font: inherit; color: inherit; }
   text-transform: uppercase; letter-spacing: .06em; color: var(--ink-muted);
 }
 
+/* navegador de periodo: ‹ titulo › */
+.periodo-nav { display: flex; align-items: center; gap: 8px; }
+.periodo-nav > .btn { flex: none; }
+.periodo-titulo { flex: 1; min-width: 0; text-align: center; }
+.periodo-titulo b { display: block; font-size: 16px; }
+.periodo-titulo span { display: block; font-size: 12px; color: var(--ink-muted); }
+
+/* encabezado de cada día dentro de semana y mes */
+.grupo-dia + .grupo-dia { border-top: 1px solid var(--line); }
+.grupo-dia-cab {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  width: 100%; padding: 9px 14px; border: 0; cursor: pointer;
+  background: var(--plane); color: var(--ink-2);
+  font-size: 13px; font-weight: 700; text-align: left;
+}
+.grupo-dia-cab .num { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+
 .muted { color: var(--ink-muted); }
 .small { font-size: 13px; }
 .nowrap { white-space: nowrap; }
@@ -403,8 +420,9 @@ table.data tfoot td { font-weight: 700; border-bottom: 0; border-top: 2px solid 
   border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 12px;
 }
 .factura-marca { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; }
-.factura-head .meta { flex: 0 0 auto; max-width: 46%; }
-.factura-head .meta b { white-space: nowrap; }
+.factura-marca > div { min-width: 0; }          /* deja encoger el nombre largo */
+.factura-head h3 { overflow-wrap: anywhere; }
+.factura-head .meta { flex: 0 1 auto; max-width: 44%; font-size: 12.5px; }
 .factura-logo {
   width: 52px; height: 52px; flex: none; border-radius: 11px; overflow: hidden;
   background: var(--brand-soft); color: var(--brand);

@@ -13,7 +13,7 @@ que el teléfono guarda como si fuera una app.
 
 | Pantalla | Para qué sirve |
 |---|---|
-| **Pedidos** | Registrar un pedido en la puerta de la tienda: nombre del cliente y cantidades. Ves el total del día y generas la **cuenta del día**. |
+| **Pedidos** | Registrar un pedido en la puerta de la tienda, y ver la relación de pedidos por **día, semana, mes o año**. |
 | **Cargue** | La respuesta a "¿qué subo al camión?": suma todos los pedidos y te da el total por producto, agrupado por categoría, con casillas para ir marcando lo que ya cargaste. |
 | **Reportes** | Cuánto vendiste por día, qué productos se mueven más, qué cliente compra más, y la **proyección** de la próxima semana y el próximo mes. Exporta a Excel (CSV). |
 | **Catálogo** | Tus productos (nombre, categoría, precio, unidad) y tus tiendas, cada una con **su historial de facturas**. |
@@ -31,16 +31,41 @@ de perfil** (tu logo o una foto). A partir de ahí:
 Se cambian cuando quieras en **Ajustes → Mi negocio**. La foto se achica sola
 antes de guardarse, para no llenar la memoria del teléfono.
 
+### Día, semana, mes y año
+
+Tanto **Pedidos** como **Reportes** tienen el mismo selector arriba: *Día ·
+Semana · Mes · Año*, con flechas **‹ ›** para moverte al periodo anterior o
+siguiente, y un botón *Hoy* para volver. Así puedes mirar la semana pasada, un
+mes de hace medio año o el año completo.
+
+Lo que ves en cada uno, en Pedidos:
+
+- **Día** — la lista de pedidos de esa jornada, uno por uno.
+- **Semana** y **Mes** — los pedidos agrupados por día, con el subtotal de cada
+  día en el encabezado. Toca el encabezado de un día para abrir ese día.
+- **Año** — mes por mes, con pedidos, unidades y valor de cada uno. Toca un mes
+  para abrirlo.
+
+Arriba de todo, cuatro cifras del periodo: pedidos (y cuántas tiendas),
+unidades, valor y **cuánto queda por cobrar**.
+
+En Reportes, el gráfico se adapta: barras por día en semana y mes, **barras por
+mes** cuando miras un año.
+
 ### Los tres documentos
 
 1. **Factura de cada pedido** — se guarda individualmente, con su número
    consecutivo, cliente, productos y total. Se comparte por WhatsApp o se
    imprime (desde ahí sale el PDF).
-2. **Cuenta del día** — el cierre. Botón *Cuenta del día* en la pantalla de
-   Pedidos: resumen del día, el detalle **por tienda** (cuánto compró cada una y
-   si quedó pendiente), el detalle **por producto**, cuánto cobraste y cuánto
-   queda por cobrar. Se genera para cualquier día: mueve la fecha y ahí está el
-   de esa jornada.
+2. **Cuenta del día / relación del periodo** — el cierre, con el botón azul de
+   la pantalla de Pedidos. Sale del periodo que estés viendo:
+   - en **Día**, la *cuenta del día*: cada pedido con su número y su estado;
+   - en **Semana**, **Mes** o **Año**, la *relación*: cuánto compró cada tienda
+     y cuánto te debe, la evolución día a día (o mes a mes en el año) y el
+     detalle por producto.
+
+   Todos terminan con el corte de caja: cobrado contra por cobrar. Se comparten
+   por WhatsApp o se imprimen en PDF.
 3. **Historial por tienda** — en *Catálogo → Clientes*, toca una tienda: total
    comprado, cuánto te debe, lo que más lleva, y **la lista de todas sus
    facturas**, cada una abrible. Desde ahí puedes tomarle un pedido nuevo con el
