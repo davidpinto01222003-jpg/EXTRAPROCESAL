@@ -249,7 +249,8 @@ def tabla_cuentas(doc, cuentas):
             (item["n"], 10, False, WD_ALIGN_PARAGRAPH.CENTER),
             (item["cuenta"], 11, True, WD_ALIGN_PARAGRAPH.CENTER),
             (item["demandado"], 10, False, WD_ALIGN_PARAGRAPH.LEFT),
-            (item["municipio"], 10, False, WD_ALIGN_PARAGRAPH.CENTER),
+            # 9 pt para que nombres largos (BARRANCABERMEJA) quepan en un renglon
+            (item["municipio"], 9, False, WD_ALIGN_PARAGRAPH.CENTER),
             (item["servicio"], 9, False, WD_ALIGN_PARAGRAPH.CENTER),
         ]
         for i, (texto, tamano, negrita, alineacion) in enumerate(valores):
