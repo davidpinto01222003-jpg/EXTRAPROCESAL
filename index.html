@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestor de Pedidos</title>
+<!-- Quien entre a la direccion base termina en la app, sin tener que
+     acordarse de escribir /pedidos/ al final. -->
+<meta http-equiv="refresh" content="0; url=./pedidos/">
+<link rel="canonical" href="./pedidos/">
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+         display: grid; place-items: center; min-height: 90vh; margin: 0;
+         background: #184f95; color: #fff; text-align: center; padding: 24px; }
+  a { color: #fff; }
+</style>
+</head>
+<body>
+  <p>Abriendo el <strong>Gestor de Pedidos</strong>…<br>
+     <a href="./pedidos/">Entrar aquí si no carga solo</a></p>
+  <script>location.replace('./pedidos/');</script>
+</body>
+</html>
