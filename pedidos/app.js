@@ -1659,6 +1659,8 @@ VISTAS.catalogo = function () {
         + ${catPestana === 'productos' ? 'Nuevo producto' : 'Nuevo cliente'}</button>
       ${catPestana === 'productos' && !S.productos.length
         ? `<button class="btn" data-act="cargarEjemplo">Cargar catálogo de ejemplo</button>` : ''}
+      ${catPestana === 'productos'
+        ? `<button class="btn" data-act="importarLista">Importar lista</button>` : ''}
     </div>
     <div class="card" id="cat-lista">${contenidoCatalogo()}</div>
   `;
@@ -1900,6 +1902,313 @@ const EJEMPLO = [
   ['Agua 600 ml', 'Bebidas', 1500, 'unidad'],
   ['Jugo caja', 'Bebidas', 2000, 'unidad']
 ];
+
+/* =======================================================================
+   IMPORTAR EL CATALOGO desde texto pegado o desde un archivo .txt / .csv
+   ======================================================================= */
+
+const PALABRA_UNIDAD = /^(paq|paquete|paquetes|und|unid|unidad|unidades|caja|cajas|bulto|bultos|display|displays|docena|libra|libras|kilo|kilos|kg|gr|gramos|ml|lt|litro|litros|botella|bolsa|sobre|tira)$/i;
+
+const ENCABEZADOS = {
+  nombre:    /^(nombre|producto|productos|articulo|art[ií]culo|descripci[oó]n|detalle|item)$/i,
+  categoria: /^(categor[ií]a|categoria|l[ií]nea|linea|grupo|tipo|marca|seccion|secci[oó]n)$/i,
+  precio:    /^(precio|precios|valor|costo|pvp|vr|precio venta|valor unitario)$/i,
+  unidad:    /^(unidad|unidades|presentaci[oó]n|presentacion|medida|empaque)$/i
+};
+
+/** Lee un precio escrito como sea: "1.800", "1,800", "$ 1.800", "1800,50".
+ *  En Colombia el punto separa miles, asi que "1.800" son mil ochocientos. */
+function precioDeTexto(t) {
+  const limpio = String(t == null ? '' : t).replace(/[^\d.,]/g, '').trim();
+  if (!limpio || !/\d/.test(limpio)) return null;
+  const punto = limpio.lastIndexOf('.');
+  const coma = limpio.lastIndexOf(',');
+  let n;
+  if (punto >= 0 && coma >= 0) {
+    // manda el que aparezca de ultimo: ese es el separador decimal
+    n = coma > punto ? limpio.replace(/\./g, '').replace(',', '.') : limpio.replace(/,/g, '');
+  } else if (coma >= 0) {
+    const partes = limpio.split(',');
+    // "1,800" son miles; "1,5" es un decimal
+    n = (partes.length === 2 && partes[1].length === 3) ? limpio.replace(',', '') : limpio.replace(',', '.');
+  } else if (punto >= 0) {
+    const partes = limpio.split('.');
+    n = (partes[partes.length - 1].length === 3) ? limpio.replace(/\./g, '') : limpio;
+  } else {
+    n = limpio;
+  }
+  const v = Number(n);
+  return isFinite(v) && v >= 0 ? v : null;
+}
+
+const esSoloNumero = t => /^[$\s]*\d[\d.,]*\s*$/.test(String(t || ''));
+
+/** Separa columnas. El punto y coma y el tabulador son inequivocos; la coma
+ *  solo se toma como separador si lleva espacio detras, porque "1,800" no lo
+ *  lleva y es un precio, no dos columnas. */
+function separarCampos(linea) {
+  if (/[;\t|]/.test(linea)) return linea.split(/[;\t|]/).map(c => c.trim());
+  if (/,\s/.test(linea)) return linea.split(/,\s+/).map(c => c.trim());
+  return [linea.trim()];
+}
+
+function detectarEncabezado(campos) {
+  const mapa = {};
+  let aciertos = 0;
+  campos.forEach((c, i) => {
+    const limpio = c.trim();
+    for (const [clave, re] of Object.entries(ENCABEZADOS)) {
+      if (mapa[clave] == null && re.test(limpio)) { mapa[clave] = i; aciertos++; return; }
+    }
+  });
+  return (aciertos >= 2 && mapa.nombre != null) ? mapa : null;
+}
+
+/** Un renglon suelto en mayusculas o terminado en ":" se toma como titulo de
+ *  categoria, que es como la gente escribe estas listas a mano. */
+function esTituloCategoria(t) {
+  const s = t.trim();
+  if (s.length > 40 || /\d/.test(s)) return false;
+  if (/[:\-–]$/.test(s)) return true;
+  const letras = s.replace(/[^a-záéíóúñA-ZÁÉÍÓÚÑ]/g, '');
+  return letras.length > 1 && letras === letras.toUpperCase();
+}
+
+const limpiarTitulo = t => cap(t.trim().replace(/[:\-–\s]+$/, '').toLowerCase());
+
+/** Convierte el texto pegado en filas de producto. Nunca falla: lo que no
+ *  entiende lo devuelve aparte para mostrarselo al usuario. */
+function analizarCatalogo(texto) {
+  const filas = [];
+  const ignoradas = [];
+  let categoriaActual = '';
+  let mapa = null;
+
+  // renglones de cierre que trae cualquier lista de precios y no son productos
+  const RESUMEN = /^(total|subtotal|sub total|suma|gran total|iva|descuento|neto|saldo)\b/i;
+
+  for (const cruda of String(texto || '').split(/\r?\n/)) {
+    const linea = cruda.trim();
+    if (!linea || RESUMEN.test(linea)) continue;
+
+    const campos = separarCampos(linea).filter(c => c !== '');
+    if (!campos.length) continue;
+
+    if (!mapa && !filas.length && campos.length >= 2) {
+      const m = detectarEncabezado(campos);
+      if (m) { mapa = m; continue; }          // era la fila de titulos del Excel
+    }
+
+    let nombre = '', categoria = '', precio = null, unidad = '';
+
+    if (mapa) {
+      const val = k => (mapa[k] != null && campos[mapa[k]] != null) ? String(campos[mapa[k]]).trim() : '';
+      nombre = val('nombre');
+      categoria = val('categoria');
+      unidad = val('unidad');
+      precio = precioDeTexto(val('precio'));
+    } else if (campos.length === 1) {
+      const solo = campos[0];
+      // "Papas de mayonesa 1800" -> nombre y precio pegados en el mismo renglon
+      const m = solo.match(/^(.*[a-záéíóúñA-ZÁÉÍÓÚÑ].*?)[\s.:\-–$]*(\$?\s*\d[\d.,]*)$/);
+      if (m && precioDeTexto(m[2]) !== null) {
+        nombre = m[1].trim().replace(/[.\-–:]+$/, '').trim();
+        precio = precioDeTexto(m[2]);
+      } else if (esTituloCategoria(solo)) {
+        categoriaActual = limpiarTitulo(solo);
+        continue;
+      } else if (/[a-záéíóúñA-ZÁÉÍÓÚÑ]/.test(solo)) {
+        nombre = solo;                        // producto sin precio, se deja en 0
+      } else {
+        ignoradas.push(linea);
+        continue;
+      }
+    } else {
+      let iPrecio = -1;
+      for (let j = campos.length - 1; j >= 0; j--) {
+        if (esSoloNumero(campos[j])) { iPrecio = j; break; }
+      }
+      const iUnidad = campos.findIndex((c, j) => j !== iPrecio && PALABRA_UNIDAD.test(c));
+      const resto = campos.filter((c, j) => j !== iPrecio && j !== iUnidad);
+      nombre = (resto[0] || '').trim();
+      categoria = (resto[1] || '').trim();
+      if (iPrecio >= 0) precio = precioDeTexto(campos[iPrecio]);
+      if (iUnidad >= 0) unidad = campos[iUnidad].trim();
+    }
+
+    if (!nombre || !/[a-záéíóúñA-ZÁÉÍÓÚÑ]/.test(nombre)) { ignoradas.push(linea); continue; }
+
+    filas.push({
+      nombre: nombre.slice(0, 80),
+      categoria: (categoria || categoriaActual || '').slice(0, 40),
+      precio: precio || 0,
+      unidad: unidad || ''
+    });
+  }
+
+  // si el mismo producto viene repetido, vale el ultimo
+  const unicas = new Map();
+  for (const f of filas) unicas.set(norm(f.nombre), f);
+  return { filas: Array.from(unicas.values()), ignoradas, repetidas: filas.length - unicas.size };
+}
+
+const EJEMPLO_LISTA = `PAPAS
+Papas de mayonesa 1800
+Papas limón 1800
+Papas pollo 1800
+
+GASEOSAS
+Gaseosa personal 2500
+Agua 600 ml 1500`;
+
+let impTexto = '';
+let impModo = 'agregar';
+
+ACC.importarLista = () => {
+  impTexto = '';
+  impModo = 'agregar';
+  abrirModal(`<div class="modal" id="modal-importar">
+    <div class="modal-head"><button type="button" data-act="cerrarSubmodal">Cancelar</button>
+      <h2>Importar lista</h2></div>
+    <div class="modal-body">
+      <div class="card"><div class="card-body">
+        <p class="small muted" style="margin-top:0">Pega tu lista de productos o abre un archivo
+          de texto o Excel (.txt o .csv). Un producto por renglón, con el precio al final.</p>
+        <div class="btn-row" style="margin-bottom:10px">
+          <button class="btn btn-sm" data-act="impArchivo">Abrir archivo</button>
+          <button class="btn btn-sm" data-act="impEjemplo">Ver un ejemplo</button>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <textarea id="imp-texto" rows="8" data-in="impCambio" placeholder="Papas de mayonesa 1800
+Cheetos 1500
+Palomitas 1200"></textarea>
+        </div>
+      </div></div>
+      <div id="imp-vista">${vistaImportacion()}</div>
+    </div>
+    <div class="modal-foot">
+      <div class="total" id="imp-pie">${piePie()}</div>
+      <button class="btn btn-primary" data-act="impAplicar">Importar</button>
+    </div>
+  </div>`);
+};
+
+function piePie() {
+  const { filas } = analizarCatalogo(impTexto);
+  return `<b>${num(filas.length)}</b><span>producto${filas.length === 1 ? '' : 's'} detectado${filas.length === 1 ? '' : 's'}</span>`;
+}
+
+function vistaImportacion() {
+  const { filas, ignoradas, repetidas } = analizarCatalogo(impTexto);
+  if (!impTexto.trim()) return '';
+  if (!filas.length) {
+    return `<div class="card"><div class="empty"><strong>No reconocí ningún producto</strong>
+      Revisa que haya un producto por renglón. Toca <b>Ver un ejemplo</b> para ver el formato.</div></div>`;
+  }
+
+  const yaEstan = filas.filter(f => S.productos.some(p => norm(p.nombre) === norm(f.nombre))).length;
+  const sinPrecio = filas.filter(f => !f.precio).length;
+
+  return `<div class="card">
+    <div class="card-head"><h2>Así lo entendí</h2><span class="small muted">${num(filas.length)}</span></div>
+    <div class="card-body">
+      <div class="chips" style="padding-bottom:2px">
+        <button class="chip ${impModo === 'agregar' ? 'is-active' : ''}" data-act="impModo" data-k="agregar">Agregar al catálogo</button>
+        <button class="chip ${impModo === 'reemplazar' ? 'is-active' : ''}" data-act="impModo" data-k="reemplazar">Reemplazar todo</button>
+      </div>
+      ${yaEstan && impModo === 'agregar' ? `<p class="small muted" style="margin:8px 2px 0">
+        ${num(yaEstan)} ya está${yaEstan === 1 ? '' : 'n'} en tu catálogo: se le${yaEstan === 1 ? '' : 's'}
+        actualizará el precio en vez de repetirlo${yaEstan === 1 ? '' : 's'}.</p>` : ''}
+      ${sinPrecio ? `<p class="aviso" style="margin-top:8px">${num(sinPrecio)}
+        producto${sinPrecio === 1 ? ' quedó' : 's quedaron'} sin precio (en 0). Puedes ponérselo después
+        tocándolo en el catálogo.</p>` : ''}
+    </div>
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Producto</th><th>Categoría</th><th class="n">Precio</th><th>Unidad</th></tr></thead>
+      <tbody>${filas.slice(0, 60).map(f => `<tr>
+        <td>${esc(f.nombre)}</td>
+        <td class="muted">${esc(f.categoria || '—')}</td>
+        <td class="n">${f.precio ? dinero(f.precio) : '—'}</td>
+        <td class="muted">${esc(f.unidad || 'paquete')}</td></tr>`).join('')}</tbody>
+    </table></div>
+    ${filas.length > 60 ? `<div class="card-body small muted">…y ${num(filas.length - 60)} más.</div>` : ''}
+    ${ignoradas.length ? `<details><summary style="padding:10px 14px;cursor:pointer;font-size:14px;
+        font-weight:650;border-top:1px solid var(--line)">No entendí ${num(ignoradas.length)}
+        renglón${ignoradas.length === 1 ? '' : 'es'}</summary>
+      <div class="card-body small muted">${ignoradas.slice(0, 20).map(l => esc(l)).join('<br>')}</div></details>` : ''}
+    ${repetidas ? `<div class="card-body small muted">Se descartaron ${num(repetidas)} repetido${repetidas === 1 ? '' : 's'}.</div>` : ''}
+  </div>`;
+}
+
+function refrescarImportacion() {
+  const v = $('#imp-vista');
+  if (v) v.innerHTML = vistaImportacion();
+  const p = $('#imp-pie');
+  if (p) p.innerHTML = piePie();
+}
+
+ACC.impCambio = el => { impTexto = el.value; refrescarImportacion(); };
+ACC.impModo = el => { impModo = el.dataset.k; refrescarImportacion(); };
+
+ACC.impEjemplo = () => {
+  impTexto = EJEMPLO_LISTA;
+  const t = $('#imp-texto');
+  if (t) t.value = impTexto;
+  refrescarImportacion();
+};
+
+ACC.impArchivo = () => {
+  let inp = $('#selector-lista');
+  if (!inp) {
+    inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.txt,.csv,.tsv,text/plain,text/csv';
+    inp.id = 'selector-lista';
+    inp.hidden = true;
+    inp.addEventListener('change', () => {
+      const f = inp.files && inp.files[0];
+      inp.value = '';
+      if (!f) return;
+      const lector = new FileReader();
+      lector.onload = () => {
+        impTexto = String(lector.result || '').replace(/^﻿/, '');   // quita la marca del Excel
+        const t = $('#imp-texto');
+        if (t) t.value = impTexto;
+        refrescarImportacion();
+        toast('Archivo leído');
+      };
+      lector.onerror = () => toast('No se pudo leer el archivo');
+      lector.readAsText(f, 'utf-8');
+    });
+    document.body.appendChild(inp);
+  }
+  inp.click();
+};
+
+ACC.impAplicar = () => {
+  const { filas } = analizarCatalogo(impTexto);
+  if (!filas.length) { toast('No hay productos que importar'); return; }
+  if (impModo === 'reemplazar' &&
+      !confirm(`Se borrarán tus ${S.productos.length} productos actuales y quedarán los ${filas.length} de la lista. Tus pedidos ya hechos no se tocan. ¿Continuar?`)) return;
+
+  if (impModo === 'reemplazar') S.productos = [];
+  let nuevos = 0, actualizados = 0;
+  for (const f of filas) {
+    const datos = {
+      nombre: f.nombre,
+      categoria: f.categoria || 'Sin categoría',
+      precio: f.precio || 0,
+      unidad: f.unidad || 'paquete'
+    };
+    const ex = S.productos.find(p => norm(p.nombre) === norm(f.nombre));
+    if (ex) { Object.assign(ex, datos); actualizados++; }
+    else { S.productos.push({ id: uid(), activo: true, ...datos }); nuevos++; }
+  }
+  guardar();
+  cerrarModal();
+  render();
+  toast(actualizados ? `${nuevos} nuevos, ${actualizados} actualizados` : `${nuevos} productos importados`);
+};
 
 ACC.cargarEjemplo = () => {
   for (const [nombre, categoria, precio, unidad] of EJEMPLO)

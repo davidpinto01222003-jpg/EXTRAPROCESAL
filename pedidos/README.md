@@ -104,9 +104,11 @@ requiere que la página venga de una dirección `https://`).
 
 1. Al abrirla por primera vez, pon el **nombre de tu empresa** y tu **foto**.
    Eso es lo que verán tus clientes en las facturas.
-2. Abre **Catálogo** → *Cargar catálogo de ejemplo* (papas, cheetos, palomitas,
-   gaseosas…) y edítalo: cambia nombres y precios por los tuyos, borra lo que no
-   vendas y agrega lo que falte.
+2. Carga tus productos, por cualquiera de estas vías (**Catálogo → Productos**):
+   - *Importar lista* — pega tu lista o abre un `.txt` / `.csv`. Ver abajo.
+   - *Cargar catálogo de ejemplo* — papas, cheetos, palomitas, gaseosas… y lo
+     editas: cambias nombres y precios, borras lo que no vendas.
+   - *+ Nuevo producto* — uno por uno.
 3. Ya puedes tomar pedidos. En cada tienda: **+ Nuevo pedido** → escribe el
    nombre de la tienda → busca cada producto y toca **+** las veces que pidan →
    **Guardar**. La tienda queda guardada en la libreta para la próxima visita.
@@ -114,6 +116,65 @@ requiere que la página venga de una dirección `https://`).
    al camión. Puedes compartirla por WhatsApp o imprimirla.
 5. Al cerrar el día, **Pedidos → Cuenta del día**: el resumen de la jornada,
    listo para compartir o guardar en PDF.
+
+---
+
+## Importar tu lista de productos
+
+**Catálogo → Productos → Importar lista.** Pega el texto o abre un archivo
+`.txt` o `.csv`. Antes de importar nada te muestra una tabla — *"Así lo
+entendí"* — para que revises que quedó bien.
+
+Entiende la lista escrita como uno la escribiría a mano. Los renglones en
+MAYÚSCULAS o terminados en `:` los toma como categoría de lo que viene debajo:
+
+```
+PAPAS
+Papas de mayonesa 1800
+Papas limón 1.800
+
+GASEOSAS:
+Gaseosa personal 2.500
+Agua 600 ml 1500
+```
+
+También lee tablas de Excel guardadas como CSV, con o sin fila de títulos:
+
+```
+Producto;Categoria;Precio;Unidad
+Cheetos;Snacks;1.500;paquete
+Doritos;Snacks;2.000;paquete
+```
+
+Detalles que resuelve solo:
+
+- **Precios en formato colombiano**: `1.800`, `1,800`, `$ 1.800` y `1800` son
+  todos mil ochocientos. `12.500,50` son doce mil quinientos con cincuenta.
+- **Separadores**: punto y coma, tabulación o coma seguida de espacio. Una coma
+  pegada a un número (`1,800`) la trata como parte del precio, no como columna.
+- **Productos que ya tienes**: no los repite, les actualiza el precio. Puedes
+  usar la importación cada vez que te cambien la lista de precios.
+- **Renglones de cierre** (`TOTAL`, `IVA`, `Subtotal`) los descarta.
+- Un producto sin precio entra en 0 y te avisa cuántos quedaron así.
+
+Con *Reemplazar todo* borras el catálogo y dejas solo lo de la lista. **Tus
+pedidos ya hechos nunca se tocan**: cada factura guarda el nombre y el precio
+que tenía el producto ese día.
+
+### Desde una foto
+
+La app no lee fotos, y es a propósito: los lectores de texto que se pueden
+meter dentro de una página web pesan varios megas y se equivocan bastante. Tu
+teléfono ya trae uno mucho mejor.
+
+1. Tómale la foto a la lista de precios.
+2. Ábrela con **Google Fotos** y toca **Lente** (o usa **Google Lens**
+   directamente). En iPhone, abre la foto y toca el icono de texto.
+3. Selecciona el texto reconocido y cópialo.
+4. En la app: *Importar lista* → pega → revisa la tabla → *Importar*.
+
+El paso de revisar es importante: ningún lector de fotos es perfecto, y ahí ves
+lo que quedó mal antes de que entre al catálogo.
 
 ---
 
