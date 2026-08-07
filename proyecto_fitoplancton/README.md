@@ -3,13 +3,37 @@
 Trabajo de apoyo al anteproyecto de maestría de Omar Enrique Gamboa Posada.
 Nada de esto se relaciona con los scripts jurídicos del resto del repositorio.
 
-## Entregable
+## Entregables
 
 `Informe_avance_tareas_tutora.docx` — informe de avance sobre las ocho tareas que la
 dirección del proyecto dejó señaladas en el apartado de tratamiento estadístico del
 anteproyecto. Incluye el diagnóstico de hasta dónde llegaba el anteproyecto en cada
 tarea, la ejecución real sobre los datos entregados y la redacción propuesta para
 corregir el documento principal. El texto se escribió sin usar guiones.
+
+`Anteproyecto_integrado_Omar_Gamboa.docx` — el anteproyecto original con el avance ya
+incorporado en sus secciones correspondientes. Conserva estilos, campos SEQ, índices
+automáticos y citas de Zotero del documento de origen. Los puntos de integración se
+listan más abajo. Al abrirlo en Word conviene seleccionar todo y actualizar campos con
+F9 para regenerar la tabla de contenido y las listas de figuras y tablas.
+
+### Dónde quedó integrado cada aporte
+
+| Sección del anteproyecto | Qué se integró |
+|---|---|
+| Resumen y Abstract | Corrección de 675 a 676 nm y cierre con los tres resultados preliminares |
+| Planteamiento del problema, Hipótesis | Hipótesis reformulada hacia el gradiente estuarino y la variabilidad interanual |
+| Metodología, Descripción de la base de datos | Párrafo de consolidación, Tabla 1 de inventario y nota sobre las fechas de las campañas de 2023 |
+| Metodología, Cálculo del índice | Corrección a 440 y 676 nm, párrafo del par elegido y Tabla 2 de sensibilidad |
+| Metodología, subsección nueva | Control de calidad de los datos, con cuatro criterios y Tabla 3 |
+| Metodología, tratamiento estadístico | Diseño de pruebas corregido, entorno de trabajo y definición operativa de zonas. Se retiró el resaltado del bloque |
+| Metodología, Modelado descriptivo | Criterio de respaldo si el ajuste no alcanza un R cuadrado de 0,4 |
+| Capítulo nuevo antes del cronograma | Resultados Preliminares, con Tablas 5 a 11 y Figuras 5 a 7 |
+| Cronograma | Subsección de estado de avance |
+| Resultados esperados | Párrafo que separa lo ya obtenido de lo pendiente |
+
+Las tablas existentes se renumeraron en consecuencia: coordenadas de temperatura
+superficial pasa a Tabla 4, cronograma a Tabla 12 y presupuesto a Tabla 13.
 
 ## Contenido
 
@@ -30,7 +54,8 @@ python3 build_data.py     # base_unificada.csv desde el compendio y los espectro
 python3 verifica.py       # control de calidad y reproducibilidad del índice
 python3 analisis.py       # estadística completa, deja salida.txt
 python3 figuras.py        # figuras finales
-node gen_doc.js           # arma el .docx
+node gen_doc.js           # arma el informe de avance
+python3 integrar_en_anteproyecto.py   # integra el avance en el anteproyecto original
 ```
 
 Dependencias: pandas, numpy, scipy, matplotlib, openpyxl y el paquete npm `docx`.
