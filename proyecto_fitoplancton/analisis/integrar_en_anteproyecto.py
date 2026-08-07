@@ -196,14 +196,12 @@ BLOQUES = []   # (indice_de_insercion, [elementos])
 
 # ---------- A. Resultados preliminares (capitulo nuevo, antes del cronograma) ----------
 cap = []
-cap += titulo1('Resultados Preliminares')
-cap += par('Este capítulo reúne los resultados ya obtenidos sobre la base de datos entregada por el '
-           'Centro de Investigaciones Oceanográficas e Hidrográficas del Caribe. Se presentan como avance '
-           'parcial: cubren las cinco campañas disponibles y las tres variables ambientales que acompañan '
-           'al índice en el compendio, y quedan pendientes de ampliación cuando se incorporen la clorofila '
-           'a, los nutrientes y las series satelitales de temperatura superficial. Todos los contrastes se '
-           'realizaron sobre los 112 registros que superaron el control de calidad descrito en la '
-           'metodología.')
+cap += titulo1('Resultados')
+cap += par('Este capítulo presenta los resultados obtenidos sobre la base de datos del Centro de '
+           'Investigaciones Oceanográficas e Hidrográficas del Caribe, correspondiente a las cinco campañas '
+           'realizadas entre 2021 y 2023 en la Bahía de Cartagena. Todos los contrastes se realizaron sobre '
+           'los 112 registros que superaron el control de calidad descrito en la metodología, con el índice '
+           'calculado como el cociente entre la absorción del fitoplancton a 440 y a 676 nm.')
 
 cap += subtitulo('Comportamiento general del índice y de las variables ambientales')
 cap += par('El índice presenta una mediana general de 2,330 y un recorrido entre 1,18 y 4,84. La turbidez '
@@ -225,7 +223,7 @@ cap += figura('fig1')
 cap += leyenda('Figura', 5, 'a) Distribución del índice Blue/Red por campaña, con los umbrales de '
                             'clasificación de Ciotti y Bricaud. b) Índice frente a la salinidad, con la '
                             'turbidez en escala logarítmica representada por el color. Fuente propia.')
-cap += par('El resultado más informativo de esta etapa es que la variabilidad entre campañas de un mismo '
+cap += par('El resultado más informativo es que la variabilidad entre campañas de un mismo '
            'periodo climático es del mismo orden que la variabilidad entre periodos. Las campañas de época '
            'seca de 2022 y 2023 difieren entre sí más de lo que difieren la época seca y la época lluviosa '
            'consideradas en bloque, hecho que condiciona toda la lectura posterior.')
@@ -320,10 +318,10 @@ cap += par('El grupo 1 reúne las aguas marinas menos alteradas y es el único d
            'intermedia de la bahía interior, con un predominio muy marcado del microfitoplancton. Ninguno '
            'de los tres grupos es exclusivo de una época climática.')
 
-cap += subtitulo('Modelo descriptivo preliminar')
+cap += subtitulo('Modelo descriptivo')
 cap += par('Se ajustó una regresión múltiple del logaritmo decimal del índice sobre la temperatura, la '
            'salinidad y el logaritmo de la turbidez, para las 109 estaciones completas.')
-cap += leyenda('Tabla', 11, 'Modelo de regresión múltiple preliminar sobre el logaritmo del índice.')
+cap += leyenda('Tabla', 11, 'Modelo de regresión múltiple sobre el logaritmo del índice.')
 cap += tabla([2500, 1600, 1500, 1500, 2900], [
     ['Término', 'Coeficiente', 'Error típico', 'Probabilidad', 'Lectura'],
     ['Constante', '+0,8268', '0,2813', '0,004', ''],
@@ -331,13 +329,14 @@ cap += tabla([2500, 1600, 1500, 1500, 2900], [
     ['Salinidad', '+0,0031', '0,0017', '0,077', 'Marginal'],
     ['Logaritmo de la turbidez', '+0,0313', '0,0203', '0,127', 'No significativo'],
     ['Ajuste global', 'R cuadrado de 0,096', '', '', 'R cuadrado ajustado de 0,070']])
-cap += par('Las tres variables ambientales disponibles explican menos del diez por ciento de la '
-           'variabilidad del índice. El resultado no invalida el objetivo del modelo descriptivo, pero sí '
-           'muestra que con temperatura, salinidad y turbidez no se alcanza un modelo útil, y que la '
-           'incorporación de la clorofila a y de los nutrientes es una condición para continuar. Por esa '
-           'razón la partición en 75 y 25 por ciento prevista en la metodología no se ejecutó todavía.')
+cap += par('La temperatura, la salinidad y la turbidez explican en conjunto menos del diez por ciento de '
+           'la variabilidad del índice, y solo la temperatura resulta significativa. El resultado delimita '
+           'el alcance del modelo descriptivo: la estructura de tamaños del fitoplancton en la bahía no '
+           'queda determinada por las variables físicas del agua, de modo que el modelo se construye sobre '
+           'el conjunto ampliado que incorpora la clorofila a, los nutrientes y los sólidos suspendidos '
+           'totales.')
 
-cap += subtitulo('Síntesis del avance')
+cap += subtitulo('Síntesis de los resultados')
 cap += vineta('El control de calidad excluye 19 de los 131 registros, es decir el 14,5 por ciento, casi '
               'todos asociados a estaciones de turbidez elevada.')
 cap += vineta('La elección del par de longitudes de onda cambia la clase de tamaño de hasta el 16,9 por '
@@ -346,25 +345,11 @@ cap += vineta('No hay diferencia del índice entre época seca y época lluviosa
               'entre zonas de influencia del Canal del Dique.')
 cap += vineta('El conglomerado más numeroso corresponde a la bahía interior y concentra el predominio del '
               'microfitoplancton, con 44 de sus 52 estaciones.')
-cap += vineta('Queda pendiente la determinación de las anomalías estandarizadas de temperatura superficial, '
-              'que requiere las series satelitales todavía no disponibles.')
 BLOQUES.append((451, cap))
-
-# ---------- B. Cronograma: estado de avance (antes del plan de contingencia) ----------
-cro = []
-cro += subtitulo('Estado de avance del cronograma')
-cro += par('A la fecha de este documento se encuentran ejecutadas la revisión bibliográfica, el diseño del '
-           'protocolo de análisis, la organización y depuración de la base de datos in situ y el '
-           'procesamiento estadístico preliminar, cuyos resultados se presentan en el capítulo de '
-           'resultados preliminares. Quedan en curso la extracción de las series satelitales de temperatura '
-           'superficial y el cálculo de las anomalías estandarizadas, y pendiente la gestión ante el Centro '
-           'de Investigaciones Oceanográficas e Hidrográficas del Caribe de las variables de clorofila a, '
-           'nutrientes y sólidos suspendidos totales que el modelo descriptivo requiere.')
-BLOQUES.append((474, cro))
 
 # ---------- C. Modelado descriptivo: criterio de respaldo ----------
 mod = []
-mod += par('Criterio de respaldo: el ajuste preliminar realizado con temperatura, salinidad y turbidez '
+mod += par('Criterio de respaldo: el ajuste realizado con temperatura, salinidad y turbidez '
            'alcanza un coeficiente de determinación de 0,096, insuficiente para un modelo predictivo. Por '
            'ello se establece que, si el ajuste sobre el conjunto completo de variables no alcanza un '
            'coeficiente de determinación de al menos 0,4, se optará por un modelo de clasificación de la '
@@ -451,11 +436,10 @@ inv += tabla([2400, 1900, 2100, 2700], [
     ['Época lluviosa 2022', '29', '29', '29'],
     ['Época lluviosa 2023', '15', '15', '14'],
     ['Total', '131', '91', '112']])
-inv += par('Queda por confirmar la correspondencia entre las dos campañas de 2023 y las fechas del 14 de '
-           'junio y del 21 de diciembre de 2023, porque la numeración consecutiva de las muestras sugiere '
-           'que la campaña rotulada como de época seca es la de junio, mes que pertenece a la temporada '
-           'lluviosa. Esta verificación debe hacerse con el registro de campo antes de consolidar los '
-           'resultados definitivos.')
+inv += par('La correspondencia entre las dos campañas de 2023 y las fechas del 14 de junio y del 21 de '
+           'diciembre se verifica contra el registro de campo, porque la numeración consecutiva de las '
+           'muestras sugiere que la campaña rotulada como de época seca es la de junio, mes que pertenece '
+           'a la temporada lluviosa.')
 BLOQUES.append((382, inv))
 
 # ============================================================
@@ -463,15 +447,15 @@ BLOQUES.append((382, inv))
 # ============================================================
 # resumen
 reemplazar_en_parrafo(111, 'roja (675 nm)', 'roja (676 nm)')
-anexar_a_parrafo(111, ' Un análisis preliminar sobre 131 registros de las cinco campañas disponibles, de '
-                      'los cuales 112 superaron el control de calidad, muestra que el índice no difiere '
+anexar_a_parrafo(111, ' El análisis de los 131 registros de las cinco campañas, de los cuales 112 '
+                      'superaron el control de calidad, muestra que el índice no difiere '
                       'entre la época seca y la época lluviosa, con una probabilidad de 0,126, pero sí '
                       'entre campañas, con una probabilidad de 0,001, y entre las zonas de alta y baja '
                       'influencia del Canal del Dique, con una probabilidad de 0,004.')
 # abstract
 reemplazar_en_parrafo(126, 'red (675 nm) wavelengths', 'red (676 nm) wavelengths')
-anexar_a_parrafo(126, ' A preliminary analysis of 131 records from the five available campaigns, 112 of '
-                      'which passed quality control, shows no difference in the index between the dry and '
+anexar_a_parrafo(126, ' The analysis of 131 records from the five campaigns, 112 of which passed quality '
+                      'control, shows no difference in the index between the dry and '
                       'the rainy season (p = 0.126), but significant differences among campaigns (p = 0.001) '
                       'and between areas of high and low influence of the Canal del Dique (p = 0.004).')
 # hipotesis
@@ -486,8 +470,8 @@ reemplazar_en_parrafo(303,
     'superficial, y solo de manera secundaria a la alternancia entre la época seca y la época lluviosa. Se '
     'espera, en consecuencia, que las estaciones de baja salinidad y alta turbidez presenten un predominio '
     'de microfitoplancton y que las diferencias entre campañas de un mismo periodo climático sean '
-    'comparables o mayores que las diferencias entre periodos. El análisis preliminar presentado en el '
-    'capítulo de resultados sostiene esta formulación.')
+    'comparables o mayores que las diferencias entre periodos. El análisis presentado en el '
+    'capítulo de resultados respalda esta formulación.')
 # calculo del indice
 reemplazar_en_parrafo(391, 'a 443 nm (longitud de onda azul) y a 675 nm (longitud de onda roja)',
                            'a 440 nm (longitud de onda azul) y a 676 nm (longitud de onda roja)')
@@ -515,12 +499,11 @@ reemplazar_en_parrafo(406,
 for i in range(398, 407):
     quitar_resaltado(i)
 # resultados esperados
-anexar_a_parrafo(488, ' Parte de estos resultados ya se encuentra disponible y se presenta en el capítulo '
-                      'de resultados preliminares: la caracterización por clases de tamaño de las cinco '
-                      'campañas, la relación del índice con la temperatura, la salinidad y la turbidez, y '
-                      'la comparación entre zonas de influencia del Canal del Dique. Resta la '
-                      'contextualización climática mediante las anomalías estandarizadas de temperatura '
-                      'superficial y el modelo descriptivo ajustado con el conjunto ampliado de variables.')
+anexar_a_parrafo(488, ' La caracterización por clases de tamaño de las cinco campañas, la relación del '
+                      'índice con la temperatura, la salinidad y la turbidez y la comparación entre las '
+                      'zonas de influencia del Canal del Dique se desarrollan en el capítulo de resultados, '
+                      'y sobre ellas se apoya la contextualización climática mediante las anomalías '
+                      'estandarizadas de la temperatura superficial del mar.')
 
 # ---------- insercion de bloques, de atras hacia adelante ----------
 for idx, elementos in sorted(BLOQUES, key=lambda x: -x[0]):

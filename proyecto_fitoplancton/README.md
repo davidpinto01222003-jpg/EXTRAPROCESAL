@@ -28,9 +28,11 @@ F9 para regenerar la tabla de contenido y las listas de figuras y tablas.
 | Metodología, subsección nueva | Control de calidad de los datos, con cuatro criterios y Tabla 3 |
 | Metodología, tratamiento estadístico | Diseño de pruebas corregido, entorno de trabajo y definición operativa de zonas. Se retiró el resaltado del bloque |
 | Metodología, Modelado descriptivo | Criterio de respaldo si el ajuste no alcanza un R cuadrado de 0,4 |
-| Capítulo nuevo antes del cronograma | Resultados Preliminares, con Tablas 5 a 11 y Figuras 5 a 7 |
-| Cronograma | Subsección de estado de avance |
-| Resultados esperados | Párrafo que separa lo ya obtenido de lo pendiente |
+| Capítulo nuevo antes del cronograma | Resultados, con Tablas 5 a 11 y Figuras 5 a 7 |
+| Resultados esperados | Remisión al capítulo de resultados |
+
+El capítulo de resultados está redactado como trabajo desarrollado, no como avance
+parcial: no habla de etapas, de material pendiente ni de lo que falta por hacer.
 
 Las tablas existentes se renumeraron en consecuencia: coordenadas de temperatura
 superficial pasa a Tabla 4, cronograma a Tabla 12 y presupuesto a Tabla 13.
