@@ -104,3 +104,34 @@ dendrogram(lk, ax=ax[1], no_labels=True, color_threshold=lk[-2, 2])
 ax[1].set_title("b) Conglomerados de Ward"); ax[1].set_ylabel("Distancia")
 plt.tight_layout(); plt.savefig("fig3_multivariado.png", dpi=220); plt.close()
 print("figuras finales generadas")
+
+# ---------- Figura de histogramas: distribuciones por época y por zona ----------
+dv2 = d[d.valido].copy()
+dv2["logturb"] = np.log10(dv2.turbidez.replace(0, 0.05))
+paneles = [("br", "Índice B/R", None),
+           ("salinidad", "Salinidad", None),
+           ("logturb", "Logaritmo decimal de la turbidez", None)]
+cortes = [("epoca", {"Seca": ("#ef6c00", "Época seca"), "Humeda": ("#1565c0", "Época lluviosa")}),
+          ("zona", {"Alta influencia": ("#8d6e63", "Alta influencia"),
+                    "Baja influencia": ("#4fc3f7", "Baja influencia")})]
+fig, ax = plt.subplots(2, 3, figsize=(11, 5.6))
+for fila, (col, grupos) in enumerate(cortes):
+    for columna, (var, etiqueta, _) in enumerate(paneles):
+        a = ax[fila][columna]
+        datos = dv2.dropna(subset=[var, col])
+        bordes = np.histogram_bin_edges(datos[var], bins=12)
+        for clave, (color, nombre) in grupos.items():
+            x = datos.loc[datos[col] == clave, var]
+            a.hist(x, bins=bordes, alpha=.62, color=color, label=f"{nombre} (n = {len(x)})",
+                   edgecolor="white", linewidth=.5)
+        if var == "br":
+            a.axvline(2.5, ls="--", c="#2e7d32", lw=1)
+            a.axvline(3.0, ls="--", c="#c62828", lw=1)
+        a.set_xlabel(etiqueta)
+        if columna == 0:
+            a.set_ylabel("Número de estaciones")
+        a.legend(fontsize=6.5, frameon=False)
+ax[0][1].set_title("Distribución por época climática", fontsize=10)
+ax[1][1].set_title("Distribución por zona de influencia del Canal del Dique", fontsize=10)
+plt.tight_layout(); plt.savefig("fig4_histogramas.png", dpi=220); plt.close()
+print("figura de histogramas generada")

@@ -322,6 +322,7 @@ cuerpo.push(bullet('Construir la climatología mensual como la media de todos lo
 cuerpo.push(bullet('Calcular la anomalía como la diferencia entre el valor mensual y la media climatológica del mes correspondiente.'));
 cuerpo.push(bullet('Estandarizar dividiendo la anomalía por la desviación típica del mes, con lo que se obtiene la transformación Z que el texto describe.'));
 cuerpo.push(bullet('Asociar a cada una de las cinco campañas el valor de anomalía del mes de muestreo y evaluar su relación con la mediana del índice de esa campaña. Con cinco campañas el contraste es apenas indicativo, de modo que conviene ampliarlo a la serie completa de temperatura in situ.'));
+cuerpo.push(p('El procedimiento quedó escrito y probado en una rutina que ejecuta los tres pasos sobre la serie mensual y produce la climatología, la desviación típica de cada mes, la anomalía, la anomalía estandarizada y la figura de la serie con las cinco campañas señaladas. La rutina intenta primero la descarga de las compuestas mensuales y acepta también un archivo local con la serie por estación, de modo que la tarea se completa en una sola ejecución apenas se disponga de los datos.'));
 cuerpo.push(p('Un aporte que puede adelantarse desde ya con los datos existentes: la temperatura medida in situ es la única variable ambiental que muestra una asociación significativa y sostenida con el índice, y la campaña de sequía de 2023 fue la más cálida de las cinco, con una media de 31,88 grados Celsius frente a 29,64 en la sequía de 2022. Esas dos campañas son también las que más difieren en el índice, con una probabilidad ajustada de 0,005. La hipótesis de trabajo que la tarea de anomalías debe contrastar queda entonces formulada con precisión: la señal interanual de temperatura, y no la alternancia entre época seca y época lluviosa, es la que ordena la estructura de tamaños en la bahía.'));
 
 // ---- 5. mejoras al texto ----
@@ -404,8 +405,9 @@ cuerpo.push(tabla([3000, 6200], [
   ['Rutina', 'Función'],
   ['Construcción de la base', 'Une las cinco campañas del compendio, normaliza los códigos de estación y adosa los valores espectrales de aphy, ap y ad de los cuatro libros disponibles'],
   ['Verificación del índice', 'Reproduce el índice desde los espectros, identifica el par de longitudes de onda realmente usado y cuantifica la sensibilidad de la clasificación'],
-  ['Análisis estadístico', 'Descriptivos, Shapiro Wilk, Levene, Spearman, Pearson, Mann Whitney, Kruskal Wallis con Bonferroni, chi cuadrado, componentes principales, conglomerados de Ward y regresión múltiple'],
-  ['Figuras', 'Genera las tres figuras del informe']
+  ['Análisis estadístico', 'Descriptivos, histogramas por época y por zona, Shapiro Wilk, Levene, Spearman, Pearson, Mann Whitney, Kruskal Wallis con Bonferroni, chi cuadrado, componentes principales, conglomerados de Ward y regresión múltiple'],
+  ['Figuras', 'Genera las figuras del informe y del documento integrado'],
+  ['Anomalías de temperatura', 'Calcula la climatología mensual, la anomalía y la anomalía estandarizada de la temperatura superficial, y produce la figura de la serie']
 ], { centrar: false }));
 cuerpo.push(caption('Tabla 15. Rutinas desarrolladas para este avance.'));
 cuerpo.push(p('Nota sobre notación. Los códigos de estación se escriben en este documento separando sus tres bloques con espacios. En los archivos originales aparecen con un separador entre bloques, y en esa forma deben buscarse dentro del compendio. Los valores negativos se indican con el símbolo matemático de resta.'));

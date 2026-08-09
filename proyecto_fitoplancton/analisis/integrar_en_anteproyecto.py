@@ -113,6 +113,7 @@ next_id = max(int(m) for m in re.findall(r'Id="rId(\d+)"', rels)) + 1
 imgs = {}
 for i, (clave, archivo, prop) in enumerate([
         ("fig1", "fig1_eda.png", 9 / 3.7),
+        ("fig4", "fig4_histogramas.png", 11 / 5.6),
         ("fig2", "fig2_clases.png", 11 / 3.9),
         ("fig3", "fig3_multivariado.png", 9.5 / 4.2)]):
     rid = f"rId{next_id + i}"
@@ -228,6 +229,25 @@ cap += par('El resultado más informativo es que la variabilidad entre campañas
            'seca de 2022 y 2023 difieren entre sí más de lo que difieren la época seca y la época lluviosa '
            'consideradas en bloque, hecho que condiciona toda la lectura posterior.')
 
+cap += par('Las distribuciones de las tres variables y del índice, desagregadas por época climática y '
+           'por zona de influencia del Canal del Dique, se presentan en la figura siguiente.')
+cap += figura('fig4')
+cap += leyenda('Figura', 6, 'Histogramas del índice Blue/Red, la salinidad y el logaritmo decimal de la '
+                            'turbidez. La fila superior separa las estaciones por época climática y la '
+                            'inferior por zona de influencia del Canal del Dique. Las líneas verticales '
+                            'marcan los umbrales de 2,5 y 3,0 del índice. Fuente propia.')
+cap += par('La distribución del índice es asimétrica hacia la derecha en las dos épocas climáticas, con un '
+           'coeficiente de asimetría de 1,13 sobre el conjunto: 66 de las 112 estaciones quedan por debajo '
+           'del umbral de 2,5 y una cola de 20 estaciones supera el umbral de 3,0. La salinidad presenta '
+           'una distribución con dos modas, un grupo de aguas de mezcla por debajo de 25 y otro de aguas '
+           'marinas por encima de 28, separación que corresponde al gradiente generado por el Canal del '
+           'Dique. La turbidez solo adopta una forma cercana a la simétrica al transformarla a logaritmo '
+           'decimal, con lo que su coeficiente de asimetría pasa de 4,52 a −0,51, y por ese motivo se usa '
+           'transformada en los análisis multivariados. En la fila inferior, el desplazamiento del índice '
+           'hacia valores menores en la zona de alta influencia se observa a lo largo de todo el recorrido '
+           'de la distribución y no depende de unas pocas estaciones extremas. El panel de salinidad de esa '
+           'fila reproduce, por construcción, el umbral que define las dos zonas.')
+
 cap += subtitulo('Supuestos estadísticos y correlaciones')
 cap += par('La prueba de Shapiro Wilk rechaza la normalidad en tres de las cuatro variables, de modo que '
            'la elección entre Pearson y Spearman queda resuelta a favor de la segunda.')
@@ -272,7 +292,7 @@ cap += tabla([2900, 3000, 1300, 2000], [
     ['Índice entre zonas de influencia del Canal del Dique', 'Mann Whitney, 65 frente a 46 estaciones',
      '0,004', 'Diferencia significativa']])
 cap += figura('fig2')
-cap += leyenda('Figura', 6, 'a) Composición porcentual de clases de tamaño por campaña. b) Índice según la '
+cap += leyenda('Figura', 7, 'a) Composición porcentual de clases de tamaño por campaña. b) Índice según la '
                             'zona de influencia del Canal del Dique. c) Relación entre el índice y la '
                             'temperatura superficial. Fuente propia.')
 cap += rich_par([
@@ -299,7 +319,7 @@ cap += tabla([1900, 1900, 1800, 2000, 2000], [
     ['CP3', '18,6 por ciento', '87,9 por ciento', 'Temperatura −0,622', 'Índice −0,563'],
     ['CP4', '12,1 por ciento', '100 por ciento', '', '']])
 cap += figura('fig3')
-cap += leyenda('Figura', 7, 'a) Plano de los dos primeros componentes principales, con las estaciones '
+cap += leyenda('Figura', 8, 'a) Plano de los dos primeros componentes principales, con las estaciones '
                             'diferenciadas por época climática. b) Dendrograma de conglomerados por el '
                             'método de Ward. Fuente propia.')
 cap += par('El primer componente es un eje estuarino que opone la salinidad alta a la temperatura y la '
@@ -445,6 +465,11 @@ BLOQUES.append((382, inv))
 # ============================================================
 #   EDICIONES SOBRE TEXTO EXISTENTE
 # ============================================================
+# marco teorico: enlazar el par de la literatura con el adoptado en este trabajo
+anexar_a_parrafo(241, ' En este trabajo el índice se calcula sobre los máximos efectivamente medidos en los '
+                      'espectros disponibles, a 440 y 676 nm, y en la metodología se cuantifica el efecto de '
+                      'esa elección sobre la clasificación por tamaños.')
+
 # resumen
 reemplazar_en_parrafo(111, 'roja (675 nm)', 'roja (676 nm)')
 anexar_a_parrafo(111, ' El análisis de los 131 registros de las cinco campañas, de los cuales 112 '
@@ -498,7 +523,29 @@ reemplazar_en_parrafo(406,
 # quitar el resaltado del bloque senalado por la direccion
 for i in range(398, 407):
     quitar_resaltado(i)
+# quitar el resaltado amarillo residual de las entradas bibliograficas
+_limpiados = 0
+for _p in body.iter(W + 'p'):
+    if _p.find(f'.//{W}highlight') is not None:
+        for _padre in list(_p.iter()):
+            for _hl in [c for c in list(_padre) if c.tag == W + 'highlight']:
+                _padre.remove(_hl)
+                _limpiados += 1
+print("resaltados retirados de la bibliografía:", _limpiados)
 # resultados esperados
+reemplazar_en_parrafo(483,
+    'Se espera que el proyecto proporcione una caracterización detallada de los tamaños dominantes del '
+    'fitoplancton en la Bahía de Cartagena durante dos periodos climáticos contrastantes, utilizando el '
+    'índice Blue/Red. Los resultados ofrecerán un análisis comparativo entre las estaciones lluviosa y '
+    'seca, identificando las variaciones espacio-temporales en la comunidad fitoplanctónica y su relación '
+    'con las condiciones ambientales locales, como las variaciones de temperatura superficial del mar.',
+    'El proyecto entrega una caracterización de los tamaños dominantes del fitoplancton en la Bahía de '
+    'Cartagena mediante el índice Blue/Red, con el análisis comparativo entre épocas climáticas y entre '
+    'zonas de influencia del Canal del Dique. Sobre esa base, el trabajo se orienta a la contextualización '
+    'climática de las campañas mediante las anomalías estandarizadas de la temperatura superficial del mar '
+    'y a la construcción del modelo descriptivo con el conjunto ampliado de variables ambientales, de modo '
+    'que el producto final articule la estructura de tamaños observada con la variabilidad climática de la '
+    'bahía.')
 anexar_a_parrafo(488, ' La caracterización por clases de tamaño de las cinco campañas, la relación del '
                       'índice con la temperatura, la salinidad y la turbidez y la comparación entre las '
                       'zonas de influencia del Canal del Dique se desarrollan en el capítulo de resultados, '
@@ -536,8 +583,31 @@ def renumerar_referencia(fragmento, viejo, nuevo):
                     return True
     return False
 
+# la lista de tablas guarda el resultado anterior del campo: se ajusta para que no
+# contradiga la nueva numeracion mientras Word no regenere el indice
+_lista = {"Tabla 1. Coordenadas geográficas": ("Tabla 1.", "Tabla 4."),
+          "Tabla 2. Cronograma de actividades": ("Tabla 2.", "Tabla 12."),
+          "Tabla 3. Descripción presupuestal": ("Tabla 3.", "Tabla 13.")}
+for _p in body.iter(W + 'p'):
+    _st = _p.find(f'{W}pPr/{W}pStyle')
+    if _st is None or _st.get(W + 'val') != 'Tabladeilustraciones':
+        continue
+    for _t in _p.iter(W + 't'):
+        for _clave, (_viejo, _nuevo) in _lista.items():
+            if _t.text and _t.text.startswith(_clave.split(".")[0] + ".") and _clave[8:] in _t.text:
+                _t.text = _t.text.replace(_viejo, _nuevo, 1)
+                print(f"lista de tablas: {_viejo} -> {_nuevo}")
+
 print("ref Tabla 1 en texto:", renumerar_referencia('posición geográfica de cada estación', '1', '4'))
 print("ref Tabla 2 en texto:", renumerar_referencia('se propone un cronograma de actividades', '2', '12'))
+
+# que Word regenere el indice y las listas al abrir el archivo
+_ajustes = open(f"{SRC}/word/settings.xml", encoding="utf-8").read()
+if 'updateFields' not in _ajustes:
+    _ajustes = _ajustes.replace('<w:hdrShapeDefaults>',
+                                '<w:updateFields w:val="true"/><w:hdrShapeDefaults>')
+    open(f"{SRC}/word/settings.xml", "w", encoding="utf-8").write(_ajustes)
+    print("settings.xml: actualización de campos al abrir activada")
 
 tree.write(f"{SRC}/word/document.xml", xml_declaration=True, encoding='UTF-8', method='xml')
 salida = open(f"{SRC}/word/document.xml", encoding="utf-8").read()

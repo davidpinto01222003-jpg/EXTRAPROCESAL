@@ -14,8 +14,9 @@ corregir el documento principal. El texto se escribió sin usar guiones.
 `Anteproyecto_integrado_Omar_Gamboa.docx` — el anteproyecto original con el avance ya
 incorporado en sus secciones correspondientes. Conserva estilos, campos SEQ, índices
 automáticos y citas de Zotero del documento de origen. Los puntos de integración se
-listan más abajo. Al abrirlo en Word conviene seleccionar todo y actualizar campos con
-F9 para regenerar la tabla de contenido y las listas de figuras y tablas.
+listan más abajo. El archivo queda configurado para que Word actualice sus campos al
+abrirlo, con lo que la tabla de contenido y las listas de figuras y tablas se regeneran
+solas.
 
 ### Dónde quedó integrado cada aporte
 
@@ -28,14 +29,19 @@ F9 para regenerar la tabla de contenido y las listas de figuras y tablas.
 | Metodología, subsección nueva | Control de calidad de los datos, con cuatro criterios y Tabla 3 |
 | Metodología, tratamiento estadístico | Diseño de pruebas corregido, entorno de trabajo y definición operativa de zonas. Se retiró el resaltado del bloque |
 | Metodología, Modelado descriptivo | Criterio de respaldo si el ajuste no alcanza un R cuadrado de 0,4 |
-| Capítulo nuevo antes del cronograma | Resultados, con Tablas 5 a 11 y Figuras 5 a 7 |
-| Resultados esperados | Remisión al capítulo de resultados |
+| Marco teórico | Enlace entre el par de longitudes de onda de la literatura y el adoptado aquí |
+| Capítulo nuevo antes del cronograma | Resultados, con Tablas 5 a 11 y Figuras 5 a 8 |
+| Resultados esperados | Reescrito para no duplicar el capítulo de resultados |
 
 El capítulo de resultados está redactado como trabajo desarrollado, no como avance
 parcial: no habla de etapas, de material pendiente ni de lo que falta por hacer.
 
-Las tablas existentes se renumeraron en consecuencia: coordenadas de temperatura
-superficial pasa a Tabla 4, cronograma a Tabla 12 y presupuesto a Tabla 13.
+Además, sobre el documento completo: se retiró el resaltado amarillo que Zotero había
+dejado en 127 puntos de la bibliografía, se renumeraron las tablas existentes y sus
+referencias cruzadas, y se activó la actualización de campos al abrir el archivo, de
+modo que Word regenera por sí solo la tabla de contenido y las listas de figuras y
+tablas. Las tablas existentes pasaron a ser Tabla 4 las coordenadas de temperatura
+superficial, Tabla 12 el cronograma y Tabla 13 el presupuesto.
 
 ## Contenido
 
@@ -43,7 +49,7 @@ superficial pasa a Tabla 4, cronograma a Tabla 12 y presupuesto a Tabla 13.
 |---|---|
 | `fuentes/` | Anteproyecto en Word, compendio de la base de datos, archivo de datos por época y presentación teórica sobre espectros del fitoplancton |
 | `analisis/` | Rutinas de Python que construyen la base, verifican el índice y corren la estadística; salidas completas en texto plano y bases derivadas en CSV; script de Node que arma el documento |
-| `figuras/` | Las tres figuras del informe |
+| `figuras/` | Las cuatro figuras del análisis |
 
 Los libros de espectros de absorción (`ap`, `ad`, `aphy`, `aCDOM`) están en
 `../datos/espectros_cdom/`.
@@ -56,15 +62,16 @@ python3 build_data.py     # base_unificada.csv desde el compendio y los espectro
 python3 verifica.py       # control de calidad y reproducibilidad del índice
 python3 analisis.py       # estadística completa, deja salida.txt
 python3 figuras.py        # figuras finales
-node gen_doc.js           # arma el informe de avance
-python3 integrar_en_anteproyecto.py   # integra el avance en el anteproyecto original
+node gen_doc.js           # arma el informe
+python3 integrar_en_anteproyecto.py   # integra el trabajo en el anteproyecto original
+python3 anomalias_sst.py --entrada sst_mensual.csv   # anomalías estandarizadas de temperatura
 ```
 
 Dependencias: pandas, numpy, scipy, matplotlib, openpyxl y el paquete npm `docx`.
 Los scripts esperan los archivos originales en la ruta de subida; ajustar la constante
 `U` en `build_data.py` para apuntarlos a `../fuentes/` y `../../datos/espectros_cdom/`.
 
-## Resultados principales del avance
+## Resultados principales
 
 - 131 registros en cinco campañas; 19 excluidos por control de calidad (14,5 por ciento),
   casi todos en estaciones de turbidez alta donde la absorción del fitoplancton se obtiene
@@ -79,3 +86,16 @@ Los scripts esperan los archivos originales en la ruta de subida; ajustar la con
   del Canal del Dique definidas por salinidad (Mann Whitney, p = 0,004).
 - El modelo de regresión con temperatura, salinidad y turbidez explica menos del 10 por
   ciento de la variabilidad del índice; faltan clorofila a y nutrientes.
+
+## Anomalías de temperatura superficial
+
+`analisis/anomalias_sst.py` ejecuta los tres pasos de Santamaría del Ángel: climatología
+mensual con su desviación típica, anomalía y anomalía estandarizada, más la figura de la
+serie con las cinco campañas señaladas. Trae cargadas las ocho posiciones geográficas de
+la tabla de coordenadas del anteproyecto.
+
+La rutina intenta primero descargar las compuestas mensuales desde el servidor ERDDAP de
+NOAA CoastWatch y acepta también un archivo local con la serie por estación. El entorno
+donde se preparó este trabajo bloquea la salida hacia los servidores de datos
+satelitales, de modo que la descarga debe hacerse desde una máquina con acceso a
+internet y pasarse con `--entrada`. La rutina quedó probada de extremo a extremo.
