@@ -217,7 +217,8 @@ FUENTES = {
         "sel_ciudad": ["p.fs16 span", ".fs13", "p.fs13"],
         "sel_descripcion": ["div.box_detail", "div.fs16.t_word_wrap", "#detalle-oferta"],
         "necesita_sesion": True,
-        "url_inicio_sesion": "https://co.computrabajo.com/",
+        "urls_inicio_sesion": ["https://co.computrabajo.com/"],
+        "url_comprobacion": "https://co.computrabajo.com/hoja-de-vida",
         "sel_boton_postular": ["postularme", "postular ahora", "postular", "aplicar"],
     },
     "elempleo": {
@@ -240,7 +241,11 @@ FUENTES = {
         "sel_ciudad": [".city", ".location", "span.info-city"],
         "sel_descripcion": [".description-block", ".offer-description", "#Description"],
         "necesita_sesion": True,
-        "url_inicio_sesion": "https://www.elempleo.com/co/Home/Index",
+        "urls_inicio_sesion": [
+            "https://www.elempleo.com/co/Home/Index",
+            "https://www.elempleo.com/",
+        ],
+        "url_comprobacion": "https://www.elempleo.com/co/homeusuario/",
         "sel_boton_postular": ["aplicar ahora", "aplicar", "postularme", "postular"],
     },
     "magneto": {
@@ -259,7 +264,14 @@ FUENTES = {
         "sel_ciudad": [".location", ".city", "p.location"],
         "sel_descripcion": [".vacancy-detail", "main", "article"],
         "necesita_sesion": True,
-        "url_inicio_sesion": "https://www.magneto365.com/co",
+        # La direccion con /co dio error al abrirla en la prueba real;
+        # se prueban varias hasta que una responda.
+        "urls_inicio_sesion": [
+            "https://www.magneto365.com/",
+            "https://www.magneto365.com/co/",
+            "https://www.magneto365.com/co/empleos",
+            "https://www.magneto365.com/co",
+        ],
         "sel_boton_postular": ["postularme", "aplicar", "postular"],
     },
     "spe": {
@@ -281,7 +293,10 @@ FUENTES = {
         "sel_ciudad": [".ciudad", ".ubicacion"],
         "sel_descripcion": ["main", ".detalle-vacante"],
         "necesita_sesion": True,
-        "url_inicio_sesion": "https://personas.serviciodeempleo.gov.co/Postulante/HomeUsuario.aspx",
+        "urls_inicio_sesion": [
+            "https://personas.serviciodeempleo.gov.co/Postulante/HomeUsuario.aspx",
+        ],
+        "url_comprobacion": "https://personas.serviciodeempleo.gov.co/Postulante/HomeUsuario.aspx",
         "sel_boton_postular": ["postularme", "postular", "aplicar"],
     },
     "linkedin": {
@@ -1027,6 +1042,7 @@ class Navegador:
         self._pw = None
         self.contexto = None
         self.pagina = None
+        self.ultimo_estado = None  # codigo HTTP de lo ultimo que se abrio
 
     def __enter__(self):
         try:
@@ -1105,15 +1121,19 @@ class Navegador:
         esta ahi; lo que faltaba era algun recurso de adorno.
         """
         pagina = pagina or self.pagina
+        self.ultimo_estado = None
         try:
-            pagina.goto(url, wait_until="domcontentloaded", timeout=TIMEOUT_PAGINA_MS)
+            respuesta = pagina.goto(url, wait_until="domcontentloaded",
+                                    timeout=TIMEOUT_PAGINA_MS)
+            self.ultimo_estado = respuesta.status if respuesta else None
             pagina.wait_for_timeout(2500)
             return True
         except Exception:
             pass
 
         try:
-            pagina.goto(url, wait_until="commit", timeout=TIMEOUT_PAGINA_MS)
+            respuesta = pagina.goto(url, wait_until="commit", timeout=TIMEOUT_PAGINA_MS)
+            self.ultimo_estado = respuesta.status if respuesta else None
             pagina.wait_for_timeout(4000)
             LOG.debug("%s cargo a medias (se sigue con lo que alcanzo a llegar)", url)
             return True
@@ -1953,16 +1973,52 @@ SENALES_SESION_ABIERTA = ("cerrar sesion", "mi perfil", "mis postulaciones",
 SENALES_SESION_CERRADA = ("iniciar sesion", "ingresar", "registrate", "crear cuenta")
 
 
-def url_de_inicio(cfg: dict) -> str:
-    """Donde se entra a la cuenta de ese portal.
+def urls_de_inicio(cfg: dict) -> list:
+    """Direcciones donde se entra a la cuenta de ese portal, en orden.
 
-    No siempre es el mismo sitio donde se busca: el Servicio Publico de
-    Empleo, por ejemplo, atiende a los postulantes en otro subdominio.
+    Son varias porque no siempre acierta la primera: Magneto rechazo
+    '/co' en la prueba real. Y no siempre coinciden con la direccion de
+    busqueda -- el Servicio Publico de Empleo atiende a los postulantes
+    en otro subdominio.
     """
-    explicita = cfg.get("url_inicio_sesion")
-    if explicita:
-        return explicita
-    return re.match(r"https?://[^/]+", cfg["plantillas_url"][0]).group(0)
+    explicitas = cfg.get("urls_inicio_sesion")
+    if explicitas:
+        return list(explicitas)
+    return [re.match(r"https?://[^/]+", cfg["plantillas_url"][0]).group(0)]
+
+
+# Direcciones que solo se ven bien con la sesion abierta; si el portal
+# rebota a una de estas, es que no hay sesion.
+SENALES_URL_SIN_SESION = ("login", "signin", "sign-in", "iniciar-sesion",
+                          "ingresar", "acceso", "auth")
+
+
+def revisar_sesion(nav: Navegador, cfg: dict, pagina) -> str:
+    """Dice si parece que la sesion de ese portal quedo abierta.
+
+    Se mira primero A DONDE quedo el navegador: si se pidio la pagina de
+    la cuenta y el portal reboto al formulario de ingreso, no hay sesion
+    y no hay mas que discutir. Solo si eso no aclara nada se mira el
+    texto, que es mas fragil porque cada portal escribe distinto.
+
+    Devuelve "si", "no" o "?" (no se pudo saber).
+    """
+    destino = cfg.get("url_comprobacion") or urls_de_inicio(cfg)[0]
+    try:
+        if not nav.ir_a(destino, pagina=pagina):
+            return "?"
+        quedo_en = sin_tildes(pagina.url)
+        cuerpo = sin_tildes(pagina.inner_text("body")[:4000])
+    except Exception:
+        return "?"
+
+    if cfg.get("url_comprobacion") and any(s in quedo_en for s in SENALES_URL_SIN_SESION):
+        return "no"
+    if any(s in cuerpo for s in SENALES_SESION_ABIERTA):
+        return "si"
+    if any(s in cuerpo for s in SENALES_SESION_CERRADA):
+        return "no"
+    return "?"
 
 
 def iniciar_sesiones(perfil):
@@ -1993,53 +2049,78 @@ def iniciar_sesiones(perfil):
     LOG.info("")
 
     with Navegador(visible=True) as nav:
-        abiertas = []
-        for _, cfg in portales:
-            url = url_de_inicio(cfg)
-            LOG.info("   Abriendo %-28s %s", cfg["nombre"], url)
-            try:
-                pagina = nav.pagina if not abiertas else nav.contexto.new_page()
-                # "commit" = en cuanto el servidor empieza a responder. No
-                # se espera a que termine de cargar: en estos portales eso
-                # puede tardar una eternidad por la publicidad, y mientras
-                # tanto tu ya podrias estar escribiendo tu clave.
-                pagina.goto(url, wait_until="commit", timeout=TIMEOUT_PAGINA_MS)
-                abiertas.append((cfg, pagina))
-            except Exception as e:
-                LOG.warning("   No pude abrir %s (%s). Entra a ese portal a mano en "
-                            "una pestana nueva de esa misma ventana.",
-                            cfg["nombre"], type(e).__name__)
+        pendientes = list(portales)
 
-        LOG.info("")
-        input("   Cuando hayas iniciado sesion en TODOS, dale Enter aqui... ")
+        for intento in (1, 2):
+            abiertas = _abrir_pestanas(nav, pendientes)
+            LOG.info("")
+            input("   Cuando hayas iniciado sesion, dale Enter aqui... ")
 
-        # Comprobacion suave: se mira si la pagina ya te saluda como
-        # usuario. No es infalible (cada portal escribe distinto), por
-        # eso se informa como "parece" y nunca se da por fallado.
-        LOG.info("")
-        LOG.info("Revisando como quedo cada portal...")
-        for cfg, pagina in abiertas:
-            try:
-                nav.ir_a(url_de_inicio(cfg), pagina=pagina)
-                cuerpo = sin_tildes(pagina.inner_text("body")[:4000])
-            except Exception:
-                LOG.info("   %-28s no pude comprobarlo (cerraste la pestana)",
-                         cfg["nombre"])
-                continue
+            LOG.info("")
+            LOG.info("Revisando como quedo cada portal...")
+            fallidos = []
+            for clave, cfg, pagina in abiertas:
+                estado = revisar_sesion(nav, cfg, pagina)
+                if estado == "si":
+                    LOG.info("   %-28s LISTO, tu sesion quedo abierta", cfg["nombre"])
+                elif estado == "no":
+                    LOG.info("   %-28s todavia sin sesion", cfg["nombre"])
+                    fallidos.append((clave, cfg))
+                else:
+                    LOG.info("   %-28s no pude comprobarlo (puede estar bien)",
+                             cfg["nombre"])
 
-            if any(s in cuerpo for s in SENALES_SESION_ABIERTA):
-                LOG.info("   %-28s parece que SI quedo tu sesion", cfg["nombre"])
-            elif any(s in cuerpo for s in SENALES_SESION_CERRADA):
-                LOG.info("   %-28s parece que NO alcanzaste a entrar", cfg["nombre"])
-            else:
-                LOG.info("   %-28s no pude confirmarlo (no pasa nada)", cfg["nombre"])
+            if not fallidos or intento == 2:
+                break
+
+            LOG.info("")
+            LOG.info("Quedaron %d sin sesion. Se pueden reintentar AHORA MISMO,",
+                     len(fallidos))
+            LOG.info("sin volver a empezar: se abren otra vez solo esos.")
+            respuesta = input("   Enter para reintentar, o escribe 'no' y Enter: ")
+            if respuesta.strip().lower().startswith("n"):
+                break
+            pendientes = fallidos
 
     LOG.info("")
     LOG.info("Tus sesiones quedaron guardadas en:")
     LOG.info("   %s", CARPETA_NAVEGADOR)
     LOG.info("")
-    LOG.info("Si alguna quedo en 'NO alcanzaste a entrar', vuelve a correr esto")
-    LOG.info("cuando quieras: no se pierde nada por repetirlo.")
+    LOG.info("Lo que quedo sin sesion no rompe nada: a esos portales el")
+    LOG.info("programa se postula por CORREO cuando la oferta publica uno, y")
+    LOG.info("los demas te los deja anotados como 'para ti' con su link.")
+
+
+def _abrir_pestanas(nav: Navegador, portales):
+    """Abre cada portal en su pestana, probando sus direcciones."""
+    abiertas = []
+    for clave, cfg in portales:
+        pagina = None
+        for url in urls_de_inicio(cfg):
+            try:
+                if pagina is None:
+                    pagina = nav.pagina if not abiertas else nav.contexto.new_page()
+                # "commit" = en cuanto el servidor empieza a responder. No
+                # se espera a que termine de cargar: en estos portales eso
+                # puede tardar una eternidad por la publicidad, y mientras
+                # tanto tu ya podrias estar escribiendo tu clave.
+                respuesta = pagina.goto(url, wait_until="commit",
+                                        timeout=TIMEOUT_PAGINA_MS)
+                # Que el navegador llegue no basta: el portal pudo
+                # contestar "esa pagina no existe". Eso tambien es fallar.
+                if respuesta is not None and respuesta.status >= 400:
+                    LOG.debug("   %s contesto error %d", url, respuesta.status)
+                    continue
+                LOG.info("   Abierto %-28s %s", cfg["nombre"], url)
+                abiertas.append((clave, cfg, pagina))
+                break
+            except Exception:
+                LOG.debug("   no abrio %s", url)
+        else:
+            LOG.warning("   %s no abrio con ninguna de sus direcciones.", cfg["nombre"])
+            LOG.warning("   Entra a ese portal A MANO en una pestana nueva de esta")
+            LOG.warning("   misma ventana (Ctrl+T): la sesion se guarda igual.")
+    return abiertas
 
 
 def _links_de_la_pagina(nav: Navegador, limite: int = 8):
@@ -2128,6 +2209,10 @@ def diagnostico(perfil):
                     titulo = limpiar_espacios(nav.pagina.title())[:70]
                 except Exception:
                     titulo = ""
+                if nav.ultimo_estado and nav.ultimo_estado >= 400:
+                    LOG.info("      -> el portal contesto ERROR %d (esa direccion "
+                             "ya no existe)", nav.ultimo_estado)
+                    continue
                 LOG.info("      titulo de la pagina: %s", titulo or "(sin titulo)")
 
                 if parece_bloqueo(nav):
