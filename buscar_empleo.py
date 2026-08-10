@@ -155,6 +155,8 @@ INTERVALO_VIGILANCIA_MIN = 120
 AVISAR_POR_CORREO = True
 
 # El navegador se ve o no. En --login y --diagnostico siempre se ve.
+# Ponlo en True si algun portal te devuelve 0 resultados siempre: varios
+# rechazan al navegador cuando corre oculto, y visible si los dejan pasar.
 NAVEGADOR_VISIBLE = False
 
 # Cuanto espera a que cargue cada pagina (milisegundos).
@@ -180,9 +182,15 @@ CORREOS_PROHIBIDOS = (
 # --diagnostico` te dice exactamente cual dejo de funcionar.
 #
 #   habilitada        -> si se busca en ese portal
-#   plantilla_url     -> {q}=termino, {ciudad}=ciudad, {pagina}=numero
-#   q_con_guiones     -> True si el termino va en la ruta (hola-mundo)
-#                        en vez de en un parametro (?q=hola+mundo)
+#   plantillas_url    -> VARIAS direcciones candidatas, en orden. Se
+#                        prueban de arriba abajo y se usa la PRIMERA que
+#                        devuelva ofertas; el log dice cual funciono.
+#                        Existe porque los portales cambian la forma de
+#                        sus direcciones cada tanto, y asi el programa se
+#                        adapta solo en vez de quedarse en 0 resultados.
+#                        Comodines: {q}=termino-con-guiones, {qp}=termino
+#                        para parametro, {ciudad} y {ciudadp} igual,
+#                        {pagina}=numero de pagina.
 #   patron_enlace     -> como se reconoce el link de una oferta. Es la
 #                        red de seguridad: aunque cambien todas las
 #                        clases CSS, los links siguen teniendo esta forma.
@@ -196,10 +204,13 @@ FUENTES = {
     "computrabajo": {
         "habilitada": True,
         "nombre": "Computrabajo",
-        "plantilla_url": "https://co.computrabajo.com/trabajo-de-{q}?p={pagina}",
-        "plantilla_url_ciudad": "https://co.computrabajo.com/trabajo-de-{q}-en-{ciudad}?p={pagina}",
-        "q_con_guiones": True,
-        "patron_enlace": r"/ofertas-de-trabajo/oferta-de-trabajo-de-",
+        "plantillas_url": [
+            "https://co.computrabajo.com/trabajo-de-{q}-en-{ciudad}?p={pagina}",
+            "https://co.computrabajo.com/trabajo-de-{q}?p={pagina}",
+            "https://co.computrabajo.com/empleos-en-{ciudad}?q={qp}&p={pagina}",
+            "https://co.computrabajo.com/empleos?q={qp}&p={pagina}",
+        ],
+        "patron_enlace": r"/ofertas-de-trabajo/",
         "sel_tarjeta": ["article.box_offer", "article[data-id]", ".js-o-container"],
         "sel_titulo": ["h2 a", "a.js-o-link", "h1 a"],
         "sel_empresa": ["p.dFlex.vMiddle a", ".fs16 a", "p.fs16"],
@@ -211,8 +222,11 @@ FUENTES = {
     "elempleo": {
         "habilitada": True,
         "nombre": "elempleo.com",
-        "plantilla_url": "https://www.elempleo.com/co/ofertas-empleo/?Search={q}&PageIndex={pagina}",
-        "q_con_guiones": False,
+        "plantillas_url": [
+            "https://www.elempleo.com/co/ofertas-empleo/?Search={qp}&PageIndex={pagina}",
+            "https://www.elempleo.com/co/ofertas-empleo/?Keyword={qp}&PageIndex={pagina}",
+            "https://www.elempleo.com/co/ofertas-empleo/{q}",
+        ],
         "patron_enlace": r"/co/ofertas-trabajo/",
         "sel_tarjeta": [".result-item", ".offer-item", "article.result"],
         "sel_titulo": ["a.js-o-link", ".title-offer a", "h2 a", "a"],
@@ -225,8 +239,11 @@ FUENTES = {
     "magneto": {
         "habilitada": True,
         "nombre": "Magneto365",
-        "plantilla_url": "https://www.magneto365.com/co/empleos?search={q}&page={pagina}",
-        "q_con_guiones": False,
+        "plantillas_url": [
+            "https://www.magneto365.com/co/empleos?search={qp}&page={pagina}",
+            "https://www.magneto365.com/co/empleos?q={qp}&page={pagina}",
+            "https://www.magneto365.com/co/empleos/{q}",
+        ],
         "patron_enlace": r"/co/empleos/",
         "sel_tarjeta": ["article", ".vacancy-card", "li.vacancy"],
         "sel_titulo": ["h2", "h3", "a"],
@@ -239,8 +256,11 @@ FUENTES = {
     "spe": {
         "habilitada": True,
         "nombre": "Servicio Publico de Empleo",
-        "plantilla_url": "https://serviciodeempleo.gov.co/buscar-empleo?keyword={q}&page={pagina}",
-        "q_con_guiones": False,
+        "plantillas_url": [
+            "https://serviciodeempleo.gov.co/buscar-empleo?keyword={qp}&page={pagina}",
+            "https://serviciodeempleo.gov.co/buscar-empleo?palabraClave={qp}&pagina={pagina}",
+            "https://serviciodeempleo.gov.co/buscar-empleo?q={qp}",
+        ],
         "patron_enlace": r"(oferta|vacante)",
         "sel_tarjeta": ["article", ".card-vacante", ".resultado"],
         "sel_titulo": ["h2", "h3", "a"],
@@ -256,11 +276,10 @@ FUENTES = {
         # aceptas ese riesgo. Lee la advertencia del docstring.
         "habilitada": False,
         "nombre": "LinkedIn",
-        "plantilla_url": (
-            "https://www.linkedin.com/jobs/search/?keywords={q}"
-            "&location={ciudad}%2C%20Colombia&f_TPR=r604800&start={pagina0_25}"
-        ),
-        "q_con_guiones": False,
+        "plantillas_url": [
+            "https://www.linkedin.com/jobs/search/?keywords={qp}"
+            "&location={ciudadp}%2C%20Colombia&f_TPR=r604800&start={pagina0_25}",
+        ],
         "patron_enlace": r"/jobs/view/",
         "sel_tarjeta": ["div.job-card-container", "li.jobs-search-results__list-item", "div.base-card"],
         "sel_titulo": ["a.job-card-list__title", "h3", "a"],
@@ -1006,12 +1025,23 @@ class Navegador:
             )
         CARPETA_NAVEGADOR.mkdir(parents=True, exist_ok=True)
         self._pw = sync_playwright().start()
+        # Varios portales rechazan a los navegadores automatizados, y
+        # cuando lo hacen el sintoma es "0 resultados", que se confunde
+        # con "no hay ofertas". Estas dos cosas -- ocultar la senal de
+        # automatizacion y presentarse con un identificador normal --
+        # evitan la mayoria de esos rechazos. No evaden captchas ni
+        # bloqueos: solo dejan de anunciar que esto es un programa.
         self.contexto = self._pw.chromium.launch_persistent_context(
             user_data_dir=str(CARPETA_NAVEGADOR),
             headless=not self.visible,
             locale="es-CO",
             timezone_id="America/Bogota",
             viewport={"width": 1366, "height": 900},
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+            ),
+            args=["--disable-blink-features=AutomationControlled"],
         )
         self.contexto.set_default_timeout(TIMEOUT_PAGINA_MS)
         self.pagina = self.contexto.pages[0] if self.contexto.pages else self.contexto.new_page()
@@ -1061,32 +1091,108 @@ def _texto_hijo(tarjeta, selectores) -> str:
     return ""
 
 
-def construir_url(cfg: dict, termino: str, ciudad: str, pagina: int) -> str:
-    from urllib.parse import quote_plus
-    if cfg.get("q_con_guiones"):
-        q = a_slug(termino)
-        ciudad_url = a_slug(ciudad)
-    else:
-        q = quote_plus(termino)
-        ciudad_url = quote_plus(ciudad)
+def construir_url(plantilla: str, termino: str, ciudad: str, pagina: int) -> str:
+    """Arma una direccion de busqueda a partir de una plantilla.
 
-    plantilla = cfg["plantilla_url"]
-    if ciudad and cfg.get("plantilla_url_ciudad"):
-        plantilla = cfg["plantilla_url_ciudad"]
+    Se ofrecen las dos formas del termino porque los portales no se
+    ponen de acuerdo: unos lo quieren dentro de la ruta separado por
+    guiones (trabajo-de-auxiliar-juridico) y otros como parametro
+    (?q=auxiliar+juridico).
+    """
+    from urllib.parse import quote_plus
     return plantilla.format(
-        q=q, ciudad=ciudad_url, pagina=pagina,
+        q=a_slug(termino),
+        qp=quote_plus(termino),
+        ciudad=a_slug(ciudad),
+        ciudadp=quote_plus(ciudad),
+        pagina=pagina,
         pagina0_25=(pagina - 1) * 25,
     )
+
+
+SENALES_DE_BLOQUEO = (
+    "just a moment", "verificando tu navegador", "checking your browser",
+    "acceso denegado", "access denied", "unusual traffic", "captcha",
+    "no eres un robot", "are you a human", "cloudflare",
+)
+
+
+def parece_bloqueo(nav) -> bool:
+    """Distingue 'no hay ofertas' de 'el portal no me dejo entrar'.
+
+    Sin esto, un bloqueo antibot se ve exactamente igual que una
+    busqueda sin resultados, y se pierde el tiempo buscando el problema
+    en la direccion cuando esta bien.
+    """
+    try:
+        texto = sin_tildes(nav.pagina.title() + " " + nav.pagina.inner_text("body")[:1500])
+    except Exception:
+        return False
+    return any(s in texto for s in SENALES_DE_BLOQUEO)
+
+
+def elegir_plantilla(nav: Navegador, clave_fuente: str, cfg: dict, termino: str, ciudad: str):
+    """Prueba las direcciones candidatas y devuelve la que si trae ofertas.
+
+    Los portales cambian la forma de sus direcciones cada tanto, y
+    cuando eso pasa el sintoma es siempre el mismo: 0 resultados en
+    todo. En vez de quedarse ahi, se prueban las alternativas conocidas
+    y se sigue con la que responda.
+
+    Devuelve (plantilla, vacantes_de_esa_primera_busqueda) o (None, []).
+    """
+    bloqueado = False
+    for plantilla in cfg["plantillas_url"]:
+        url = construir_url(plantilla, termino, ciudad, 1)
+        if not nav.ir_a(url):
+            LOG.debug("   no respondio: %s", url)
+            continue
+
+        if parece_bloqueo(nav):
+            bloqueado = True
+            LOG.debug("   el portal mostro una pantalla de verificacion en %s", url)
+            continue
+
+        vacantes = _leer_resultados(nav, clave_fuente, cfg)
+        if vacantes:
+            return plantilla, vacantes
+        LOG.debug("   0 resultados con: %s", url)
+        time.sleep(random.uniform(*ESPERA_ENTRE_LECTURAS))
+
+    if bloqueado:
+        LOG.warning("   %s no dejo entrar: mostro una pantalla de verificacion "
+                    "(captcha o similar).", cfg["nombre"])
+        LOG.warning("   Suele pasar con el navegador oculto. Abre buscar_empleo.py "
+                    "y pon NAVEGADOR_VISIBLE = True.")
+    else:
+        LOG.warning("   %s no devolvio ofertas con ninguna de sus %d direcciones.",
+                    cfg["nombre"], len(cfg["plantillas_url"]))
+        LOG.warning("   Corre 'python buscar_empleo.py --diagnostico' para ver que "
+                    "esta mostrando el portal y con que direccion.")
+    return None, []
 
 
 def buscar_en_portal(nav: Navegador, clave_fuente: str, cfg: dict, perfil: dict):
     """Devuelve las vacantes que ese portal muestra para tus cargos."""
     encontradas = {}
     ciudad = perfil.get("ciudad", "")
+    terminos = list(perfil["cargos_objetivo"])
 
-    for termino in perfil["cargos_objetivo"]:
+    # Con el primer termino se averigua cual de las direcciones sirve; el
+    # resto de la busqueda ya va derecho por esa.
+    plantilla, primeras = elegir_plantilla(nav, clave_fuente, cfg, terminos[0], ciudad)
+    if plantilla is None:
+        return []
+    for vac in primeras:
+        encontradas.setdefault(vac.clave, vac)
+    if plantilla is not cfg["plantillas_url"][0]:
+        LOG.info("   (usando la direccion alterna: %s)", plantilla)
+
+    for indice, termino in enumerate(terminos):
         for pagina in range(1, PAGINAS_POR_BUSQUEDA + 1):
-            url = construir_url(cfg, termino, ciudad, pagina)
+            if indice == 0 and pagina == 1:
+                continue  # esa ya se leyo al elegir la direccion
+            url = construir_url(plantilla, termino, ciudad, pagina)
             LOG.debug("   %s: buscando '%s' (pag. %d)", cfg["nombre"], termino, pagina)
             if not nav.ir_a(url):
                 LOG.warning("   %s no respondio en %s", cfg["nombre"], url)
@@ -1097,7 +1203,6 @@ def buscar_en_portal(nav: Navegador, clave_fuente: str, cfg: dict, perfil: dict)
                 encontradas.setdefault(vac.clave, vac)
 
             if not nuevas:
-                # Sin resultados: o no hay ofertas, o el portal cambio.
                 LOG.debug("   %s: 0 resultados en pag. %d", cfg["nombre"], pagina)
                 break
             time.sleep(random.uniform(*ESPERA_ENTRE_LECTURAS))
@@ -1759,46 +1864,132 @@ def iniciar_sesiones(perfil):
 
     with Navegador(visible=True) as nav:
         for _, cfg in portales:
-            inicio = re.match(r"https?://[^/]+", cfg["plantilla_url"]).group(0)
+            inicio = re.match(r"https?://[^/]+", cfg["plantillas_url"][0]).group(0)
             LOG.info(">> Abriendo %s ...", cfg["nombre"])
             nav.ir_a(inicio)
             input(f"   Inicia sesion en {cfg['nombre']} y dale Enter aqui... ")
     LOG.info("Listo. Tus sesiones quedaron guardadas en %s", CARPETA_NAVEGADOR)
 
 
-def diagnostico(perfil):
-    """Revisa portal por portal si todavia devuelve resultados.
+def _links_de_la_pagina(nav: Navegador, limite: int = 8):
+    """Que formas de enlace hay en la pagina, de la mas repetida a la menos.
 
-    Cuando un portal cambia su pagina, esto te dice CUAL y con que URL,
-    para que corrijas su entrada en FUENTES sin adivinar.
+    Es LA pista que hace falta cuando un portal deja de dar resultados:
+    si el programa busca enlaces con una forma y el portal ahora usa
+    otra, aqui se ve cual es la nueva, sin adivinar.
+    """
+    try:
+        enlaces = nav.pagina.eval_on_selector_all(
+            "a[href]", "e => e.map(x => x.getAttribute('href') || '')")
+    except Exception:
+        return []
+
+    from urllib.parse import urlparse
+    conteo = {}
+    ejemplos = {}
+    for href in enlaces:
+        ruta = urlparse(href).path
+        if not ruta or ruta == "/":
+            continue
+        # Se agrupa por los dos primeros tramos: /ofertas-de-trabajo/xxx
+        tramos = [t for t in ruta.split("/") if t][:2]
+        if not tramos:
+            continue
+        forma = "/" + "/".join(tramos[:1]) + ("/..." if len(tramos) > 1 else "")
+        conteo[forma] = conteo.get(forma, 0) + 1
+        ejemplos.setdefault(forma, ruta)
+
+    ordenados = sorted(conteo.items(), key=lambda x: -x[1])[:limite]
+    return [(forma, veces, ejemplos[forma]) for forma, veces in ordenados]
+
+
+def diagnostico(perfil):
+    """Revisa portal por portal, direccion por direccion, que esta pasando.
+
+    Cuando un portal cambia su pagina, el sintoma es siempre "0
+    resultados" y no se sabe si la direccion quedo mala, si el portal
+    bloqueo al programa o si de verdad no hay ofertas. Esto lo separa:
+    prueba TODAS las direcciones candidatas, dice cual respondio,
+    cuantos enlaces de oferta encontro, y ademas lista que formas de
+    enlace trae la pagina -- que es lo que hace falta para corregir
+    'patron_enlace' si el portal lo cambio.
+
+    Deja la pagina guardada (.html) y una captura de cada portal, para
+    poder mirarlas con calma o mandarlas a quien te ayude.
     """
     carpeta = CARPETA_DATOS / "diagnostico"
     carpeta.mkdir(parents=True, exist_ok=True)
     termino = perfil["cargos_objetivo"][0]
+    ciudad = perfil.get("ciudad", "")
 
-    LOG.info("Probando cada portal con el termino '%s'...", termino)
     LOG.info("")
+    LOG.info("=" * 62)
+    LOG.info(" DIAGNOSTICO -- buscando '%s' en %s", termino, ciudad or "todo el pais")
+    LOG.info("=" * 62)
+
     with Navegador(visible=True) as nav:
         for clave, cfg in FUENTES.items():
+            LOG.info("")
+            LOG.info(">> %s", cfg["nombre"])
             if not cfg.get("habilitada"):
-                LOG.info("  %-28s DESACTIVADO en FUENTES", cfg["nombre"])
+                LOG.info("   DESACTIVADO en FUENTES (no se prueba)")
                 continue
-            url = construir_url(cfg, termino, perfil.get("ciudad", ""), 1)
-            abierto = nav.ir_a(url)
-            resultados = _leer_resultados(nav, clave, cfg) if abierto else []
-            captura = carpeta / f"{clave}.png"
+
+            gano = None
+            for numero, plantilla in enumerate(cfg["plantillas_url"], start=1):
+                url = construir_url(plantilla, termino, ciudad, 1)
+                LOG.info("   Direccion %d: %s", numero, url)
+
+                if not nav.ir_a(url):
+                    LOG.info("      -> no respondio (sin internet, o direccion mala)")
+                    continue
+
+                try:
+                    titulo = limpiar_espacios(nav.pagina.title())[:70]
+                except Exception:
+                    titulo = ""
+                LOG.info("      titulo de la pagina: %s", titulo or "(sin titulo)")
+
+                if parece_bloqueo(nav):
+                    LOG.info("      -> EL PORTAL PIDIO VERIFICACION (captcha o similar).")
+                    LOG.info("         Prueba con NAVEGADOR_VISIBLE = True.")
+                    continue
+
+                resultados = _leer_resultados(nav, clave, cfg)
+                if resultados:
+                    LOG.info("      -> BIEN: %d ofertas. Ejemplo: %s",
+                             len(resultados), resultados[0].titulo[:45])
+                    gano = url
+                    break
+
+                LOG.info("      -> abrio, pero no reconoci ninguna oferta.")
+                formas = _links_de_la_pagina(nav)
+                if formas:
+                    LOG.info("         Los enlaces que trae esta pagina son:")
+                    for forma, veces, ejemplo in formas:
+                        LOG.info("           %-28s x%-4d  ej: %s", forma, veces, ejemplo[:60])
+                    LOG.info("         (el programa busca enlaces que digan '%s')",
+                             cfg["patron_enlace"])
+
+            # Se guarda lo ultimo que se vio, para poder revisarlo despues.
             try:
-                nav.pagina.screenshot(path=str(captura), full_page=False)
+                nav.pagina.screenshot(path=str(carpeta / f"{clave}.png"), full_page=False)
+                (carpeta / f"{clave}.html").write_text(nav.pagina.content(), encoding="utf-8")
             except Exception:
                 pass
-            estado = f"{len(resultados)} ofertas" if resultados else "SIN RESULTADOS"
-            LOG.info("  %-28s %s", cfg["nombre"], estado)
-            LOG.info("      %s", url)
-            if not resultados:
-                LOG.info("      -> revisa 'plantilla_url' y los selectores de "
-                         "'%s' en FUENTES. Captura: %s", clave, captura.name)
+
+            if gano:
+                LOG.info("   RESULTADO: funciona -> %s", gano)
+            else:
+                LOG.info("   RESULTADO: ninguna direccion sirvio.")
+                LOG.info("   Mira %s.png y %s.html en la carpeta de diagnostico.",
+                         clave, clave)
+
     LOG.info("")
-    LOG.info("Capturas de pantalla en: %s", carpeta)
+    LOG.info("=" * 62)
+    LOG.info(" Paginas y capturas guardadas en:")
+    LOG.info("   %s", carpeta)
+    LOG.info("=" * 62)
 
 
 def main():

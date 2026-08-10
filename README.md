@@ -1681,13 +1681,24 @@ Los portales cambian su página cada tanto y ahí es donde se rompen
 siempre este tipo de programas. Este está armado para que puedas
 arreglarlo tú sin tocar código:
 
-1. Corre `python buscar_empleo.py --diagnostico`. Abre cada portal, te
-   dice cuál devolvió **SIN RESULTADOS**, con qué dirección exacta lo
-   intentó, y te deja una captura de pantalla en
-   `datos_empleo/diagnostico/`.
-2. Corrige ese portal en la sección **`FUENTES`**, al inicio de
-   `buscar_empleo.py`: ahí están, uno por uno, la dirección de búsqueda y
-   los selectores de cada portal, comentados. No hay que tocar nada más.
+**Antes de tocar nada, el programa ya se defiende solo**: cada portal
+tiene *varias* direcciones candidatas en `FUENTES`, y las prueba en orden
+hasta que una devuelva ofertas. En el log te dice cuál usó. Solo si
+ninguna funciona hay que meter mano:
+
+1. Corre `python buscar_empleo.py --diagnostico`. Prueba **todas** las
+   direcciones de cada portal y te dice, una por una: si abrió, qué
+   título tenía la página, si el portal pidió verificación (captcha), y
+   —lo más útil— **qué forma tienen los enlaces que sí trae esa página**,
+   comparada con la que el programa está buscando. Guarda además la
+   página (`.html`) y una captura en `datos_empleo/diagnostico/`.
+2. Con eso corrige ese portal en la sección **`FUENTES`**, al inicio de
+   `buscar_empleo.py`: ahí están, uno por uno, las direcciones y los
+   selectores de cada portal, comentados. No hay que tocar nada más.
+
+Si el diagnóstico dice que el portal **pidió verificación**, no es la
+dirección: es que rechazó al navegador por correr oculto. Abre
+`buscar_empleo.py` y pon `NAVEGADOR_VISIBLE = True`.
 
 Además, el programa ya trae una red de seguridad: si los selectores de un
 portal dejan de funcionar, recoge las ofertas reconociendo los **links**
