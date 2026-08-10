@@ -1,0 +1,32 @@
+{
+  "name": "Mi buscador de empleo",
+  "short_name": "Empleo",
+  "description": "Vigila los portales de empleo colombianos y postula por ti.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6fa",
+  "theme_color": "#12325c",
+  "lang": "es-CO",
+  "icons": [
+    {
+      "src": "/estatico/icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/estatico/icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/estatico/icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

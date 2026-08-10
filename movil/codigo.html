@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12325c">
+<title>Código de acceso</title>
+<link rel="icon" href="/estatico/icono-192.png">
+<link rel="stylesheet" href="/estatico/estilo.css">
+</head>
+<body>
+
+<header id="cabecera">
+  <div class="titulo"><h1>Mi buscador de empleo</h1></div>
+</header>
+
+<main>
+  <div class="bloque">
+    <h2>Escribe el código</h2>
+    <p class="nota">
+      Es el código de 8 caracteres que aparece en la ventana del PC donde
+      corriste <strong>app_movil.py</strong>. Solo se pide una vez en
+      este teléfono.
+    </p>
+    <input id="codigo" class="campo" type="text" inputmode="latin"
+           autocapitalize="characters" autocomplete="off"
+           placeholder="A1B2C3D4" style="letter-spacing:.18em; text-align:center; font-size:20px;">
+    <button id="entrar" class="boton primario ancho">Entrar</button>
+    <p class="nota" id="error"></p>
+  </div>
+
+  <div class="bloque">
+    <h2>¿No te aparece nada?</h2>
+    <p class="nota">
+      El PC tiene que estar encendido, con <strong>app_movil.py</strong>
+      corriendo, y el celular en el <strong>mismo WiFi</strong> que el PC.
+      Si cambiaste de red, la dirección del PC cambia: vuelve a mirar la
+      que muestra esa ventana.
+    </p>
+  </div>
+</main>
+
+<script>
+  const campo = document.getElementById("codigo");
+  const entrar = () => {
+    const valor = campo.value.trim().toUpperCase();
+    if (!valor) { document.getElementById("error").textContent = "Escribe el código."; return; }
+    location.href = "/?t=" + encodeURIComponent(valor);
+  };
+  document.getElementById("entrar").onclick = entrar;
+  campo.addEventListener("keydown", (e) => { if (e.key === "Enter") entrar(); });
+  campo.focus();
+</script>
+</body>
+</html>

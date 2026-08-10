@@ -552,7 +552,45 @@ def cargar_perfil() -> dict:
     ciudades = list(perfil["ciudades"]) or ([perfil["ciudad"]] if perfil["ciudad"] else [])
     perfil["_ciudades"] = [sin_tildes(c) for c in ciudades if c]
     perfil["_nivel"] = nivel_a_numero(perfil["nivel_educativo"])
+    aplicar_ajustes_del_perfil(perfil)
     return perfil
+
+
+def aplicar_ajustes_del_perfil(perfil: dict):
+    """Deja que el perfil mande sobre los ajustes de CONFIGURACION.
+
+    Existe para que la app del telefono pueda cambiar el umbral, el tope
+    diario o el modo sin editar este archivo: los guarda en
+    perfil_laboral.json y aqui se aplican. Si el perfil no los trae,
+    quedan los valores de CONFIGURACION tal cual.
+    """
+    global UMBRAL_POSTULACION, MAX_POSTULACIONES_DIA, INTERVALO_VIGILANCIA_MIN, MODO
+
+    ajustes = {
+        "umbral_postulacion": ("UMBRAL_POSTULACION", int, 0, 100),
+        "max_postulaciones_dia": ("MAX_POSTULACIONES_DIA", int, 1, 200),
+        "intervalo_vigilancia_min": ("INTERVALO_VIGILANCIA_MIN", int, 15, 1440),
+    }
+    for clave, (nombre, tipo, minimo, maximo) in ajustes.items():
+        if perfil.get(clave) in (None, ""):
+            continue
+        try:
+            valor = tipo(perfil[clave])
+        except (TypeError, ValueError):
+            LOG.warning("Ignoro '%s' del perfil: '%s' no es un numero.", clave, perfil[clave])
+            continue
+        if not (minimo <= valor <= maximo):
+            LOG.warning("Ignoro '%s' del perfil: %s esta fuera de %s-%s.",
+                        clave, valor, minimo, maximo)
+            continue
+        globals()[nombre] = valor
+
+    modo = str(perfil.get("modo", "")).strip().lower()
+    if modo:
+        if modo in ("simulacion", "semiautomatico", "automatico"):
+            MODO = modo
+        else:
+            LOG.warning("Ignoro 'modo' del perfil: '%s' no es un modo valido.", modo)
 
 
 def cargar_credenciales():

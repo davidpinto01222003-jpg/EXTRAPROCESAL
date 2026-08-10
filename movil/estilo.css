@@ -1,0 +1,301 @@
+/* Estilo de la app de empleo. Pensado para el celular primero:
+   todo lo que se toca mide al menos 44px, y la navegacion vive abajo,
+   al alcance del pulgar. */
+
+:root {
+  --fondo: #f4f6fa;
+  --superficie: #ffffff;
+  --borde: #dfe4ec;
+  --texto: #16202f;
+  --texto-suave: #5d6b80;
+  --marca: #12325c;
+  --marca-clara: #1d4f8f;
+  --ok: #17703f;
+  --ok-fondo: #e5f4ea;
+  --alerta: #8a5200;
+  --alerta-fondo: #fdf1dd;
+  --malo: #9a2b2b;
+  --malo-fondo: #fbe9e9;
+  --sombra: 0 1px 3px rgba(16, 32, 47, .10), 0 8px 24px rgba(16, 32, 47, .06);
+  --barra-inferior: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0e1420;
+    --superficie: #161e2d;
+    --borde: #25314a;
+    --texto: #e8edf6;
+    --texto-suave: #9aa8bf;
+    --marca: #4b8fe0;
+    --marca-clara: #6aa6ee;
+    --ok: #6ede9f;
+    --ok-fondo: #123526;
+    --alerta: #f0bd6a;
+    --alerta-fondo: #38290f;
+    --malo: #ff9c9c;
+    --malo-fondo: #3a1a1a;
+    --sombra: 0 1px 3px rgba(0, 0, 0, .5);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: calc(72px + var(--barra-inferior));
+}
+
+/* ---------- Cabecera ---------- */
+#cabecera {
+  background: var(--marca);
+  color: #fff;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+#cabecera h1 { font-size: 1.05rem; margin: 0; font-weight: 600; }
+.titulo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+.chip {
+  font-size: .72rem;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .16);
+  white-space: nowrap;
+}
+.chip.malo { background: #9a2b2b; }
+.chip.vivo { background: #1d7a4a; }
+
+/* ---------- Estructura ---------- */
+main { padding: 14px; max-width: 720px; margin: 0 auto; }
+.vista { display: none; }
+.vista.activa { display: block; animation: aparecer .18s ease-out; }
+@keyframes aparecer { from { opacity: 0; transform: translateY(4px); } }
+
+.bloque {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--sombra);
+}
+.bloque h2 { font-size: .95rem; margin: 0 0 6px; }
+
+.nota { color: var(--texto-suave); font-size: .82rem; line-height: 1.45; margin: 6px 0 0; }
+/* La nota que abre una pestana necesita aire antes del primer campo. */
+.vista > .nota:first-child { margin: 0 0 16px; }
+.renglon { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+/* ---------- Tarjetas de conteo ---------- */
+.tarjetas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: var(--sombra);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.tarjeta strong { display: block; font-size: 1.7rem; line-height: 1.1; }
+.tarjeta span { font-size: .78rem; color: var(--texto-suave); }
+.tarjeta.destacada { border-color: var(--marca); }
+.tarjeta.destacada strong { color: var(--marca); }
+
+/* ---------- Barra de cupo ---------- */
+.barra { height: 8px; background: var(--borde); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+.barra div { height: 100%; width: 0; background: var(--marca); transition: width .3s; }
+
+/* ---------- Botones ---------- */
+.botones { display: flex; gap: 10px; margin-top: 12px; }
+.boton {
+  flex: 1;
+  min-height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.boton.primario { background: var(--marca); border-color: var(--marca); color: #fff; }
+.boton.ancho { width: 100%; margin-top: 8px; }
+.boton:disabled { opacity: .5; }
+.boton:active { transform: scale(.99); }
+
+/* ---------- Progreso ---------- */
+.progreso { margin-top: 14px; border-top: 1px solid var(--borde); padding-top: 12px; }
+pre {
+  background: #0d1420;
+  color: #cfe0f5;
+  font-size: .72rem;
+  line-height: 1.5;
+  padding: 12px;
+  border-radius: 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow-y: auto;
+  margin: 10px 0 0;
+}
+
+/* ---------- Filtros de la lista ---------- */
+.filtros { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
+.filtros button {
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto-suave);
+  padding: 9px 14px;
+  font: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+.filtros button.activo { background: var(--marca); border-color: var(--marca); color: #fff; }
+
+/* ---------- Lista de vacantes ---------- */
+.vacante {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--sombra);
+}
+.vacante h3 { margin: 0 0 4px; font-size: .95rem; line-height: 1.35; }
+.vacante .meta { font-size: .8rem; color: var(--texto-suave); }
+.vacante .detalle { font-size: .8rem; margin-top: 8px; line-height: 1.45; }
+.vacante .pie { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.vacante .pie a, .vacante .pie button {
+  flex: 1;
+  min-width: 120px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--borde);
+  background: transparent;
+  color: var(--marca);
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.insignia {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.insignia.postulada { background: var(--ok-fondo); color: var(--ok); }
+.insignia.pendiente_revision { background: var(--alerta-fondo); color: var(--alerta); }
+.insignia.descartada, .insignia.duplicada { background: var(--borde); color: var(--texto-suave); }
+.insignia.error { background: var(--malo-fondo); color: var(--malo); }
+.insignia.en_espera, .insignia.simulada, .insignia.revisada { background: var(--borde); color: var(--texto-suave); }
+
+.puntaje { float: right; font-weight: 700; color: var(--marca); font-size: .95rem; }
+
+/* ---------- Formulario ---------- */
+.etiqueta { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 14px; }
+.ayuda { display: block; font-weight: 400; color: var(--texto-suave); font-size: .78rem; margin: 3px 0 6px; }
+.campo {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 1px solid var(--borde);
+  border-radius: 11px;
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  font-size: 16px; /* 16px evita que el iPhone haga zoom al enfocar */
+}
+textarea.campo { min-height: 88px; resize: vertical; }
+.pareja { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .88rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  min-height: 44px;
+}
+.interruptor input { width: 22px; height: 22px; }
+
+/* ---------- Avisos ---------- */
+.aviso {
+  background: var(--alerta-fondo);
+  color: var(--alerta);
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-size: .84rem;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  white-space: pre-line;
+}
+
+.vacio { text-align: center; color: var(--texto-suave); padding: 40px 20px; font-size: .88rem; }
+
+/* ---------- Pestanas de abajo ---------- */
+#pestanas {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  background: var(--superficie);
+  border-top: 1px solid var(--borde);
+  padding-bottom: var(--barra-inferior);
+  z-index: 20;
+}
+.pestana {
+  flex: 1;
+  min-height: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  background: transparent;
+  color: var(--texto-suave);
+  font: inherit;
+  font-size: .7rem;
+  cursor: pointer;
+}
+.pestana span { font-size: 1.15rem; line-height: 1; }
+.pestana.activa { color: var(--marca); font-weight: 600; }
+
+/* ---------- Mensajito flotante ---------- */
+.brindis {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + var(--barra-inferior));
+  transform: translateX(-50%);
+  background: #16202f;
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 999px;
+  font-size: .84rem;
+  z-index: 30;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+  max-width: 90vw;
+  text-align: center;
+}
+
+.oculto { display: none !important; }

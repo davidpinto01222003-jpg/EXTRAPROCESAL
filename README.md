@@ -1437,6 +1437,10 @@ que hace es vigilar los portales de empleo colombianos, mirar cada
 vacante nueva, compararla contra **tu perfil** y **mandar tu hoja de
 vida** únicamente a las que de verdad encajan contigo.
 
+Se maneja desde el PC, y además **desde el celular**: trae una app
+instalable (ver "La app para el celular", más abajo) para ver las
+postulaciones y disparar búsquedas desde la mano.
+
 La idea de fondo es esta: postularse a 200 ofertas no sube tus
 opciones, las baja (te descartan en el filtro automático de la empresa,
 y los reclutadores del mismo grupo ven las postulaciones repetidas). Lo
@@ -1646,6 +1650,97 @@ portal dejan de funcionar, recoge las ofertas reconociendo los **links**
 el log. Y **las direcciones de los portales que vienen de fábrica no se
 pudieron probar contra internet** al escribir el programa, así que trata
 `--diagnostico` como el primer paso obligatorio, no como un extra.
+
+### La app para el celular (`app_movil.py`)
+
+El buscador **no puede correr dentro del teléfono**, y conviene saber por
+qué antes de nada: para leer los portales hay que abrir un navegador
+Chromium de verdad, y ni Android ni iPhone dejan hacer eso en segundo
+plano (además, las tiendas rechazan las apps que se postulan solas). Así
+que el trabajo se reparte:
+
+```
+   EL PC  ──── busca en los portales y manda las hojas de vida
+     │
+     │  (tu WiFi)
+     ▼
+ EL CELULAR ── es la app: ver, decidir y disparar búsquedas
+```
+
+La consecuencia práctica es una sola: **el PC tiene que estar encendido**
+y con `app_movil.py` corriendo. Si lo apagas, la app abre igual (queda
+instalada en el teléfono) pero avisa "PC apagado" y no trae datos nuevos.
+
+#### Cómo se instala en el teléfono
+
+1. En el PC, doble clic en **`abrir_movil.bat`** (o `python app_movil.py`).
+   Deja esa ventana abierta.
+2. Esa ventana te muestra una dirección tipo
+   `http://192.168.1.15:8777/?t=A1B2C3D4`. Ábrela en el navegador del
+   celular, **conectado al mismo WiFi que el PC**.
+3. Instálala como app:
+   - **Android (Chrome)**: menú de los 3 puntos → *Instalar aplicación*.
+   - **iPhone (Safari)**: botón compartir → *Agregar a pantalla de inicio*.
+
+Queda con su ícono propio y abre en pantalla completa, sin barra de
+navegador. Es una PWA: no hay que pasar por ninguna tienda, no hay que
+firmar nada y no caduca.
+
+#### Qué puedes hacer desde el celular
+
+- **Inicio**: cuántas llevas postuladas hoy contra el tope diario, cuántas
+  quedaron "para ti", y los dos botones para lanzar una búsqueda —
+  *Probar sin enviar* o *Buscar y postular*—. Mientras el PC busca, ves el
+  avance en vivo, línea por línea.
+- **Vacantes**: todas las ofertas con su puntaje, filtrables por estado y
+  buscables por cargo o empresa. Cada una muestra **por qué** se descartó
+  o cómo se postuló, con un botón para abrir la oferta original. Las que
+  quedaron "para ti" traen además *Ya la hice*, para sacarlas de la lista
+  cuando las remates a mano.
+- **Filtro**: cargos, palabras que suman, palabras que descartan, ciudades,
+  remoto sí/no, años de experiencia, salario mínimo, nivel educativo,
+  umbral, tope diario y modo. Se guarda directo en el `perfil_laboral.json`
+  del PC y se aplica de inmediato, sin reiniciar nada.
+- **Registro**: el log completo, tal cual, por si algo salió raro.
+
+Lo que **no** se puede tocar desde el celular es a propósito: la hoja de
+vida, las credenciales del correo y la carta de presentación se editan
+solo en el PC. Son los campos que dejarían todo roto si se tocan por
+accidente desde el bus.
+
+#### Seguridad
+
+El panel muestra tus datos y puede mandar postulaciones a tu nombre, así
+que viene cerrado:
+
+- **Solo escucha en tu red local.** No lo publiques en internet ni le
+  abras puertos al router.
+- **Pide un código** de 8 caracteres que se genera solo la primera vez y
+  queda en `datos_empleo/token_movil.txt`. Se escribe una vez por teléfono
+  y no se vuelve a pedir. Si crees que alguien más lo tiene, borra ese
+  archivo y vuelve a arrancar: sale uno nuevo.
+- Las claves de los portales **nunca pasan por aquí**: siguen viviendo
+  como cookies del navegador del PC, de cuando corriste `--login`.
+
+Si quieres que ni siquiera salga al WiFi (para probar solo en el PC):
+
+```
+python app_movil.py --solo-este-pc
+python app_movil.py --puerto 9000     (si el 8777 está ocupado)
+```
+
+#### Detalles útiles
+
+- No necesita instalar nada nuevo: usa la librería estándar de Python. Los
+  íconos se generan con `python movil/generar_iconos.py` (ya vienen hechos;
+  solo hay que correrlo si quieres cambiarles el color o el dibujo).
+- La app funciona en modo claro y oscuro según como tengas el teléfono.
+- La dirección del PC (`192.168...`) **cambia si cambias de WiFi**. Si un
+  día no conecta, vuelve a mirar la que muestre la ventana del PC.
+- Si quieres que busque sola cada dos horas sin que tú toques nada, deja
+  `vigilar_empleo.bat` corriendo en el PC **además** de `abrir_movil.bat`:
+  el celular te sirve entonces para ir mirando lo que va cayendo.
+
 
 ### Portales incluidos
 

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12325c">
+<title>Mi buscador de empleo</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/estatico/icono-192.png">
+<link rel="apple-touch-icon" href="/estatico/icono-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Empleo">
+<link rel="stylesheet" href="/estatico/estilo.css">
+</head>
+<body>
+
+<header id="cabecera">
+  <div class="titulo">
+    <h1>Mi buscador de empleo</h1>
+    <span id="estado-conexion" class="chip">conectando…</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ INICIO ============ -->
+  <section id="vista-inicio" class="vista activa">
+
+    <div id="aviso-perfil" class="aviso oculto"></div>
+
+    <div class="tarjetas" id="tarjetas"></div>
+
+    <div class="bloque">
+      <div class="renglon">
+        <span>Postuladas hoy</span>
+        <strong id="hoy">–</strong>
+      </div>
+      <div class="barra"><div id="barra-hoy"></div></div>
+      <p class="nota" id="nota-tope"></p>
+    </div>
+
+    <div class="bloque">
+      <h2>Buscar ahora</h2>
+      <p class="nota">
+        El PC abre los portales, lee las vacantes nuevas y decide. Puede
+        tardar varios minutos.
+      </p>
+      <div class="botones">
+        <button id="btn-simular" class="boton secundario">Probar sin enviar</button>
+        <button id="btn-real" class="boton primario">Buscar y postular</button>
+      </div>
+      <div id="progreso" class="progreso oculto">
+        <div class="renglon">
+          <span id="progreso-titulo">Buscando…</span>
+          <span id="progreso-reloj" class="chip vivo">en curso</span>
+        </div>
+        <pre id="progreso-lineas"></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VACANTES ============ -->
+  <section id="vista-vacantes" class="vista">
+    <div class="filtros" id="filtros-estado"></div>
+    <input id="buscador" class="campo" type="search" placeholder="Buscar cargo o empresa…">
+    <div id="lista"></div>
+  </section>
+
+  <!-- ============ FILTRO ============ -->
+  <section id="vista-filtro" class="vista">
+    <p class="nota">
+      Esto es lo que decide a qué te postula. Se guarda en el PC apenas
+      le des Guardar.
+    </p>
+
+    <label class="etiqueta">Cargos que buscas
+      <span class="ayuda">Uno por línea. Con esto se busca en los portales.</span>
+      <textarea id="f-cargos" class="campo" rows="4"></textarea>
+    </label>
+
+    <label class="etiqueta">Palabras que suman
+      <span class="ayuda">Lo que sabes hacer. Cada coincidencia sube el puntaje.</span>
+      <textarea id="f-deseables" class="campo" rows="3"></textarea>
+    </label>
+
+    <label class="etiqueta">Palabras que descartan
+      <span class="ayuda">Si aparece cualquiera, la oferta se bota de una.</span>
+      <textarea id="f-excluyentes" class="campo" rows="3"></textarea>
+    </label>
+
+    <label class="etiqueta">Ciudades donde sí trabajarías
+      <span class="ayuda">Vacío = no filtra por ciudad.</span>
+      <textarea id="f-ciudades" class="campo" rows="3"></textarea>
+    </label>
+
+    <label class="interruptor">
+      <input id="f-remoto" type="checkbox"> Acepto trabajo remoto
+    </label>
+
+    <div class="pareja">
+      <label class="etiqueta">Años de experiencia
+        <input id="f-experiencia" class="campo" type="number" min="0" max="60" inputmode="numeric">
+      </label>
+      <label class="etiqueta">Salario mínimo
+        <input id="f-salario" class="campo" type="number" min="0" step="50000" inputmode="numeric">
+      </label>
+    </div>
+
+    <label class="etiqueta">Nivel educativo
+      <select id="f-nivel" class="campo">
+        <option value="ninguno">Ninguno</option>
+        <option value="bachiller">Bachiller</option>
+        <option value="tecnico">Técnico</option>
+        <option value="tecnologo">Tecnólogo</option>
+        <option value="profesional">Profesional</option>
+        <option value="especializacion">Especialización</option>
+        <option value="maestria">Maestría</option>
+        <option value="doctorado">Doctorado</option>
+      </select>
+    </label>
+
+    <div class="pareja">
+      <label class="etiqueta">Umbral (0–100)
+        <span class="ayuda">Más alto = más exigente.</span>
+        <input id="f-umbral" class="campo" type="number" min="0" max="100" inputmode="numeric">
+      </label>
+      <label class="etiqueta">Tope por día
+        <input id="f-tope" class="campo" type="number" min="1" max="200" inputmode="numeric">
+      </label>
+    </div>
+
+    <label class="etiqueta">Modo
+      <select id="f-modo" class="campo">
+        <option value="simulacion">Simulación — no envía nada</option>
+        <option value="semiautomatico">Semiautomático — correos sí, formularios no</option>
+        <option value="automatico">Automático — envía todo solo</option>
+      </select>
+    </label>
+
+    <button id="btn-guardar" class="boton primario ancho">Guardar</button>
+    <p id="aviso-guardado" class="nota"></p>
+  </section>
+
+  <!-- ============ REGISTRO ============ -->
+  <section id="vista-registro" class="vista">
+    <p class="nota">Lo último que hizo el PC, tal cual quedó en el log.</p>
+    <pre id="log"></pre>
+  </section>
+
+</main>
+
+<nav id="pestanas">
+  <button class="pestana activa" data-vista="inicio"><span>◉</span>Inicio</button>
+  <button class="pestana" data-vista="vacantes"><span>≡</span>Vacantes</button>
+  <button class="pestana" data-vista="filtro"><span>⚙</span>Filtro</button>
+  <button class="pestana" data-vista="registro"><span>▤</span>Registro</button>
+</nav>
+
+<div id="brindis" class="brindis oculto"></div>
+
+<script src="/estatico/app.js"></script>
+</body>
+</html>
