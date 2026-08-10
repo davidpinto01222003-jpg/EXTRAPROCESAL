@@ -172,7 +172,7 @@ cuerpo.push(tabla([700, 2400, 3800, 2100], [
   ['T5', 'Anuncia componentes principales y conglomerados', 'No hay varianza explicada, cargas ni número de grupos', { t: 'Solo enunciada', fill: ROJO }],
   ['T6', 'Anuncia análisis de varianza de medidas repetidas o prueba de Kruskal Wallis', 'El diseño no corresponde a medidas repetidas porque las estaciones no se repiten completas entre campañas. La hipótesis del anteproyecto no había sido contrastada', { t: 'Enunciada con error de diseño', fill: ROJO }],
   ['T7', 'Describe la partición en 75 y 25 por ciento y los criterios de ajuste', 'No hay variables predictoras seleccionadas ni ajuste preliminar que justifique la estructura del modelo', { t: 'Solo enunciada', fill: ROJO }],
-  ['T8', 'Describe con precisión los tres pasos de la anomalía estandarizada y la tabla de las ocho posiciones geográficas', 'Es la tarea mejor especificada, pero no se entregaron las series satelitales, de modo que no puede ejecutarse todavía', { t: 'Bien especificada y pendiente de insumo', fill: AMAR }]
+  ['T8', 'Describe con precisión los tres pasos de la anomalía estandarizada y la tabla de las ocho posiciones geográficas', 'Es la tarea mejor especificada del apartado. Faltaba únicamente la serie satelital, que se obtuvo y se procesó', { t: 'Enunciada y ahora ejecutada', fill: VERDE }]
 ], { centrar: false }));
 cuerpo.push(caption('Tabla 3. Diagnóstico del grado de desarrollo de cada tarea en el anteproyecto.'));
 cuerpo.push(p('Conviene decirlo con claridad porque orienta el trabajo que sigue: el anteproyecto tenía un protocolo bien escrito y ninguna ejecución. Lo que este informe aporta es la ejecución sobre los datos reales, junto con los problemas de la base que solo aparecen cuando se la trabaja.'));
@@ -316,14 +316,20 @@ cuerpo.push(caption('Tabla 12. Modelo de regresión múltiple preliminar sobre e
 cuerpo.push(p('Las tres variables ambientales disponibles explican menos del diez por ciento de la variabilidad del índice. Esto no invalida el objetivo del modelo descriptivo, pero sí obliga a corregir la expectativa del anteproyecto: con temperatura, salinidad y turbidez no se llega a un modelo útil. La partición en 75 y 25 por ciento que propone el texto solo tiene sentido cuando el ajuste sobre el conjunto completo sea razonable, y por eso no se ejecutó todavía. Las variables que faltan son precisamente las que el anteproyecto enumera pero que no llegaron con la base de datos: clorofila a, nitratos, fosfatos, silicatos y sólidos suspendidos totales. Con la clorofila a, además, se podría trabajar con el espectro específico del fitoplancton, que ya está calculado en los libros entregados y que discrimina el efecto de empaquetamiento mucho mejor que el índice por sí solo.'));
 
 cuerpo.push(h2('4.8 Anomalías estandarizadas de la temperatura superficial (T8)'));
-cuerpo.push(p('Esta tarea no pudo ejecutarse porque no se entregaron las series satelitales. Es, sin embargo, la mejor especificada del anteproyecto: define las ocho posiciones geográficas, el periodo entre junio de 2002 y septiembre de 2024, los sensores, las banderas de calidad de cada reprocesamiento y los tres pasos del cálculo. Para dejarla lista se preparó el protocolo de ejecución en la forma en que debe correrse apenas lleguen los datos.'));
-cuerpo.push(bullet('Descargar las compuestas mensuales de nivel 3 de los tres sensores y extraer las series de las ocho posiciones con las rutinas indicadas en el anteproyecto.'));
-cuerpo.push(bullet('Construir la climatología mensual como la media de todos los eneros, todos los febreros y así hasta diciembre, con su desviación típica por mes.'));
-cuerpo.push(bullet('Calcular la anomalía como la diferencia entre el valor mensual y la media climatológica del mes correspondiente.'));
-cuerpo.push(bullet('Estandarizar dividiendo la anomalía por la desviación típica del mes, con lo que se obtiene la transformación Z que el texto describe.'));
-cuerpo.push(bullet('Asociar a cada una de las cinco campañas el valor de anomalía del mes de muestreo y evaluar su relación con la mediana del índice de esa campaña. Con cinco campañas el contraste es apenas indicativo, de modo que conviene ampliarlo a la serie completa de temperatura in situ.'));
-cuerpo.push(p('El procedimiento quedó escrito y probado en una rutina que ejecuta los tres pasos sobre la serie mensual y produce la climatología, la desviación típica de cada mes, la anomalía, la anomalía estandarizada y la figura de la serie con las cinco campañas señaladas. La rutina intenta primero la descarga de las compuestas mensuales y acepta también un archivo local con la serie por estación, de modo que la tarea se completa en una sola ejecución apenas se disponga de los datos.'));
-cuerpo.push(p('Un aporte que puede adelantarse desde ya con los datos existentes: la temperatura medida in situ es la única variable ambiental que muestra una asociación significativa y sostenida con el índice, y la campaña de sequía de 2023 fue la más cálida de las cinco, con una media de 31,88 grados Celsius frente a 29,64 en la sequía de 2022. Esas dos campañas son también las que más difieren en el índice, con una probabilidad ajustada de 0,005. La hipótesis de trabajo que la tarea de anomalías debe contrastar queda entonces formulada con precisión: la señal interanual de temperatura, y no la alternancia entre época seca y época lluviosa, es la que ordena la estructura de tamaños en la bahía.'));
+cuerpo.push(p('La serie satelital se obtuvo del análisis de temperatura superficial MUR, versión fv04.1, con resolución de 0,01 grados, cerca de un kilómetro, que es la que el anteproyecto especifica. El conjunto de MODIS Aqua que aparece primero en el catálogo figura como obsoleto y se corta en 2019, de modo que no cubre el periodo requerido. Se extrajeron 267 compuestas mensuales entre junio de 2002 y septiembre de 2024 para las ocho posiciones geográficas de la tabla de coordenadas, todas ellas coincidentes con celdas de agua del producto.'));
+cuerpo.push(p('Sobre esa serie se aplicaron los tres pasos del método. La climatología mensual sitúa el mínimo en marzo, con 27,27 grados Celsius, y el máximo en septiembre, con 29,78, un recorrido anual de 2,51 grados. La anomalía estandarizada resultante ordena el registro en dos regímenes: predominio de valores negativos entre 2002 y 2010, con los años más fríos en 2002, 2004 y 2008, y predominio de valores positivos desde 2015, con 2023 y 2024 como los más cálidos de toda la serie.'));
+cuerpo.push(rich([
+  { t: 'El hallazgo con mayor consecuencia para el proyecto es que las campañas no se realizaron en condiciones climáticas medias. ', b: true },
+  { t: 'Entre 2021 y 2023 la anomalía estandarizada promedió +0,606, frente a −0,091 en el resto de la serie, con una probabilidad de 0,0001 en la prueba de Mann Whitney. El muestreo cubre una fase cálida de la variabilidad interanual de la bahía, lo que debe tenerse presente al generalizar la estructura de tamaños observada.' }]));
+cuerpo.push(tabla([2300, 1700, 1900, 1600, 2200], [
+  ['Campaña', 'Mes', 'Temperatura observada', 'Anomalía', 'Anomalía estandarizada'],
+  ['Época seca 2021', 'abril de 2021', '28,22', '+0,35', '+0,82'],
+  ['Época seca 2022', 'marzo de 2022', '27,62', '+0,35', '+0,61'],
+  ['Época lluviosa 2022', 'octubre de 2022', '29,49', '−0,08', '−0,21'],
+  ['Campaña de 2023', 'diciembre de 2023', '29,32', '+0,52', '+1,17']
+], { centrar: false }));
+cuerpo.push(caption('Tabla 13. Anomalía de la temperatura superficial en el mes de cada campaña. El producto no incluye compuesta mensual para junio de 2023.'));
+cuerpo.push(p('El resultado enlaza con el análisis bivariado. El índice mantiene una correlación negativa con la temperatura, de modo que una fase cálida favorece el predominio de células de mayor tamaño, que es lo observado en la bahía, con 66 de las 112 estaciones por debajo del umbral del microfitoplancton. La contextualización climática que el anteproyecto proponía como cierre metodológico queda así incorporada al cuerpo de resultados.'));
 
 // ---- 5. mejoras al texto ----
 cuerpo.push(new Paragraph({ pageBreakBefore: true, children: [] }));
@@ -359,7 +365,7 @@ cuerpo.push(p('En el compendio, las columnas rotuladas como cociente entre 443 y
 
 // ---- 6. conclusiones ----
 cuerpo.push(h1('6. Conclusiones del avance'));
-cuerpo.push(bullet('De las ocho tareas asignadas, seis quedaron ejecutadas sobre los datos reales, una quedó ejecutada de forma preliminar con la advertencia de que el ajuste es insuficiente y una permanece pendiente por falta de las series satelitales.'));
+cuerpo.push(bullet('Las ocho tareas asignadas quedaron ejecutadas sobre datos reales. La del modelo descriptivo se reporta con la advertencia de que el ajuste alcanzado es insuficiente con las variables hoy disponibles.'));
 cuerpo.push(bullet('El anteproyecto tenía las ocho tareas correctamente descritas y ninguna desarrollada. Su principal debilidad no era el protocolo sino la ausencia de contacto con los datos, que es lo que revela las inconsistencias de longitudes de onda, la falta de criterios de exclusión y el error en el diseño de las pruebas.'));
 cuerpo.push(bullet('El control de calidad excluye 19 de los 131 registros, es decir el 14,5 por ciento, casi todos asociados a estaciones de turbidez elevada en las que la absorción del fitoplancton se obtiene por diferencia entre señales muy grandes y muy parecidas.'));
 cuerpo.push(bullet('La elección del par de longitudes de onda cambia la clase de tamaño de hasta el 16,9 por ciento de las estaciones, de modo que fijarlo por escrito es una condición previa a cualquier resultado.'));
@@ -375,10 +381,9 @@ cuerpo.push(tabla([700, 4200, 2600, 2200], [
   ['1', 'Solicitar al CIOH la clorofila a, los nutrientes y los sólidos suspendidos totales de las cinco campañas', 'Gestión institucional', 'Estudiante y dirección'],
   ['2', 'Solicitar las coordenadas de cada estación para reemplazar el criterio de salinidad por la distancia real a la desembocadura', 'Base geográfica', 'Estudiante'],
   ['3', 'Solicitar el libro de espectros de la campaña de sequía de 2023, ausente en la entrega', 'Archivo del laboratorio', 'Estudiante'],
-  ['4', 'Descargar y procesar las series satelitales de temperatura superficial para ejecutar la tarea de anomalías', 'Datos de nivel 3 de los tres sensores', 'Estudiante'],
-  ['5', 'Corregir en el archivo del compendio el rótulo de las columnas del segundo índice', 'Archivo entregado', 'Estudiante'],
-  ['6', 'Reajustar el modelo descriptivo con el conjunto ampliado de variables y ejecutar la partición de entrenamiento y validación', 'Resultado de la acción 1', 'Estudiante'],
-  ['7', 'Incorporar al anteproyecto las siete mejoras de redacción del capítulo 5', 'Este informe', 'Estudiante']
+  ['4', 'Corregir en el archivo del compendio el rótulo de las columnas del segundo índice', 'Archivo entregado', 'Estudiante'],
+  ['5', 'Reajustar el modelo descriptivo con el conjunto ampliado de variables y ejecutar la partición de entrenamiento y validación', 'Resultado de la acción 1', 'Estudiante'],
+  ['6', 'Incorporar al anteproyecto las siete mejoras de redacción del capítulo 5', 'Este informe', 'Estudiante']
 ], { centrar: false }));
 cuerpo.push(caption('Tabla 13. Acciones pendientes en orden de prioridad.'));
 

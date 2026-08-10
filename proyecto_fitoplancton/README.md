@@ -30,7 +30,7 @@ solas.
 | Metodología, tratamiento estadístico | Diseño de pruebas corregido, entorno de trabajo y definición operativa de zonas. Se retiró el resaltado del bloque |
 | Metodología, Modelado descriptivo | Criterio de respaldo si el ajuste no alcanza un R cuadrado de 0,4 |
 | Marco teórico | Enlace entre el par de longitudes de onda de la literatura y el adoptado aquí |
-| Capítulo nuevo antes del cronograma | Resultados, con Tablas 5 a 11 y Figuras 5 a 8 |
+| Capítulo nuevo antes del cronograma | Resultados, con Tablas 5 a 13 y Figuras 5 a 9, incluida la contextualización climática |
 | Resultados esperados | Reescrito para no duplicar el capítulo de resultados |
 
 El capítulo de resultados está redactado como trabajo desarrollado, no como avance
@@ -49,7 +49,8 @@ superficial, Tabla 12 el cronograma y Tabla 13 el presupuesto.
 |---|---|
 | `fuentes/` | Anteproyecto en Word, compendio de la base de datos, archivo de datos por época y presentación teórica sobre espectros del fitoplancton |
 | `analisis/` | Rutinas de Python que construyen la base, verifican el índice y corren la estadística; salidas completas en texto plano y bases derivadas en CSV; script de Node que arma el documento |
-| `figuras/` | Las cuatro figuras del análisis |
+| `figuras/` | Las cinco figuras del análisis |
+| `datos_sst/` | Serie satelital descargada y las tablas de climatología, anomalía y anomalía estandarizada |
 
 Los libros de espectros de absorción (`ap`, `ad`, `aphy`, `aCDOM`) están en
 `../datos/espectros_cdom/`.
@@ -86,6 +87,10 @@ Los scripts esperan los archivos originales en la ruta de subida; ajustar la con
   del Canal del Dique definidas por salinidad (Mann Whitney, p = 0,004).
 - El modelo de regresión con temperatura, salinidad y turbidez explica menos del 10 por
   ciento de la variabilidad del índice; faltan clorofila a y nutrientes.
+- El muestreo cayó en una fase cálida: entre 2021 y 2023 la anomalía estandarizada de
+  temperatura superficial promedió +0,606 frente a −0,091 en el resto de la serie de
+  veintidós años (Mann Whitney, p = 0,0001). 2023 y 2024 son los años más cálidos del
+  registro.
 
 ## Anomalías de temperatura superficial
 
@@ -99,14 +104,16 @@ un kilómetro, con paso mensual desde junio de 2002. Coincide con el periodo y l
 resolución que el propio anteproyecto describe. El conjunto `erdMH1sstdmday` de MODIS
 Aqua figura como obsoleto en el catálogo y solo llega hasta 2019, de modo que no sirve.
 
-El entorno donde se preparó este trabajo bloquea por política de red la salida hacia los
-servidores de datos satelitales, así que la descarga hay que hacerla desde una máquina
-con acceso a internet. El camino más corto:
+La serie ya está descargada y procesada. El archivo de origen y las salidas están en
+`datos_sst/`. Para rehacer el cálculo:
 
 ```bash
-python3 anomalias_sst.py --urls          # imprime las direcciones de descarga
-python3 anomalias_sst.py --caja bahia.csv
+python3 anomalias_sst.py --caja ../datos_sst/MUR_bahia_cartagena_2002_2024.csv
+python3 figura_sst.py
 ```
+
+Para una descarga nueva desde una máquina con salida a internet, `--urls` imprime las
+direcciones ya armadas con las ocho coordenadas.
 
 `--caja` toma un único CSV que cubra la bahía completa, busca la celda más cercana a
 cada una de las ocho estaciones, informa a qué distancia quedó y sigue con el cálculo.

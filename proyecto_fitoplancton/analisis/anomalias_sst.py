@@ -132,8 +132,13 @@ def leer_caja(ruta):
         "lat": pd.to_numeric(crudo[col_lat], errors="coerce"),
         "lon": pd.to_numeric(crudo[col_lon], errors="coerce"),
         "valor": pd.to_numeric(crudo[col_v], errors="coerce")}).dropna(subset=["mes", "lat", "lon"])
-    celdas = d[["lat", "lon"]].drop_duplicates()
-    print(f"archivo con {len(celdas)} celdas y {d.mes.nunique()} meses, variable {col_v!r}")
+    todas = d[["lat", "lon"]].drop_duplicates()
+    # solo se consideran celdas de agua, es decir con dato en la mayor parte de la serie
+    cobertura = d.groupby(["lat", "lon"]).valor.apply(lambda x: x.notna().mean())
+    validas = cobertura[cobertura >= 0.8].index
+    celdas = pd.DataFrame(list(validas), columns=["lat", "lon"])
+    print(f"archivo con {len(todas)} celdas y {d.mes.nunique()} meses, variable {col_v!r}")
+    print(f"celdas de agua utilizables: {len(celdas)}")
 
     series = {}
     for nombre, (lon, lat) in ESTACIONES.items():

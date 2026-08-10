@@ -115,7 +115,8 @@ for i, (clave, archivo, prop) in enumerate([
         ("fig1", "fig1_eda.png", 9 / 3.7),
         ("fig4", "fig4_histogramas.png", 11 / 5.6),
         ("fig2", "fig2_clases.png", 11 / 3.9),
-        ("fig3", "fig3_multivariado.png", 9.5 / 4.2)]):
+        ("fig3", "fig3_multivariado.png", 9.5 / 4.2),
+        ("fig5", "fig5_sst.png", 11 / 6.4)]):
     rid = f"rId{next_id + i}"
     destino = f"image{10 + i}.png"
     shutil.copy(f"{FIG}/{archivo}", f"{SRC}/word/media/{destino}")
@@ -338,6 +339,67 @@ cap += par('El grupo 1 reúne las aguas marinas menos alteradas y es el único d
            'intermedia de la bahía interior, con un predominio muy marcado del microfitoplancton. Ninguno '
            'de los tres grupos es exclusivo de una época climática.')
 
+cap += subtitulo('Contexto climático de las campañas')
+cap += par('Las anomalías climatológicas estandarizadas se calcularon sobre las compuestas mensuales del '
+           'análisis de temperatura superficial MUR, versión fv04.1, con resolución de 0,01 grados, '
+           'extraídas en las ocho posiciones geográficas de la Tabla 4. La serie reúne 267 compuestas '
+           'entre junio de 2002 y septiembre de 2024, y las ocho posiciones coinciden con celdas de agua '
+           'del producto, de modo que ninguna requirió desplazamiento. Sobre esa serie se construyó la '
+           'climatología de cada mes con su desviación típica, y a partir de ellas la anomalía y su '
+           'transformación en unidades de desviación típica, según los tres pasos descritos en la '
+           'metodología.')
+cap += leyenda('Tabla', 12, 'Climatología mensual de la temperatura superficial del mar en la Bahía de '
+                            'Cartagena, promedio de las ocho posiciones para el periodo 2002 a 2024.')
+cap += tabla([1500, 2200, 2300, 1500, 2200], [
+    ['Mes', 'Climatología', 'Desviación típica', 'Mes', 'Climatología'],
+    ['Enero', '27,88', '0,41', 'Julio', '29,45'],
+    ['Febrero', '27,48', '0,38', 'Agosto', '29,47'],
+    ['Marzo', '27,27', '0,56', 'Septiembre', '29,78'],
+    ['Abril', '27,87', '0,43', 'Octubre', '29,56'],
+    ['Mayo', '28,96', '0,58', 'Noviembre', '29,33'],
+    ['Junio', '29,54', '0,49', 'Diciembre', '28,79']])
+cap += par('El ciclo anual tiene su mínimo en marzo, con 27,27 grados Celsius, y su máximo en septiembre, '
+           'con 29,78, lo que representa un recorrido de 2,51 grados. El mínimo coincide con el periodo de '
+           'vientos alisios intensos de la época seca y el máximo con el final de la temporada lluviosa, '
+           'patrón coherente con la estacionalidad descrita para la bahía en el planteamiento del problema.')
+cap += figura('fig5')
+cap += leyenda('Figura', 9, 'a) Climatología mensual de la temperatura superficial con su desviación '
+                            'típica. b) Anomalía estandarizada mensual entre junio de 2002 y septiembre '
+                            'de 2024, con el mes de cada campaña señalado en verde. Fuente propia a partir '
+                            'del análisis MUR fv04.1.')
+cap += par('La serie muestra dos regímenes contrastados. Entre 2002 y 2010 predominan las anomalías '
+           'negativas, con los años más fríos en 2002, 2004 y 2008, cuyas medias anuales se sitúan entre '
+           '1,0 y 1,3 desviaciones típicas por debajo de la climatología. A partir de 2015 predominan las '
+           'anomalías positivas, y los dos años más cálidos de todo el registro son 2023 y 2024, con medias '
+           'anuales de 1,06 y 2,24 desviaciones típicas, esta última calculada sobre los nueve meses '
+           'disponibles de ese año. Los nueve meses con anomalía superior a dos desviaciones típicas se '
+           'concentran entre septiembre de 2023 y agosto de 2024, mientras que los tres meses por debajo '
+           'de menos dos pertenecen al régimen frío, en 2002, 2005 y 2010.')
+cap += rich_par([
+    ('El periodo de muestreo del proyecto transcurrió en condiciones cálidas frente al registro de '
+     'referencia. ', True),
+    ('Entre 2021 y 2023 la anomalía estandarizada promedió +0,606, frente a −0,091 en el resto de la '
+     'serie, diferencia significativa según la prueba de Mann Whitney con una probabilidad de 0,0001. Las '
+     'cinco campañas no describen, por tanto, un estado climático medio de la bahía, sino una fase cálida '
+     'de su variabilidad interanual.', False)])
+cap += leyenda('Tabla', 13, 'Temperatura superficial y anomalía en el mes de cada campaña. El producto no '
+                            'incluye compuesta mensual para junio de 2023. La asignación de las dos '
+                            'campañas de 2023 a sus fechas se verifica contra el registro de campo, según '
+                            'se indica en la descripción de la base de datos.')
+cap += tabla([2200, 1500, 1900, 1700, 2300], [
+    ['Campaña', 'Mes', 'Temperatura observada', 'Anomalía', 'Anomalía estandarizada'],
+    ['Época seca 2021', 'abril de 2021', '28,22', '+0,35', '+0,82'],
+    ['Época seca 2022', 'marzo de 2022', '27,62', '+0,35', '+0,61'],
+    ['Época lluviosa 2022', 'octubre de 2022', '29,49', '−0,08', '−0,21'],
+    ['Campaña de 2023', 'diciembre de 2023', '29,32', '+0,52', '+1,17']])
+cap += par('Las cuatro campañas con compuesta disponible se realizaron en meses de anomalía positiva, salvo '
+           'la de octubre de 2022, que resultó prácticamente neutra. La de diciembre de 2023 es la que se '
+           'apartó más de su climatología, con 1,17 desviaciones típicas por encima. Esta lectura conecta '
+           'con el resultado del análisis bivariado: el índice mantiene una correlación negativa con la '
+           'temperatura, de modo que un periodo cálido como el muestreado favorece el predominio de células '
+           'de mayor tamaño, que es precisamente lo observado, con 66 de las 112 estaciones por debajo del '
+           'umbral del microfitoplancton.')
+
 cap += subtitulo('Modelo descriptivo')
 cap += par('Se ajustó una regresión múltiple del logaritmo decimal del índice sobre la temperatura, la '
            'salinidad y el logaritmo de la turbidez, para las 109 estaciones completas.')
@@ -365,6 +427,9 @@ cap += vineta('No hay diferencia del índice entre época seca y época lluviosa
               'entre zonas de influencia del Canal del Dique.')
 cap += vineta('El conglomerado más numeroso corresponde a la bahía interior y concentra el predominio del '
               'microfitoplancton, con 44 de sus 52 estaciones.')
+cap += vineta('El periodo muestreado corresponde a una fase cálida de la variabilidad interanual de la '
+              'bahía, con una anomalía estandarizada media de +0,606 entre 2021 y 2023 frente a −0,091 en '
+              'el resto de la serie de veintidós años.')
 BLOQUES.append((451, cap))
 
 # ---------- C. Modelado descriptivo: criterio de respaldo ----------
@@ -569,8 +634,8 @@ def renumerar_leyenda(texto_ancla, viejo, nuevo):
     return False
 
 print("renumerar SST:", renumerar_leyenda('Coordenadas geográficas de las series temporales', '1', '4'))
-print("renumerar cronograma:", renumerar_leyenda('Cronograma de actividades del proyecto', '2', '12'))
-print("renumerar presupuesto:", renumerar_leyenda('Descripción presupuestal', '3', '13'))
+print("renumerar cronograma:", renumerar_leyenda('Cronograma de actividades del proyecto', '2', '14'))
+print("renumerar presupuesto:", renumerar_leyenda('Descripción presupuestal', '3', '15'))
 
 # referencias cruzadas en el texto
 def renumerar_referencia(fragmento, viejo, nuevo):
@@ -586,8 +651,8 @@ def renumerar_referencia(fragmento, viejo, nuevo):
 # la lista de tablas guarda el resultado anterior del campo: se ajusta para que no
 # contradiga la nueva numeracion mientras Word no regenere el indice
 _lista = {"Tabla 1. Coordenadas geográficas": ("Tabla 1.", "Tabla 4."),
-          "Tabla 2. Cronograma de actividades": ("Tabla 2.", "Tabla 12."),
-          "Tabla 3. Descripción presupuestal": ("Tabla 3.", "Tabla 13.")}
+          "Tabla 2. Cronograma de actividades": ("Tabla 2.", "Tabla 14."),
+          "Tabla 3. Descripción presupuestal": ("Tabla 3.", "Tabla 15.")}
 for _p in body.iter(W + 'p'):
     _st = _p.find(f'{W}pPr/{W}pStyle')
     if _st is None or _st.get(W + 'val') != 'Tabladeilustraciones':
@@ -599,7 +664,7 @@ for _p in body.iter(W + 'p'):
                 print(f"lista de tablas: {_viejo} -> {_nuevo}")
 
 print("ref Tabla 1 en texto:", renumerar_referencia('posición geográfica de cada estación', '1', '4'))
-print("ref Tabla 2 en texto:", renumerar_referencia('se propone un cronograma de actividades', '2', '12'))
+print("ref Tabla 2 en texto:", renumerar_referencia('se propone un cronograma de actividades', '2', '14'))
 
 # que Word regenere el indice y las listas al abrir el archivo
 _ajustes = open(f"{SRC}/word/settings.xml", encoding="utf-8").read()
