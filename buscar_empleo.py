@@ -147,6 +147,13 @@ ESPERA_ENTRE_LECTURAS = (3, 7)
 # Cada cuanto vuelve a revisar en modo --vigilar.
 INTERVALO_VIGILANCIA_MIN = 120
 
+# Al terminar cada pasada, mandarte un correo a TI con el resumen (lo
+# que se postulo y lo que te espera). Es la forma de enterarte desde el
+# celular sin abrir nada: llega como cualquier notificacion de correo.
+# Solo se manda cuando hubo algo que contar. Necesita
+# credenciales_empleo.txt configurado.
+AVISAR_POR_CORREO = True
+
 # El navegador se ve o no. En --login y --diagnostico siempre se ve.
 NAVEGADOR_VISIBLE = False
 
@@ -283,10 +290,14 @@ def configurar_log(verboso: bool = True) -> logging.Logger:
     archivo.setLevel(logging.DEBUG)
     log.addHandler(archivo)
 
-    consola = logging.StreamHandler(sys.stdout)
-    consola.setFormatter(logging.Formatter("%(message)s"))
-    consola.setLevel(logging.DEBUG if verboso else logging.INFO)
-    log.addHandler(consola)
+    # Cuando se arranca con pythonw.exe (sin ventana, que es como corre al
+    # iniciar Windows) no hay consola a donde escribir: ahi solo queda el
+    # archivo de log, y hay que no intentar siquiera crear el handler.
+    if sys.stdout is not None:
+        consola = logging.StreamHandler(sys.stdout)
+        consola.setFormatter(logging.Formatter("%(message)s"))
+        consola.setLevel(logging.DEBUG if verboso else logging.INFO)
+        log.addHandler(consola)
     return log
 
 
@@ -1137,6 +1148,18 @@ def postular_por_correo(vac: Vacante, perfil: dict, cred: dict, simular: bool):
         mensaje.add_attachment(f.read(), maintype=principal, subtype=secundario or "octet-stream",
                                filename=Path(hoja).name)
 
+    exito, detalle = _entregar_correo(cred, mensaje)
+    if not exito:
+        return False, detalle
+    return True, f"hoja de vida enviada a {destino}"
+
+
+def _entregar_correo(cred: dict, mensaje: EmailMessage):
+    """Entrega un correo ya armado por SMTP. Devuelve (exito, detalle).
+
+    Lo usan las postulaciones y los avisos que te llegan al celular, para
+    no repetir en dos lados el manejo de puertos y errores.
+    """
     contexto = ssl.create_default_context()
     puerto = int(cred.get("SMTP_PUERTO", 465))
     servidor = cred.get("SMTP_SERVIDOR", "smtp.gmail.com")
@@ -1155,8 +1178,60 @@ def postular_por_correo(vac: Vacante, perfil: dict, cred: dict, simular: bool):
                        "CONTRASENA DE APLICACION, no tu clave normal")
     except Exception as e:
         return False, f"error mandando el correo: {type(e).__name__}: {e}"
+    return True, "enviado"
 
-    return True, f"hoja de vida enviada a {destino}"
+
+def avisar_al_celular(perfil: dict, cred, postuladas: list, pendientes: list):
+    """Te manda a TU correo el resumen de lo que acaba de pasar.
+
+    Es la forma de enterarte sin abrir nada: al celular le llega la
+    notificacion del correo como cualquier otra. Solo se manda cuando
+    hay algo que contar -- un aviso de "no encontre nada" cada dos horas
+    se vuelve ruido y se termina silenciando, que es justo lo que no
+    queremos.
+    """
+    if not AVISAR_POR_CORREO or not cred:
+        return
+    if not postuladas and not pendientes:
+        return
+
+    destino = perfil.get("correo") or cred["CORREO_USUARIO"]
+
+    partes = []
+    if postuladas:
+        partes.append(f"{len(postuladas)} postulacion(es) enviada(s)")
+    if pendientes:
+        partes.append(f"{len(pendientes)} te esperan")
+    asunto = "Empleo: " + ", ".join(partes)
+
+    lineas = []
+    if postuladas:
+        lineas.append("YA SE POSTULO A:")
+        for vac, detalle in postuladas:
+            lineas.append(f"  - {vac.titulo}")
+            lineas.append(f"    {vac.empresa or 'empresa no publicada'} - {detalle}")
+            lineas.append(f"    {vac.url}")
+        lineas.append("")
+    if pendientes:
+        lineas.append("TE TOCA A TI (el portal no dejo terminar solo):")
+        for vac, detalle in pendientes:
+            lineas.append(f"  - {vac.titulo}")
+            lineas.append(f"    {vac.empresa or 'empresa no publicada'} - {detalle}")
+            lineas.append(f"    {vac.url}")
+        lineas.append("")
+    lineas.append("-- Enviado por tu buscador de empleo, desde tu PC.")
+
+    mensaje = EmailMessage()
+    mensaje["From"] = cred["CORREO_USUARIO"]
+    mensaje["To"] = destino
+    mensaje["Subject"] = asunto
+    mensaje.set_content("\n".join(lineas))
+
+    exito, detalle = _entregar_correo(cred, mensaje)
+    if exito:
+        LOG.info(" Aviso enviado a %s", destino)
+    else:
+        LOG.warning(" No se pudo mandar el aviso: %s", detalle)
 
 
 TEXTOS_ENVIAR = ("enviar postulacion", "enviar solicitud", "enviar", "confirmar",
@@ -1332,7 +1407,8 @@ def una_pasada(perfil: dict, cred, registro: Registro, modo: str):
                  MAX_POSTULACIONES_DIA)
         return
 
-    nuevas = descartadas = postuladas = pendientes = 0
+    nuevas = descartadas = 0
+    postuladas, pendientes = [], []  # (vacante, detalle), para el aviso al celular
 
     with Navegador() as nav:
         for clave, cfg in fuentes_activas.items():
@@ -1383,12 +1459,12 @@ def una_pasada(perfil: dict, cred, registro: Registro, modo: str):
                 registro.anotar(vac.clave, estado=estado, metodo=metodo, detalle=detalle, **base)
 
                 if estado == "postulada":
-                    postuladas += 1
+                    postuladas.append((vac, detalle))
                     cupo -= 1
                     LOG.info("     -> POSTULADO por %s: %s", metodo, detalle)
                     time.sleep(random.uniform(*ESPERA_ENTRE_POSTULACIONES))
                 elif estado == "pendiente_revision":
-                    pendientes += 1
+                    pendientes.append((vac, detalle))
                     LOG.info("     -> TE TOCA A TI: %s", detalle)
                     LOG.info("        %s", vac.url)
                 else:
@@ -1399,10 +1475,13 @@ def una_pasada(perfil: dict, cred, registro: Registro, modo: str):
     LOG.info("")
     LOG.info("-" * 62)
     LOG.info(" Vacantes nuevas: %d | descartadas: %d | postuladas: %d | para ti: %d",
-             nuevas, descartadas, postuladas, pendientes)
+             nuevas, descartadas, len(postuladas), len(pendientes))
     if simular:
         LOG.info(" (MODO SIMULACION: no se mando nada de verdad)")
     LOG.info("-" * 62)
+
+    if not simular:
+        avisar_al_celular(perfil, cred, postuladas, pendientes)
 
 
 def _postular(nav, vac, cfg, perfil, cred, modo):

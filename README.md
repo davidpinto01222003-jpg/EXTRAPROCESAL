@@ -1606,6 +1606,9 @@ hace 3 días", "ayer". Puedes comprobarlo tú mismo con
 filtro y verifica que decida bien, sin tocar internet ni gastar una sola
 postulación.
 
+Cuando termina, te manda un correo con el resumen (ver "Que trabaje
+solo y te avise al celular", más abajo).
+
 Dos protecciones más, que importan tanto como el filtro:
 
 - **Tope diario** (`MAX_POSTULACIONES_DIA`, 15 de fábrica). Lo que sobra
@@ -1679,12 +1682,22 @@ instalada en el teléfono) pero avisa "PC apagado" y no trae datos nuevos.
    `http://192.168.1.15:8777/?t=A1B2C3D4`. Ábrela en el navegador del
    celular, **conectado al mismo WiFi que el PC**.
 3. Instálala como app:
-   - **Android (Chrome)**: menú de los 3 puntos → *Instalar aplicación*.
    - **iPhone (Safari)**: botón compartir → *Agregar a pantalla de inicio*.
+   - **Android (Chrome)**: menú de los 3 puntos → *Agregar a pantalla de
+     inicio*.
 
 Queda con su ícono propio y abre en pantalla completa, sin barra de
-navegador. Es una PWA: no hay que pasar por ninguna tienda, no hay que
-firmar nada y no caduca.
+navegador. No hay que pasar por ninguna tienda, no hay que firmar nada y
+no caduca.
+
+Un detalle técnico, por si en Android no te aparece *Instalar
+aplicación* sino solo *Agregar a pantalla de inicio*: es normal y no es
+un error. Los navegadores reservan la instalación completa para
+conexiones `https`, y esto se sirve por `http` dentro de tu WiFi (montar
+`https` de verdad exigiría un certificado y un dominio, para algo que
+nunca sale de tu casa). El acceso directo funciona igual: mismo ícono,
+misma pantalla completa. Lo único que no tienes es que la app abra sin
+el PC prendido — y sin el PC no habría datos que mostrar de todos modos.
 
 #### Qué puedes hacer desde el celular
 
@@ -1740,6 +1753,58 @@ python app_movil.py --puerto 9000     (si el 8777 está ocupado)
 - Si quieres que busque sola cada dos horas sin que tú toques nada, deja
   `vigilar_empleo.bat` corriendo en el PC **además** de `abrir_movil.bat`:
   el celular te sirve entonces para ir mirando lo que va cayendo.
+
+
+### Que trabaje solo y te avise al celular
+
+Lo anterior sirve para mirar y decidir desde el teléfono. Esto es para
+que no tengas ni que mirar: el PC busca solo y te escribe cuando pasa
+algo.
+
+#### 1. Que te avise al celular (por correo)
+
+Cada vez que termina una pasada, el PC te manda un correo **a ti** con lo
+que hizo: qué postuló, qué quedó esperándote, y el link de cada una para
+abrirla de un toque. Al iPhone le llega como cualquier notificación de
+correo, sin abrir la app ni estar en el WiFi de la casa.
+
+Ya viene encendido; solo necesita que hayas configurado
+`credenciales_empleo.txt` (el mismo correo con el que se postula). El
+aviso llega a la dirección que tengas en `"correo"` dentro de
+`perfil_laboral.json`.
+
+**Solo escribe cuando hay algo que contar.** Si en esa pasada no postuló
+nada ni quedó nada pendiente, no manda nada. Un aviso de "no encontré
+nada" cada dos horas se vuelve ruido, y el ruido se termina silenciando —
+que es justo lo que no queremos. Si aun así prefieres no recibirlos, pon
+`AVISAR_POR_CORREO = False` en `buscar_empleo.py`.
+
+#### 2. Que arranque solo con el computador
+
+Doble clic en **`instalar_inicio_automatico.bat`** (si te dice que no
+pudo, clic derecho → *Ejecutar como administrador*). Desde ahí, cada vez
+que prendas el computador y entres a tu usuario, arrancan solas y sin
+ventanas:
+
+- la **vigilancia**, que revisa los portales cada 2 horas y postula;
+- la **app del celular**, para que el teléfono conecte cuando lo abras.
+
+No tienes que abrir nada más. Los otros tres archivos son para manejarlo:
+
+| Archivo | Para qué |
+|---|---|
+| `empleo_automatico.bat` | Arrancar las dos cosas **ahora**, sin reiniciar. |
+| `parar_empleo.bat` | Pararlas. Lo ya postulado queda guardado. |
+| `desinstalar_inicio_automatico.bat` | Que deje de arrancar solo. No borra nada. |
+
+Como corren sin ventana, para saber si están vivas: abre la app en el
+celular (si conecta, están corriendo), o busca `pythonw.exe` en el
+Administrador de tareas. Lo que hicieron queda siempre en
+`datos_empleo/buscar_empleo.log` y en el Excel.
+
+Un aviso sobre `parar_empleo.bat`: cierra **todos** los programas de
+Python que corran sin ventana en ese equipo. Si tienes también el de
+procesos jurídicos corriendo así, se cierra igual.
 
 
 ### Portales incluidos
