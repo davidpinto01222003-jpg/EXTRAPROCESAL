@@ -11,12 +11,27 @@ anteproyecto. Incluye el diagnóstico de hasta dónde llegaba el anteproyecto en
 tarea, la ejecución real sobre los datos entregados y la redacción propuesta para
 corregir el documento principal. El texto se escribió sin usar guiones.
 
-`Anteproyecto_integrado_Omar_Gamboa.docx` — el anteproyecto original con el avance ya
-incorporado en sus secciones correspondientes. Conserva estilos, campos SEQ, índices
-automáticos y citas de Zotero del documento de origen. Los puntos de integración se
-listan más abajo. El archivo queda configurado para que Word actualice sus campos al
-abrirlo, con lo que la tabla de contenido y las listas de figuras y tablas se regeneran
-solas.
+`Anteproyecto_integrado_Omar_Gamboa.docx` — el anteproyecto original con el trabajo ya
+incorporado en sus secciones y con las normas APA, séptima edición, aplicadas a todo el
+documento. Conserva campos SEQ, índices automáticos y citas de Zotero del documento de
+origen, y queda configurado para que Word actualice sus campos al abrirlo.
+
+`Resumen_sencillo_estado_del_proyecto.docx` — cuatro páginas en lenguaje llano con qué
+pidió la dirección del proyecto, qué se hizo, los cinco hallazgos que importan, qué falta
+y en qué orden resolverlo.
+
+### Formato APA aplicado
+
+| Elemento | Qué se hizo |
+|---|---|
+| Márgenes | 2,54 cm en los cuatro lados, ya presentes en el original |
+| Interlineado | Doble en todo el cuerpo, los pies y la bibliografía |
+| Alineación | A la izquierda, con sangría de primera línea de 1,27 cm |
+| Títulos | Nivel uno centrado y en negrita; 32 subtítulos que estaban en negrita suelta pasaron a nivel dos, con lo que entran en la tabla de contenido |
+| Tablas | Número en negrita, título en cursiva debajo, solo líneas horizontales, sin sombreado y con nota al pie |
+| Figuras | Número y título encima de la imagen y la fuente como nota debajo |
+| Bibliografía | Sangría francesa a doble espacio |
+| Paginación | Número arriba a la derecha |
 
 ### Dónde quedó integrado cada aporte
 
@@ -65,6 +80,8 @@ python3 analisis.py       # estadística completa, deja salida.txt
 python3 figuras.py        # figuras finales
 node gen_doc.js           # arma el informe
 python3 integrar_en_anteproyecto.py   # integra el trabajo en el anteproyecto original
+python3 aplicar_apa.py                # aplica el formato APA a todo el documento
+node gen_resumen.js                   # arma el resumen en lenguaje llano
 python3 anomalias_sst.py --entrada sst_mensual.csv   # anomalías estandarizadas de temperatura
 ```
 
