@@ -217,6 +217,7 @@ FUENTES = {
         "sel_ciudad": ["p.fs16 span", ".fs13", "p.fs13"],
         "sel_descripcion": ["div.box_detail", "div.fs16.t_word_wrap", "#detalle-oferta"],
         "necesita_sesion": True,
+        "url_inicio_sesion": "https://co.computrabajo.com/",
         "sel_boton_postular": ["postularme", "postular ahora", "postular", "aplicar"],
     },
     "elempleo": {
@@ -239,6 +240,7 @@ FUENTES = {
         "sel_ciudad": [".city", ".location", "span.info-city"],
         "sel_descripcion": [".description-block", ".offer-description", "#Description"],
         "necesita_sesion": True,
+        "url_inicio_sesion": "https://www.elempleo.com/co/Home/Index",
         "sel_boton_postular": ["aplicar ahora", "aplicar", "postularme", "postular"],
     },
     "magneto": {
@@ -257,19 +259,20 @@ FUENTES = {
         "sel_ciudad": [".location", ".city", "p.location"],
         "sel_descripcion": [".vacancy-detail", "main", "article"],
         "necesita_sesion": True,
+        "url_inicio_sesion": "https://www.magneto365.com/co",
         "sel_boton_postular": ["postularme", "aplicar", "postular"],
     },
     "spe": {
         "habilitada": True,
         "nombre": "Servicio Publico de Empleo",
-        # Ninguna de las direcciones sin "www" respondio en la prueba
-        # real: el dominio a secas no resuelve. Se prueban primero las
-        # que llevan www.
+        # El portal del postulante vive en personas.serviciodeempleo.gov.co
+        # (dato confirmado por un usuario con cuenta ahi); serviciodeempleo
+        # .gov.co a secas no respondio en la prueba real.
         "plantillas_url": [
+            "https://personas.serviciodeempleo.gov.co/Postulante/BuscarEmpleo.aspx?palabraClave={qp}",
+            "https://personas.serviciodeempleo.gov.co/Postulante/BuscarEmpleo.aspx?q={qp}",
+            "https://personas.serviciodeempleo.gov.co/Postulante/BuscarEmpleo.aspx",
             "https://www.serviciodeempleo.gov.co/buscar-empleo?keyword={qp}&page={pagina}",
-            "https://www.serviciodeempleo.gov.co/buscar-empleo?palabraClave={qp}",
-            "https://www.serviciodeempleo.gov.co/ofertas?keyword={qp}",
-            "https://serviciodeempleo.gov.co/buscar-empleo?keyword={qp}&page={pagina}",
         ],
         "patron_enlace": r"(oferta|vacante)",
         "sel_tarjeta": ["article", ".card-vacante", ".resultado"],
@@ -277,7 +280,8 @@ FUENTES = {
         "sel_empresa": [".empresa", "h4"],
         "sel_ciudad": [".ciudad", ".ubicacion"],
         "sel_descripcion": ["main", ".detalle-vacante"],
-        "necesita_sesion": False,
+        "necesita_sesion": True,
+        "url_inicio_sesion": "https://personas.serviciodeempleo.gov.co/Postulante/HomeUsuario.aspx",
         "sel_boton_postular": ["postularme", "postular", "aplicar"],
     },
     "linkedin": {
@@ -1900,11 +1904,35 @@ def vigilar(perfil, cred, registro, modo):
         time.sleep(INTERVALO_VIGILANCIA_MIN * 60)
 
 
-def iniciar_sesiones(perfil):
-    """Abre el navegador visible para que inicies sesion tu mismo.
+SENALES_SESION_ABIERTA = ("cerrar sesion", "mi perfil", "mis postulaciones",
+                          "mi cuenta", "cerrar sesión", "mis hojas de vida",
+                          "mi hoja de vida", "salir")
+SENALES_SESION_CERRADA = ("iniciar sesion", "ingresar", "registrate", "crear cuenta")
 
-    Las cookies quedan guardadas en CARPETA_NAVEGADOR y se reusan
-    despues. El programa NUNCA escribe tus claves de los portales.
+
+def url_de_inicio(cfg: dict) -> str:
+    """Donde se entra a la cuenta de ese portal.
+
+    No siempre es el mismo sitio donde se busca: el Servicio Publico de
+    Empleo, por ejemplo, atiende a los postulantes en otro subdominio.
+    """
+    explicita = cfg.get("url_inicio_sesion")
+    if explicita:
+        return explicita
+    return re.match(r"https?://[^/]+", cfg["plantillas_url"][0]).group(0)
+
+
+def iniciar_sesiones(perfil):
+    """Abre TODOS los portales a la vez, en pestanas, para que entres tu.
+
+    Antes se reusaba una sola ventana, portal por portal: bastaba que
+    cerraras la del primero -- lo natural cuando uno cree que ya
+    termino -- para que los demas ya no abrieran ("TargetClosedError").
+    Ahora cada portal va en su propia pestana y todas se abren de una,
+    asi que el orden en que los atiendes y lo que cierres da igual.
+
+    Las cookies quedan en CARPETA_NAVEGADOR y se reusan despues. El
+    programa NUNCA escribe ni lee tus claves de los portales.
     """
     portales = [(k, v) for k, v in FUENTES.items()
                 if v.get("habilitada") and v.get("necesita_sesion")]
@@ -1913,18 +1941,60 @@ def iniciar_sesiones(perfil):
         return
 
     LOG.info("")
-    LOG.info("Se va a abrir un navegador. Inicia sesion TU MISMO en cada portal")
-    LOG.info("que se abra (usuario y clave los escribes tu; el programa no los")
-    LOG.info("guarda ni los ve). Cuando termines en uno, vuelve aca y dale Enter.")
+    LOG.info("Se va a abrir un navegador con %d pestanas, una por portal.", len(portales))
+    LOG.info("Inicia sesion TU MISMO en cada una (usuario y clave los escribes")
+    LOG.info("tu; el programa no los guarda ni los ve).")
+    LOG.info("")
+    LOG.info("NO CIERRES el navegador hasta terminar en todas. Cuando ya hayas")
+    LOG.info("entrado en todos los portales, vuelve a esta ventana y dale Enter.")
     LOG.info("")
 
     with Navegador(visible=True) as nav:
+        abiertas = []
         for _, cfg in portales:
-            inicio = re.match(r"https?://[^/]+", cfg["plantillas_url"][0]).group(0)
-            LOG.info(">> Abriendo %s ...", cfg["nombre"])
-            nav.ir_a(inicio)
-            input(f"   Inicia sesion en {cfg['nombre']} y dale Enter aqui... ")
-    LOG.info("Listo. Tus sesiones quedaron guardadas en %s", CARPETA_NAVEGADOR)
+            url = url_de_inicio(cfg)
+            LOG.info("   Abriendo %-28s %s", cfg["nombre"], url)
+            try:
+                pagina = nav.pagina if not abiertas else nav.contexto.new_page()
+                pagina.goto(url, wait_until="domcontentloaded", timeout=TIMEOUT_PAGINA_MS)
+                abiertas.append((cfg, pagina))
+            except Exception as e:
+                LOG.warning("   No pude abrir %s (%s). Entra a ese portal a mano en "
+                            "una pestana nueva de esa misma ventana.",
+                            cfg["nombre"], type(e).__name__)
+
+        LOG.info("")
+        input("   Cuando hayas iniciado sesion en TODOS, dale Enter aqui... ")
+
+        # Comprobacion suave: se mira si la pagina ya te saluda como
+        # usuario. No es infalible (cada portal escribe distinto), por
+        # eso se informa como "parece" y nunca se da por fallado.
+        LOG.info("")
+        LOG.info("Revisando como quedo cada portal...")
+        for cfg, pagina in abiertas:
+            try:
+                pagina.goto(url_de_inicio(cfg), wait_until="domcontentloaded",
+                            timeout=TIMEOUT_PAGINA_MS)
+                pagina.wait_for_timeout(1500)
+                cuerpo = sin_tildes(pagina.inner_text("body")[:4000])
+            except Exception:
+                LOG.info("   %-28s no pude comprobarlo (cerraste la pestana)",
+                         cfg["nombre"])
+                continue
+
+            if any(s in cuerpo for s in SENALES_SESION_ABIERTA):
+                LOG.info("   %-28s parece que SI quedo tu sesion", cfg["nombre"])
+            elif any(s in cuerpo for s in SENALES_SESION_CERRADA):
+                LOG.info("   %-28s parece que NO alcanzaste a entrar", cfg["nombre"])
+            else:
+                LOG.info("   %-28s no pude confirmarlo (no pasa nada)", cfg["nombre"])
+
+    LOG.info("")
+    LOG.info("Tus sesiones quedaron guardadas en:")
+    LOG.info("   %s", CARPETA_NAVEGADOR)
+    LOG.info("")
+    LOG.info("Si alguna quedo en 'NO alcanzaste a entrar', vuelve a correr esto")
+    LOG.info("cuando quieras: no se pierde nada por repetirlo.")
 
 
 def _links_de_la_pagina(nav: Navegador, limite: int = 8):
