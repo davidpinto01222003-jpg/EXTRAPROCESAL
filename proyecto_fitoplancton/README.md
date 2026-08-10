@@ -94,6 +94,11 @@ mensual con su desviación típica, anomalía y anomalía estandarizada, más la
 serie con las cinco campañas señaladas. Trae cargadas las ocho posiciones geográficas de
 la tabla de coordenadas del anteproyecto.
 
+El conjunto elegido es `jplMURSST41mday`, el análisis MUR fv04.1 a 0,01 grados, cerca de
+un kilómetro, con paso mensual desde junio de 2002. Coincide con el periodo y la
+resolución que el propio anteproyecto describe. El conjunto `erdMH1sstdmday` de MODIS
+Aqua figura como obsoleto en el catálogo y solo llega hasta 2019, de modo que no sirve.
+
 El entorno donde se preparó este trabajo bloquea por política de red la salida hacia los
 servidores de datos satelitales, así que la descarga hay que hacerla desde una máquina
 con acceso a internet. El camino más corto:

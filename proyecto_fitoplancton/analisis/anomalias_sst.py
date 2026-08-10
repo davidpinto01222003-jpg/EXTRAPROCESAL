@@ -55,20 +55,28 @@ CAMPANAS = {
     "Campaña de diciembre de 2023": "2023-12",
 }
 
-SERVIDOR = ("https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMH1sstdmday.csv"
-            "?sst%5B({inicio}):({fin})%5D%5B({lat}):({lat})%5D%5B({lon}):({lon})%5D")
+# Conjunto elegido: análisis MUR fv04.1, resolución 0,01 grados, cerca de 1 km, mensual,
+# desde junio de 2002, que es justo el periodo y la resolución que describe el anteproyecto.
+# El conjunto erdMH1sstdmday que aparece en el buscador está marcado como obsoleto y solo
+# llega hasta 2019, de modo que no sirve para esta serie.
+BASE_URL = "https://coastwatch.pfeg.noaa.gov/erddap/griddap"
+CONJUNTO = "jplMURSST41mday"
+VARIABLE = "sst"
+
+SERVIDOR = (BASE_URL + "/{conjunto}.csv"
+            "?{var}%5B({inicio}):({fin})%5D%5B({lat}):({lat})%5D%5B({lon}):({lon})%5D")
 
 # una sola descarga que cubre la bahía completa y contiene las ocho estaciones
-CAJA = ("https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMH1sstdmday.csv"
-        "?sst%5B({inicio}):({fin})%5D%5B(10.41):(10.28)%5D%5B(-75.60):(-75.52)%5D")
+CAJA = (BASE_URL + "/{conjunto}.csv"
+        "?{var}%5B({inicio}):({fin})%5D%5B(10.28):(10.41)%5D%5B(-75.60):(-75.52)%5D")
 
 
-def descargar(inicio="2002-07-16", fin="2024-09-16", destino="sst_mensual.csv"):
+def descargar(inicio="2002-06-01", fin="2024-09-30", destino="sst_mensual.csv"):
     """Extrae la serie mensual de cada estación desde ERDDAP."""
     import urllib.request
     series = {}
     for nombre, (lon, lat) in ESTACIONES.items():
-        url = SERVIDOR.format(inicio=inicio, fin=fin, lat=lat, lon=lon)
+        url = SERVIDOR.format(conjunto=CONJUNTO, var=VARIABLE, inicio=inicio, fin=fin, lat=lat, lon=lon)
         try:
             with urllib.request.urlopen(url, timeout=120) as r:
                 crudo = r.read().decode()
@@ -88,20 +96,22 @@ def descargar(inicio="2002-07-16", fin="2024-09-16", destino="sst_mensual.csv"):
     return df
 
 
-def imprimir_urls(inicio="2002-07-16", fin="2024-09-16"):
+def imprimir_urls(inicio="2002-06-01", fin="2024-09-30"):
     """Direcciones de descarga, una por estación, para abrir en el navegador."""
     print("OPCIÓN RECOMENDADA: una sola descarga que cubre toda la bahía.\n")
-    print("  " + CAJA.format(inicio=inicio, fin=fin) + "\n")
+    print("  " + CAJA.format(conjunto=CONJUNTO, var=VARIABLE, inicio=inicio, fin=fin) + "\n")
+    print("Si el servidor responde que la variable no existe, pruebe con analysed_sst:\n")
+    print("  " + CAJA.format(conjunto=CONJUNTO, var="analysed_sst", inicio=inicio, fin=fin) + "\n")
     print("Guarde ese archivo como bahia.csv y ejecute:\n")
     print("    python3 anomalias_sst.py --caja bahia.csv\n")
-    print("Si el servidor rechaza el rango de latitud, invierta los dos valores de latitud")
-    print("en la dirección, porque algunos conjuntos ordenan ese eje al revés.\n")
+    print("Si rechaza el rango de latitud, invierta los dos valores de ese eje.\n")
     print("OPCIÓN ALTERNATIVA: una descarga por estación, guardadas en una misma carpeta,")
     print("y después  python3 anomalias_sst.py --carpeta <esa carpeta>\n")
     for nombre, (lon, lat) in ESTACIONES.items():
         print(f"{nombre}.csv")
-        print("  " + SERVIDOR.format(inicio=inicio, fin=fin, lat=lat, lon=lon) + "\n")
-    print("Si el conjunto erdMH1sstdmday no estuviera disponible, busque en")
+        print("  " + SERVIDOR.format(conjunto=CONJUNTO, var=VARIABLE,
+                                     inicio=inicio, fin=fin, lat=lat, lon=lon) + "\n")
+    print("Si el conjunto no estuviera disponible, busque en")
     print("https://coastwatch.pfeg.noaa.gov/erddap/search y sustituya el identificador:")
     print("la rutina acepta cualquier CSV de ERDDAP con columnas de tiempo y de temperatura.")
 
@@ -175,6 +185,14 @@ def leer_carpeta(carpeta):
     return df
 
 
+def a_celsius(df):
+    """Algunos conjuntos entregan la temperatura en kelvin; se convierte si hace falta."""
+    if df.stack().median() > 200:
+        print("valores en kelvin, se convierten a grados Celsius")
+        return df - 273.15
+    return df
+
+
 def anomalias(df):
     """Devuelve climatología, desviación típica, anomalía y anomalía estandarizada."""
     fechas = pd.PeriodIndex(df.index, freq="M")
@@ -222,6 +240,7 @@ def main():
     print(f"serie de {len(df)} meses y {df.shape[1]} estaciones, "
           f"de {df.index[0]} a {df.index[-1]}")
 
+    df = a_celsius(df)
     clim, sigma, anom, z = anomalias(df)
 
     print("\nClimatología mensual, promedio de las estaciones")
