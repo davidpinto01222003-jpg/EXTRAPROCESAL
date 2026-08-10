@@ -84,6 +84,48 @@ def descargar(inicio="2002-07-16", fin="2024-09-16", destino="sst_mensual.csv"):
     return df
 
 
+def imprimir_urls(inicio="2002-07-16", fin="2024-09-16"):
+    """Direcciones de descarga, una por estación, para abrir en el navegador."""
+    print("Abra cada dirección en el navegador y guarde el archivo con el nombre indicado")
+    print("dentro de una misma carpeta. Después ejecute:\n")
+    print("    python3 anomalias_sst.py --carpeta <esa carpeta>\n")
+    for nombre, (lon, lat) in ESTACIONES.items():
+        print(f"{nombre}.csv")
+        print("  " + SERVIDOR.format(inicio=inicio, fin=fin, lat=lat, lon=lon) + "\n")
+    print("Si el conjunto erdMH1sstdmday no estuviera disponible, busque en")
+    print("https://coastwatch.pfeg.noaa.gov/erddap/search y sustituya el identificador:")
+    print("la rutina acepta cualquier CSV de ERDDAP con columnas de tiempo y de temperatura.")
+
+
+def leer_carpeta(carpeta):
+    """Arma la tabla mensual a partir de los CSV que entrega ERDDAP, uno por estación."""
+    import glob
+    series = {}
+    for ruta in sorted(glob.glob(os.path.join(carpeta, "*.csv"))):
+        nombre = os.path.splitext(os.path.basename(ruta))[0]
+        crudo = pd.read_csv(ruta, low_memory=False)
+        # ERDDAP inserta una fila de unidades justo debajo del encabezado
+        if len(crudo) and not str(crudo.iloc[0, 0])[:4].isdigit():
+            crudo = crudo.iloc[1:]
+        col_tiempo = next(c for c in crudo.columns if "time" in c.lower() or "fecha" in c.lower())
+        candidatas = [c for c in crudo.columns
+                      if c != col_tiempo and c.lower() not in ("latitude", "longitude", "altitude", "depth")]
+        col_valor = next((c for c in candidatas if "sst" in c.lower() or "temp" in c.lower()), candidatas[-1])
+        serie = pd.DataFrame({
+            "mes": pd.to_datetime(crudo[col_tiempo], errors="coerce").dt.strftime("%Y-%m"),
+            "valor": pd.to_numeric(crudo[col_valor], errors="coerce")}).dropna()
+        series[nombre] = serie.groupby("mes").valor.mean()
+        print(f"  {nombre}: {len(series[nombre])} meses, columna {col_valor!r}")
+    if not series:
+        print("No se encontraron archivos CSV en", carpeta)
+        sys.exit(1)
+    df = pd.DataFrame(series).sort_index()
+    df.index.name = "fecha"
+    df.to_csv("sst_mensual.csv")
+    print("tabla combinada guardada en sst_mensual.csv")
+    return df
+
+
 def anomalias(df):
     """Devuelve climatología, desviación típica, anomalía y anomalía estandarizada."""
     fechas = pd.PeriodIndex(df.index, freq="M")
@@ -104,18 +146,25 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--entrada", help="CSV mensual con una columna por estación")
+    ap.add_argument("--carpeta", help="carpeta con un CSV de ERDDAP por estación, nombrado <estación>.csv")
     ap.add_argument("--descargar", action="store_true", help="intentar la descarga desde ERDDAP")
+    ap.add_argument("--urls", action="store_true", help="imprimir las direcciones de descarga y salir")
     ap.add_argument("--salida", default="anomalias_sst", help="prefijo de los archivos de salida")
     args = ap.parse_args()
 
+    if args.urls:
+        imprimir_urls()
+        return
     if args.descargar:
         df = descargar()
         if df is None:
             sys.exit(1)
+    elif args.carpeta:
+        df = leer_carpeta(args.carpeta)
     elif args.entrada:
         df = pd.read_csv(args.entrada, index_col=0)
     else:
-        ap.error("indique --entrada o --descargar")
+        ap.error("indique --entrada, --carpeta, --descargar o --urls")
 
     df = df.apply(pd.to_numeric, errors="coerce")
     print(f"serie de {len(df)} meses y {df.shape[1]} estaciones, "

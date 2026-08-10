@@ -94,8 +94,17 @@ mensual con su desviación típica, anomalía y anomalía estandarizada, más la
 serie con las cinco campañas señaladas. Trae cargadas las ocho posiciones geográficas de
 la tabla de coordenadas del anteproyecto.
 
-La rutina intenta primero descargar las compuestas mensuales desde el servidor ERDDAP de
-NOAA CoastWatch y acepta también un archivo local con la serie por estación. El entorno
-donde se preparó este trabajo bloquea la salida hacia los servidores de datos
-satelitales, de modo que la descarga debe hacerse desde una máquina con acceso a
-internet y pasarse con `--entrada`. La rutina quedó probada de extremo a extremo.
+El entorno donde se preparó este trabajo bloquea por política de red la salida hacia los
+servidores de datos satelitales, así que la descarga hay que hacerla desde una máquina
+con acceso a internet. El camino más corto:
+
+```bash
+python3 anomalias_sst.py --urls          # imprime una dirección por estación
+# se abre cada una en el navegador y se guardan los ocho CSV en una carpeta
+python3 anomalias_sst.py --carpeta descargas
+```
+
+`--carpeta` entiende el formato que entrega ERDDAP, con su fila de unidades, promedia a
+paso mensual, arma la tabla combinada y sigue con el cálculo. También acepta
+`--entrada tabla.csv` si la serie ya viene armada, y `--descargar` cuando la red lo
+permite. Los tres caminos quedaron probados de extremo a extremo.
