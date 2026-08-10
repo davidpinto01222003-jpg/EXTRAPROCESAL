@@ -1,0 +1,28 @@
+# Copia este archivo, renombralo a "credenciales_empleo.txt" (sin ".example")
+# y reemplaza los valores de abajo con los tuyos.
+#
+# Esto es SOLO para el correo desde el que salen tus postulaciones. Las
+# claves de Computrabajo, elempleo o LinkedIn NO van aqui ni en ningun
+# archivo: esas las escribes tu mismo, una sola vez, cuando corras
+#     python buscar_empleo.py --login
+# y quedan guardadas como cookies del navegador, igual que si hubieras
+# entrado a mano.
+#
+# CORREO_APP_PASSWORD NO es tu contrasena normal de Gmail. Es una
+# "Contrasena de aplicacion" que Google genera aparte. Para crearla:
+#   1. Activa la verificacion en 2 pasos en https://myaccount.google.com/security
+#   2. Ve a https://myaccount.google.com/apppasswords
+#   3. Crea una nueva, ponle un nombre (ej. "Empleo") y copia el codigo de
+#      16 letras. Pegalo abajo (con o sin espacios, da igual).
+#
+# El archivo "credenciales_empleo.txt" (ya con tus datos reales) NUNCA se
+# debe subir a GitHub. El .gitignore de este repositorio ya lo ignora.
+
+CORREO_USUARIO=tu_correo@gmail.com
+CORREO_APP_PASSWORD=xxxxxxxxxxxxxxxx
+
+# Si NO usas Gmail, cambia estos dos. Ejemplos:
+#   Outlook/Hotmail:  smtp-mail.outlook.com  puerto 587
+#   Yahoo:            smtp.mail.yahoo.com    puerto 465
+SMTP_SERVIDOR=smtp.gmail.com
+SMTP_PUERTO=465

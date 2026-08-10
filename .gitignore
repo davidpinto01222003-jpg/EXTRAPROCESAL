@@ -7,3 +7,8 @@ clasificar_procesos_ejecutivos_revisados.txt
 revisar_correo_pro_progreso.json
 revisar_correo_pro_progreso.json.tmp
 _tmp_descargas_sgde/
+
+# buscar_empleo.py: datos personales y sesiones (NUNCA se suben)
+perfil_laboral.json
+credenciales_empleo.txt
+datos_empleo/

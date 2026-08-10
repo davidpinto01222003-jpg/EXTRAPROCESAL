@@ -1429,6 +1429,233 @@ largas, metadatos raros, o simplemente se traba) usa
   Excel, un PDF, el antivirus escaneándola) -- ciérralo e inténtalo de
   nuevo.
 
+## Buscar y postularse a empleos automáticamente (`buscar_empleo.py`) ⭐
+
+Esta herramienta **no tiene nada que ver con los procesos jurídicos**:
+vive en la misma carpeta por comodidad, pero es un programa aparte. Lo
+que hace es vigilar los portales de empleo colombianos, mirar cada
+vacante nueva, compararla contra **tu perfil** y **mandar tu hoja de
+vida** únicamente a las que de verdad encajan contigo.
+
+La idea de fondo es esta: postularse a 200 ofertas no sube tus
+opciones, las baja (te descartan en el filtro automático de la empresa,
+y los reclutadores del mismo grupo ven las postulaciones repetidas). Lo
+que sí sube tus opciones es postularte **rápido** —en las primeras
+horas— a las ofertas donde **sí cumples los requisitos**. Eso es lo que
+automatiza este programa: la velocidad y el filtro, no la cantidad.
+
+### Qué hace, en orden
+
+1. **Lee tu perfil** de `perfil_laboral.json`: qué cargos buscas, en qué
+   ciudades, cuántos años de experiencia tienes, qué estudios, cuál es
+   tu salario mínimo, qué palabras no quieres ver, y dónde está tu hoja
+   de vida.
+2. **Busca** en cada portal habilitado usando tus cargos como término de
+   búsqueda, con un navegador real (Playwright), igual que si buscaras tú.
+3. **Abre cada vacante nueva** y le lee la descripción completa (no solo
+   el título: los requisitos de verdad están en el cuerpo del aviso).
+4. **La califica de 0 a 100** contra tu perfil.
+5. **Postula** solo a las que pasan el umbral (65 puntos por defecto):
+   - Si la oferta publica un **correo** de contacto → le manda tu hoja de
+     vida adjunta con una carta de presentación armada para *esa* vacante.
+     Esto es 100 % automático y no depende de ningún portal.
+   - Si no hay correo → entra al portal con **tu sesión** ya iniciada y usa
+     el botón de "Postularme" del propio portal.
+6. **Anota todo** en `datos_empleo/postulaciones.json` y en un Excel, para
+   no postular dos veces a lo mismo y para que revises qué se mandó, a
+   dónde y por qué.
+
+### ⚠️ Antes de usarlo — léelo, son dos párrafos
+
+Los portales de empleo prohíben en sus términos de uso el acceso
+automatizado, y **LinkedIn en particular suspende cuentas** que lo hagan.
+Por eso el programa está armado así:
+
+- La vía principal es el **correo**: mandarle tu hoja de vida al correo
+  que la propia oferta publica no infringe nada de nadie.
+- En los portales, se usa **tu navegador con tu sesión** —la inicias tú
+  mismo, a mano, una sola vez con `--login`— y solo se repiten los pasos
+  que tú ya estás autorizado a hacer manualmente. No entra a APIs
+  ocultas, no evade captchas ni bloqueos, y espera entre acción y acción
+  como una persona.
+- **LinkedIn viene desactivado a propósito** en la sección `FUENTES` de
+  `buscar_empleo.py`. Actívalo solo si aceptas el riesgo de que te
+  restrinjan la cuenta; es tu perfil profesional el que está en juego.
+
+Y hay un límite honesto que conviene tener claro: el programa **manda la
+hoja de vida, no consigue el trabajo**. Sirve para no perderte ofertas y
+para no gastar tres horas diarias llenando formularios. La entrevista
+sigue siendo tuya.
+
+### Instalación
+
+Las dependencias ya están en `requirements.txt` (son las mismas que usa
+el resto del proyecto):
+
+```
+pip install -r requirements.txt
+playwright install chromium
+```
+
+### Configuración (dos archivos)
+
+**1. Tu perfil.** Copia `perfil_laboral.example.json`, renómbralo a
+`perfil_laboral.json` y llénalo. El archivo de ejemplo trae una nota
+explicando cada campo (las claves que empiezan por `nota_` son solo
+comentarios, no las borres ni les hagas caso). Los campos que de verdad
+deciden todo son:
+
+| Campo | Para qué sirve |
+|---|---|
+| `cargos_objetivo` | Con esto se busca en los portales, **y** suma 45 puntos si aparece en el título. Escríbelos como los publican las empresas ("auxiliar jurídico", no "trabajo de abogado"). No pongas más de 6 u 8. |
+| `palabras_excluyentes` | Si cualquiera aparece en la oferta, se descarta de una. Aquí va lo que no aceptas ("solo comisión", "multinivel", "inversión inicial"). |
+| `anos_experiencia` | Los que **tienes**. Se descarta lo que pida más de 1 año por encima. |
+| `nivel_educativo` | `bachiller`, `tecnico`, `tecnologo`, `profesional`, `especializacion`, `maestria` o `doctorado`. |
+| `ciudades` | Dónde sí trabajarías. Déjalo en `[]` para no filtrar por ciudad. |
+| `salario_minimo` | En pesos. Pon `0` para no filtrar por salario. |
+| `ruta_hoja_de_vida` | Ruta a tu hoja de vida en PDF. **Sin esto no se puede postular por correo.** |
+| `carta_presentacion` | El cuerpo del correo. Acepta comodines `{titulo}`, `{empresa}`, `{portal}`, `{nombre}`, `{resumen}`... que se reemplazan solos con los datos de cada vacante. |
+
+**2. El correo desde el que salen las postulaciones.** Copia
+`credenciales_empleo.example.txt`, renómbralo a `credenciales_empleo.txt`
+y pon tu correo y una **Contraseña de aplicación** de Gmail (la misma
+idea que en `credenciales_sgde.txt`: nunca tu contraseña normal; se crea
+en https://myaccount.google.com/apppasswords).
+
+Las claves de Computrabajo, elempleo o LinkedIn **no van en ningún
+archivo**. Esas las escribes tú una sola vez con `--login`, y quedan
+guardadas como cookies del navegador. El programa nunca las ve.
+
+Los dos archivos con tus datos reales (`perfil_laboral.json` y
+`credenciales_empleo.txt`), más toda la carpeta `datos_empleo/`, están en
+`.gitignore`: nunca se suben a GitHub.
+
+### Uso
+
+**Primera vez, en este orden:**
+
+```
+python buscar_empleo.py --login        (abre el navegador, inicias sesión tú)
+python probar_filtro_empleo.py         (prueba el filtro sin internet)
+python buscar_empleo.py --simular      (busca de verdad, pero NO manda nada)
+```
+
+`--simular` es el paso importante: te muestra a qué vacantes postularía y
+con cuántos puntos, sin mandar nada. **Córrelo varias veces y ajusta tu
+perfil hasta que la lista que muestra sea la que tú mismo escogerías.**
+Ahí sí, ya en serio:
+
+```
+python buscar_empleo.py                (una pasada de verdad)
+python buscar_empleo.py --vigilar      (queda revisando cada 2 horas)
+python buscar_empleo.py --reporte      (exporta el Excel y resume)
+python buscar_empleo.py --diagnostico  (revisa si los portales responden)
+```
+
+En Windows puedes hacer doble clic en:
+
+- `probar_empleo.bat` → el modo simulación (empieza por aquí).
+- `buscar_empleo.bat` → una pasada real.
+- `vigilar_empleo.bat` → queda vigilando de forma indefinida.
+
+### Los tres modos
+
+Se ponen en `MODO`, dentro de `buscar_empleo.py`, o con `--simular` /
+`--automatico` al llamarlo:
+
+- **`simulacion`** (el de fábrica): busca, califica y te muestra qué
+  haría. No manda nada.
+- **`semiautomatico`**: manda las postulaciones **por correo** solas, y en
+  los portales hace el clic de "Postularme" —que en la mayoría ya postula
+  de una—. Si el portal abre **además** un formulario, no lo llena: deja
+  la vacante marcada como "pendiente_revision" con su link, para que la
+  termines tú.
+- **`automatico`**: manda todo solo. En los portales solo envía cuando
+  reconoció el formulario completo; si el formulario pide algo que no
+  entiende (preguntas del empleador, pruebas, subir documentos), **no
+  inventa respuestas**: deja la vacante pendiente para que la termines
+  tú. Una respuesta inventada te quema la postulación; dejarla a medias,
+  no.
+
+### Cómo decide a qué postular
+
+Primero mira los requisitos **duros**. Si no los cumples, descarta de una
+—mandar la hoja de vida ahí solo gasta tu cupo del día—:
+
+- pide más experiencia de la que tienes (con 1 año de tolerancia);
+- pide más estudios de los que tienes;
+- dice cuánto paga y paga menos de tu mínimo;
+- queda en una ciudad que no trabajas y no es remota;
+- trae una de tus palabras excluyentes;
+- se publicó hace más de 30 días (ya está cerrada aunque siga visible).
+
+Lo que sobrevive suma puntos: el cargo en el título (+45), tus palabras
+clave (+20), tu ciudad (+15), la experiencia que sí cumples (+15), el
+nivel educativo (+10), que publique correo (+5), que sea recién publicada
+(+5). Con 65 o más, postula.
+
+Todo esto se lee de la oferta escrita en español real: reconoce
+"experiencia mínima de 2 años", "de 1 a 3 años", "18 meses de
+experiencia", "sin experiencia", "$2.500.000", "3 millones", "publicado
+hace 3 días", "ayer". Puedes comprobarlo tú mismo con
+`python probar_filtro_empleo.py`, que le pasa ofertas de ejemplo al mismo
+filtro y verifica que decida bien, sin tocar internet ni gastar una sola
+postulación.
+
+Dos protecciones más, que importan tanto como el filtro:
+
+- **Tope diario** (`MAX_POSTULACIONES_DIA`, 15 de fábrica). Lo que sobra
+  queda "en_espera" para el día siguiente.
+- **Antiduplicados**: si la misma vacante está publicada en Computrabajo
+  y en elempleo, se postula una sola vez.
+
+### Qué archivos genera
+
+Todo dentro de `datos_empleo/`:
+
+- `postulaciones.xlsx` — el reporte para leer tú: fecha, estado, puntaje,
+  cargo, empresa, portal, cómo se postuló y el link.
+- `postulaciones.json` — la memoria del programa (lo que ya vio y lo que
+  ya mandó). Si lo borras, volvería a postular a lo mismo.
+- `buscar_empleo.log` — el detalle de todo, incluido el motivo exacto por
+  el que descartó cada oferta.
+- `perfil_navegador/` — tus sesiones de los portales. **No la subas ni la
+  compartas**: son tus cookies de sesión.
+
+Los estados posibles son: `postulada`, `descartada`, `duplicada`,
+`en_espera` (tope diario lleno), `pendiente_revision` (te toca a ti
+terminarla) y `error`.
+
+### Si un portal deja de dar resultados
+
+Los portales cambian su página cada tanto y ahí es donde se rompen
+siempre este tipo de programas. Este está armado para que puedas
+arreglarlo tú sin tocar código:
+
+1. Corre `python buscar_empleo.py --diagnostico`. Abre cada portal, te
+   dice cuál devolvió **SIN RESULTADOS**, con qué dirección exacta lo
+   intentó, y te deja una captura de pantalla en
+   `datos_empleo/diagnostico/`.
+2. Corrige ese portal en la sección **`FUENTES`**, al inicio de
+   `buscar_empleo.py`: ahí están, uno por uno, la dirección de búsqueda y
+   los selectores de cada portal, comentados. No hay que tocar nada más.
+
+Además, el programa ya trae una red de seguridad: si los selectores de un
+portal dejan de funcionar, recoge las ofertas reconociendo los **links**
+(que casi nunca cambian de forma) y sigue trabajando, dejando un aviso en
+el log. Y **las direcciones de los portales que vienen de fábrica no se
+pudieron probar contra internet** al escribir el programa, así que trata
+`--diagnostico` como el primer paso obligatorio, no como un extra.
+
+### Portales incluidos
+
+Computrabajo, elempleo.com, Magneto365 y el Servicio Público de Empleo
+(el del Gobierno) vienen **activos**. LinkedIn viene **desactivado** por
+lo que se explicó arriba. Para agregar otro portal, copia una entrada de
+`FUENTES`, cámbiale la dirección y el patrón de link, y ponle
+`"habilitada": True`.
+
+
 ## Si algo falla
 
 - El sitio del SGDE puede cambiar de diseño con el tiempo, lo que puede

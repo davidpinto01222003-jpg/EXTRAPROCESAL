@@ -1,0 +1,99 @@
+{
+  "nota_comentario": [
+    "Copia este archivo, renombralo a 'perfil_laboral.json' (sin '.example')",
+    "y reemplaza TODO por tus datos reales. Ese archivo esta en .gitignore:",
+    "nunca se sube a GitHub.",
+    "",
+    "Lo mas importante son 'cargos_objetivo' (con eso se busca) y",
+    "'palabras_excluyentes' (con eso se descarta). Los valores de abajo son",
+    "solo un ejemplo para que veas el formato."
+  ],
+
+  "nombre_completo": "Tu Nombre Completo",
+  "correo": "tucorreo@gmail.com",
+  "telefono": "300 000 0000",
+  "ciudad": "Bucaramanga",
+
+  "nota_ruta_hoja_de_vida": "Ruta a tu hoja de vida en PDF (o DOCX). En Windows usa doble backslash.",
+  "ruta_hoja_de_vida": "C:\\Users\\TuUsuario\\Documents\\HojaDeVida.pdf",
+
+  "nota_cargos_objetivo": [
+    "Los cargos que buscas, escritos COMO LOS PUBLICAN las empresas.",
+    "Cada uno se usa como termino de busqueda en todos los portales,",
+    "y ademas suma 45 puntos si aparece en el titulo de la oferta.",
+    "No pongas mas de 6 u 8: cada uno multiplica el tiempo de la revision."
+  ],
+  "cargos_objetivo": [
+    "auxiliar juridico",
+    "asistente juridico",
+    "auxiliar administrativo",
+    "analista de cartera"
+  ],
+
+  "nota_palabras_clave_deseables": [
+    "Cosas que sabes hacer. Cada coincidencia suma puntos (hasta 20).",
+    "Sirven para que gane la oferta que de verdad se parece a tu experiencia."
+  ],
+  "palabras_clave_deseables": [
+    "procesos ejecutivos",
+    "rama judicial",
+    "excel",
+    "cobro juridico",
+    "tutelas",
+    "archivo"
+  ],
+
+  "nota_palabras_excluyentes": [
+    "Si CUALQUIERA de estas aparece en la oferta, se descarta de una,",
+    "sin importar el puntaje. Aqui va lo que NO quieres: modalidades de pago",
+    "que no aceptas, tipos de trabajo que no haces, y las estafas tipicas",
+    "('paga tu curso', 'inversion inicial')."
+  ],
+  "palabras_excluyentes": [
+    "solo comision",
+    "puerta a puerta",
+    "multinivel",
+    "inversion inicial",
+    "curso pago",
+    "moto propia",
+    "vendedor de calle"
+  ],
+
+  "nota_ciudades": [
+    "Ciudades donde SI trabajarias. Si la oferta no queda en ninguna y",
+    "tampoco es remota, se descarta. Deja la lista vacia [] para no filtrar",
+    "por ciudad."
+  ],
+  "ciudades": [
+    "Bucaramanga",
+    "Floridablanca",
+    "Giron",
+    "Piedecuesta"
+  ],
+  "acepta_remoto": true,
+
+  "nota_anos_experiencia": "Anos de experiencia que TIENES. Se descartan las ofertas que pidan mas de 1 ano por encima de esto.",
+  "anos_experiencia": 3,
+
+  "nota_nivel_educativo": "Uno de: ninguno, bachiller, tecnico, tecnologo, profesional, especializacion, maestria, doctorado.",
+  "nivel_educativo": "profesional",
+
+  "nota_salario_minimo": "En pesos. Si la oferta dice cuanto paga y paga menos, se descarta. Pon 0 para no filtrar por salario.",
+  "salario_minimo": 1600000,
+
+  "nota_resumen_profesional": "Dos o tres frases sobre ti. Se insertan en la carta de presentacion donde diga {resumen}.",
+  "resumen_profesional": "Soy profesional en Derecho con 3 anos de experiencia en gestion de procesos ejecutivos y manejo de expedientes judiciales, con dominio de Excel y de los sistemas de la Rama Judicial.",
+
+  "nota_asunto_correo": "Asunto del correo de postulacion. Acepta {titulo}, {empresa} y {nombre}.",
+  "asunto_correo": "Postulacion: {titulo} - {nombre}",
+
+  "nota_carta_presentacion": [
+    "El cuerpo del correo. Acepta estos comodines, que se reemplazan solos",
+    "con los datos de CADA vacante:",
+    "  {titulo} {empresa} {en_empresa} {ciudad} {portal}",
+    "  {nombre} {telefono} {correo} {resumen}",
+    "Si lo dejas en blanco (\"\"), se usa una carta por defecto que ya sirve.",
+    "Usa \\n para los saltos de linea."
+  ],
+  "carta_presentacion": "Buen dia,\n\nMe dirijo a ustedes para postularme a la vacante de {titulo}{en_empresa}, publicada en {portal}.\n\n{resumen}\n\nAdjunto mi hoja de vida. Quedo atento(a) a la posibilidad de una entrevista y a cualquier documento adicional que requieran.\n\nCordial saludo,\n\n{nombre}\nCelular: {telefono}\nCorreo: {correo}"
+}
