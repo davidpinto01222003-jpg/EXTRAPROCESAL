@@ -1529,9 +1529,35 @@ deciden todo son:
 
 **2. El correo desde el que salen las postulaciones.** Copia
 `credenciales_empleo.example.txt`, renómbralo a `credenciales_empleo.txt`
-y pon tu correo y una **Contraseña de aplicación** de Gmail (la misma
-idea que en `credenciales_sgde.txt`: nunca tu contraseña normal; se crea
-en https://myaccount.google.com/apppasswords).
+y pon tu correo con una **Contraseña de aplicación** de Gmail — nunca tu
+contraseña normal. Se saca así:
+
+1. Entra a https://myaccount.google.com/security y **activa la
+   verificación en 2 pasos**. Es obligatoria: sin ella Google ni siquiera
+   muestra la opción del paso siguiente.
+2. Entra a https://myaccount.google.com/apppasswords
+3. En "Nombre de la app" escribe cualquier cosa (por ejemplo *Buscador de
+   empleo*) y dale **Crear**.
+4. Sale un recuadro con **16 letras en cuatro grupos**
+   (`abcd efgh ijkl mnop`). Cópialas a `CORREO_APP_PASSWORD`. Puedes
+   dejar los espacios: el programa los quita solo.
+5. Ese recuadro **no se vuelve a mostrar**. Si lo cierras sin copiar,
+   borras esa contraseña y creas otra; no pasa nada.
+
+Para comprobar que quedó bien, sin lanzar una búsqueda entera:
+
+```
+python buscar_empleo.py --probar-correo
+```
+
+Te manda un correo de prueba a ti mismo (con tu hoja de vida adjunta, si
+ya la configuraste). Si llega, el envío de postulaciones va a funcionar;
+si no, te dice exactamente qué falló.
+
+Si no te aparece la opción de contraseñas de aplicación, casi siempre es
+que falta el paso 1. También puede estar bloqueada si el correo es de un
+trabajo o universidad (Workspace) o si tienes la "Protección avanzada" de
+Google: en esos dos casos usa un Gmail personal.
 
 Las claves de Computrabajo, elempleo o LinkedIn **no van en ningún
 archivo**. Esas las escribes tú una sola vez con `--login`, y quedan

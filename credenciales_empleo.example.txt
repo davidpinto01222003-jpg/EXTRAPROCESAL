@@ -1,25 +1,65 @@
 # Copia este archivo, renombralo a "credenciales_empleo.txt" (sin ".example")
 # y reemplaza los valores de abajo con los tuyos.
 #
-# Esto es SOLO para el correo desde el que salen tus postulaciones. Las
-# claves de Computrabajo, elempleo o LinkedIn NO van aqui ni en ningun
-# archivo: esas las escribes tu mismo, una sola vez, cuando corras
+# Esto es SOLO para el correo desde el que salen tus postulaciones y los
+# avisos que te llegan al celular. Las claves de Computrabajo, elempleo o
+# LinkedIn NO van aqui ni en ningun archivo: esas las escribes tu mismo,
+# una sola vez, cuando corras
 #     python buscar_empleo.py --login
 # y quedan guardadas como cookies del navegador, igual que si hubieras
 # entrado a mano.
 #
-# CORREO_APP_PASSWORD NO es tu contrasena normal de Gmail. Es una
-# "Contrasena de aplicacion" que Google genera aparte. Para crearla:
-#   1. Activa la verificacion en 2 pasos en https://myaccount.google.com/security
-#   2. Ve a https://myaccount.google.com/apppasswords
-#   3. Crea una nueva, ponle un nombre (ej. "Empleo") y copia el codigo de
-#      16 letras. Pegalo abajo (con o sin espacios, da igual).
+#
+# COMO SACAR LA CONTRASENA DE APLICACION (paso a paso)
+# ============================================================
+# CORREO_APP_PASSWORD **no es** tu contrasena normal de Gmail. Es un
+# codigo aparte que Google genera para programas como este. Sin esto,
+# Google rechaza el envio: es una medida suya, no un capricho del
+# programa.
+#
+#   1. Entra a https://myaccount.google.com/security
+#
+#   2. Activa la VERIFICACION EN 2 PASOS si no la tienes. Es obligatoria:
+#      sin ella Google ni siquiera muestra la opcion de contrasenas de
+#      aplicacion. Te va a pedir confirmar con tu celular.
+#
+#   3. Entra a https://myaccount.google.com/apppasswords
+#      (si te pide la contrasena otra vez, escribela)
+#
+#   4. Donde dice "Nombre de la app" escribe cualquier cosa que te sirva
+#      para acordarte, por ejemplo:  Buscador de empleo
+#      y dale a "Crear".
+#
+#   5. Sale un recuadro con 16 letras en cuatro grupos, asi:
+#            abcd efgh ijkl mnop
+#      Copialas y pegalas abajo, en CORREO_APP_PASSWORD.
+#      Puedes dejar los espacios: el programa los quita solo.
+#
+#   6. ESA VENTANA NO SE VUELVE A MOSTRAR. Si la cierras sin copiar,
+#      no pasa nada grave: borras esa y creas otra.
+#
+# Una vez configurada, el envio NO pide codigo ni confirmacion en el
+# telefono: el 2FA interactivo solo aplica a los inicios de sesion
+# normales desde el navegador.
+#
+# PARA COMPROBAR QUE QUEDO BIEN, corre:
+#     python buscar_empleo.py --probar-correo
+# Te manda un correo de prueba a ti mismo (con tu hoja de vida adjunta,
+# si ya la configuraste) y te dice exactamente que fallo si algo falla.
+#
+# SI NO TE APARECE LA OPCION DE CONTRASENAS DE APLICACION:
+#   - Casi siempre es que falta activar la verificacion en 2 pasos (paso 2).
+#   - Si es un correo del trabajo o de la universidad (Workspace), puede
+#     que el administrador las tenga bloqueadas. Usa entonces un Gmail
+#     personal.
+#   - Si tienes activada la "Proteccion avanzada" de Google, no se pueden
+#     crear. Tambien ahi conviene usar otro correo.
 #
 # El archivo "credenciales_empleo.txt" (ya con tus datos reales) NUNCA se
-# debe subir a GitHub. El .gitignore de este repositorio ya lo ignora.
+# debe subir a GitHub ni compartir. El .gitignore ya lo ignora.
 
 CORREO_USUARIO=tu_correo@gmail.com
-CORREO_APP_PASSWORD=xxxxxxxxxxxxxxxx
+CORREO_APP_PASSWORD=xxxx xxxx xxxx xxxx
 
 # Si NO usas Gmail, cambia estos dos. Ejemplos:
 #   Outlook/Hotmail:  smtp-mail.outlook.com  puerto 587

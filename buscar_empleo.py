@@ -614,6 +614,15 @@ def cargar_credenciales():
             if "=" in linea and not linea.strip().startswith("#"):
                 clave, _, valor = linea.partition("=")
                 datos[clave.strip().upper()] = valor.strip()
+
+    # Google muestra la contrasena de aplicacion en cuatro grupos de
+    # cuatro letras ("abcd efgh ijkl mnop") y casi todo el mundo la pega
+    # tal cual. Con los espacios adentro, el servidor la rechaza y el
+    # error que se ve es "clave incorrecta", que manda a buscar el
+    # problema donde no esta. Se quitan aqui, de una vez.
+    if datos.get("CORREO_APP_PASSWORD"):
+        datos["CORREO_APP_PASSWORD"] = re.sub(r"\s+", "", datos["CORREO_APP_PASSWORD"])
+
     if not datos.get("CORREO_USUARIO") or not datos.get("CORREO_APP_PASSWORD"):
         LOG.warning(
             "AVISO: %s existe pero le falta CORREO_USUARIO o CORREO_APP_PASSWORD. "
@@ -1503,6 +1512,84 @@ def _postular(nav, vac, cfg, perfil, cred, modo):
     return estado, "portal", detalle
 
 
+def probar_correo(perfil: dict, cred) -> int:
+    """Manda un correo de prueba a ti mismo y dice claramente que paso.
+
+    Existe para separar dos problemas que de otro modo se confunden: que
+    el correo este mal configurado, y que la busqueda no encuentre nada.
+    Si esto llega a tu bandeja, el envio de hojas de vida va a funcionar.
+    """
+    if not cred:
+        LOG.error("")
+        LOG.error("No encuentro %s (o le faltan datos).", ARCHIVO_CREDENCIALES.name)
+        LOG.error("   Copia '%s.example.txt' -> '%s' y llenalo.",
+                  ARCHIVO_CREDENCIALES.stem.replace(".example", ""), ARCHIVO_CREDENCIALES.name)
+        return 1
+
+    destino = perfil.get("correo") or cred["CORREO_USUARIO"]
+    largo = len(cred["CORREO_APP_PASSWORD"])
+
+    LOG.info("")
+    LOG.info("Probando el correo...")
+    LOG.info("  Cuenta que envia : %s", cred["CORREO_USUARIO"])
+    LOG.info("  Servidor         : %s puerto %s",
+             cred.get("SMTP_SERVIDOR"), cred.get("SMTP_PUERTO"))
+    LOG.info("  Clave            : %d caracteres", largo)
+    if largo != 16:
+        LOG.warning("  OJO: una contrasena de aplicacion de Google tiene 16 letras. "
+                    "La tuya tiene %d: revisa que no hayas pegado tu clave normal.", largo)
+    LOG.info("  Enviando a       : %s", destino)
+    LOG.info("")
+
+    mensaje = EmailMessage()
+    mensaje["From"] = cred["CORREO_USUARIO"]
+    mensaje["To"] = destino
+    mensaje["Subject"] = "Prueba de tu buscador de empleo"
+    mensaje.set_content(
+        "Si estas leyendo esto, el correo quedo bien configurado.\n\n"
+        "Es el mismo camino por el que van a salir tus hojas de vida y los "
+        "avisos de lo que se vaya postulando.\n\n"
+        "-- Tu buscador de empleo."
+    )
+
+    hoja = perfil.get("_ruta_hoja_de_vida")
+    if hoja and Path(hoja).exists():
+        # Se adjunta la hoja de vida de verdad: asi la prueba tambien
+        # comprueba que el archivo se lee y que no pesa de mas.
+        tipo, _ = mimetypes.guess_type(str(hoja))
+        principal, _, secundario = (tipo or "application/octet-stream").partition("/")
+        with open(hoja, "rb") as f:
+            mensaje.add_attachment(f.read(), maintype=principal,
+                                   subtype=secundario or "octet-stream",
+                                   filename=Path(hoja).name)
+        LOG.info("  (va con tu hoja de vida adjunta, para probarla tambien)")
+
+    exito, detalle = _entregar_correo(cred, mensaje)
+    LOG.info("")
+    if exito:
+        LOG.info("=" * 62)
+        LOG.info(" LISTO: revisa la bandeja de %s", destino)
+        LOG.info(" Si llego, el correo ya esta bien y no hay que tocarlo mas.")
+        LOG.info(" (Mira tambien en Spam la primera vez.)")
+        LOG.info("=" * 62)
+        return 0
+
+    LOG.error("=" * 62)
+    LOG.error(" NO SE PUDO ENVIAR")
+    LOG.error(" %s", detalle)
+    LOG.error("")
+    LOG.error(" Lo que casi siempre lo causa:")
+    LOG.error("   - Pegaste tu clave normal de Gmail en vez de una")
+    LOG.error("     CONTRASENA DE APLICACION (son 16 letras que Google")
+    LOG.error("     genera aparte, en myaccount.google.com/apppasswords).")
+    LOG.error("   - La verificacion en 2 pasos no esta activada: sin ella")
+    LOG.error("     Google no deja crear contrasenas de aplicacion.")
+    LOG.error("   - El correo de CORREO_USUARIO no es el mismo con el que")
+    LOG.error("     creaste la contrasena de aplicacion.")
+    LOG.error("=" * 62)
+    return 1
+
+
 def vigilar(perfil, cred, registro, modo):
     LOG.info("Vigilancia encendida: reviso cada %d minutos. Ctrl+C para parar.",
              INTERVALO_VIGILANCIA_MIN)
@@ -1599,6 +1686,8 @@ def main():
                         help="revisa si los portales siguen respondiendo")
     parser.add_argument("--reporte", action="store_true",
                         help="exporta el Excel de postulaciones y sale")
+    parser.add_argument("--probar-correo", action="store_true",
+                        help="manda un correo de prueba a ti mismo y sale")
     args = parser.parse_args()
 
     try:
@@ -1627,6 +1716,9 @@ def main():
     except ErrorConfiguracion as e:
         LOG.error("%s", e)
         return 1
+
+    if args.probar_correo:
+        return probar_correo(perfil, cargar_credenciales())
 
     modo = MODO
     if args.simular:
