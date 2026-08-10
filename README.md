@@ -1493,13 +1493,20 @@ sigue siendo tuya.
 
 ### Instalación
 
-Las dependencias ya están en `requirements.txt` (son las mismas que usa
-el resto del proyecto):
+Doble clic en **`INSTALAR.bat`**: revisa que tengas Python, instala las
+librerías, baja el navegador y te deja escrito el orden de los pasos que
+siguen. Es lo único que hay que hacer, y una sola vez.
+
+A mano, si prefieres:
 
 ```
-pip install -r requirements.txt
+pip install -r requirements_empleo.txt
 playwright install chromium
 ```
+
+`requirements_empleo.txt` trae solo lo que necesita el buscador
+(el `requirements.txt` grande es del resto del proyecto). Así esta parte
+se puede copiar a otro computador sola, sin arrastrar nada más.
 
 ### Configuración (dos archivos)
 

@@ -1,0 +1,13 @@
+# Lo unico que necesita el buscador de empleo. (El resto del proyecto
+# tiene sus propias dependencias en requirements.txt; este archivo existe
+# para poder llevarse la carpeta del buscador sola, sin arrastrar nada mas.)
+#
+# Se instala con:   pip install -r requirements_empleo.txt
+#                   playwright install chromium
+
+playwright>=1.44.0
+openpyxl>=3.1.0
+
+# Opcional: solo para el codigo QR con el que entras desde el celular.
+# Si falta, la app funciona igual y muestra la direccion en texto.
+qrcode>=7.4
