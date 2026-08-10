@@ -822,8 +822,12 @@ def cargar_credenciales():
 class Registro:
     """Memoria del programa: sin esto postularia dos veces a lo mismo."""
 
-    def __init__(self, ruta: Path = ARCHIVO_REGISTRO):
-        self.ruta = ruta
+    def __init__(self, ruta: Path = None):
+        # Se resuelve aqui y no en la firma: si se pusiera como valor por
+        # defecto, quedaria fijado al arrancar el programa y cambiar
+        # ARCHIVO_REGISTRO despues (la app del celular, las pruebas) no
+        # tendria ningun efecto, en silencio.
+        self.ruta = ruta or ARCHIVO_REGISTRO
         self.datos = {}
         if ruta.exists():
             try:
@@ -1658,24 +1662,167 @@ def postular_en_portal(nav: Navegador, vac: Vacante, cfg: dict, modo: str):
 
 
 def _buscar_boton(nav: Navegador, textos):
-    """Busca un boton/enlace cuyo texto sea uno de `textos`."""
+    """Busca un boton/enlace cuyo texto sea uno de `textos`.
+
+    Se recorre por texto y no por selector CSS a proposito: el nombre
+    del boton ("Postularme") sobrevive a los rediseños del portal, sus
+    clases CSS no.
+    """
     for texto in textos:
-        for etiqueta in ("button", "a", "input[type=submit]", "[role=button]"):
+        for etiqueta in ("button", "a", "input[type=submit]", "input[type=button]",
+                         "[role=button]"):
             try:
                 elementos = nav.pagina.query_selector_all(etiqueta)
             except Exception:
                 continue
             for elemento in elementos:
                 try:
-                    if not elemento.is_visible():
-                        continue
                     contenido = sin_tildes(elemento.inner_text() or
                                            elemento.get_attribute("value") or "")
-                    if texto in contenido and len(contenido) < 60:
+                    if texto not in contenido or len(contenido) >= 60:
+                        continue
+                    # Muchos portales dejan el boton mas abajo del primer
+                    # pantallazo; sin acercarlo, cuenta como invisible.
+                    try:
+                        elemento.scroll_into_view_if_needed(timeout=3000)
+                    except Exception:
+                        pass
+                    if elemento.is_visible():
                         return elemento
                 except Exception:
                     continue
     return None
+
+
+def probar_postulacion(perfil: dict, cred) -> int:
+    """Prueba de punta a punta en UNA vacante real, con el navegador visible.
+
+    Es la respuesta a la unica pregunta que importa: "¿de verdad se
+    puede postular?". Busca una vacante que pase tu filtro, la abre a la
+    vista, dice exactamente que encontro -- correo de contacto, boton de
+    postularse, o nada -- y solo entonces te pregunta si quieres que lo
+    intente en serio. Nada se manda sin que digas que si.
+    """
+    fuentes = {k: v for k, v in FUENTES.items() if v.get("habilitada")}
+    if not fuentes:
+        LOG.error("No hay portales habilitados en FUENTES.")
+        return 1
+
+    LOG.info("")
+    LOG.info("=" * 62)
+    LOG.info(" PRUEBA DE POSTULACION (una sola vacante, con tu permiso)")
+    LOG.info("=" * 62)
+
+    with Navegador(visible=True) as nav:
+        elegida = None
+        for clave, cfg in fuentes.items():
+            LOG.info("")
+            LOG.info("Buscando una vacante en %s ...", cfg["nombre"])
+            try:
+                vacantes = buscar_en_portal(nav, clave, cfg, perfil)
+            except Exception as e:
+                LOG.warning("   %s fallo: %s", cfg["nombre"], type(e).__name__)
+                continue
+            if not vacantes:
+                continue
+
+            for vac in vacantes:
+                try:
+                    leer_detalle(nav, vac, cfg)
+                except Exception:
+                    continue
+                ev = evaluar_vacante(vac, perfil)
+                if not ev.descartada and ev.puntaje >= UMBRAL_POSTULACION:
+                    elegida = (vac, cfg, ev)
+                    break
+            if elegida:
+                break
+            LOG.info("   %d vacantes vistas, ninguna paso tu filtro de %d puntos.",
+                     len(vacantes), UMBRAL_POSTULACION)
+
+        if not elegida:
+            LOG.error("")
+            LOG.error("No encontre ninguna vacante que pase tu filtro ahora mismo.")
+            LOG.error("Baja el umbral (hoy en %d) o amplia tus cargos, y repite.",
+                      UMBRAL_POSTULACION)
+            return 1
+
+        vac, cfg, ev = elegida
+        LOG.info("")
+        LOG.info("-" * 62)
+        LOG.info(" VACANTE ELEGIDA PARA LA PRUEBA")
+        LOG.info("-" * 62)
+        LOG.info("   Cargo   : %s", vac.titulo)
+        LOG.info("   Empresa : %s", vac.empresa or "(no la publica)")
+        LOG.info("   Ciudad  : %s", vac.ciudad or "(no la publica)")
+        LOG.info("   Portal  : %s", cfg["nombre"])
+        LOG.info("   Puntaje : %s", ev.resumen())
+        LOG.info("   Link    : %s", vac.url)
+        LOG.info("")
+
+        # --- Via 1: correo publicado en la oferta ---
+        if vac.correos:
+            LOG.info(" TIENE CORREO DE CONTACTO: %s", vac.correos[0])
+            LOG.info(" Por ahi se puede postular sin depender del portal.")
+            if not cred:
+                LOG.warning(" Pero falta configurar %s para poder enviarlo.",
+                            ARCHIVO_CREDENCIALES.name)
+        else:
+            LOG.info(" La oferta no publica correo: hay que postularse en el portal.")
+
+        # --- Via 2: el boton del portal ---
+        nav.ir_a(vac.url)
+        boton = _buscar_boton(nav, cfg["sel_boton_postular"])
+        if boton is None:
+            LOG.info("")
+            LOG.warning(" NO ENCONTRE EL BOTON de postularse en esta pagina.")
+            LOG.warning(" Puede ser que el portal lo llame de otra forma. Mira la")
+            LOG.warning(" pagina abierta: si ves un boton para postularte, dime")
+            LOG.warning(" COMO SE LLAMA exactamente y lo agrego a la lista")
+            LOG.warning(" 'sel_boton_postular' de %s en FUENTES.", cfg["nombre"])
+            LOG.warning(" Hoy busca botones que digan: %s",
+                        ", ".join(cfg["sel_boton_postular"]))
+        else:
+            try:
+                nombre_boton = limpiar_espacios(boton.inner_text())
+            except Exception:
+                nombre_boton = "(sin nombre)"
+            LOG.info("")
+            LOG.info(" ENCONTRE EL BOTON: \"%s\"", nombre_boton)
+            LOG.info(" Con esto el programa SI puede postularse en este portal.")
+
+        if boton is None and not vac.correos:
+            LOG.error("")
+            LOG.error(" Por esta vacante no se puede postular automaticamente.")
+            return 1
+
+        # --- Confirmacion explicita ---
+        LOG.info("")
+        LOG.info("-" * 62)
+        respuesta = input(" ¿Quieres que se postule DE VERDAD a esta vacante? (si/no): ")
+        if not respuesta.strip().lower().startswith("s"):
+            LOG.info(" Listo, no se mando nada. La prueba ya te dijo lo importante.")
+            return 0
+
+        registro = Registro()
+        estado, metodo, detalle = _postular(nav, vac, cfg, perfil, cred, "automatico")
+        registro.anotar(vac.clave, estado=estado, metodo=metodo, detalle=detalle,
+                        portal=cfg["nombre"], titulo=vac.titulo, empresa=vac.empresa,
+                        ciudad=vac.ciudad, url=vac.url, puntaje=ev.puntaje)
+
+        LOG.info("")
+        LOG.info("=" * 62)
+        if estado == "postulada":
+            LOG.info(" POSTULADO por %s: %s", metodo, detalle)
+            LOG.info(" Revisa tus postulaciones en el portal para confirmarlo.")
+        elif estado == "pendiente_revision":
+            LOG.info(" QUEDO A MEDIAS: %s", detalle)
+            LOG.info(" La pagina esta abierta: terminala tu y asi ves que le falta.")
+        else:
+            LOG.info(" %s: %s", estado.upper(), detalle)
+        LOG.info("=" * 62)
+        input(" Enter para cerrar el navegador... ")
+    return 0
 
 
 def _parece_postulado(nav: Navegador) -> bool:
@@ -2304,6 +2451,8 @@ def main():
                         help="manda un correo de prueba a ti mismo y sale")
     parser.add_argument("--ver", action="store_true",
                         help="muestra el navegador trabajando (normalmente va oculto)")
+    parser.add_argument("--probar-postulacion", action="store_true",
+                        help="prueba postularse a UNA vacante real, preguntandote antes")
     args = parser.parse_args()
 
     if args.ver:
@@ -2341,6 +2490,9 @@ def main():
 
     if args.probar_correo:
         return probar_correo(perfil, cargar_credenciales())
+
+    if args.probar_postulacion:
+        return probar_postulacion(perfil, cargar_credenciales())
 
     modo = MODO
     if args.simular:
