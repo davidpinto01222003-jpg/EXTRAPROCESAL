@@ -1544,6 +1544,15 @@ contraseña normal. Se saca así:
 5. Ese recuadro **no se vuelve a mostrar**. Si lo cierras sin copiar,
    borras esa contraseña y creas otra; no pasa nada.
 
+Sobre editar `perfil_laboral.json`: el formato es quisquilloso de una
+forma que no tiene nada que ver con buscar empleo (cada renglón de una
+lista lleva coma al final **menos el último**, los números van sin puntos
+—`1750000`, no `1.750.000`— y las rutas de Windows llevan barra doble:
+`C:\\Users\\...`). Si te equivocas en alguna de esas cuatro cosas, el
+programa **te lo corrige solo**, te dice exactamente qué corrigió y deja
+tu versión original en `perfil_laboral.roto.bak`. Si el error es de otro
+tipo, te señala el renglón exacto y qué parece estar mal.
+
 Para comprobar que quedó bien, sin lanzar una búsqueda entera:
 
 ```

@@ -514,6 +514,86 @@ class ErrorConfiguracion(Exception):
     """Falta algo que el usuario tiene que llenar antes de correr esto."""
 
 
+def reparar_perfil_escrito_a_mano(texto: str):
+    """Arregla los tres errores que todo el mundo comete editando el perfil.
+
+    El formato de este archivo (JSON) es quisquilloso de una forma que no
+    tiene nada que ver con buscar empleo, y por tres tonterias se niega a
+    abrir entero. Antes que dejar al usuario peleando con comas, se
+    corrigen aqui:
+
+      1. Rutas de Windows con una sola barra: C:\\Users\\... En este
+         formato la barra invertida hay que escribirla dos veces.
+      2. Comas que faltan entre los renglones de una lista.
+      3. Numeros escritos con puntos de miles: 1.750.000 en vez de 1750000.
+
+    Devuelve (texto_corregido, lista_de_lo_que_se_corrigio). Nunca
+    corrige en silencio: quien llama avisa de cada cambio.
+    """
+    arreglos = []
+
+    # 1. Barras invertidas sueltas dentro de textos. En JSON las unicas
+    #    combinaciones validas son \" \\ \/ \b \f \n \r \t y \uXXXX;
+    #    cualquier otra hay que duplicarla. Fuera de los textos no hay
+    #    barras invertidas, asi que se puede mirar el archivo entero.
+    #
+    #    La alternancia importa: hay que CONSUMIR las parejas validas
+    #    enteras. Si solo se buscara "barra que no inicia escape valido",
+    #    la segunda barra de un "\\" bien escrito se leeria como suelta y
+    #    se romperia un archivo que estaba bien.
+    sueltas = 0
+
+    def _arreglar_barra(m):
+        nonlocal sueltas
+        if m.group(1) is not None:
+            return m.group(0)  # pareja valida: se deja igual
+        sueltas += 1
+        return "\\\\"
+
+    texto_nuevo = re.sub(r'\\(["\\/bfnrt]|u[0-9a-fA-F]{4})|\\', _arreglar_barra, texto)
+    if sueltas:
+        arreglos.append(f"{sueltas} barra(s) invertida(s) de una ruta de Windows")
+        texto = texto_nuevo
+
+    # 2. Numeros con puntos de miles.
+    def _sin_puntos(m):
+        return m.group(1) + m.group(2).replace(".", "")
+
+    texto_nuevo, cambios = re.subn(
+        r'(:\s*)(\d{1,3}(?:\.\d{3})+)(?=\s*[,}\]\r\n])', _sin_puntos, texto)
+    if cambios:
+        arreglos.append(f"{cambios} numero(s) escrito(s) con puntos de miles")
+        texto = texto_nuevo
+
+    # 3. Comas que faltan al final de un renglon. Se mira el renglon
+    #    siguiente: si empieza otro valor, es que falto la coma.
+    lineas = texto.split("\n")
+    faltantes = 0
+    for i, linea in enumerate(lineas[:-1]):
+        actual = linea.rstrip()
+        if not actual or actual.rstrip().endswith((",", "[", "{", ":")):
+            continue
+        if not actual.rstrip().endswith(('"', "]", "}")) and \
+           not re.search(r"(\d|true|false|null)\s*$", actual):
+            continue
+        siguiente = next((l.strip() for l in lineas[i + 1:] if l.strip()), "")
+        if siguiente.startswith(('"', "{", "[")):
+            lineas[i] = actual + ","
+            faltantes += 1
+    if faltantes:
+        arreglos.append(f"{faltantes} coma(s) que faltaban al final de un renglon")
+        texto = "\n".join(lineas)
+
+    # 4. La coma de mas antes de cerrar una lista o el archivo. Es el otro
+    #    error clasico, el espejo del anterior.
+    texto_nuevo, cambios = re.subn(r",(\s*[}\]])", r"\1", texto)
+    if cambios:
+        arreglos.append(f"{cambios} coma(s) de sobra antes de cerrar una lista")
+        texto = texto_nuevo
+
+    return texto, arreglos
+
+
 def cargar_perfil() -> dict:
     if not ARCHIVO_PERFIL.exists():
         raise ErrorConfiguracion(
@@ -521,14 +601,12 @@ def cargar_perfil() -> dict:
             f"   Copia 'perfil_laboral.example.json', renombralo a "
             f"'perfil_laboral.json' y llenalo con tus datos."
         )
+
+    crudo = ARCHIVO_PERFIL.read_text(encoding="utf-8")
     try:
-        with open(ARCHIVO_PERFIL, encoding="utf-8") as f:
-            datos = json.load(f)
-    except json.JSONDecodeError as e:
-        raise ErrorConfiguracion(
-            f"El archivo {ARCHIVO_PERFIL.name} tiene un error de formato JSON "
-            f"(linea {e.lineno}): {e.msg}. Revisa comas y comillas."
-        )
+        datos = json.loads(crudo)
+    except json.JSONDecodeError as error_original:
+        datos = _rescatar_perfil(crudo, error_original)
 
     perfil = dict(PERFIL_POR_DEFECTO)
     perfil.update(datos)
@@ -565,6 +643,61 @@ def cargar_perfil() -> dict:
     perfil["_nivel"] = nivel_a_numero(perfil["nivel_educativo"])
     aplicar_ajustes_del_perfil(perfil)
     return perfil
+
+
+def _rescatar_perfil(crudo: str, error_original: json.JSONDecodeError) -> dict:
+    """Intenta salvar un perfil mal escrito; si no puede, explica donde.
+
+    Cuando logra arreglarlo, GUARDA el archivo ya corregido y deja una
+    copia del original en '.roto.bak'. Asi el usuario no tiene que
+    arreglar lo mismo cada vez que arranca.
+    """
+    reparado, arreglos = reparar_perfil_escrito_a_mano(crudo)
+    if arreglos:
+        try:
+            datos = json.loads(reparado)
+        except json.JSONDecodeError:
+            datos = None
+        if datos is not None:
+            LOG.warning("")
+            LOG.warning("Tu %s tenia errores de escritura. Los corregi:", ARCHIVO_PERFIL.name)
+            for arreglo in arreglos:
+                LOG.warning("   - %s", arreglo)
+            respaldo = ARCHIVO_PERFIL.with_suffix(".roto.bak")
+            try:
+                respaldo.write_text(crudo, encoding="utf-8")
+                ARCHIVO_PERFIL.write_text(reparado, encoding="utf-8")
+                LOG.warning("   Ya quedo guardado corregido (tu version original "
+                            "quedo en %s).", respaldo.name)
+            except OSError as e:
+                LOG.warning("   No pude guardar la correccion (%s); sigo con ella "
+                            "solo por esta vez.", e)
+            LOG.warning("")
+            return datos
+
+    # No se pudo: se senala el renglon exacto y se explica en cristiano.
+    lineas = crudo.split("\n")
+    culpable = lineas[error_original.lineno - 1].strip() if 0 < error_original.lineno <= len(lineas) else ""
+    pistas = {
+        "Invalid \\escape": "una ruta de Windows con una sola barra invertida "
+                            "(hay que escribir C:\\\\Users\\\\... con barras dobles)",
+        "Expecting ',' delimiter": "falta una coma al final del renglon anterior",
+        "Expecting property name": "sobra una coma en el renglon anterior",
+        "Expecting value": "un valor mal escrito: si es un numero va sin puntos "
+                           "(1750000, no 1.750.000); si es texto va entre comillas",
+        "Unterminated string": "falta la comilla que cierra el texto",
+    }
+    pista = next((p for clave, p in pistas.items() if clave in error_original.msg),
+                 "revisa las comas y las comillas de ese renglon")
+
+    raise ErrorConfiguracion(
+        f"Tu {ARCHIVO_PERFIL.name} tiene un error de escritura en la LINEA "
+        f"{error_original.lineno}:\n"
+        f"      {culpable}\n"
+        f"   Lo que parece: {pista}.\n"
+        f"   (Regla practica: cada renglon de una lista lleva coma al final "
+        f"menos el ultimo, y los numeros van sin puntos.)"
+    )
 
 
 def aplicar_ajustes_del_perfil(perfil: dict):
