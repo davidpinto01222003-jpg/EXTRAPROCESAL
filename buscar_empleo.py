@@ -1922,6 +1922,15 @@ def diagnostico(perfil):
     termino = perfil["cargos_objetivo"][0]
     ciudad = perfil.get("ciudad", "")
 
+    # Todo lo que sigue se copia tal cual a un archivo de texto: es lo
+    # que hay que mandarle a quien vaya a corregir un portal, y nadie
+    # deberia tener que copiarlo a mano de la pantalla negra.
+    informe = carpeta / "informe.txt"
+    copia = logging.FileHandler(informe, mode="w", encoding="utf-8")
+    copia.setFormatter(logging.Formatter("%(message)s"))
+    copia.setLevel(logging.INFO)
+    LOG.addHandler(copia)
+
     LOG.info("")
     LOG.info("=" * 62)
     LOG.info(" DIAGNOSTICO -- buscando '%s' en %s", termino, ciudad or "todo el pais")
@@ -1987,9 +1996,23 @@ def diagnostico(perfil):
 
     LOG.info("")
     LOG.info("=" * 62)
-    LOG.info(" Paginas y capturas guardadas en:")
+    LOG.info(" INFORME COMPLETO guardado en:")
+    LOG.info("   %s", informe)
+    LOG.info("")
+    LOG.info(" Ese archivo se abre con el Bloc de notas. Si algun portal")
+    LOG.info(" quedo en 'ninguna direccion sirvio', mandalo tal cual a")
+    LOG.info(" quien te ayude con el programa: ahi esta todo lo necesario")
+    LOG.info(" para corregirlo sin adivinar.")
+    LOG.info("")
+    LOG.info(" Las capturas y las paginas quedaron en:")
     LOG.info("   %s", carpeta)
     LOG.info("=" * 62)
+    LOG.removeHandler(copia)
+    copia.close()
+    try:
+        os.startfile(str(carpeta))  # en Windows, abre la carpeta sola
+    except (AttributeError, OSError):
+        pass
 
 
 def main():
@@ -2012,7 +2035,15 @@ def main():
                         help="exporta el Excel de postulaciones y sale")
     parser.add_argument("--probar-correo", action="store_true",
                         help="manda un correo de prueba a ti mismo y sale")
+    parser.add_argument("--ver", action="store_true",
+                        help="muestra el navegador trabajando (normalmente va oculto)")
     args = parser.parse_args()
+
+    if args.ver:
+        # Ver el navegador sirve para dos cosas: entender que esta
+        # haciendo, y que algunos portales dejen de rechazarlo.
+        global NAVEGADOR_VISIBLE
+        NAVEGADOR_VISIBLE = True
 
     try:
         perfil = cargar_perfil()
