@@ -99,12 +99,14 @@ servidores de datos satelitales, así que la descarga hay que hacerla desde una 
 con acceso a internet. El camino más corto:
 
 ```bash
-python3 anomalias_sst.py --urls          # imprime una dirección por estación
-# se abre cada una en el navegador y se guardan los ocho CSV en una carpeta
-python3 anomalias_sst.py --carpeta descargas
+python3 anomalias_sst.py --urls          # imprime las direcciones de descarga
+python3 anomalias_sst.py --caja bahia.csv
 ```
 
-`--carpeta` entiende el formato que entrega ERDDAP, con su fila de unidades, promedia a
-paso mensual, arma la tabla combinada y sigue con el cálculo. También acepta
-`--entrada tabla.csv` si la serie ya viene armada, y `--descargar` cuando la red lo
-permite. Los tres caminos quedaron probados de extremo a extremo.
+`--caja` toma un único CSV que cubra la bahía completa, busca la celda más cercana a
+cada una de las ocho estaciones, informa a qué distancia quedó y sigue con el cálculo.
+Es el camino más corto porque supone una sola descarga.
+
+Los otros modos: `--carpeta` para ocho archivos, uno por estación; `--entrada` si la
+tabla mensual ya viene armada; y `--descargar` cuando la red lo permite. Los cuatro
+quedaron probados de extremo a extremo.

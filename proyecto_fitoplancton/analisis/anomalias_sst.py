@@ -58,6 +58,10 @@ CAMPANAS = {
 SERVIDOR = ("https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMH1sstdmday.csv"
             "?sst%5B({inicio}):({fin})%5D%5B({lat}):({lat})%5D%5B({lon}):({lon})%5D")
 
+# una sola descarga que cubre la bahía completa y contiene las ocho estaciones
+CAJA = ("https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMH1sstdmday.csv"
+        "?sst%5B({inicio}):({fin})%5D%5B(10.41):(10.28)%5D%5B(-75.60):(-75.52)%5D")
+
 
 def descargar(inicio="2002-07-16", fin="2024-09-16", destino="sst_mensual.csv"):
     """Extrae la serie mensual de cada estación desde ERDDAP."""
@@ -86,15 +90,60 @@ def descargar(inicio="2002-07-16", fin="2024-09-16", destino="sst_mensual.csv"):
 
 def imprimir_urls(inicio="2002-07-16", fin="2024-09-16"):
     """Direcciones de descarga, una por estación, para abrir en el navegador."""
-    print("Abra cada dirección en el navegador y guarde el archivo con el nombre indicado")
-    print("dentro de una misma carpeta. Después ejecute:\n")
-    print("    python3 anomalias_sst.py --carpeta <esa carpeta>\n")
+    print("OPCIÓN RECOMENDADA: una sola descarga que cubre toda la bahía.\n")
+    print("  " + CAJA.format(inicio=inicio, fin=fin) + "\n")
+    print("Guarde ese archivo como bahia.csv y ejecute:\n")
+    print("    python3 anomalias_sst.py --caja bahia.csv\n")
+    print("Si el servidor rechaza el rango de latitud, invierta los dos valores de latitud")
+    print("en la dirección, porque algunos conjuntos ordenan ese eje al revés.\n")
+    print("OPCIÓN ALTERNATIVA: una descarga por estación, guardadas en una misma carpeta,")
+    print("y después  python3 anomalias_sst.py --carpeta <esa carpeta>\n")
     for nombre, (lon, lat) in ESTACIONES.items():
         print(f"{nombre}.csv")
         print("  " + SERVIDOR.format(inicio=inicio, fin=fin, lat=lat, lon=lon) + "\n")
     print("Si el conjunto erdMH1sstdmday no estuviera disponible, busque en")
     print("https://coastwatch.pfeg.noaa.gov/erddap/search y sustituya el identificador:")
     print("la rutina acepta cualquier CSV de ERDDAP con columnas de tiempo y de temperatura.")
+
+
+def leer_caja(ruta):
+    """Extrae la serie de cada estación desde un único CSV que cubre la bahía."""
+    crudo = pd.read_csv(ruta, low_memory=False)
+    if len(crudo) and not str(crudo.iloc[0, 0])[:4].isdigit():
+        crudo = crudo.iloc[1:]
+    col_t = next(c for c in crudo.columns if "time" in c.lower() or "fecha" in c.lower())
+    col_lat = next(c for c in crudo.columns if "lat" in c.lower())
+    col_lon = next(c for c in crudo.columns if "lon" in c.lower())
+    resto = [c for c in crudo.columns if c not in (col_t, col_lat, col_lon)]
+    col_v = next((c for c in resto if "sst" in c.lower() or "temp" in c.lower()), resto[-1])
+
+    d = pd.DataFrame({
+        "mes": pd.to_datetime(crudo[col_t], errors="coerce").dt.strftime("%Y-%m"),
+        "lat": pd.to_numeric(crudo[col_lat], errors="coerce"),
+        "lon": pd.to_numeric(crudo[col_lon], errors="coerce"),
+        "valor": pd.to_numeric(crudo[col_v], errors="coerce")}).dropna(subset=["mes", "lat", "lon"])
+    celdas = d[["lat", "lon"]].drop_duplicates()
+    print(f"archivo con {len(celdas)} celdas y {d.mes.nunique()} meses, variable {col_v!r}")
+
+    series = {}
+    for nombre, (lon, lat) in ESTACIONES.items():
+        dist = (celdas.lat - lat) ** 2 + (celdas.lon - lon) ** 2
+        clat, clon = celdas.loc[dist.idxmin(), ["lat", "lon"]]
+        sel = d[(d.lat == clat) & (d.lon == clon)].dropna(subset=["valor"])
+        if sel.empty:
+            print(f"  {nombre}: la celda más cercana no tiene datos, se omite")
+            continue
+        series[nombre] = sel.groupby("mes").valor.mean()
+        km = ((clat - lat) ** 2 + (clon - lon) ** 2) ** .5 * 111
+        print(f"  {nombre}: celda ({clat:.3f}, {clon:.3f}), a {km:.1f} km, {len(series[nombre])} meses")
+    if not series:
+        print("Ninguna estación tuvo datos utilizables en el archivo")
+        sys.exit(1)
+    df = pd.DataFrame(series).sort_index()
+    df.index.name = "fecha"
+    df.to_csv("sst_mensual.csv")
+    print("tabla combinada guardada en sst_mensual.csv")
+    return df
 
 
 def leer_carpeta(carpeta):
@@ -147,6 +196,7 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--entrada", help="CSV mensual con una columna por estación")
     ap.add_argument("--carpeta", help="carpeta con un CSV de ERDDAP por estación, nombrado <estación>.csv")
+    ap.add_argument("--caja", help="un único CSV de ERDDAP que cubra la bahía; se extrae la celda más cercana a cada estación")
     ap.add_argument("--descargar", action="store_true", help="intentar la descarga desde ERDDAP")
     ap.add_argument("--urls", action="store_true", help="imprimir las direcciones de descarga y salir")
     ap.add_argument("--salida", default="anomalias_sst", help="prefijo de los archivos de salida")
@@ -159,12 +209,14 @@ def main():
         df = descargar()
         if df is None:
             sys.exit(1)
+    elif args.caja:
+        df = leer_caja(args.caja)
     elif args.carpeta:
         df = leer_carpeta(args.carpeta)
     elif args.entrada:
         df = pd.read_csv(args.entrada, index_col=0)
     else:
-        ap.error("indique --entrada, --carpeta, --descargar o --urls")
+        ap.error("indique --caja, --carpeta, --entrada, --descargar o --urls")
 
     df = df.apply(pd.to_numeric, errors="coerce")
     print(f"serie de {len(df)} meses y {df.shape[1]} estaciones, "
