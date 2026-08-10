@@ -223,9 +223,14 @@ FUENTES = {
         "habilitada": True,
         "nombre": "elempleo.com",
         "plantillas_url": [
-            "https://www.elempleo.com/co/ofertas-empleo/?Search={qp}&PageIndex={pagina}",
-            "https://www.elempleo.com/co/ofertas-empleo/?Keyword={qp}&PageIndex={pagina}",
+            # El diagnostico de un usuario mostro que la primera abre pero
+            # devuelve ofertas de cualquier cosa: el portal ignora ese
+            # parametro. Se dejan varias formas y gana la que si filtre.
             "https://www.elempleo.com/co/ofertas-empleo/{q}",
+            "https://www.elempleo.com/co/ofertas-empleo/?Search={qp}&PageIndex={pagina}",
+            "https://www.elempleo.com/co/ofertas-empleo/?keyword={qp}&PageIndex={pagina}",
+            "https://www.elempleo.com/co/ofertas-empleo/?Keyword={qp}&PageIndex={pagina}",
+            "https://www.elempleo.com/co/ofertas-empleo/?q={qp}&PageIndex={pagina}",
         ],
         "patron_enlace": r"/co/ofertas-trabajo/",
         "sel_tarjeta": [".result-item", ".offer-item", "article.result"],
@@ -240,9 +245,10 @@ FUENTES = {
         "habilitada": True,
         "nombre": "Magneto365",
         "plantillas_url": [
+            "https://www.magneto365.com/co/empleos/{q}",
             "https://www.magneto365.com/co/empleos?search={qp}&page={pagina}",
             "https://www.magneto365.com/co/empleos?q={qp}&page={pagina}",
-            "https://www.magneto365.com/co/empleos/{q}",
+            "https://www.magneto365.com/co/empleos?keyword={qp}&page={pagina}",
         ],
         "patron_enlace": r"/co/empleos/",
         "sel_tarjeta": ["article", ".vacancy-card", "li.vacancy"],
@@ -256,10 +262,14 @@ FUENTES = {
     "spe": {
         "habilitada": True,
         "nombre": "Servicio Publico de Empleo",
+        # Ninguna de las direcciones sin "www" respondio en la prueba
+        # real: el dominio a secas no resuelve. Se prueban primero las
+        # que llevan www.
         "plantillas_url": [
+            "https://www.serviciodeempleo.gov.co/buscar-empleo?keyword={qp}&page={pagina}",
+            "https://www.serviciodeempleo.gov.co/buscar-empleo?palabraClave={qp}",
+            "https://www.serviciodeempleo.gov.co/ofertas?keyword={qp}",
             "https://serviciodeempleo.gov.co/buscar-empleo?keyword={qp}&page={pagina}",
-            "https://serviciodeempleo.gov.co/buscar-empleo?palabraClave={qp}&pagina={pagina}",
-            "https://serviciodeempleo.gov.co/buscar-empleo?q={qp}",
         ],
         "patron_enlace": r"(oferta|vacante)",
         "sel_tarjeta": ["article", ".card-vacante", ".resultado"],
@@ -1131,6 +1141,29 @@ def parece_bloqueo(nav) -> bool:
     return any(s in texto for s in SENALES_DE_BLOQUEO)
 
 
+def relevancia(vacantes, termino: str) -> float:
+    """Que tanto tienen que ver los resultados con lo que se busco (0 a 1).
+
+    Hace falta porque un portal puede responder perfectamente y aun asi
+    estar ignorando la busqueda: devuelve sus 20 ofertas del dia -- una
+    cajera, un bacteriologo -- como si nada. Eso se ve igual de bien que
+    una busqueda correcta, y no lo es: significa que la direccion no
+    lleva bien el termino.
+    """
+    if not vacantes:
+        return 0.0
+    palabras = [p for p in sin_tildes(termino).split() if len(p) >= 4]
+    if not palabras:
+        return 1.0
+    aciertos = sum(1 for v in vacantes
+                   if any(p in sin_tildes(v.titulo) for p in palabras))
+    return aciertos / len(vacantes)
+
+
+# Por debajo de esto se considera que el portal ignoro la busqueda.
+RELEVANCIA_MINIMA = 0.25
+
+
 def elegir_plantilla(nav: Navegador, clave_fuente: str, cfg: dict, termino: str, ciudad: str):
     """Prueba las direcciones candidatas y devuelve la que si trae ofertas.
 
@@ -1142,6 +1175,8 @@ def elegir_plantilla(nav: Navegador, clave_fuente: str, cfg: dict, termino: str,
     Devuelve (plantilla, vacantes_de_esa_primera_busqueda) o (None, []).
     """
     bloqueado = False
+    segundo_mejor = (None, [], 0.0)  # por si ninguna filtra bien
+
     for plantilla in cfg["plantillas_url"]:
         url = construir_url(plantilla, termino, ciudad, 1)
         if not nav.ir_a(url):
@@ -1154,10 +1189,31 @@ def elegir_plantilla(nav: Navegador, clave_fuente: str, cfg: dict, termino: str,
             continue
 
         vacantes = _leer_resultados(nav, clave_fuente, cfg)
-        if vacantes:
+        if not vacantes:
+            LOG.debug("   0 resultados con: %s", url)
+            time.sleep(random.uniform(*ESPERA_ENTRE_LECTURAS))
+            continue
+
+        pertinencia = relevancia(vacantes, termino)
+        if pertinencia >= RELEVANCIA_MINIMA:
             return plantilla, vacantes
-        LOG.debug("   0 resultados con: %s", url)
+
+        LOG.debug("   %d ofertas pero solo el %d%% tiene que ver con '%s': %s",
+                  len(vacantes), round(pertinencia * 100), termino, url)
+        if pertinencia >= segundo_mejor[2]:
+            segundo_mejor = (plantilla, vacantes, pertinencia)
         time.sleep(random.uniform(*ESPERA_ENTRE_LECTURAS))
+
+    # Ninguna direccion filtro bien. Se usa la menos mala, avisando: es
+    # mejor revisar ofertas de mas -- el filtro por perfil las descarta
+    # igual -- que quedarse sin mirar ese portal.
+    if segundo_mejor[0] is not None:
+        LOG.warning("   %s no esta filtrando por lo que buscas: de sus ofertas, "
+                    "solo el %d%% menciona '%s'.",
+                    cfg["nombre"], round(segundo_mejor[2] * 100), termino)
+        LOG.warning("   Se revisan igual y tu perfil descarta las que no sirven, "
+                    "pero va mas lento. Corre el diagnostico para ver el detalle.")
+        return segundo_mejor[0], segundo_mejor[1]
 
     if bloqueado:
         LOG.warning("   %s no dejo entrar: mostro una pantalla de verificacion "
@@ -1966,10 +2022,21 @@ def diagnostico(perfil):
 
                 resultados = _leer_resultados(nav, clave, cfg)
                 if resultados:
-                    LOG.info("      -> BIEN: %d ofertas. Ejemplo: %s",
-                             len(resultados), resultados[0].titulo[:45])
-                    gano = url
-                    break
+                    pertinencia = relevancia(resultados, termino)
+                    ejemplos = ", ".join(v.titulo[:32] for v in resultados[:3])
+                    if pertinencia >= RELEVANCIA_MINIMA:
+                        LOG.info("      -> BIEN: %d ofertas, el %d%% habla de '%s'.",
+                                 len(resultados), round(pertinencia * 100), termino)
+                        LOG.info("         Ejemplos: %s", ejemplos)
+                        gano = url
+                        break
+                    LOG.info("      -> ABRE PERO NO FILTRA: %d ofertas y solo el %d%% "
+                             "menciona '%s'.", len(resultados),
+                             round(pertinencia * 100), termino)
+                    LOG.info("         Ejemplos: %s", ejemplos)
+                    LOG.info("         (esta direccion no le esta pasando bien el "
+                             "termino de busqueda al portal)")
+                    continue
 
                 LOG.info("      -> abrio, pero no reconoci ninguna oferta.")
                 formas = _links_de_la_pagina(nav)
