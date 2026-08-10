@@ -1678,9 +1678,11 @@ instalada en el teléfono) pero avisa "PC apagado" y no trae datos nuevos.
 
 1. En el PC, doble clic en **`abrir_movil.bat`** (o `python app_movil.py`).
    Deja esa ventana abierta.
-2. Esa ventana te muestra una dirección tipo
-   `http://192.168.1.15:8777/?t=A1B2C3D4`. Ábrela en el navegador del
-   celular, **conectado al mismo WiFi que el PC**.
+2. Esa ventana te muestra **un código QR** (se abre solo en pantalla) y
+   una dirección tipo `http://192.168.1.15:8777/?t=A1B2C3D4`. Apunta la
+   cámara del celular al QR y entras de una — o escribe la dirección a
+   mano si prefieres. El celular tiene que estar **en el mismo WiFi que
+   el PC**.
 3. Instálala como app:
    - **iPhone (Safari)**: botón compartir → *Agregar a pantalla de inicio*.
    - **Android (Chrome)**: menú de los 3 puntos → *Agregar a pantalla de

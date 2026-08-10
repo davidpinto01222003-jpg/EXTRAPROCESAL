@@ -60,6 +60,7 @@ import datetime
 import json
 import logging
 import mimetypes
+import os
 import secrets
 import socket
 import threading
@@ -535,6 +536,62 @@ class Manejador(BaseHTTPRequestHandler):
         self._responder(401, pagina, "text/html; charset=utf-8")
 
 
+def guardar_qr(url: str):
+    """Deja un QR con la direccion, para entrar sin teclear nada.
+
+    Con la camara del celular apuntando al QR ya estas adentro: no hay
+    que copiar la IP ni el codigo a mano. Si la libreria `qrcode` no
+    esta instalada, no pasa nada: se sigue mostrando la direccion en
+    texto, que funciona igual.
+    """
+    try:
+        import qrcode
+    except ImportError:
+        return None
+
+    try:
+        codigo = qrcode.QRCode(border=2, error_correction=qrcode.constants.ERROR_CORRECT_M)
+        codigo.add_data(url)
+        codigo.make(fit=True)
+        matriz = codigo.get_matrix()
+
+        # Se dibuja el PNG a mano (mismo metodo que los iconos de la app)
+        # para no depender de Pillow solo por esto.
+        import struct
+        import zlib
+
+        escala = 8
+        lado = len(matriz) * escala
+        filas = []
+        for fila in matriz:
+            linea = bytearray()
+            for negro in fila:
+                linea.extend((0, 0, 0) if negro else (255, 255, 255))
+            linea_escalada = bytearray()
+            for i in range(0, len(linea), 3):
+                linea_escalada.extend(linea[i:i + 3] * escala)
+            for _ in range(escala):
+                filas.append(b"\x00" + bytes(linea_escalada))
+
+        def trozo(tipo: bytes, contenido: bytes) -> bytes:
+            cuerpo = tipo + contenido
+            return (struct.pack(">I", len(contenido)) + cuerpo
+                    + struct.pack(">I", zlib.crc32(cuerpo) & 0xFFFFFFFF))
+
+        png = (b"\x89PNG\r\n\x1a\n"
+               + trozo(b"IHDR", struct.pack(">IIBBBBB", lado, lado, 8, 2, 0, 0, 0))
+               + trozo(b"IDAT", zlib.compress(b"".join(filas), 9))
+               + trozo(b"IEND", b""))
+
+        destino = app.CARPETA_DATOS / "entrar.png"
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        destino.write_bytes(png)
+        return destino
+    except Exception as e:
+        app.LOG.debug("No se pudo generar el QR: %s", e)
+        return None
+
+
 def ip_en_la_red() -> str:
     """La IP del PC dentro del WiFi (la que el celular tiene que marcar)."""
     try:
@@ -584,9 +641,22 @@ def main():
     print()
     print(f"    (o entra a http://{ip}:{args.puerto} y escribe el codigo: {TOKEN})")
     print()
-    print(" 3. Instalala como app:")
-    print("       Android (Chrome):  menu (3 puntos) > 'Instalar aplicacion'")
+
+    qr = guardar_qr(url)
+    if qr:
+        print(" O MAS FACIL: apunta la camara del celular a este QR")
+        print(f"       {qr}")
+        try:
+            os.startfile(str(qr))  # solo existe en Windows: lo abre en pantalla
+        except AttributeError:
+            pass
+        except OSError:
+            pass
+        print()
+    print(" 3. Instalala como app (una sola vez):")
     print("       iPhone (Safari):   compartir > 'Agregar a pantalla de inicio'")
+    print("       Android (Chrome):  menu (3 puntos) > 'Agregar a pantalla de inicio'")
+    print("    Queda con icono propio y abre en pantalla completa.")
     print()
     print(" Deja esta ventana ABIERTA: el PC es el que hace la busqueda.")
     print(" Ctrl+C para apagar la app.")
