@@ -1039,27 +1039,53 @@ class Navegador:
             )
         CARPETA_NAVEGADOR.mkdir(parents=True, exist_ok=True)
         self._pw = sync_playwright().start()
-        # Varios portales rechazan a los navegadores automatizados, y
-        # cuando lo hacen el sintoma es "0 resultados", que se confunde
-        # con "no hay ofertas". Estas dos cosas -- ocultar la senal de
-        # automatizacion y presentarse con un identificador normal --
-        # evitan la mayoria de esos rechazos. No evaden captchas ni
-        # bloqueos: solo dejan de anunciar que esto es un programa.
-        self.contexto = self._pw.chromium.launch_persistent_context(
+        self.contexto = self._abrir_contexto()
+        self.contexto.set_default_timeout(TIMEOUT_PAGINA_MS)
+        self.pagina = self.contexto.pages[0] if self.contexto.pages else self.contexto.new_page()
+        return self
+
+    def _abrir_contexto(self):
+        """Abre el navegador presentandose como uno normal, sin mentir.
+
+        Aqui hubo un error que costo caro: se le puso a mano un
+        identificador de "Chrome 126". Como el navegador de verdad es
+        otra version, quedaba una incoherencia -- que es EXACTAMENTE lo
+        que los portales miran para reconocer programas. Varios
+        respondian con una verificacion que no terminaba nunca: la
+        pagina se quedaba cargando para siempre.
+
+        Lo correcto es no inventar nada. Solo se corrige una cosa: con
+        el navegador oculto, Chromium se anuncia como "HeadlessChrome",
+        que si es un delator. Se toma su propio identificador y se le
+        quita esa palabra -- misma version, misma verdad, sin el cartel.
+        """
+        opciones = dict(
             user_data_dir=str(CARPETA_NAVEGADOR),
             headless=not self.visible,
             locale="es-CO",
             timezone_id="America/Bogota",
             viewport={"width": 1366, "height": 900},
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
-            ),
+            # Esto no falsea nada: solo evita que el navegador anuncie
+            # que lo maneja un programa.
             args=["--disable-blink-features=AutomationControlled"],
         )
-        self.contexto.set_default_timeout(TIMEOUT_PAGINA_MS)
-        self.pagina = self.contexto.pages[0] if self.contexto.pages else self.contexto.new_page()
-        return self
+        contexto = self._pw.chromium.launch_persistent_context(**opciones)
+
+        if self.visible:
+            return contexto  # a la vista, el identificador ya es el normal
+
+        try:
+            pagina = contexto.pages[0] if contexto.pages else contexto.new_page()
+            identificador = pagina.evaluate("navigator.userAgent")
+        except Exception:
+            return contexto
+
+        if "Headless" not in identificador:
+            return contexto
+
+        contexto.close()
+        opciones["user_agent"] = identificador.replace("HeadlessChrome", "Chrome")
+        return self._pw.chromium.launch_persistent_context(**opciones)
 
     def __exit__(self, *_):
         try:
@@ -1069,10 +1095,27 @@ class Navegador:
             if self._pw:
                 self._pw.stop()
 
-    def ir_a(self, url: str) -> bool:
+    def ir_a(self, url: str, pagina=None) -> bool:
+        """Abre una direccion. Devuelve False solo si no se pudo del todo.
+
+        Si la pagina tarda demasiado en terminar de cargar -- cosa comun
+        en portales llenos de publicidad y rastreadores -- no se da por
+        perdida: se vuelve a intentar conformandose con que el servidor
+        haya empezado a responder. Lo que interese leer casi siempre ya
+        esta ahi; lo que faltaba era algun recurso de adorno.
+        """
+        pagina = pagina or self.pagina
         try:
-            self.pagina.goto(url, wait_until="domcontentloaded", timeout=TIMEOUT_PAGINA_MS)
-            self.pagina.wait_for_timeout(2500)
+            pagina.goto(url, wait_until="domcontentloaded", timeout=TIMEOUT_PAGINA_MS)
+            pagina.wait_for_timeout(2500)
+            return True
+        except Exception:
+            pass
+
+        try:
+            pagina.goto(url, wait_until="commit", timeout=TIMEOUT_PAGINA_MS)
+            pagina.wait_for_timeout(4000)
+            LOG.debug("%s cargo a medias (se sigue con lo que alcanzo a llegar)", url)
             return True
         except Exception as e:
             LOG.debug("No pude abrir %s (%s)", url, type(e).__name__)
@@ -1956,7 +1999,11 @@ def iniciar_sesiones(perfil):
             LOG.info("   Abriendo %-28s %s", cfg["nombre"], url)
             try:
                 pagina = nav.pagina if not abiertas else nav.contexto.new_page()
-                pagina.goto(url, wait_until="domcontentloaded", timeout=TIMEOUT_PAGINA_MS)
+                # "commit" = en cuanto el servidor empieza a responder. No
+                # se espera a que termine de cargar: en estos portales eso
+                # puede tardar una eternidad por la publicidad, y mientras
+                # tanto tu ya podrias estar escribiendo tu clave.
+                pagina.goto(url, wait_until="commit", timeout=TIMEOUT_PAGINA_MS)
                 abiertas.append((cfg, pagina))
             except Exception as e:
                 LOG.warning("   No pude abrir %s (%s). Entra a ese portal a mano en "
@@ -1973,9 +2020,7 @@ def iniciar_sesiones(perfil):
         LOG.info("Revisando como quedo cada portal...")
         for cfg, pagina in abiertas:
             try:
-                pagina.goto(url_de_inicio(cfg), wait_until="domcontentloaded",
-                            timeout=TIMEOUT_PAGINA_MS)
-                pagina.wait_for_timeout(1500)
+                nav.ir_a(url_de_inicio(cfg), pagina=pagina)
                 cuerpo = sin_tildes(pagina.inner_text("body")[:4000])
             except Exception:
                 LOG.info("   %-28s no pude comprobarlo (cerraste la pestana)",
