@@ -642,6 +642,19 @@ def main():
     print(f"    (o entra a http://{ip}:{args.puerto} y escribe el codigo: {TOKEN})")
     print()
 
+    # La IP cambia si cambias de red o si el router la reparte de nuevo, y
+    # ahi el icono guardado en el celular deja de conectar. El nombre
+    # .local no cambia nunca: cuando funciona, es la direccion que
+    # conviene guardar. Se muestra como alternativa porque depende de que
+    # la red permita mDNS, cosa que no se puede dar por hecha.
+    if not args.solo_este_pc:
+        nombre_pc = socket.gethostname().split(".")[0]
+        if nombre_pc:
+            print(f" Si algun dia la direccion de arriba deja de conectar (porque")
+            print(f" el PC cambio de IP), prueba con esta, que no cambia nunca:")
+            print(f"       http://{nombre_pc}.local:{args.puerto}/?t={TOKEN}")
+            print()
+
     qr = guardar_qr(url)
     if qr:
         print(" O MAS FACIL: apunta la camara del celular a este QR")

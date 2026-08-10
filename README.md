@@ -1697,7 +1697,21 @@ instalada en el teléfono) pero avisa "PC apagado" y no trae datos nuevos.
 
 Queda con su ícono propio y abre en pantalla completa, sin barra de
 navegador. No hay que pasar por ninguna tienda, no hay que firmar nada y
-no caduca.
+no caduca. **En el celular no se instala ningún archivo**: la app viaja
+del PC al teléfono por el WiFi.
+
+Dos cosas que van a pasar y conviene saber de antemano:
+
+- **La primera vez que la abras desde el ícono, puede pedirte el código
+  otra vez.** Es normal: el iPhone guarda las apps de la pantalla de
+  inicio aparte del navegador, así que esa copia todavía no lo tiene.
+  Escríbelo una vez y no vuelve a preguntar.
+- **Si un día deja de conectar**, casi siempre es porque el PC cambió de
+  dirección en la red (cambiaste de WiFi, o el router la repartió de
+  nuevo). Vuelve a correr `abrir_movil.bat` y escanea el QR nuevo. La
+  misma ventana te muestra también una dirección con el nombre del PC
+  (`http://nombre-del-pc.local:8777/...`) que no cambia nunca: si esa te
+  funciona, es la que conviene guardar.
 
 Un detalle técnico, por si en Android no te aparece *Instalar
 aplicación* sino solo *Agregar a pantalla de inicio*: es normal y no es
