@@ -1354,6 +1354,142 @@ Cada punto corresponde a un fallo real que se vio en la práctica:
 Necesita `credenciales_sgde.txt` (las mismas de siempre, contraseña de
 aplicación de Gmail -- ver más abajo).
 
+## Descargar a UNA carpeta los correos de pago oficioso, petición y tutela ⭐
+
+`descargar_correos_palabras_clave.py` (o su iniciador
+`descargar_correos_palabras_clave.bat`) busca en tu Gmail los correos de
+**PAGO OFICIOSO**, **DERECHO DE PETICIÓN** y **SENTENCIA DE TUTELA**, y
+descarga sus adjuntos a **una sola carpeta**, renombrándolos con el
+**radicado**, el **número de cuenta** o el **asunto** del correo.
+
+**No necesita el Excel de control**: sirve aunque el proceso todavía no
+esté en el informe o no tenga carpeta creada.
+
+### En qué se diferencia de `revisar_correo_pro.py`
+
+Los dos leen el mismo Gmail, pero sirven para cosas distintas:
+
+| | `revisar_correo_pro.py` | `descargar_correos_palabras_clave.py` |
+|---|---|---|
+| **A dónde va todo** | a la carpeta de **cada proceso** | a **una sola carpeta**, todo junto |
+| **Necesita el Excel** | sí (compara contra el control) | **no** |
+| **Qué busca** | todo lo extraprocesal (petición/PQR/tutela/pago oficioso) | **solo las 3 frases** pedidas |
+| **Cómo nombra** | deja el nombre original del adjunto | **renombra** con radicado/cuenta/asunto |
+
+Usa este cuando quieras **tener los documentos a la mano**, todos juntos
+y ya identificados. Usa el otro cuando quieras que cada correo quede
+archivado en la carpeta de su proceso. **Se pueden usar los dos**: cada
+uno lleva su propio archivo de progreso, así que no se estorban ni se
+saltan correos entre ellos.
+
+### Qué correos descarga
+
+Solo los que **son** de uno de estos tres tipos (`FRASES_A_BUSCAR`):
+
+- **PAGO OFICIOSO** (también "pagos oficiosos", "pago de manera oficiosa")
+- **DERECHO DE PETICIÓN** (también sus **respuestas**: "RESPUESTA
+  DERECHO DE PETICIÓN…" trae la frase igual)
+- **SENTENCIA DE TUTELA** (también **"fallo de tutela"**, que es como se
+  le dice en la práctica al mismo documento)
+
+Se reconocen **con o sin tilde**, en singular o plural, y aunque la
+frase venga **partida en dos líneas** dentro del PDF (que es lo normal
+en un documento escaneado). La frase se busca en el **asunto**, el
+**cuerpo**, el **nombre** de cada adjunto y el **texto de adentro** de
+cada PDF/DOCX adjunto: un correo con asunto genérico
+("Notificación 12345") pero con `FALLO DE TUTELA.pdf` adjunto **sí** se
+descarga.
+
+Por defecto (`EXIGIR_ADJUNTOS = True`) solo descarga los correos **con
+adjuntos**. Con `False`, un correo del tipo buscado que venga en puro
+texto también se guarda, como un `.txt`.
+
+De los adjuntos se guardan los **documentos** (PDF, Word, Excel,
+imágenes escaneadas…) y se abren los **.zip** para sacar los PDF/DOCX de
+adentro. Se omiten las firmas `.p7s`, los calendarios `.ics` y las
+imágenes de menos de `MIN_KB_IMAGEN` (40 KB), que casi siempre son el
+logo o la firma del pie del correo, no un documento.
+
+### Cómo queda nombrado cada archivo
+
+```
+<IDENTIFICADOR> - <TIPO> - <nombre original del adjunto>.pdf
+```
+
+El identificador se busca en este orden y se usa **el primero que
+aparezca** (de más confiable a menos):
+
+1. el **radicado** (23 dígitos), así venga escrito con guiones, puntos o
+   espacios -- `68001-40-03-001-2024-00050-00` es el mismo número que
+   `68001400300120240005000`;
+2. el **número de cuenta**, cuando el texto lo rotula como tal
+   (`CUENTA No. 1234567`, `NIC 1234567`, `cuenta contrato 1234567`). Se
+   exige el rótulo a propósito: un número suelto de 7 dígitos puede ser
+   un teléfono o una factura, y nombrar un documento con el número
+   equivocado es peor que no nombrarlo;
+3. si no hay ninguno de los dos, la **fecha + el asunto** del correo.
+
+Así quedan en la carpeta:
+
+```
+68001400300120240005000 - SENTENCIA DE TUTELA - fallo primera instancia.pdf
+1234567 - PAGO OFICIOSO - respuesta essa.pdf
+2026-03-14 Notificacion judicial - DERECHO DE PETICION - anexo.pdf
+```
+
+Si un correo es de **dos tipos a la vez** (una respuesta que contesta un
+derecho de petición *y* anuncia un pago oficioso), el nombre los lleva a
+los dos (`PAGO OFICIOSO + DERECHO DE PETICION`) en vez de guardar el
+mismo documento dos veces.
+
+**Nunca pisa un archivo ya guardado**: si dos correos generan el mismo
+nombre, el segundo queda como `..._2.pdf`.
+
+Dentro de la misma carpeta queda `_correos descargados.csv` con una fila
+por archivo: de qué correo salió, de qué tipo es, qué identificador se
+le puso y **de dónde se sacó** -- para revisar de un vistazo los que
+quedaron nombrados por asunto (que son los que quizás quieras renombrar
+a mano).
+
+### Ajustes principales (al inicio del archivo)
+
+| Ajuste | Para qué sirve |
+|---|---|
+| `CARPETA_DESCARGAS` | la carpeta única donde se guarda todo (se crea sola) |
+| `MODO_PRUEBA` | `True` = solo muestra en el log qué bajaría y con qué nombre, sin guardar nada |
+| `DIAS_HACIA_ATRAS` | cuántos días atrás revisar (730 = 2 años) |
+| `FRASES_A_BUSCAR` | los tres tipos y sus variantes de escritura |
+| `EXIGIR_ADJUNTOS` | `False` para guardar también los correos de puro texto |
+| `INCLUIR_NOMBRE_ORIGINAL` | `False` para nombres más cortos (sin el nombre del adjunto) |
+| `MAX_CORREOS_POR_CORRIDA` / `MAX_MINUTOS_POR_CORRIDA` | cuánto avanza cada corrida |
+
+> A diferencia del resto del proyecto, aquí `MODO_PRUEBA` viene en
+> **`False`** (descarga de verdad desde la primera corrida). Los otros
+> scripts *mueven, renombran o borran* carpetas que ya existen, y ahí una
+> equivocación cuesta caro; este solo **crea archivos nuevos** en una
+> carpeta propia, así que lo peor que puede pasar es que baje algo que no
+> querías -- y para eso basta borrarlo.
+
+### Se puede hacer por partes
+
+Igual que `revisar_correo_pro.py`: reutiliza su misma conexión con Gmail
+(límite de tiempo duro por operación, reconexión automática, descarga
+por lotes, UIDs en vez de números de orden) y lleva su **propio** archivo
+de progreso, `descargar_correos_palabras_clave_progreso.json`. Si lo
+cortas, se cae la luz o Gmail corta la conexión, la próxima corrida
+**sigue donde se quedó**. Cada corrida termina en un rato acotado
+(`MAX_CORREOS_POR_CORRIDA` y `MAX_MINUTOS_POR_CORRIDA`): si falta más, lo
+dice en el log y basta volver a correrlo.
+
+A Gmail solo se le piden **6 consultas** (`OFICIOSO`, `PETICI`, `TUTELA`
+por asunto y por texto -- `FRASES_PARA_PEDIR_A_GMAIL`) para acotar la
+descarga; el filtro fino se hace después en tu PC con `FRASES_A_BUSCAR`,
+que es más estricto, así que un correo que solo diga "tutela" de pasada
+igual se descarta.
+
+Necesita `credenciales_sgde.txt` (las mismas de siempre, contraseña de
+aplicación de Gmail -- ver más abajo).
+
 ## Listar terminados por auto o por pago (partes y radicado)
 
 `listar_terminados_auto_pago.py` (o su iniciador

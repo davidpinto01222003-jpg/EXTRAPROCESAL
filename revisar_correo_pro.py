@@ -291,7 +291,7 @@ def configurar_logging():
 # ==================== Progreso (para hacerlo por partes) ====================
 
 
-def cargar_progreso(uidvalidity_actual):
+def cargar_progreso(uidvalidity_actual, archivo=None):
     """
     Lee que correos ya se revisaron en corridas anteriores. Devuelve un
     set de UIDs (numeros).
@@ -303,14 +303,21 @@ def cargar_progreso(uidvalidity_actual):
     de UIDVALIDITY haria que el script se saltara correos nuevos en
     silencio, que es el peor error posible aca: perder correos sin que
     nadie se entere.
+
+    'archivo' permite usar OTRO archivo de progreso (por defecto, el de
+    este script). Lo usa descargar_correos_palabras_clave.py, que revisa
+    el mismo Gmail pero para otra cosa: si compartieran el archivo, cada
+    script daria por revisados los correos que proceso el otro y se
+    saltaria correos sin avisar.
     """
-    if not os.path.exists(ARCHIVO_PROGRESO):
+    archivo = archivo or ARCHIVO_PROGRESO
+    if not os.path.exists(archivo):
         return set()
     try:
-        with open(ARCHIVO_PROGRESO, "r", encoding="utf-8") as f:
+        with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
     except (OSError, ValueError) as error:
-        logging.warning("[Progreso] No se pudo leer %s (%s) -- se empieza de cero.", ARCHIVO_PROGRESO, error)
+        logging.warning("[Progreso] No se pudo leer %s (%s) -- se empieza de cero.", archivo, error)
         return set()
 
     uidvalidity_guardado = datos.get("uidvalidity")
@@ -331,14 +338,17 @@ def cargar_progreso(uidvalidity_actual):
     return revisados
 
 
-def guardar_progreso(uids_revisados, uidvalidity):
+def guardar_progreso(uids_revisados, uidvalidity, archivo=None):
     """
     Guarda en disco que correos ya se revisaron. Se escribe primero en
     un archivo temporal y despues se reemplaza el bueno, para que un
     corte de luz a mitad de la escritura no deje el archivo de progreso
     corrupto (y con el, la duda de que se reviso y que no).
+
+    'archivo' permite usar OTRO archivo de progreso -- ver cargar_progreso.
     """
-    temporal = ARCHIVO_PROGRESO + ".tmp"
+    archivo = archivo or ARCHIVO_PROGRESO
+    temporal = archivo + ".tmp"
     try:
         with open(temporal, "w", encoding="utf-8") as f:
             json.dump(
@@ -349,9 +359,9 @@ def guardar_progreso(uids_revisados, uidvalidity):
                 },
                 f,
             )
-        os.replace(temporal, ARCHIVO_PROGRESO)
+        os.replace(temporal, archivo)
     except OSError as error:
-        logging.warning("[Progreso] No se pudo guardar el avance en %s: %s", ARCHIVO_PROGRESO, error)
+        logging.warning("[Progreso] No se pudo guardar el avance en %s: %s", archivo, error)
 
 
 # ==================== Conexion con Gmail ====================
