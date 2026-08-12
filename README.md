@@ -1400,6 +1400,33 @@ cada PDF/DOCX adjunto: un correo con asunto genérico
 ("Notificación 12345") pero con `FALLO DE TUTELA.pdf` adjunto **sí** se
 descarga.
 
+El documento tiene que **ser** de uno de esos tipos, no basta con que
+los **mencione**. Se decide en tres pasos (los mismos que usa
+`clasificar_procesos_ejecutivos.py`):
+
+1. si el **título** lo dice (el asunto, o el nombre del archivo:
+   `RESPUESTA DERECHO DE PETICION.pdf`) → entra;
+2. si el título dice que es **otra cosa** -- un auto, un mandamiento,
+   una demanda, un poder… (`PALABRAS_QUE_DESCARTAN`) → no entra, aunque
+   su contenido mencione la frase;
+3. si el título no dice ni una cosa ni la otra, la frase tiene que estar
+   en el **encabezado** del documento (`VENTANA_ENCABEZADO`), que es
+   donde un escrito judicial se titula a sí mismo.
+
+El paso 2 es el que evita el error típico: un correo *"Notifica **auto
+avoca** acción de tutela"* cuyo cuerpo cuenta que el accionante alega la
+vulneración de su *"derecho de petición"* **no** es un derecho de
+petición. `SENTENCIA` y `NOTIFICACION` quedan fuera de esa lista a
+propósito: los juzgados notifican todo, y una *sentencia de tutela* es
+justamente lo que se busca.
+
+Además, de cada correo se bajan **solo los adjuntos que son del tipo
+buscado** (`SOLO_EL_DOCUMENTO_QUE_COINCIDE`): de una notificación que
+trae la sentencia junto con la constancia de envío, el poder y un
+pantallazo, se baja la sentencia y nada más. Si el que coincidió fue el
+correo (por su asunto) y ningún adjunto coincide por sí mismo, se bajan
+todos -- es preferible eso a no bajar nada.
+
 Por defecto (`EXIGIR_ADJUNTOS = True`) solo descarga los correos **con
 adjuntos**. Con `False`, un correo del tipo buscado que venga en puro
 texto también se guarda, como un `.txt`.
@@ -1461,6 +1488,8 @@ a mano).
 | `FRASES_A_BUSCAR` | los tres tipos y sus variantes de escritura |
 | `EXIGIR_ADJUNTOS` | `False` para guardar también los correos de puro texto |
 | `INCLUIR_NOMBRE_ORIGINAL` | `False` para nombres más cortos (sin el nombre del adjunto) |
+| `SOLO_EL_DOCUMENTO_QUE_COINCIDE` | `False` para bajar **todos** los adjuntos del correo, no solo los del tipo buscado |
+| `BUSQUEDA_EXACTA_EN_GMAIL` | `False` para volver a la búsqueda amplia (mucho más lenta) |
 | `MAX_CORREOS_POR_CORRIDA` / `MAX_MINUTOS_POR_CORRIDA` | cuánto avanza cada corrida |
 
 > A diferencia del resto del proyecto, aquí `MODO_PRUEBA` viene en
@@ -1472,20 +1501,36 @@ a mano).
 
 ### Se puede hacer por partes
 
-Igual que `revisar_correo_pro.py`: reutiliza su misma conexión con Gmail
-(límite de tiempo duro por operación, reconexión automática, descarga
-por lotes, UIDs en vez de números de orden) y lleva su **propio** archivo
-de progreso, `descargar_correos_palabras_clave_progreso.json`. Si lo
-cortas, se cae la luz o Gmail corta la conexión, la próxima corrida
-**sigue donde se quedó**. Cada corrida termina en un rato acotado
-(`MAX_CORREOS_POR_CORRIDA` y `MAX_MINUTOS_POR_CORRIDA`): si falta más, lo
-dice en el log y basta volver a correrlo.
+Reutiliza la conexión con Gmail de `revisar_correo_pro.py` (límite de
+tiempo duro por operación, reconexión automática, descarga por lotes,
+UIDs en vez de números de orden) y lleva su **propio** archivo de
+progreso, `descargar_correos_palabras_clave_progreso.json`. Cada corrida
+termina en un rato acotado (`MAX_CORREOS_POR_CORRIDA` y
+`MAX_MINUTOS_POR_CORRIDA`): si falta más, lo dice en el log y basta
+volver a correrlo.
 
-A Gmail solo se le piden **6 consultas** (`OFICIOSO`, `PETICI`, `TUTELA`
-por asunto y por texto -- `FRASES_PARA_PEDIR_A_GMAIL`) para acotar la
-descarga; el filtro fino se hace después en tu PC con `FRASES_A_BUSCAR`,
-que es más estricto, así que un correo que solo diga "tutela" de pasada
-igual se descarta.
+Encima de eso, tres cosas propias, cada una sacada de un fallo real:
+
+- **El progreso se guarda después de cada correo**, no cada 25
+  (`GUARDAR_PROGRESO_CADA_N = 1`). Con 25, una caída después de bajar 24
+  correos dejaba esos 24 en el disco pero **sin registrar**, y la corrida
+  siguiente los volvía a bajar: aparecían duplicados `..._2.pdf`.
+- **A Gmail se le pide la frase exacta**, y solo correos con adjuntos --
+  una sola consulta, vía `X-GM-RAW` (`BUSQUEDA_EXACTA_EN_GMAIL`).
+  Buscando por palabras sueltas, `TUTELA` sola aparecía en **926**
+  correos (firmas, hilos citados, "responder a todos") y había que
+  bajarlos completos solo para descartarlos. Si esa consulta falla, se
+  cae sola a la búsqueda amplia de antes (6 consultas por trozos de
+  palabra, `FRASES_PARA_PEDIR_A_GMAIL`).
+- **Más tiempo y lotes más pequeños** (`TIMEOUT_SEGUNDOS = 180`,
+  `TAMANO_LOTE_DESCARGA = 2`): aquí casi todo correo trae escaneos
+  pesados, y con el límite de 60s del otro script se cortaban descargas
+  que iban bien, solo lentas -- la corrida se iba entera en reconectar
+  sin avanzar.
+
+De cada PDF se leen solo las primeras páginas (`MAX_PAGINAS_PDF_PARA_LEER`):
+el título del documento y su radicado están ahí, y sacarle el texto a un
+escaneo de 80 páginas tarda minutos con la conexión abierta esperando.
 
 Necesita `credenciales_sgde.txt` (las mismas de siempre, contraseña de
 aplicación de Gmail -- ver más abajo).

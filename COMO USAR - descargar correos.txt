@@ -83,9 +83,33 @@ puede tardar. Trabaja por partes: revisa un rato (por defecto
 hasta 30 minutos o 500 correos) y se detiene sola avisando
 cuantos faltan. Vuelve a darle doble clic las veces que haga
 falta -- SIEMPRE SIGUE DONDE SE QUEDO, nunca repite lo ya hecho.
+Eso vale tambien si se cae la conexion o si cierras la ventana a
+la mitad: lo ya descargado queda registrado correo por correo.
 
 Despues de esa primera puesta al dia, cada corrida solo revisa
 lo nuevo y termina en segundos.
+
+
+------------------------------------------------------------
+ SI YA LO HABIAS CORRIDO ANTES Y QUEDO HECHO UN DESORDEN
+------------------------------------------------------------
+
+Las primeras versiones repetian descargas (archivos "..._2.pdf")
+y bajaban documentos que no correspondian. Para empezar de cero
+y que quede limpio:
+
+  1. Borra la carpeta CORREOS DESCARGADOS - PAGO OFICIOSO,
+     PETICION Y TUTELA (o cambiale el nombre, si quieres
+     conservarla por si acaso).
+  2. Borra, en la carpeta del programa, el archivo
+     descargar_correos_palabras_clave_progreso.json
+     (es el que lleva la cuenta de lo ya revisado).
+  3. Vuelve a darle doble clic al .bat.
+
+Si NO borras el progreso, no pasa nada malo: simplemente no
+volvera a revisar los correos que ya habia visto, asi que los
+documentos que se descargaron de mas se quedan donde estan y
+puedes borrarlos a mano.
 
 
 ------------------------------------------------------------
@@ -114,6 +138,13 @@ Los archivos quedan nombrados asi:
 Es decir: primero el RADICADO si el correo lo trae; si no, el
 NUMERO DE CUENTA; y si no trae ninguno de los dos, la fecha y el
 asunto del correo.
+
+De cada correo se bajan SOLO los documentos que son de los tres
+tipos buscados. Si una notificacion trae la sentencia de tutela
+junto con la constancia de envio, el poder y un pantallazo, se
+baja la sentencia y nada mas. Al final el programa te dice
+cuantos anexos dejo por fuera. Si los quieres todos, abre el .py
+y pon SOLO_EL_DOCUMENTO_QUE_COINCIDE = False.
 
 Dentro de esa misma carpeta queda "_correos descargados.csv"
 (se abre con Excel) con una fila por archivo: de que correo

@@ -367,10 +367,15 @@ def guardar_progreso(uids_revisados, uidvalidity, archivo=None):
 # ==================== Conexion con Gmail ====================
 
 
-def _con_limite_de_tiempo(mail, funcion, *args, **kwargs):
+def _con_limite_de_tiempo(mail, funcion, *args, timeout=None, **kwargs):
     """
     Corre 'funcion' con un limite de tiempo DURO de TIMEOUT_SEGUNDOS,
     en un hilo aparte.
+
+    'timeout' permite usar OTRO limite en vez del de este script. Lo usa
+    descargar_correos_palabras_clave.py, que baja casi puros correos con
+    adjuntos escaneados y necesita mas margen: con 60s se cortaban
+    descargas que iban bien, solo lentas.
 
     Es una SEGUNDA linea de defensa ademas del limite del socket: en
     equipos con antivirus que inspecciona el correo (o con un proxy de
@@ -383,6 +388,7 @@ def _con_limite_de_tiempo(mail, funcion, *args, **kwargs):
     Al agotarse el tiempo levanta TimeoutError (que es un OSError, asi
     que lo atrapa el mismo manejo de "se cayo la conexion").
     """
+    limite = timeout or TIMEOUT_SEGUNDOS
     resultado = {}
 
     def _ejecutar():
@@ -393,7 +399,7 @@ def _con_limite_de_tiempo(mail, funcion, *args, **kwargs):
 
     hilo = threading.Thread(target=_ejecutar, daemon=True)
     hilo.start()
-    hilo.join(timeout=TIMEOUT_SEGUNDOS)
+    hilo.join(timeout=limite)
     if hilo.is_alive():
         try:
             sock = getattr(mail, "sock", None)
@@ -401,13 +407,13 @@ def _con_limite_de_tiempo(mail, funcion, *args, **kwargs):
                 sock.close()
         except Exception:
             pass
-        raise TimeoutError(f"Gmail no respondio en {TIMEOUT_SEGUNDOS}s (limite duro)")
+        raise TimeoutError(f"Gmail no respondio en {limite}s (limite duro)")
     if "error" in resultado:
         raise resultado["error"]
     return resultado.get("valor")
 
 
-def conectar(usuario, app_password):
+def conectar(usuario, app_password, timeout=None):
     """
     Abre una conexion nueva con Gmail, inicia sesion y selecciona la
     carpeta de TODOS los correos. Devuelve (conexion, uidvalidity), o
@@ -416,17 +422,18 @@ def conectar(usuario, app_password):
     Cada paso deja su propia linea en el log: si alguna vez se traba,
     el ultimo mensaje dice exactamente donde -- sin tener que adivinar.
     """
+    limite = timeout or TIMEOUT_SEGUNDOS
     try:
         # Cada paso va con el limite de tiempo DURO, no solo con el del
         # socket: el login y la apertura de la carpeta tambien se
         # pueden quedar esperando para siempre en un equipo con
         # antivirus que inspecciona el correo.
-        logging.info("[Correo] Conectando con Gmail (limite %ds por operacion)...", TIMEOUT_SEGUNDOS)
-        mail = imaplib.IMAP4_SSL("imap.gmail.com", timeout=TIMEOUT_SEGUNDOS)
+        logging.info("[Correo] Conectando con Gmail (limite %ds por operacion)...", limite)
+        mail = imaplib.IMAP4_SSL("imap.gmail.com", timeout=limite)
         logging.info("[Correo] Conectado -- iniciando sesion...")
-        _con_limite_de_tiempo(mail, mail.login, usuario, app_password)
+        _con_limite_de_tiempo(mail, mail.login, usuario, app_password, timeout=limite)
         logging.info("[Correo] Sesion iniciada -- abriendo la carpeta de todos los correos...")
-        if not _con_limite_de_tiempo(mail, buscador.seleccionar_todos_los_correos, mail):
+        if not _con_limite_de_tiempo(mail, buscador.seleccionar_todos_los_correos, mail, timeout=limite):
             logging.error("[Correo] No se pudo abrir la carpeta de 'Todos los correos' de Gmail.")
             return None, None
     except Exception as error:
@@ -445,7 +452,7 @@ def conectar(usuario, app_password):
     return mail, uidvalidity
 
 
-def _conectar_o_none(credenciales, uidvalidity_esperado):
+def _conectar_o_none(credenciales, uidvalidity_esperado, timeout=None):
     """
     Reconecta y comprueba que el buzon siga siendo "el mismo" (que no
     haya cambiado el UIDVALIDITY). Devuelve (conexion, uidvalidity), o
@@ -453,7 +460,7 @@ def _conectar_o_none(credenciales, uidvalidity_esperado):
     ese caso el que llama debe detenerse: los UIDs que quedaban
     pendientes ya no se refieren a los mismos correos.
     """
-    mail, uidvalidity_nuevo = conectar(*credenciales)
+    mail, uidvalidity_nuevo = conectar(*credenciales, timeout=timeout)
     if mail is None:
         logging.error(
             "[Correo] No se pudo reconectar -- se detiene aqui. Lo revisado queda guardado; vuelve a correr "
@@ -549,7 +556,7 @@ def listar_uids(mail):
 _PATRON_UID_EN_RESPUESTA = re.compile(rb"UID\s+(\d+)")
 
 
-def descargar_lote(mail, uids):
+def descargar_lote(mail, uids, timeout=None):
     """
     Baja de una sola vez el contenido completo de varios correos (por
     su UID). Devuelve {uid: mensaje_ya_parseado}.
@@ -565,7 +572,7 @@ def descargar_lote(mail, uids):
     ignora sin tumbar el lote completo.
     """
     lista = ",".join(str(u) for u in uids)
-    typ, datos = _con_limite_de_tiempo(mail, mail.uid, "FETCH", lista, "(UID BODY.PEEK[])")
+    typ, datos = _con_limite_de_tiempo(mail, mail.uid, "FETCH", lista, "(UID BODY.PEEK[])", timeout=timeout)
     if typ != "OK" or not datos:
         return {}
 

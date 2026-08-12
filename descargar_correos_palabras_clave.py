@@ -39,11 +39,28 @@ Solo los que SON de uno de estos tres tipos (ver FRASES_A_BUSCAR):
 De cada uno se reconocen sus variantes normales de escritura: con o sin
 tilde ("PETICIÓN" = "PETICION"), en singular o plural, y las formas con
 que se llaman en la practica (a una sentencia de tutela casi siempre le
-dicen "fallo de tutela"). La frase se busca en el ASUNTO, en el CUERPO,
-en el NOMBRE de cada adjunto y -- lo importante -- en el TEXTO DE
-ADENTRO de cada adjunto PDF/DOCX: un correo con asunto generico
-("Notificacion 12345") pero con "FALLO DE TUTELA.pdf" adjunto SI es de
-los que buscamos, y mirando solo el asunto se perderia.
+dicen "fallo de tutela").
+
+El documento tiene que SER de uno de esos tipos, no basta con que los
+MENCIONE (ver tipos_de_pieza). Se decide asi:
+
+  1. si el TITULO lo dice (el asunto, o el nombre del archivo:
+     "RESPUESTA DERECHO DE PETICION.pdf") -> entra;
+  2. si el titulo dice que es OTRA COSA -- un auto, un mandamiento, una
+     demanda, un poder... (PALABRAS_QUE_DESCARTAN) -> no entra, aunque
+     su contenido mencione la frase;
+  3. si el titulo no dice ni una cosa ni la otra, la frase tiene que
+     estar en el ENCABEZADO del documento, que es donde un escrito
+     judicial se titula a si mismo.
+
+El paso 2 es el que evita el error tipico: un correo "Notifica AUTO
+AVOCA accion de tutela" cuyo cuerpo cuenta que el accionante alega la
+vulneracion de su "derecho de peticion" NO es un derecho de peticion.
+
+Ademas, de un correo se bajan SOLO los adjuntos que son del tipo
+buscado (SOLO_EL_DOCUMENTO_QUE_COINCIDE): de una notificacion que trae
+la sentencia de tutela junto con la constancia de envio, el poder y un
+pantallazo, se baja la sentencia y nada mas.
 
 Por defecto (EXIGIR_ADJUNTOS) solo se descargan los correos que TRAEN
 ADJUNTOS, que es lo que se pidio. Si quieres guardar tambien los que
@@ -82,16 +99,31 @@ quieras renombrar a mano).
 NUNCA PISA UN ARCHIVO YA GUARDADO. Si dos correos generan el mismo
 nombre, el segundo queda como "..._2.pdf" (ver _ruta_archivo_libre).
 
-POR QUE NO SE TRABA
+POR QUE NO SE TRABA (y por que no repite trabajo)
 ============================================================
-Reutiliza tal cual la conexion con Gmail de revisar_correo_pro.py, que
-ya trae resuelto todo lo que fallaba en la practica: limite de tiempo
-DURO por operacion (para equipos con antivirus que inspecciona el
-correo), reconexion automatica, descarga por lotes, UIDs en vez de
-numeros de orden, y tope por cantidad y por tiempo para que la corrida
-SIEMPRE termine. Ademas lleva su propio archivo de progreso
-(ARCHIVO_PROGRESO): si lo cortas o se cae la conexion, la proxima
-corrida SIGUE DONDE SE QUEDO en vez de volver a bajar todo.
+Reutiliza la conexion con Gmail de revisar_correo_pro.py, que ya trae
+resuelto lo que fallaba en la practica: limite de tiempo DURO por
+operacion (para equipos con antivirus que inspecciona el correo),
+reconexion automatica, descarga por lotes, UIDs en vez de numeros de
+orden, y tope por cantidad y por tiempo para que la corrida SIEMPRE
+termine. Encima de eso, tres cosas propias de este script, cada una
+sacada de un fallo real:
+
+* EL PROGRESO SE GUARDA DESPUES DE CADA CORREO (no cada 25, ver
+  GUARDAR_PROGRESO_CADA_N). Con 25, una caida despues de bajar 24
+  correos dejaba esos 24 en el disco pero sin registrar, y la corrida
+  siguiente los bajaba otra vez: aparecian duplicados "..._2.pdf".
+* SE LE PIDE A GMAIL LA FRASE EXACTA, y solo correos con adjuntos (ver
+  BUSQUEDA_EXACTA_EN_GMAIL). Buscando por palabras sueltas, "TUTELA"
+  sola aparecia en 926 correos (firmas, hilos citados, "responder a
+  todos") y habia que bajarlos todos completos para descartarlos.
+* MAS TIEMPO Y LOTES MAS PEQUEÑOS (TIMEOUT_SEGUNDOS, TAMANO_LOTE_DESCARGA):
+  aca casi todo correo trae adjuntos escaneados, y con el limite de 60s
+  de revisar_correo_pro.py se cortaban descargas que iban bien, solo
+  lentas -- la corrida se iba entera en reconectar sin avanzar.
+
+Si lo cortas o se cae la conexion, la proxima corrida SIGUE DONDE SE
+QUEDO (ARCHIVO_PROGRESO, que es suyo y no el del otro script).
 
 Necesita credenciales_sgde.txt (las mismas de siempre, contraseña de
 aplicacion de Gmail -- ver README). Si no existe, avisa y no hace nada.
@@ -206,12 +238,39 @@ MAX_CARACTERES_NOMBRE = 120
 # radicado ni cuenta y hay que nombrarlo por el asunto.
 MAX_CARACTERES_ASUNTO = 60
 
+# True (por defecto): de un correo se bajan SOLO los adjuntos que son
+# del tipo buscado, no todos.
+#
+# Un correo de notificacion judicial trae la sentencia de tutela y, con
+# ella, el auto, la constancia de envio, el poder y un pantallazo. Solo
+# el primero es lo que se pidio. Con False se bajan todos los documentos
+# de cualquier correo que coincida.
+#
+# Si el que coincidio fue el CORREO (por su asunto) y ningun adjunto
+# coincide por si mismo, no hay como saber cual es "el bueno" y se bajan
+# todos igual -- es preferible eso a no bajar nada.
+SOLO_EL_DOCUMENTO_QUE_COINCIDE = True
+
+# Cuantos caracteres del principio de un texto cuentan como su
+# "encabezado" para decidir de que tipo es (ver tipos_de_pieza). Un
+# documento judicial se titula a si mismo en las primeras lineas; mas
+# alla de eso, la frase que aparezca casi siempre es una mencion de
+# pasada. Subirlo trae mas documentos que no van; bajarlo puede dejar
+# afuera los que traen un membrete largo antes del titulo.
+VENTANA_ENCABEZADO = 900
+
 # True (por defecto): ademas del asunto, el cuerpo y el nombre de los
 # adjuntos, se LEE EL TEXTO de adentro de los PDF/DOCX adjuntos, tanto
 # para reconocer el tipo de documento como para buscarle el radicado o
 # la cuenta. Es lo mas lento de todo, pero es lo que hace que funcione:
 # el radicado casi nunca esta en el asunto, esta impreso dentro del PDF.
 LEER_TEXTO_DE_ADJUNTOS = True
+
+# De cada PDF se leen solo las primeras paginas: es donde esta el titulo
+# del documento y su radicado. Leer un escaneo de 80 paginas entero
+# tarda minutos -- con la conexion a Gmail abierta esperando, que es
+# justo lo que hace que el servidor la corte.
+MAX_PAGINAS_PDF_PARA_LEER = 5
 
 # Adjuntos mas pesados que esto no se abren para leerles el texto (un
 # escaneo grande puede tardar muchisimo). Igual se guardan completos:
@@ -229,16 +288,27 @@ MAX_MINUTOS_POR_CORRIDA = 30
 # urgentes) y va hacia atras.
 EMPEZAR_POR_LOS_MAS_NUEVOS = True
 
-# Cuantos correos se bajan por cada peticion a Gmail. Pedir demasiados
-# de golpe hace que la peticion tarde mas del limite y la conexion se
-# caiga; 5 es un punto medio seguro (ver revisar_correo_pro.py).
-TAMANO_LOTE_DESCARGA = 5
+# Cuantos correos se bajan por cada peticion a Gmail.
+#
+# 2, no 5: aca casi TODOS los correos traen adjuntos (por eso se
+# buscan), y muchos son escaneos pesados. Pedir 5 de golpe hacia que una
+# sola peticion tuviera que traer decenas de MB, tardara mas del limite
+# de tiempo y la conexion se cayera -- y al reintentar el mismo grupo
+# volvia a pasar lo mismo. Con 2 cada peticion es mas corta y, si algo
+# falla, se pierde menos trabajo.
+TAMANO_LOTE_DESCARGA = 2
 
-# Los limites de red (tiempo de espera, reintentos, reconexiones) se
-# reutilizan de revisar_correo_pro.py -- es el mismo Gmail y ya estan
-# ajustados a lo que aguanta en la practica. Si alguna vez hay que
-# tocarlos, se tocan alla y los dos scripts quedan iguales.
-TIMEOUT_SEGUNDOS = correo_pro.TIMEOUT_SEGUNDOS
+# Limite de tiempo para cada operacion contra Gmail.
+#
+# 180s, no los 60s de revisar_correo_pro.py: ese script revisa correos
+# de cualquier tipo (la mayoria livianos) y 60s le sobran, pero bajar un
+# par de escaneos de varios MB por una conexion domestica se pasa de 60s
+# con facilidad. Cuando eso ocurria, el limite cortaba una descarga que
+# iba PERFECTAMENTE BIEN, solo lenta, y la corrida se iba en reconectar
+# una y otra vez sin avanzar.
+TIMEOUT_SEGUNDOS = 180
+
+# Reintentos y reconexiones: se reutilizan de revisar_correo_pro.py.
 MAX_RECONEXIONES = correo_pro.MAX_RECONEXIONES
 MAX_REINTENTOS_POR_LOTE = correo_pro.MAX_REINTENTOS_POR_LOTE
 
@@ -275,19 +345,60 @@ FRASES_A_BUSCAR = {
     ],
 }
 
-# Lo que se le pide a GMAIL para acotar la busqueda del lado del
-# servidor, antes de bajar nada. A proposito son TROZOS de palabra y
-# sin tildes (la busqueda de IMAP es por subcadena y en ASCII):
+# True (por defecto): se le pide a Gmail que busque las FRASES EXACTAS
+# (la misma busqueda que escribirlas entre comillas en la barra de
+# Gmail), y ademas que devuelva solo correos CON ADJUNTOS.
+#
+# Esto es lo que decide si la corrida dura minutos u horas. Buscando por
+# palabras sueltas, en un caso real Gmail devolvia 971 candidatos --
+# porque "TUTELA" aparece por si sola en 926 correos: en la firma del
+# remitente, en el hilo citado abajo, en un "responder a todos" de otra
+# cosa. Bajar 971 correos COMPLETOS, con sus adjuntos escaneados, es lo
+# que hacia que la descarga tardara horas y que la conexion terminara
+# cayendose. Pidiendo la frase exacta quedan los que de verdad lo son.
+#
+# Ponlo en False para volver a la busqueda amplia (por si alguna vez
+# sospechas que Gmail esta dejando algo por fuera): revisa muchos mas
+# correos, mucho mas lento, pero el filtro fino en tu PC es el mismo.
+BUSQUEDA_EXACTA_EN_GMAIL = True
+
+# Si el TITULO (asunto del correo o nombre del archivo) trae alguna de
+# estas marcas, la pieza se descarta aunque su contenido mencione una de
+# las frases buscadas: el titulo ya dijo que es otra cosa. Ver el paso 2
+# de tipos_de_pieza.
+#
+# De aqui salio el caso real: "Notifica AUTO AVOCA accion de tutela..."
+# cuyo cuerpo menciona el "derecho de peticion" del accionante.
+#
+# OJO con dos ausencias, las dos a proposito:
+#
+# * "SENTENCIA" NO esta (aunque el resto del proyecto si la excluye, ver
+#   PALABRAS_PROCESAL_EXCLUIR): aca una SENTENCIA DE TUTELA es
+#   justamente de lo que se trata. Si un archivo se llama solo
+#   "SENTENCIA.pdf" y su encabezado dice que es de tutela, tiene que
+#   poder entrar.
+# * "NOTIFICACION" tampoco: los juzgados notifican TODO, incluidas las
+#   sentencias de tutela, asi que descartaria justo lo que se busca.
+#   Lo que si descarta es "AUTO", que es un documento distinto.
+PALABRAS_QUE_DESCARTAN = [
+    "AUTO", "AUTOS", "AVOCA", "ADMISORIO", "ADMITE",
+    "MANDAMIENTO", "DEMANDA", "MEMORIAL", "TRASLADO", "EXCEPCIONES",
+    "RECURSO DE REPOSICION", "RECURSO DE APELACION", "REQUERIMIENTO",
+    "MEDIDA CAUTELAR", "EMBARGO", "SECUESTRO", "PODER",
+    "LIQUIDACION DE CREDITO", "SOLICITUD DE CONCILIACION",
+    "CONSTANCIA", "CITACION", "EDICTO", "FACTURA",
+]
+
+# Lo que se le pide a Gmail cuando BUSQUEDA_EXACTA_EN_GMAIL esta en
+# False: TROZOS de palabra, sin tildes (la busqueda de IMAP es por
+# subcadena y en ASCII):
 #   "OFICIOSO" -> PAGO OFICIOSO, PAGOS OFICIOSOS, pago de manera oficiosa
 #   "PETICI"   -> PETICION, PETICIÓN, PETICIONES
 #   "TUTELA"   -> SENTENCIA DE TUTELA, FALLO DE TUTELA
-# Son 3 frases x (asunto + texto) = 6 consultas a Gmail en total, no una
-# por proceso. Bajar los ~25.000 correos de dos años completos, en
-# cambio, satura la conexion -- por eso se acota aqui.
 #
-# Estas frases solo ACOTAN: sobre lo que llegue se vuelve a revisar en
-# tu PC con FRASES_A_BUSCAR (que es mas estricto), asi que un correo que
-# solo diga "TUTELA" de pasada igual se descarta despues.
+# Sea cual sea la busqueda, lo que llegue se vuelve a revisar en tu PC
+# con FRASES_A_BUSCAR (que es mas estricto): un correo que solo diga
+# "TUTELA" de pasada se descarta igual, sin bajarlo.
 FRASES_PARA_PEDIR_A_GMAIL = ["OFICIOSO", "PETICI", "TUTELA"]
 
 # Archivo donde se guarda que correos ya se revisaron (para poder
@@ -302,9 +413,20 @@ ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "descargar_correos_palabra
 # que quede junto con los archivos a los que se refiere.
 NOMBRE_REPORTE = "_correos descargados.csv"
 
-# Cada cuantos correos se guarda el progreso / se avisa el avance.
-GUARDAR_PROGRESO_CADA_N = 25
-AVISO_PROGRESO_CADA_N = 25
+# Cada cuantos correos se guarda el progreso. 1 = DESPUES DE CADA
+# CORREO, a proposito.
+#
+# Guardarlo cada 25 (como hace revisar_correo_pro.py, que no descarga
+# nada pesado) sale carisimo aca: si se cae la conexion despues de bajar
+# 24 correos con adjuntos, esos 24 ya estan en el disco pero ninguno
+# quedo registrado, asi que la proxima corrida los vuelve a bajar
+# enteros y quedan duplicados ("..._2.pdf"). Escribir un JSON de unos
+# pocos KB es instantaneo comparado con volver a descargar un solo
+# correo con adjuntos escaneados.
+GUARDAR_PROGRESO_CADA_N = 1
+
+# Cada cuantos correos se deja un aviso de avance en el log.
+AVISO_PROGRESO_CADA_N = 10
 
 # ========================================================================
 
@@ -342,6 +464,34 @@ def _texto_comparable(texto: str) -> str:
     return _PATRON_ESPACIOS.sub(" ", buscador._normalizar_para_comparar(texto))
 
 
+def _texto_de_pdf(contenido: bytes) -> str:
+    """
+    Texto de las PRIMERAS MAX_PAGINAS_PDF_PARA_LEER paginas de un PDF que
+    esta en memoria.
+
+    No se leen todas a proposito, y son dos motivos distintos:
+
+    * VELOCIDAD. Sacarle el texto a un escaneo de 80 paginas puede tardar
+      minutos, y hay que hacerlo con cientos de correos. Con la conexion
+      a Gmail abierta esperando, esa demora es justo la que hace que el
+      servidor la corte.
+    * PRECISION. Lo que se busca (que TIPO de documento es, y su
+      radicado) esta siempre en el encabezado, en la primera pagina. Lo
+      que aparece en la pagina 40 suele ser una cita de otro proceso o
+      un anexo, y meterlo a la comparacion solo genera falsos positivos.
+
+    Devuelve "" si el PDF esta dañado -- nunca revienta.
+    """
+    if cruce_excel.PdfReader is None:
+        return ""
+    try:
+        lector = cruce_excel.PdfReader(io.BytesIO(contenido))
+        paginas = list(lector.pages)[:MAX_PAGINAS_PDF_PARA_LEER]
+        return "\n".join((pagina.extract_text() or "") for pagina in paginas)
+    except Exception:
+        return ""
+
+
 def _texto_de_adjunto(nombre: str, contenido: bytes) -> str:
     """
     Texto de adentro de un adjunto PDF/DOCX. Devuelve "" si no es de un
@@ -355,7 +505,7 @@ def _texto_de_adjunto(nombre: str, contenido: bytes) -> str:
         return ""
     extension = Path(nombre).suffix.lower()
     if extension == ".pdf":
-        return correo_pro._texto_de_pdf_en_memoria(contenido)
+        return _texto_de_pdf(contenido)
     if extension == ".docx":
         return correo_pro._texto_de_docx_en_memoria(contenido)
     return ""
@@ -363,52 +513,113 @@ def _texto_de_adjunto(nombre: str, contenido: bytes) -> str:
 
 def piezas_del_correo(correo):
     """
-    Prepara, UNA SOLA VEZ, los textos donde se va a buscar todo (el tipo
-    de documento y el radicado/cuenta). Devuelve una lista de textos ya
-    normalizados, EN ORDEN DE CONFIANZA para identificar el correo:
+    Prepara, UNA SOLA VEZ, las piezas del correo donde se va a buscar
+    todo (el tipo de documento y el radicado/cuenta). Cada pieza es un
+    diccionario:
 
-      1. el asunto
-      2. el nombre de cada adjunto
-      3. el texto de adentro de cada adjunto PDF/DOCX
-      4. el cuerpo del correo
+        {"titulo":     el asunto, o el nombre del adjunto
+         "encabezado": el principio del texto (VENTANA_ENCABEZADO)
+         "texto":      todo el texto disponible de esa pieza
+         "adjunto":    el (nombre, contenido) del adjunto, o None si es
+                       la pieza del correo mismo}
 
-    El orden importa para el IDENTIFICADOR (ver identificador_del_correo):
-    el radicado que viene en el asunto o en el nombre del archivo es mas
-    de fiar que uno que aparezca perdido en el cuerpo, donde puede ser
-    la referencia a OTRO proceso ("en relacion con el radicado ...").
+    La pieza 0 es SIEMPRE el correo (asunto + cuerpo); despues va una
+    pieza por adjunto. Se separan asi -- y no todo pegado en un texto
+    gigante -- por dos razones:
 
-    Se devuelven por separado -- y no todo pegado -- porque leer el
-    texto de un PDF es lo mas lento de todo y asi se hace una sola vez
-    para las dos revisiones.
+    * cada adjunto se decide POR SI MISMO (ver tipos_de_pieza), que es lo
+      que permite bajar la sentencia de tutela de un correo y dejar
+      afuera los otros cuatro anexos que no tienen nada que ver;
+    * leer el texto de un PDF es lo mas lento de todo, asi que se hace
+      una sola vez aqui y se reutiliza para el tipo y para el radicado.
     """
-    piezas = [_texto_comparable(correo["asunto"])]
-    textos_de_adjuntos = []
+    piezas = [{
+        "titulo": _texto_comparable(correo["asunto"]),
+        "encabezado": _texto_comparable(correo["cuerpo"])[:VENTANA_ENCABEZADO],
+        "texto": _texto_comparable(correo["asunto"] + " " + correo["cuerpo"]),
+        "adjunto": None,
+    }]
     for nombre, contenido in correo["adjuntos"]:
-        piezas.append(_texto_comparable(nombre))
-        texto = _texto_de_adjunto(nombre, contenido)
-        if texto:
-            textos_de_adjuntos.append(_texto_comparable(texto))
-    piezas.extend(textos_de_adjuntos)
-    piezas.append(_texto_comparable(correo["cuerpo"]))
+        texto = _texto_comparable(_texto_de_adjunto(nombre, contenido))
+        piezas.append({
+            "titulo": _texto_comparable(nombre),
+            "encabezado": texto[:VENTANA_ENCABEZADO],
+            "texto": texto,
+            "adjunto": (nombre, contenido),
+        })
     return piezas
+
+
+def _menciona(texto: str, frase: str) -> bool:
+    """
+    True si 'frase' aparece en 'texto' como palabra(s) completa(s), no
+    pegada a otras letras. Hace falta para las marcas cortas: sin esto,
+    "AUTO" coincidiria dentro de "AUTOMATICO" o "AUTORIZA", y "PODER"
+    dentro de "PODERDANTE".
+    """
+    return re.search(rf"(?<![A-ZÑ]){re.escape(frase)}(?![A-ZÑ])", texto) is not None
+
+
+def tipos_de_pieza(pieza):
+    """
+    De que tipo(s) es UNA pieza (el correo, o un adjunto suelto). Vacio =
+    de ninguno.
+
+    Es riguroso a proposito -- el documento debe SER una sentencia de
+    tutela, un derecho de peticion o un pago oficioso, no basta con que
+    lo MENCIONE. Se decide en tres pasos, igual que hace el resto del
+    proyecto (ver clasificar_procesos_ejecutivos.es_informacion_no_procesal):
+
+      1. la frase esta en el TITULO (el asunto del correo, o el nombre
+         del archivo: "RESPUESTA DERECHO DE PETICION.pdf" no deja lugar
+         a dudas) -> SI, sin mirar nada mas;
+      2. el titulo dice que es OTRA COSA (ver PALABRAS_QUE_DESCARTAN) ->
+         NO, aunque el contenido mencione la frase;
+      3. sin marcas en el titulo: la frase tiene que estar en el
+         ENCABEZADO del texto -- los primeros VENTANA_ENCABEZADO
+         caracteres, donde un documento judicial se titula a si mismo.
+
+    Los pasos 2 y 3 son los que arreglan el caso que se vio en la
+    practica: un correo "Notifica AUTO AVOCA accion de tutela ..." cuyo
+    cuerpo explica que el accionante alega la vulneracion de su "derecho
+    de peticion". Buscando la frase en todo el texto, ese correo entraba
+    entero -- con sus cinco anexos -- como si fuera un derecho de
+    peticion. Ahora el paso 2 lo descarta por lo que su propio titulo
+    dice que es: un auto.
+    """
+    encontrados = []
+    for tipo, variantes in FRASES_A_BUSCAR.items():
+        if any(v in pieza["titulo"] for v in variantes):
+            encontrados.append(tipo)
+    if encontrados:
+        return encontrados
+
+    if any(_menciona(pieza["titulo"], marca) for marca in PALABRAS_QUE_DESCARTAN):
+        return []
+
+    for tipo, variantes in FRASES_A_BUSCAR.items():
+        if any(v in pieza["encabezado"] for v in variantes):
+            encontrados.append(tipo)
+    return encontrados
 
 
 def tipos_del_correo(piezas):
     """
-    Los tipos (de FRASES_A_BUSCAR) que este correo tiene, sin repetir y
-    en el orden en que estan definidos. Vacio = no es de los que
-    buscamos.
+    Los tipos que tiene el correo en conjunto (la union de los de todas
+    sus piezas), sin repetir y en el orden de FRASES_A_BUSCAR. Vacio = no
+    es de los que buscamos.
 
     Un mismo correo puede ser de mas de uno (ej. una respuesta que
     contesta un derecho de peticion Y anuncia un pago oficioso); en ese
     caso el nombre del archivo los lleva a los dos, separados por " + ",
-    para no tener que guardar el mismo documento dos veces.
+    para no guardar el mismo documento dos veces.
     """
     encontrados = []
-    for tipo, variantes in FRASES_A_BUSCAR.items():
-        if any(any(v in pieza for v in variantes) for pieza in piezas):
-            encontrados.append(tipo)
-    return encontrados
+    for pieza in piezas:
+        for tipo in tipos_de_pieza(pieza):
+            if tipo not in encontrados:
+                encontrados.append(tipo)
+    return [t for t in FRASES_A_BUSCAR if t in encontrados]
 
 
 # ==================== Radicado / cuenta / asunto ====================
@@ -454,21 +665,28 @@ def identificador_del_correo(correo, piezas):
     -- queda anotado en el CSV para poder revisar despues los que
     quedaron nombrados por asunto.
 
-    Se prueba primero el RADICADO en TODAS las piezas (asunto, nombres
-    de adjunto, contenido, cuerpo) y solo si no hay ninguno se pasa a la
-    CUENTA: el radicado identifica el proceso completo y es lo que usa
-    el resto del proyecto para nombrar carpetas, asi que si el correo lo
-    trae en cualquier parte es preferible a una cuenta que aparezca en
-    el asunto. Dentro de cada uno se respeta el orden de confianza de
-    las piezas (ver piezas_del_correo).
+    Se prueba primero el RADICADO en TODAS las piezas y solo si no hay
+    ninguno se pasa a la CUENTA: el radicado identifica el proceso
+    completo y es lo que usa el resto del proyecto para nombrar
+    carpetas, asi que si el correo lo trae en cualquier parte es
+    preferible a una cuenta que aparezca en el asunto.
+
+    Dentro de cada uno se busca en orden de confianza: primero los
+    TITULOS (el asunto y los nombres de los archivos, que es donde el
+    numero viene puesto a proposito para identificar el envio) y solo
+    despues el texto de adentro, donde el numero puede ser la referencia
+    a OTRO proceso ("en relacion con el radicado ...").
     """
-    for pieza in piezas:
-        radicado = _radicado_en(pieza)
+    titulos = [p["titulo"] for p in piezas]
+    textos = [p["texto"] for p in piezas]
+
+    for texto in titulos + textos:
+        radicado = _radicado_en(texto)
         if radicado:
             return radicado, "radicado"
 
-    for pieza in piezas:
-        cuenta = _cuenta_en(pieza)
+    for texto in titulos + textos:
+        cuenta = _cuenta_en(texto)
         if cuenta:
             return cuenta, "cuenta"
 
@@ -501,16 +719,35 @@ def _archivos_de_zip(contenido: bytes):
     return sacados
 
 
-def adjuntos_a_guardar(correo):
+def _adjuntos_que_corresponden(piezas):
+    """
+    Los adjuntos que SON de los tipos buscados, decidido documento por
+    documento (ver tipos_de_pieza). Si ninguno lo es por si mismo,
+    devuelve None -- que significa "el que coincidio fue el correo, no un
+    adjunto en particular".
+
+    Esta es la diferencia entre bajar un archivo o bajar cinco: un correo
+    de notificacion trae la sentencia de tutela Y el auto, la constancia,
+    el poder y el pantallazo del envio. Solo el primero es lo que se
+    pidio; los demas se dejan en el correo.
+    """
+    del_tipo = [p["adjunto"] for p in piezas if p["adjunto"] is not None and tipos_de_pieza(p)]
+    return del_tipo or None
+
+
+def adjuntos_a_guardar(correo, adjuntos=None):
     """
     Los adjuntos que de verdad hay que guardar: se descartan los tipos
     que no son documentos (EXTENSIONES_A_GUARDAR) y las imagenes
     demasiado livianas (el logo y la firma del pie del correo, ver
     MIN_KB_IMAGEN), y se abren los .zip para sacar los PDF/DOCX de
     adentro.
+
+    'adjuntos' permite pasar solo algunos (los que corresponden al tipo
+    buscado); por defecto se revisan todos los del correo.
     """
     utiles = []
-    for nombre, contenido in correo["adjuntos"]:
+    for nombre, contenido in (correo["adjuntos"] if adjuntos is None else adjuntos):
         extension = Path(nombre).suffix.lower()
         if extension == ".zip":
             utiles.extend(_archivos_de_zip(contenido))
@@ -558,6 +795,12 @@ def nombre_de_archivo(identificador: str, tipos, nombre_original: str) -> str:
 
     if INCLUIR_NOMBRE_ORIGINAL:
         original = Path(nombre_original).stem.strip()
+        # Si el propio nombre del adjunto ya dice el tipo ("SENTENCIA DE
+        # TUTELA primera instancia.pdf"), no se repite: quedaria
+        # "... - SENTENCIA DE TUTELA - SENTENCIA DE TUTELA primera
+        # instancia.pdf".
+        if etiqueta_tipo in _texto_comparable(original):
+            nombre = identificador or etiqueta_tipo
         espacio_libre = espacio_util - len(nombre) - len(" - ")
         if original and espacio_libre > 0:
             nombre = f"{nombre} - {original[:espacio_libre].strip()}"
@@ -636,7 +879,14 @@ def revisar_correo(correo, resumen, filas_reporte):
         resumen["descartados_por_tipo"] += 1
         return
 
-    archivos = adjuntos_a_guardar(correo)
+    # Si hay adjuntos que SON del tipo buscado, se bajan solo esos. Si el
+    # que coincidio fue el correo mismo (por su asunto), no hay como
+    # saber cual de sus adjuntos es "el bueno" y se bajan todos.
+    del_tipo = _adjuntos_que_corresponden(piezas) if SOLO_EL_DOCUMENTO_QUE_COINCIDE else None
+    archivos = adjuntos_a_guardar(correo, del_tipo)
+    if del_tipo is not None and len(del_tipo) < len(correo["adjuntos"]):
+        resumen["anexos_omitidos"] += len(correo["adjuntos"]) - len(del_tipo)
+
     if EXIGIR_ADJUNTOS and not archivos:
         # Traia adjuntos, pero ninguno era un documento (solo el logo
         # del pie de firma, un .p7s, etc).
@@ -660,36 +910,84 @@ def revisar_correo(correo, resumen, filas_reporte):
 # ==================== Gmail ====================
 
 
+def _buscar_uids(mail, *criterios):
+    """Lanza UNA busqueda contra Gmail y devuelve la lista de UIDs (vacia si no hubo resultados)."""
+    typ, datos = correo_pro._con_limite_de_tiempo(
+        mail, mail.uid, "SEARCH", None, *criterios, timeout=TIMEOUT_SEGUNDOS
+    )
+    if typ != "OK" or not datos or not datos[0]:
+        return []
+    return [int(u) for u in datos[0].split() if u.isdigit()]
+
+
+def _consulta_exacta_de_gmail() -> str:
+    """
+    La consulta para Gmail con las FRASES EXACTAS, tal como se escribiria
+    en su barra de busqueda:
+
+        has:attachment ("pago oficioso" OR "derecho de peticion" OR ...)
+
+    Las comillas son las que convierten la busqueda en una FRASE: sin
+    ellas Gmail busca los correos que tengan esas palabras en cualquier
+    parte y por separado, que es de donde salian los cientos de
+    candidatos que no eran nada.
+
+    Va envuelta en comillas y con las de adentro escapadas, que es como
+    IMAP espera recibir un texto con comillas.
+    """
+    frases = [v.lower() for variantes in FRASES_A_BUSCAR.values() for v in variantes]
+    consulta = " OR ".join(f'"{frase}"' for frase in frases)
+    if EXIGIR_ADJUNTOS:
+        consulta = f"has:attachment ({consulta})"
+    return '"' + consulta.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
 def listar_uids(mail):
     """
-    Los UIDs de los correos candidatos, en pocas consultas: cada frase de
-    FRASES_PARA_PEDIR_A_GMAIL por ASUNTO y por TEXTO, dentro de la
-    ventana de DIAS_HACIA_ATRAS. Son 6 consultas en total.
+    Los UIDs de los correos candidatos, dentro de la ventana de
+    DIAS_HACIA_ATRAS.
 
-    Cada consulta es lo mas basico del protocolo (SINCE + SUBJECT/TEXT,
-    en ASCII puro, sin extensiones de Gmail ni OR): es lo unico que
-    aguanta cualquier servidor sin cortar. Si una falla, se registra y
-    se sigue con las demas -- es preferible revisar de menos que no
-    revisar nada.
+    Con BUSQUEDA_EXACTA_EN_GMAIL (por defecto) es UNA sola consulta, con
+    las frases exactas y solo correos con adjuntos -- ver
+    _consulta_exacta_de_gmail. Usa X-GM-RAW, que es la busqueda propia de
+    Gmail (la misma de su barra de busqueda) y que el proyecto ya usa en
+    otros scripts.
+
+    Si esa consulta falla o no devuelve NADA, se cae automaticamente a la
+    busqueda amplia (SUBJECT/TEXT por trozos de palabra, lo mas basico
+    del protocolo, que funciona en cualquier servidor). Es a proposito:
+    entre revisar de mas y no revisar nada, se prefiere revisar de mas.
     """
     desde = (datetime.date.today() - datetime.timedelta(days=DIAS_HACIA_ATRAS)).strftime("%d-%b-%Y")
-    encontrados = set()
 
+    if BUSQUEDA_EXACTA_EN_GMAIL:
+        try:
+            encontrados = _buscar_uids(mail, "SINCE", desde, "X-GM-RAW", _consulta_exacta_de_gmail())
+            if encontrados:
+                logging.info(
+                    "[Correo] Busqueda exacta%s: %d correo(s) candidatos.",
+                    " (solo con adjuntos)" if EXIGIR_ADJUNTOS else "", len(encontrados),
+                )
+                return sorted(encontrados)
+            logging.warning(
+                "[Correo] La busqueda exacta no devolvio ningun correo -- se prueba con la busqueda amplia "
+                "por si acaso (mas lenta)."
+            )
+        except Exception as error:
+            logging.warning(
+                "[Correo] Fallo la busqueda exacta (%s) -- se sigue con la busqueda amplia (mas lenta).", error,
+            )
+
+    encontrados = set()
     for campo in ("SUBJECT", "TEXT"):
         for frase in FRASES_PARA_PEDIR_A_GMAIL:
             try:
-                typ, datos = correo_pro._con_limite_de_tiempo(
-                    mail, mail.uid, "SEARCH", None, "SINCE", desde, campo, frase
-                )
+                nuevos = _buscar_uids(mail, "SINCE", desde, campo, frase)
             except Exception as error:
                 logging.warning(
                     "   [Correo] Fallo la busqueda %s '%s' (%s) -- se sigue con las demas.", campo, frase, error,
                 )
                 continue
-            if typ != "OK" or not datos or not datos[0]:
-                logging.info("[Correo] %s '%s': 0 correo(s).", campo, frase)
-                continue
-            nuevos = [int(u) for u in datos[0].split() if u.isdigit()]
             antes = len(encontrados)
             encontrados.update(nuevos)
             logging.info(
@@ -728,21 +1026,22 @@ def procesar():
         ", solo los que traigan adjuntos" if EXIGIR_ADJUNTOS else "",
     )
 
-    mail, uidvalidity = correo_pro.conectar(*credenciales)
+    mail, uidvalidity = correo_pro.conectar(*credenciales, timeout=TIMEOUT_SEGUNDOS)
     if mail is None:
         return
 
     resumen = {
         "descargados": 0, "archivos": 0, "descartados_por_tipo": 0, "sin_adjuntos": 0,
-        "fallidos": 0, "por_radicado": 0, "por_cuenta": 0, "por_asunto": 0,
+        "anexos_omitidos": 0, "fallidos": 0, "por_radicado": 0, "por_cuenta": 0, "por_asunto": 0,
     }
     filas_reporte = []
     revisados = correo_pro.cargar_progreso(uidvalidity, ARCHIVO_PROGRESO)
 
     try:
         logging.info(
-            "[Correo] Pidiendo a Gmail los correos candidatos (%d frase(s) x asunto y texto = %d consulta(s))...",
-            len(FRASES_PARA_PEDIR_A_GMAIL), len(FRASES_PARA_PEDIR_A_GMAIL) * 2,
+            "[Correo] Pidiendo a Gmail los correos candidatos (%s)...",
+            "busqueda exacta, 1 consulta" if BUSQUEDA_EXACTA_EN_GMAIL
+            else f"busqueda amplia, {len(FRASES_PARA_PEDIR_A_GMAIL) * 2} consultas",
         )
         try:
             uids = listar_uids(mail)
@@ -797,7 +1096,7 @@ def procesar():
 
             while mensajes is None:
                 try:
-                    mensajes = correo_pro.descargar_lote(mail, lote)
+                    mensajes = correo_pro.descargar_lote(mail, lote, timeout=TIMEOUT_SEGUNDOS)
                 except (imaplib.IMAP4.abort, imaplib.IMAP4.error, OSError) as error:
                     intentos += 1
                     if intentos > MAX_REINTENTOS_POR_LOTE:
@@ -822,7 +1121,7 @@ def procesar():
                         error, reconexiones, MAX_RECONEXIONES,
                     )
                     correo_pro.cerrar(mail)
-                    mail, _uidvalidity_nuevo = correo_pro._conectar_o_none(credenciales, uidvalidity)
+                    mail, _uidvalidity_nuevo = correo_pro._conectar_o_none(credenciales, uidvalidity, timeout=TIMEOUT_SEGUNDOS)
                     if mail is None:
                         return
 
@@ -833,7 +1132,7 @@ def procesar():
                 # fueran la respuesta del servidor. Se abre una nueva.
                 logging.info("[Correo] Se descarta la conexion (quedo en mal estado) y se abre una nueva...")
                 correo_pro.cerrar(mail)
-                mail, _uidvalidity_nuevo = correo_pro._conectar_o_none(credenciales, uidvalidity)
+                mail, _uidvalidity_nuevo = correo_pro._conectar_o_none(credenciales, uidvalidity, timeout=TIMEOUT_SEGUNDOS)
                 if mail is None:
                     return
                 continue
@@ -879,6 +1178,12 @@ def procesar():
         "Nombrados por radicado: %d, por numero de cuenta: %d, por asunto (no traian ni radicado ni cuenta): %d.",
         resumen["por_radicado"], resumen["por_cuenta"], resumen["por_asunto"],
     )
+    if resumen["anexos_omitidos"]:
+        logging.info(
+            "%d adjunto(s) se dejaron sin bajar por no ser del tipo buscado (eran anexos del correo: "
+            "constancias, poderes, pantallazos). Si los quieres todos, pon "
+            "SOLO_EL_DOCUMENTO_QUE_COINCIDE = False.", resumen["anexos_omitidos"],
+        )
 
     if filas_reporte and not MODO_PRUEBA:
         ruta_reporte = os.path.join(CARPETA_DESCARGAS, NOMBRE_REPORTE)
