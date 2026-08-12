@@ -115,12 +115,43 @@ import clasificar_procesos_ejecutivos as base
 
 # ============================= CONFIGURACION =============================
 
+# Nombre de la carpeta UNICA donde se guarda todo lo descargado.
+NOMBRE_CARPETA_DESCARGAS = "CORREOS DESCARGADOS - PAGO OFICIOSO, PETICION Y TUTELA"
+
+
+def _carpeta_descargas_por_defecto() -> str:
+    """
+    Donde dejar la carpeta de descargas si no se configura a mano.
+
+    Se prueba, en orden: (1) al lado de la carpeta de procesos del resto
+    del proyecto -- que es donde se espera tener todo junto; (2) la
+    carpeta Documentos del usuario que este usando el equipo; (3) al
+    lado de este mismo script.
+
+    Se comprueba que cada una EXISTA antes de usarla, en vez de dar por
+    hecho la primera: la ruta de CARPETA_PROCESOS esta escrita para un
+    equipo concreto (C:\\Users\\Francy\\...), y en OTRO equipo crearia
+    una carpeta "C:\\Users\\Francy" nueva y vacia -- el usuario dejaria
+    corriendo la herramienta y despues no encontraria por ningun lado
+    los archivos descargados.
+    """
+    candidatas = [
+        os.path.dirname(base.CARPETA_PROCESOS),
+        os.path.join(os.path.expanduser("~"), "Documents"),
+        os.path.expanduser("~"),
+    ]
+    for carpeta in candidatas:
+        if carpeta and os.path.isdir(carpeta):
+            return os.path.join(carpeta, NOMBRE_CARPETA_DESCARGAS)
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), NOMBRE_CARPETA_DESCARGAS)
+
+
 # Carpeta UNICA donde se guarda todo lo descargado. Si no existe, se
-# crea. Cambiala por la que quieras.
-CARPETA_DESCARGAS = os.path.join(
-    os.path.dirname(base.CARPETA_PROCESOS) or os.path.dirname(__file__),
-    "CORREOS DESCARGADOS - PAGO OFICIOSO, PETICION Y TUTELA",
-)
+# crea. Cambiala por la que quieras -- por ejemplo:
+#     CARPETA_DESCARGAS = r"C:\\Users\\TuUsuario\\Documents\\CORREOS DESCARGADOS"
+# Al arrancar, el log dice siempre en que carpeta va a guardar, para que
+# no haya que adivinarlo.
+CARPETA_DESCARGAS = _carpeta_descargas_por_defecto()
 
 # False: descarga de verdad. True: solo muestra en el log lo que
 # descargaria y con que nombre, sin guardar nada.
@@ -675,7 +706,9 @@ def procesar():
     if not credenciales:
         logging.error(
             "No hay %s (o le faltan datos) -- sin las credenciales de Gmail no se puede revisar el correo. "
-            "Ver el README.", organizador.ARCHIVO_CREDENCIALES,
+            "Haz una copia de credenciales_sgde.example.txt, renombrala a credenciales_sgde.txt y pon ahi tu "
+            "correo y tu contraseña de aplicacion de Gmail (paso 3 de 'COMO USAR - descargar correos.txt').",
+            organizador.ARCHIVO_CREDENCIALES,
         )
         return
 

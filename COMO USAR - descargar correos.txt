@@ -1,0 +1,159 @@
+============================================================
+ DESCARGAR CORREOS DE PAGO OFICIOSO, DERECHO DE PETICION
+ Y SENTENCIA DE TUTELA
+============================================================
+
+Esta carpeta busca en tu Gmail los correos de esos tres tipos y
+descarga sus adjuntos a UNA SOLA carpeta, renombrandolos con el
+radicado, el numero de cuenta o el asunto que traiga el correo.
+
+Se hace UNA VEZ (pasos 1 a 3) y despues solo es doble clic (paso 4).
+
+
+------------------------------------------------------------
+ PASO 1 - Instalar Python (una sola vez)
+------------------------------------------------------------
+
+Si ya lo tienes instalado, salta al paso 2.
+
+  1. Entra a https://www.python.org/downloads/
+  2. Descarga la version para Windows y ejecutala.
+  3. MUY IMPORTANTE: en la primera pantalla del instalador MARCA
+     la casilla "Add python.exe to PATH" (abajo), y despues dale
+     a "Install Now".
+
+Si no marcas esa casilla, los archivos .bat no van a encontrar
+Python y no va a funcionar nada.
+
+
+------------------------------------------------------------
+ PASO 2 - Instalar lo que necesita (una sola vez)
+------------------------------------------------------------
+
+Doble clic en:
+
+     instalar_requisitos.bat
+
+Se abre una ventana negra, tarda unos minutos y al final dice
+"Listo". Si dice que no encontro Python, vuelve al paso 1.
+
+
+------------------------------------------------------------
+ PASO 3 - Poner tu clave de Gmail (una sola vez)
+------------------------------------------------------------
+
+NO es tu contrasena normal de Gmail: es una "contrasena de
+aplicacion" que Google genera aparte, solo para programas.
+
+  1. Activa la verificacion en 2 pasos de tu cuenta:
+     https://myaccount.google.com/security
+  2. Entra a https://myaccount.google.com/apppasswords
+  3. Crea una nueva, ponle cualquier nombre (ej. "CORREOS") y
+     copia el codigo de 16 letras que te muestra.
+  4. En esta carpeta, haz una copia del archivo
+     "credenciales_sgde.example.txt", renombra la copia a
+
+          credenciales_sgde.txt
+
+     (sin el ".example"), abrela con el Bloc de notas y pon tus
+     datos:
+
+          GMAIL_USUARIO=tucorreo@gmail.com
+          GMAIL_APP_PASSWORD=las16letrasquecopiaste
+
+  5. Guarda y cierra.
+
+Ese archivo se queda SOLO en tu computador. Nunca lo compartas
+ni lo subas a ningun lado.
+
+
+------------------------------------------------------------
+ PASO 4 - Usarlo (cada vez que quieras)
+------------------------------------------------------------
+
+Doble clic en:
+
+     descargar_correos_palabras_clave.bat
+
+Se abre una ventana negra y va contando lo que encuentra. Al
+terminar dice cuantos correos descargo y en que carpeta quedaron.
+
+La PRIMERA vez revisa los ultimos 2 anios de correo, asi que
+puede tardar. Trabaja por partes: revisa un rato (por defecto
+hasta 30 minutos o 500 correos) y se detiene sola avisando
+cuantos faltan. Vuelve a darle doble clic las veces que haga
+falta -- SIEMPRE SIGUE DONDE SE QUEDO, nunca repite lo ya hecho.
+
+Despues de esa primera puesta al dia, cada corrida solo revisa
+lo nuevo y termina en segundos.
+
+
+------------------------------------------------------------
+ DONDE QUEDA TODO
+------------------------------------------------------------
+
+Por defecto, en tu carpeta Documentos:
+
+     CORREOS DESCARGADOS - PAGO OFICIOSO, PETICION Y TUTELA
+
+La ventana negra te dice la ruta exacta al arrancar (primera
+linea: "Todo se va a guardar en: ...").
+
+Si la quieres en otro lado: abre con el Bloc de notas el archivo
+descargar_correos_palabras_clave.py, busca arriba la linea que
+dice CARPETA_DESCARGAS y ponla asi (con la r y las comillas):
+
+     CARPETA_DESCARGAS = r"D:\MI CARPETA\COMO SE LLAME"
+
+Los archivos quedan nombrados asi:
+
+     68001400300120240005000 - SENTENCIA DE TUTELA - fallo.pdf
+     1234567 - PAGO OFICIOSO - respuesta essa.pdf
+     2026-03-14 Notificacion - DERECHO DE PETICION - anexo.pdf
+
+Es decir: primero el RADICADO si el correo lo trae; si no, el
+NUMERO DE CUENTA; y si no trae ninguno de los dos, la fecha y el
+asunto del correo.
+
+Dentro de esa misma carpeta queda "_correos descargados.csv"
+(se abre con Excel) con una fila por archivo: de que correo
+salio, de que tipo es, con que nombre quedo y de donde se saco
+ese nombre. Sirve para ubicar rapido los que quedaron nombrados
+por asunto, por si les quieres poner el radicado a mano.
+
+
+------------------------------------------------------------
+ SI ALGO FALLA
+------------------------------------------------------------
+
+Todo lo que pasa queda escrito en el archivo
+
+     descargar_correos_palabras_clave.log
+
+que esta en esta misma carpeta. Abrelo con el Bloc de notas: la
+ultima linea dice exactamente en que se quedo.
+
+Cosas comunes:
+
+* "No hay credenciales_sgde.txt" -> falta el paso 3.
+* "No se pudo conectar con Gmail" -> revisa que la contrasena de
+  aplicacion este bien copiada (sin espacios) y que tengas
+  internet.
+* No descarga nada y dice "0 correos candidatos" -> puede que de
+  verdad no haya correos de esos tipos en los ultimos 2 anios.
+  Para revisar mas atras, abre el .py y sube el numero de
+  DIAS_HACIA_ATRAS (730 son 2 anios).
+* Quieres ver primero que HARIA, sin bajar nada -> abre el .py y
+  pon MODO_PRUEBA = True. Corre, revisa el .log, y cuando se vea
+  bien vuelve a ponerlo en False.
+
+
+------------------------------------------------------------
+ QUE NO HACE
+------------------------------------------------------------
+
+* No borra, no mueve ni renombra NADA de tu computador ni de tu
+  correo: solo crea archivos nuevos en su carpeta.
+* No toca tus correos: los lee, no los marca, no los borra.
+* Si dos correos dan el mismo nombre, el segundo queda como
+  "..._2.pdf". Nunca pisa un archivo ya guardado.
