@@ -20,6 +20,10 @@ origen, y queda configurado para que Word actualice sus campos al abrirlo.
 pidió la dirección del proyecto, qué se hizo, los cinco hallazgos que importan, qué falta
 y en qué orden resolverlo.
 
+`Como_se_cumplio_cada_punto.docx` — seis páginas que recorren las ocho tareas una por una,
+con lo que se pidió, el procedimiento seguido paso a paso y el resultado obtenido. Está
+redactado en primera persona, para sustentar el trabajo ante la dirección del proyecto.
+
 ### Formato APA aplicado
 
 | Elemento | Qué se hizo |
@@ -82,6 +86,7 @@ node gen_doc.js           # arma el informe
 python3 integrar_en_anteproyecto.py   # integra el trabajo en el anteproyecto original
 python3 aplicar_apa.py                # aplica el formato APA a todo el documento
 node gen_resumen.js                   # arma el resumen en lenguaje llano
+node gen_explicacion.js               # arma el recorrido tarea por tarea
 python3 anomalias_sst.py --entrada sst_mensual.csv   # anomalías estandarizadas de temperatura
 ```
 
