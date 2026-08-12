@@ -116,7 +116,8 @@ for i, (clave, archivo, prop) in enumerate([
         ("fig4", "fig4_histogramas.png", 11 / 5.6),
         ("fig2", "fig2_clases.png", 11 / 3.9),
         ("fig3", "fig3_multivariado.png", 9.5 / 4.2),
-        ("fig5", "fig5_sst.png", 11 / 6.4)]):
+        ("fig5", "fig5_sst.png", 11 / 6.4),
+        ("fig6", "fig6_validacion.png", 11 / 3.7)]):
     rid = f"rId{next_id + i}"
     destino = f"image{10 + i}.png"
     shutil.copy(f"{FIG}/{archivo}", f"{SRC}/word/media/{destino}")
@@ -203,7 +204,9 @@ cap += par('Este capítulo presenta los resultados obtenidos sobre la base de da
            'Investigaciones Oceanográficas e Hidrográficas del Caribe, correspondiente a las cinco campañas '
            'realizadas entre 2021 y 2023 en la Bahía de Cartagena. Todos los contrastes se realizaron sobre '
            'los 112 registros que superaron el control de calidad descrito en la metodología, con el índice '
-           'calculado como el cociente entre la absorción del fitoplancton a 440 y a 676 nm.')
+           'calculado como el cociente entre la absorción del fitoplancton a 440 y a 676 nm. La campaña de '
+           'época seca de 2021 dispone además de clorofila a, que permite validar el índice contra el '
+           'coeficiente de absorción específico.')
 
 cap += subtitulo('Comportamiento general del índice y de las variables ambientales')
 cap += par('El índice presenta una mediana general de 2,330 y un recorrido entre 1,18 y 4,84. La turbidez '
@@ -339,6 +342,59 @@ cap += par('El grupo 1 reúne las aguas marinas menos alteradas y es el único d
            'intermedia de la bahía interior, con un predominio muy marcado del microfitoplancton. Ninguno '
            'de los tres grupos es exclusivo de una época climática.')
 
+cap += subtitulo('Composición de la absorción y validación del índice')
+cap += par('Los libros de espectros incluyen, además de las curvas de absorción, la concentración de '
+           'clorofila a de la campaña de época seca de 2021 y el reparto de la absorción a 443 nm entre '
+           'sus tres componentes. Con esa información es posible comprobar si el índice mide realmente lo '
+           'que se le atribuye.')
+cap += par('El primer resultado es la composición de la absorción. En las campañas de época seca el '
+           'material no algal y el fitoplancton aportan la mayor parte de la señal, mientras que en la '
+           'campaña de época lluviosa de 2023 la materia orgánica disuelta pasa a ser el componente '
+           'dominante, con casi la mitad del total. El reparto confirma que la bahía se comporta como un '
+           'sistema ópticamente complejo, en el que el fitoplancton nunca supera el cuarenta por ciento de '
+           'la absorción.')
+cap += leyenda('Tabla', 12, 'Aporte medio de cada componente a la absorción a 443 nm, en porcentaje. Los '
+                            'valores corresponden a las estaciones con los tres componentes disponibles.')
+cap += tabla([2400, 1300, 1900, 2100, 1900], [
+    ['Campaña', 'n', 'Detritus', 'Fitoplancton', 'CDOM'],
+    ['Época seca 2021', '24', '35,6', '38,7', '25,7'],
+    ['Época seca 2022', '22', '39,6', '30,4', '29,9'],
+    ['Época lluviosa 2023', '15', '26,1', '26,5', '47,4']])
+cap += par('La campaña de época lluviosa de 2022 quedó fuera de esta tabla porque en su libro de espectros '
+           'la fila del aCDOM a 443 nm reproduce los valores del aphy en las 29 estaciones, lo que indica '
+           'un error de fórmula en el archivo de origen que debe corregirse antes de usar ese reparto.')
+cap += par('El segundo resultado es la validación propiamente dicha. Con la clorofila a de la campaña de '
+           '2021 se calculó el coeficiente de absorción específico del fitoplancton a 440 nm, que es la '
+           'medida clásica del efecto de empaquetamiento celular y que se obtiene por una vía '
+           'independiente del índice. Sobre las 19 estaciones que disponen de clorofila y superan el '
+           'control de calidad, la concentración presenta una mediana de 3,78 miligramos por metro cúbico '
+           'y el coeficiente específico una mediana de 0,0896 metros cuadrados por miligramo.')
+cap += figura('fig6')
+cap += leyenda('Figura', 9, 'a) Coeficiente de absorción específico del fitoplancton a 440 nm frente al '
+                            'índice Blue/Red. b) El mismo coeficiente separado por clase de tamaño. '
+                            'c) Composición media de la absorción a 443 nm por campaña. Fuente propia.')
+cap += leyenda('Tabla', 13, 'Coeficiente de absorción específico del fitoplancton a 440 nm por clase de '
+                            'tamaño, en metros cuadrados por miligramo, campaña de época seca de 2021.')
+cap += tabla([2900, 1400, 2400, 2900], [
+    ['Clase de tamaño', 'n', 'Mediana de aphy*', 'Lectura'],
+    ['Microfitoplancton', '11', '0,0786', 'Células grandes, mayor empaquetamiento'],
+    ['Nanofitoplancton', '4', '0,1001', 'Valor intermedio'],
+    ['Picofitoplancton', '4', '0,2269', 'Células pequeñas, menor empaquetamiento']])
+cap += rich_par([
+    ('La correlación entre el coeficiente específico y el índice es de 0,789, con una probabilidad de '
+     '0,0001. ', True),
+    ('Además, la mediana del coeficiente aumenta de forma ordenada desde el microfitoplancton hasta el '
+     'picofitoplancton, y la diferencia entre las tres clases es significativa según la prueba de Kruskal '
+     'Wallis, con una probabilidad de 0,037. Ambos resultados son los que predice la teoría bio óptica: a '
+     'igualdad de clorofila, las células pequeñas absorben más porque su pigmento está menos empaquetado. '
+     'El índice Blue/Red y el coeficiente específico, que se obtienen por caminos distintos, ordenan las '
+     'estaciones de la misma manera, lo que respalda el uso del índice como estimador del tamaño '
+     'dominante en la Bahía de Cartagena.', False)])
+cap += par('De la misma campaña se dispone también de la pendiente espectral de la materia orgánica '
+           'disuelta, obtenida del ajuste exponencial del aCDOM en las 32 estaciones, con una mediana de '
+           '0,0179 por nanómetro y un recorrido entre 0,0138 y 0,0187. Los valores se sitúan en el '
+           'intervalo característico de aguas costeras con aporte continental.')
+
 cap += subtitulo('Contexto climático de las campañas')
 cap += par('Las anomalías climatológicas estandarizadas se calcularon sobre las compuestas mensuales del '
            'análisis de temperatura superficial MUR, versión fv04.1, con resolución de 0,01 grados, '
@@ -348,7 +404,7 @@ cap += par('Las anomalías climatológicas estandarizadas se calcularon sobre la
            'climatología de cada mes con su desviación típica, y a partir de ellas la anomalía y su '
            'transformación en unidades de desviación típica, según los tres pasos descritos en la '
            'metodología.')
-cap += leyenda('Tabla', 12, 'Climatología mensual de la temperatura superficial del mar en la Bahía de '
+cap += leyenda('Tabla', 14, 'Climatología mensual de la temperatura superficial del mar en la Bahía de '
                             'Cartagena, promedio de las ocho posiciones para el periodo 2002 a 2024.')
 cap += tabla([1500, 2200, 2300, 1500, 2200], [
     ['Mes', 'Climatología', 'Desviación típica', 'Mes', 'Climatología'],
@@ -363,7 +419,7 @@ cap += par('El ciclo anual tiene su mínimo en marzo, con 27,27 grados Celsius, 
            'vientos alisios intensos de la época seca y el máximo con el final de la temporada lluviosa, '
            'patrón coherente con la estacionalidad descrita para la bahía en el planteamiento del problema.')
 cap += figura('fig5')
-cap += leyenda('Figura', 9, 'a) Climatología mensual de la temperatura superficial con su desviación '
+cap += leyenda('Figura', 10, 'a) Climatología mensual de la temperatura superficial con su desviación '
                             'típica. b) Anomalía estandarizada mensual entre junio de 2002 y septiembre '
                             'de 2024, con el mes de cada campaña señalado en verde. Fuente propia a partir '
                             'del análisis MUR fv04.1.')
@@ -382,7 +438,7 @@ cap += rich_par([
      'serie, diferencia significativa según la prueba de Mann Whitney con una probabilidad de 0,0001. Las '
      'cinco campañas no describen, por tanto, un estado climático medio de la bahía, sino una fase cálida '
      'de su variabilidad interanual.', False)])
-cap += leyenda('Tabla', 13, 'Temperatura superficial y anomalía en el mes de cada campaña. El producto no '
+cap += leyenda('Tabla', 15, 'Temperatura superficial y anomalía en el mes de cada campaña. El producto no '
                             'incluye compuesta mensual para junio de 2023. La asignación de las dos '
                             'campañas de 2023 a sus fechas se verifica contra el registro de campo, según '
                             'se indica en la descripción de la base de datos.')
@@ -427,6 +483,7 @@ cap += vineta('No hay diferencia del índice entre época seca y época lluviosa
               'entre zonas de influencia del Canal del Dique.')
 cap += vineta('El conglomerado más numeroso corresponde a la bahía interior y concentra el predominio del '
               'microfitoplancton, con 44 de sus 52 estaciones.')
+cap += vineta('El índice queda validado contra el coeficiente de absorción específico del fitoplancton, con una correlación de 0,789 y un aumento ordenado de ese coeficiente desde el microfitoplancton hasta el picofitoplancton.')
 cap += vineta('El periodo muestreado corresponde a una fase cálida de la variabilidad interanual de la '
               'bahía, con una anomalía estandarizada media de +0,606 entre 2021 y 2023 frente a −0,091 en '
               'el resto de la serie de veintidós años.')
@@ -634,8 +691,8 @@ def renumerar_leyenda(texto_ancla, viejo, nuevo):
     return False
 
 print("renumerar SST:", renumerar_leyenda('Coordenadas geográficas de las series temporales', '1', '4'))
-print("renumerar cronograma:", renumerar_leyenda('Cronograma de actividades del proyecto', '2', '14'))
-print("renumerar presupuesto:", renumerar_leyenda('Descripción presupuestal', '3', '15'))
+print("renumerar cronograma:", renumerar_leyenda('Cronograma de actividades del proyecto', '2', '16'))
+print("renumerar presupuesto:", renumerar_leyenda('Descripción presupuestal', '3', '17'))
 
 # referencias cruzadas en el texto
 def renumerar_referencia(fragmento, viejo, nuevo):
@@ -651,8 +708,8 @@ def renumerar_referencia(fragmento, viejo, nuevo):
 # la lista de tablas guarda el resultado anterior del campo: se ajusta para que no
 # contradiga la nueva numeracion mientras Word no regenere el indice
 _lista = {"Tabla 1. Coordenadas geográficas": ("Tabla 1.", "Tabla 4."),
-          "Tabla 2. Cronograma de actividades": ("Tabla 2.", "Tabla 14."),
-          "Tabla 3. Descripción presupuestal": ("Tabla 3.", "Tabla 15.")}
+          "Tabla 2. Cronograma de actividades": ("Tabla 2.", "Tabla 16."),
+          "Tabla 3. Descripción presupuestal": ("Tabla 3.", "Tabla 17.")}
 for _p in body.iter(W + 'p'):
     _st = _p.find(f'{W}pPr/{W}pStyle')
     if _st is None or _st.get(W + 'val') != 'Tabladeilustraciones':
@@ -664,7 +721,7 @@ for _p in body.iter(W + 'p'):
                 print(f"lista de tablas: {_viejo} -> {_nuevo}")
 
 print("ref Tabla 1 en texto:", renumerar_referencia('posición geográfica de cada estación', '1', '4'))
-print("ref Tabla 2 en texto:", renumerar_referencia('se propone un cronograma de actividades', '2', '14'))
+print("ref Tabla 2 en texto:", renumerar_referencia('se propone un cronograma de actividades', '2', '16'))
 
 # que Word regenere el indice y las listas al abrir el archivo
 _ajustes = open(f"{SRC}/word/settings.xml", encoding="utf-8").read()

@@ -83,10 +83,11 @@ c.push(tabla([2200, 6900], [
   ['Agrupar estaciones', 'Componentes principales y conglomerados, que separaron la bahía en tres ambientes'],
   ['Probar diferencias', 'Comparaciones entre épocas, entre campañas y entre zonas'],
   ['Modelo', 'Se ajustó y se reportó con honestidad que todavía no sirve, y se explica por qué'],
-  ['Temperatura satelital', 'Se procesaron 267 meses de imágenes entre 2002 y 2024 y se calcularon las anomalías']
+  ['Temperatura satelital', 'Se procesaron 267 meses de imágenes entre 2002 y 2024 y se calcularon las anomalías'],
+  ['Validar el índice', 'Se usó la clorofila hallada en los libros de espectros para comprobar el índice por otra vía']
 ]));
 
-c.push(h('4. Los cinco hallazgos que importan'));
+c.push(h('4. Los seis hallazgos que importan'));
 c.push(p('Estos son los resultados que cambian algo. Vale la pena que los tengas claros para la reunión.'));
 c.push(p('Primero. Había un lío con las longitudes de onda.', { bold: true, after: 60 }));
 c.push(p('El resumen de tu documento decía 440 y 675 nanómetros, la metodología decía 443 y 675, y la base de datos estaba hecha con 440 y 676. Comprobé que esa elección no es un detalle: cambia la clasificación de tamaño de casi una de cada seis estaciones. Ahora todo el documento usa un solo par y lo justifica.'));
@@ -99,10 +100,12 @@ c.push(p('Donde el agua es menos salada, por la descarga del canal, las células
 c.push(p('Quinto. Muestreaste en años calientes.', { bold: true, after: 60 }));
 c.push(p('Al procesar veintidós años de temperatura satelital se ve que entre 2021 y 2023 la bahía estuvo claramente más caliente que su promedio histórico, y que 2023 y 2024 son los dos años más calientes de todo el registro. Es decir, tus cinco campañas no retratan una bahía en condiciones normales, sino en una fase cálida. Eso hay que decirlo al momento de generalizar.'));
 
+c.push(p('Sexto. El índice quedó comprobado.', { bold: true, after: 60 }));
+c.push(p('Con la clorofila de la campaña de 2021 se calculó cuánta luz absorbe el fitoplancton por cada unidad de clorofila, que es una medida del tamaño celular obtenida por otro camino. Esa medida y tu índice ordenan las estaciones igual, con una correlación de 0,789, y crece de forma ordenada desde las células grandes hasta las pequeñas. En palabras simples: el índice mide lo que dice medir. Es de lo mejor que puedes mostrar.'));
 c.push(h('5. Qué falta'));
 c.push(p('Tres cosas. Ninguna depende de más análisis, todas dependen de conseguir información.'));
 c.push(p('Falta 1. Las variables que nunca llegaron.', { bold: true, after: 60 }));
-c.push(p('Tu metodología nombra siete variables del agua: temperatura, salinidad, turbidez, sólidos suspendidos, nitratos, fosfatos y silicatos. En la base que te entregaron solo venían las tres primeras. Todo se analizó con esas tres, pero con tres variables el modelo explica menos del diez por ciento de lo que pasa. Hay que pedirle al CIOH la clorofila a y los nutrientes. Esto es lo más importante de la lista.'));
+c.push(p('Tu metodología nombra siete variables del agua. En la base venían tres: temperatura, salinidad y turbidez. La clorofila a también estaba, escondida en los libros de espectros, pero solo para una de las cinco campañas. Faltan los nutrientes, los sólidos suspendidos y la clorofila de las otras cuatro campañas. Con lo que hay, el modelo explica menos del diez por ciento de lo que pasa. Pedirle eso al CIOH es lo más importante de la lista.'));
 c.push(p('Falta 2. El modelo con validación.', { bold: true, after: 60 }));
 c.push(p('La profesora pedía partir los datos en dos grupos, uno para entrenar y otro para validar. No lo hice, y fue una decisión consciente: con un ajuste tan bajo, esa partición produce números que no significan nada y que ella tendría razón en cuestionar. En el documento quedó escrito qué hacer cuando lleguen las variables que faltan. Pregúntale si aun así quiere que se haga.'));
 c.push(p('Falta 3. Dos verificaciones tuyas.', { bold: true, after: 60 }));

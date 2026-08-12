@@ -49,7 +49,7 @@ redactado en primera persona, para sustentar el trabajo ante la dirección del p
 | Metodología, tratamiento estadístico | Diseño de pruebas corregido, entorno de trabajo y definición operativa de zonas. Se retiró el resaltado del bloque |
 | Metodología, Modelado descriptivo | Criterio de respaldo si el ajuste no alcanza un R cuadrado de 0,4 |
 | Marco teórico | Enlace entre el par de longitudes de onda de la literatura y el adoptado aquí |
-| Capítulo nuevo antes del cronograma | Resultados, con Tablas 5 a 13 y Figuras 5 a 9, incluida la contextualización climática |
+| Capítulo nuevo antes del cronograma | Resultados, con Tablas 5 a 15 y Figuras 5 a 10, incluidas la validación óptica del índice y la contextualización climática |
 | Resultados esperados | Reescrito para no duplicar el capítulo de resultados |
 
 El capítulo de resultados está redactado como trabajo desarrollado, no como avance
@@ -68,8 +68,9 @@ superficial, Tabla 12 el cronograma y Tabla 13 el presupuesto.
 |---|---|
 | `fuentes/` | Anteproyecto en Word, compendio de la base de datos, archivo de datos por época y presentación teórica sobre espectros del fitoplancton |
 | `analisis/` | Rutinas de Python que construyen la base, verifican el índice y corren la estadística; salidas completas en texto plano y bases derivadas en CSV; script de Node que arma el documento |
-| `figuras/` | Las cinco figuras del análisis |
+| `figuras/` | Las seis figuras del análisis |
 | `datos_sst/` | Serie satelital descargada y las tablas de climatología, anomalía y anomalía estandarizada |
+| `datos_opticos/` | Clorofila a, reparto de la absorción a 443 nm y pendiente del CDOM, recuperados de bloques laterales de los libros de espectros |
 
 Los libros de espectros de absorción (`ap`, `ad`, `aphy`, `aCDOM`) están en
 `../datos/espectros_cdom/`.
@@ -109,6 +110,9 @@ Los scripts esperan los archivos originales en la ruta de subida; ajustar la con
   del Canal del Dique definidas por salinidad (Mann Whitney, p = 0,004).
 - El modelo de regresión con temperatura, salinidad y turbidez explica menos del 10 por
   ciento de la variabilidad del índice; faltan clorofila a y nutrientes.
+- El índice queda validado por una vía independiente: el coeficiente de absorción
+  específico del fitoplancton correlaciona con él a 0,789 (p = 0,0001) y crece de forma
+  ordenada desde el microfitoplancton (0,0786) hasta el picofitoplancton (0,2269).
 - El muestreo cayó en una fase cálida: entre 2021 y 2023 la anomalía estandarizada de
   temperatura superficial promedió +0,606 frente a −0,091 en el resto de la serie de
   veintidós años (Mann Whitney, p = 0,0001). 2023 y 2024 son los años más cálidos del
