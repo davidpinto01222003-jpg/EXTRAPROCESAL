@@ -409,6 +409,14 @@ ARCHIVO_PROGRESO = os.path.join(
 
 ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "descargar_correos_palabras_clave.log")
 
+# Version de esta herramienta. Se escribe como PRIMERA linea del log, y
+# sirve para una sola cosa, muy practica: saber DE UN VISTAZO si el
+# archivo que se esta ejecutando es el actualizado o una copia vieja que
+# quedo en otra carpeta. Cuando algo no cuadra, esa es siempre la
+# primera pregunta -- y sin este numero hay que deducirla comparando
+# lineas del log. Subelo cada vez que se cambie algo del comportamiento.
+VERSION = "3 (mas rapida y mas estricta con lo que descarga)"
+
 # Reporte de lo descargado. Va DENTRO de la carpeta de descargas, para
 # que quede junto con los archivos a los que se refiere.
 NOMBRE_REPORTE = "_correos descargados.csv"
@@ -1203,6 +1211,10 @@ def procesar():
 
 def main():
     configurar_logging()
+    logging.info(
+        "descargar_correos_palabras_clave.py -- VERSION %s. Corriendo desde: %s",
+        VERSION, os.path.dirname(os.path.abspath(__file__)),
+    )
     procesar()
 
 
