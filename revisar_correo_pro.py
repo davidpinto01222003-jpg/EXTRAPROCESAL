@@ -742,9 +742,9 @@ def carpeta_visible_del_proceso(proceso) -> str:
 def guardar_en_proceso(correo, proceso) -> int:
     """
     Guarda el correo (adjuntos, o su texto si no trae) en la carpeta del
-    proceso. Para un proceso "TERMINADO POR AUTO" no hay carpeta propia
-    (su auto vive renombrado en "PROCESOS TERMINADOS POR AUTO"), asi que
-    el correo va a su subcarpeta "CORREOS" -- ver
+    proceso. Para un proceso terminado no hay carpeta propia (su
+    documento vive renombrado en "PROCESOS TERMINADOS POR AUTO/PAGO/
+    ..."), asi que el correo va a su subcarpeta "CORREOS" -- ver
     clasificar_procesos_ejecutivos.carpeta_de_correos.
     """
     return base._guardar_correo(correo, base.carpeta_de_correos(proceso))

@@ -1,49 +1,62 @@
 """
-Organiza los AUTOS que TU ya bajaste a mano a la carpeta de Descargas
--- NO busca nada en Google Drive ni en el correo, no necesita
-credenciales, y no se demora horas: solo mira lo que ya esta en tu
-disco.
+Organiza los documentos que TU ya bajaste a mano a la carpeta de
+Descargas y que TERMINAN un proceso -- NO busca nada en Google Drive ni
+en el correo, no necesita credenciales, y no se demora horas: solo mira
+lo que ya esta en tu disco.
+
+Por defecto revisa SOLO lo que bajaste HOY (ver DIAS_HACIA_ATRAS).
 
 Para cada archivo de Descargas (PDF/DOCX, sueltos o dentro de un .zip):
 
- 1. Le lee el nombre y el texto y decide si es el AUTO que termina un
-    proceso -- un auto de terminacion, de aceptacion de retiro de la
-    demanda, de desistimiento, de archivo, etc (mismo criterio que
+ 1. Le lee el nombre y el texto y decide si es el documento que TERMINA
+    un proceso -- un auto de terminacion, de aceptacion de retiro de la
+    demanda, de desistimiento, de archivo, una terminacion por pago,
+    etc (mismo criterio que
     clasificar_procesos_ejecutivos.es_auto_terminador: no exige que
     diga literalmente "AUTO"). Lo que no lo parece, se deja quieto.
+
+    Si el NOMBRE del archivo ya dice que es otra cosa (una demanda, un
+    memorial, unos anexos, un mandamiento... ver
+    _el_nombre_lo_descarta), se descarta aunque el texto de adentro
+    mencione que se acepto un retiro o que el proceso termino: un
+    "ANEXOS DEMANDA.pdf" cuenta la historia del proceso, no es el
+    documento que lo cierra.
  2. Lo empareja con su proceso del Excel de control por RADICADO (con
     o sin guiones), por CUENTA, o por el nombre del DEMANDADO
     (cualquiera de los tres alcanza -- es el mismo emparejamiento que
     usa revisar_correo_pro.py para los correos).
- 3. Si ese proceso figura en el Excel como "TERMINADO POR AUTO", mueve
-    el archivo -- RENOMBRADO con el numero de proceso, ej.
-    "245. TERMINADO POR AUTO.pdf" -- a la carpeta
-    "PROCESOS TERMINADOS POR AUTO" (la misma que usa
-    clasificar_procesos_ejecutivos.py), dentro de CARPETA_PROCESOS.
+ 3. Si ese proceso figura en el Excel como TERMINADO -- por auto, por
+    pago, por contrato/prepago, CUALQUIER terminado -- mueve el archivo
+    RENOMBRADO con el numero de proceso ("245. TERMINADO POR AUTO.pdf",
+    "300. TERMINADO POR PAGO.pdf") a la carpeta comun de ese estado:
+    "PROCESOS TERMINADOS POR AUTO", "PROCESOS TERMINADOS POR PAGO",
+    etc, dentro de CARPETA_PROCESOS (las mismas que usa
+    clasificar_procesos_ejecutivos.py).
 
 Lo que NO se puede decidir solo, no se toca: se deja en Descargas y
 queda listado en el reporte ARCHIVO_REPORTE (y en el log) con el
 motivo. Son tres casos:
   - No coincide con ningun proceso del Excel.
-  - Coincide con VARIOS procesos terminados por auto (no hay forma de
-    saber a cual de ellos corresponde sin abrirlo).
-  - Coincide con un proceso que en el Excel NO figura como "TERMINADO
-    POR AUTO" (ej. sigue como ACTIVO, o quedo como TERMINADO POR PAGO)
-    -- ahi lo que hay que revisar es el Excel, no el archivo.
+  - Coincide con VARIOS procesos terminados (no hay forma de saber a
+    cual de ellos corresponde sin abrirlo).
+  - Coincide con un proceso que en el Excel NO figura como terminado
+    (ej. sigue como ACTIVO) -- ahi lo que hay que revisar es el Excel,
+    no el archivo. El reporte te dice el numero y el estado.
 
 Nunca borra ni sobreescribe nada: si el nombre de destino ya existe (un
-proceso con auto de primera y de segunda instancia), el nuevo se guarda
-como "245. TERMINADO POR AUTO_2.pdf". Los .zip no se tocan ni se
-borran: si adentro viene el auto, se EXTRAE una copia ya renombrada y
-el zip se queda como esta.
+proceso con documento de primera y de segunda instancia), el nuevo se
+guarda como "245. TERMINADO POR AUTO_2.pdf". Los .zip no se tocan ni se
+borran: si adentro viene el documento, se EXTRAE una copia ya
+renombrada y el zip se queda como esta.
 
 Respeta MODO_PRUEBA (por defecto True): en modo prueba solo revisa y
 te dice que moveria y con que nombre, sin tocar ningun archivo.
 
 Reutiliza la lectura del Excel y las reglas de
 clasificar_procesos_ejecutivos.py (misma hoja ACTIVOS, mismo
-CARPETA_PROCESOS, misma carpeta de autos) -- no hay nada que configurar
-aparte, salvo la carpeta de Descargas si la tuya no es la de Windows.
+CARPETA_PROCESOS, mismas carpetas por estado) -- no hay nada que
+configurar aparte, salvo la carpeta de Descargas si la tuya no es la de
+Windows.
 """
 
 import datetime
@@ -83,10 +96,12 @@ except ImportError as _error:
 # cambiala aqui si la tuya esta en otro lado.
 CARPETA_DESCARGAS = organizador.CARPETA_DESCARGAS
 
-# Donde van los autos organizados: la MISMA carpeta que usa
+# Donde van los documentos organizados: la MISMA carpeta que usa
 # clasificar_procesos_ejecutivos.py, para que no queden en dos sitios.
+# Adentro se crea una carpeta por estado -- "PROCESOS TERMINADOS POR
+# AUTO", "PROCESOS TERMINADOS POR PAGO", etc (ver
+# clasificar_procesos_ejecutivos.carpeta_agrupada_para).
 CARPETA_PROCESOS = base.CARPETA_PROCESOS
-CARPETA_TERMINADOS_POR_AUTO = base.CARPETA_TERMINADOS_POR_AUTO
 
 ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "organizar_autos_descargados.log")
 
@@ -102,11 +117,14 @@ MODO_PRUEBA = True
 # proxima corrida). False: se COPIA, dejando el original en Descargas.
 MOVER_EN_VEZ_DE_COPIAR = True
 
-# Cuantos dias hacia atras revisar, por fecha de modificacion del
-# archivo. Una carpeta de Descargas normal acumula años de archivos, y
-# leerles el texto a todos toma un buen rato. 0 = revisar TODO sin
-# importar la fecha.
-DIAS_HACIA_ATRAS = 60
+# Cuantos dias contar hacia atras, por fecha del archivo:
+#   1 = SOLO lo que bajaste HOY (por defecto)
+#   2 = hoy y ayer, 7 = la ultima semana, etc
+#   0 = revisar TODO lo que haya, sin importar la fecha
+# Una carpeta de Descargas normal acumula años de archivos y leerles el
+# texto a todos toma un buen rato, ademas de revolver documentos viejos
+# que ya organizaste.
+DIAS_HACIA_ATRAS = 1
 
 # True (por defecto): tambien revisa las subcarpetas de Descargas.
 REVISAR_SUBCARPETAS = True
@@ -149,14 +167,20 @@ def configurar_logging():
 
 
 def _es_reciente(ruta: Path) -> bool:
-    """True si el archivo se modifico dentro de DIAS_HACIA_ATRAS (0 = sin limite)."""
+    """
+    True si el archivo es de los ultimos DIAS_HACIA_ATRAS dias de
+    CALENDARIO (1 = solo hoy, 2 = hoy y ayer...; 0 = sin limite). Se
+    cuenta por dia, no por horas: algo que bajaste hoy a las 8 de la
+    mañana cuenta igual aunque ya sean las 11 de la noche.
+    """
     if not DIAS_HACIA_ATRAS:
         return True
     try:
-        modificado = datetime.datetime.fromtimestamp(ruta.stat().st_mtime)
+        modificado = datetime.date.fromtimestamp(ruta.stat().st_mtime)
     except OSError:
         return False
-    return (datetime.datetime.now() - modificado).days <= DIAS_HACIA_ATRAS
+    limite = datetime.date.today() - datetime.timedelta(days=DIAS_HACIA_ATRAS - 1)
+    return modificado >= limite
 
 
 def listar_candidatos(carpeta_descargas: Path):
@@ -206,44 +230,79 @@ def _mencion_essa_ok(contenido_normalizado: str) -> bool:
     return any(buscador._nombre_coincide(contenido_normalizado, t) for t in buscador.TERMINOS_DEMANDANTE_VALIDO)
 
 
+def _el_nombre_lo_descarta(nombre: str, nombre_normalizado: str) -> bool:
+    """
+    True si el NOMBRE del archivo ya dice que es un documento procesal
+    (demanda, memorial, anexos de demanda, mandamiento, embargo... ver
+    base.PALABRAS_PROCESAL_EXCLUIR) y NO se anuncia el mismo como el
+    documento que termina el proceso.
+
+    Hace falta porque el contenido engaña: un "02. ANEXOS DEMANDA.pdf"
+    puede mencionar adentro "se acepta el retiro de la demanda" y
+    hacerse pasar por el auto. El nombre es la señal mas confiable (es
+    el mismo orden de prioridad que usa base._decision_solo_por_nombre).
+
+    Ojo con el orden: primero se mira si el NOMBRE mismo ya dice que
+    termina el proceso ("AUTO ACEPTA EL RETIRO DE LA DEMANDA.pdf"
+    contiene la palabra "DEMANDA", pero es exactamente lo que estamos
+    buscando), y solo si no, se aplica el descarte.
+    """
+    if base.es_auto_terminador(nombre_normalizado):
+        return False
+    return any(marca in nombre_normalizado for marca in base.PALABRAS_PROCESAL_EXCLUIR)
+
+
 def decidir(nombre: str, contenido_normalizado: str, indices):
     """
     Decide que hacer con UN documento (venga suelto o de un zip).
     Devuelve (proceso, motivo):
-      - (proceso, motivo)  -> es el auto de ese proceso, se puede organizar.
+      - (proceso, motivo)  -> es el documento que termina ese proceso,
+                              se puede organizar.
       - (None, motivo)     -> no se organiza; 'motivo' explica por que.
-      - (None, None)       -> ni siquiera parece un auto: se ignora en
-                              silencio (es la mayoria de lo que hay en
-                              Descargas y no tiene nada que ver).
+      - (None, None)       -> ni siquiera parece el documento que
+                              termina un proceso: se ignora en silencio
+                              (es la mayoria de lo que hay en Descargas
+                              y no tiene nada que ver).
     """
+    nombre_normalizado = buscador._normalizar_para_comparar(Path(nombre).name)
+
     if not base.es_auto_terminador(contenido_normalizado):
         return None, None
 
+    if _el_nombre_lo_descarta(nombre, nombre_normalizado):
+        return None, None
+
     if not _mencion_essa_ok(contenido_normalizado):
-        return None, "parece un auto, pero no menciona a ESSA/Electrificadora de Santander"
+        return None, "parece el documento que termina un proceso, pero no menciona a ESSA/Electrificadora de Santander"
 
     coincidencias = base._procesos_que_coinciden_con_correo(contenido_normalizado, indices)
     if not coincidencias:
-        return None, "parece un auto, pero no coincide con el radicado, la cuenta ni el demandado de ningun proceso del Excel"
+        return None, "parece el documento que termina un proceso, pero no coincide con el radicado, la cuenta ni el demandado de ningun proceso del Excel"
 
-    terminados_por_auto = [p for p in coincidencias if base.es_terminado_por_auto(p["estado"])]
+    terminados = [p for p in coincidencias if base.es_estado_agrupado(p["estado"])]
 
-    if not terminados_por_auto:
+    if not terminados:
         detalle = ", ".join(f"{p['numero']} ({p['estado']})" for p in coincidencias)
-        return None, f"parece un auto y coincide con {detalle}, pero en el Excel ese proceso no figura como TERMINADO POR AUTO -- revisa el Excel"
+        return None, f"parece el documento que termina un proceso y coincide con {detalle}, pero en el Excel ninguno de esos figura como TERMINADO -- revisa el Excel"
 
-    if len(terminados_por_auto) > 1:
-        detalle = ", ".join(str(p["numero"]) for p in terminados_por_auto)
-        return None, f"parece un auto, pero coincide con VARIOS procesos terminados por auto ({detalle}) -- revisalo a mano"
+    if len(terminados) > 1:
+        detalle = ", ".join(f"{p['numero']} ({p['estado']})" for p in terminados)
+        return None, f"parece el documento que termina un proceso, pero coincide con VARIOS procesos terminados ({detalle}) -- revisalo a mano"
 
-    return terminados_por_auto[0], "es el auto que termina el proceso"
+    return terminados[0], "es el documento que termina el proceso"
 
 
 # ==================== Guardar donde va ====================
 
 
-def _carpeta_destino() -> Path:
-    return Path(CARPETA_PROCESOS) / CARPETA_TERMINADOS_POR_AUTO
+def _carpeta_destino(proceso) -> Path:
+    """
+    Carpeta comun del estado de ESTE proceso -- "PROCESOS TERMINADOS POR
+    AUTO", "PROCESOS TERMINADOS POR PAGO", etc (la calcula
+    clasificar_procesos_ejecutivos, para que los dos scripts dejen todo
+    en el mismo sitio).
+    """
+    return Path(CARPETA_PROCESOS) / proceso["carpeta_destino"]
 
 
 def _nombre_final(proceso, nombre_original: str) -> str:
@@ -277,8 +336,8 @@ def _ya_esta_organizado(destino: Path, nombre_final: str, tamano: int) -> bool:
 
 
 def guardar_archivo_suelto(ruta: Path, proceso) -> Path:
-    """Mueve (o copia, ver MOVER_EN_VEZ_DE_COPIAR) 'ruta' a la carpeta de autos, ya renombrada."""
-    destino = _carpeta_destino()
+    """Mueve (o copia, ver MOVER_EN_VEZ_DE_COPIAR) 'ruta' a la carpeta comun de su estado, ya renombrada."""
+    destino = _carpeta_destino(proceso)
     base._crear_carpeta(destino)
     ruta_final = buscador._ruta_archivo_libre(destino, _nombre_final(proceso, ruta.name))
     origen_seguro = organizador._ruta_larga_segura(str(ruta))
@@ -291,8 +350,8 @@ def guardar_archivo_suelto(ruta: Path, proceso) -> Path:
 
 
 def extraer_de_zip(archivo_zip: zipfile.ZipFile, nombre_interno: str, proceso) -> Path:
-    """Extrae UN documento de dentro de un .zip a la carpeta de autos, ya renombrado. El zip no se toca."""
-    destino = _carpeta_destino()
+    """Extrae UN documento de dentro de un .zip a la carpeta comun de su estado, ya renombrado. El zip no se toca."""
+    destino = _carpeta_destino(proceso)
     base._crear_carpeta(destino)
     ruta_final = buscador._ruta_archivo_libre(destino, _nombre_final(proceso, nombre_interno))
     with open(organizador._ruta_larga_segura(str(ruta_final)), "wb") as f:
@@ -325,8 +384,11 @@ def revisar_archivos_sueltos(archivos, indices, pendientes, resumen):
             tamano = ruta.stat().st_size
         except OSError:
             tamano = -1
-        if not MOVER_EN_VEZ_DE_COPIAR and _ya_esta_organizado(_carpeta_destino(), nombre_final, tamano):
-            logging.info("[Ya estaba] '%s' -> proceso %s: ya hay una copia igual en '%s'.", ruta.name, proceso["numero"], CARPETA_TERMINADOS_POR_AUTO)
+        if not MOVER_EN_VEZ_DE_COPIAR and _ya_esta_organizado(_carpeta_destino(proceso), nombre_final, tamano):
+            logging.info(
+                "[Ya estaba] '%s' -> proceso %s: ya hay una copia igual en '%s'.",
+                ruta.name, proceso["numero"], proceso["carpeta_destino"],
+            )
             resumen["ya_estaban"] += 1
             continue
 
@@ -334,7 +396,7 @@ def revisar_archivos_sueltos(archivos, indices, pendientes, resumen):
             logging.info(
                 "[SIMULACION] '%s' -> proceso %s: %s a '%s' como '%s'.",
                 ruta.name, proceso["numero"], "se moveria" if MOVER_EN_VEZ_DE_COPIAR else "se copiaria",
-                CARPETA_TERMINADOS_POR_AUTO, nombre_final,
+                proceso["carpeta_destino"], nombre_final,
             )
             resumen["organizados"] += 1
             continue
@@ -369,10 +431,10 @@ def revisar_zips(zips, indices, pendientes, resumen):
                         continue
 
                     nombre_final = _nombre_final(proceso, nombre_interno)
-                    if _ya_esta_organizado(_carpeta_destino(), nombre_final, archivo_zip.getinfo(nombre_interno).file_size):
+                    if _ya_esta_organizado(_carpeta_destino(proceso), nombre_final, archivo_zip.getinfo(nombre_interno).file_size):
                         logging.info(
                             "[Ya estaba] '%s' (dentro de %s) -> proceso %s: ya hay una copia igual en '%s'.",
-                            Path(nombre_interno).name, ruta_zip.name, proceso["numero"], CARPETA_TERMINADOS_POR_AUTO,
+                            Path(nombre_interno).name, ruta_zip.name, proceso["numero"], proceso["carpeta_destino"],
                         )
                         resumen["ya_estaban"] += 1
                         continue
@@ -381,7 +443,7 @@ def revisar_zips(zips, indices, pendientes, resumen):
                         logging.info(
                             "[SIMULACION] '%s' (dentro de %s) -> proceso %s: se extraeria a '%s' como '%s'.",
                             Path(nombre_interno).name, ruta_zip.name, proceso["numero"],
-                            CARPETA_TERMINADOS_POR_AUTO, nombre_final,
+                            proceso["carpeta_destino"], nombre_final,
                         )
                         resumen["organizados"] += 1
                         continue
@@ -426,21 +488,31 @@ def procesar():
 
     procesos = base.leer_procesos_control()
     con_radicado, terminados, _sin_estado = base.clasificar_procesos(procesos)
-    # Se indexan TODOS los procesos (no solo los terminados por auto)
-    # para poder avisar cuando un auto corresponde a un proceso que en
-    # el Excel todavia figura como ACTIVO/terminado por pago/etc.
+    # Se indexan TODOS los procesos (no solo los terminados) para poder
+    # avisar cuando un documento corresponde a un proceso que en el
+    # Excel todavia figura como ACTIVO/suspendido/etc.
     indices = base._indexar_procesos_para_correo(con_radicado + terminados)
-    por_auto = sum(1 for p in terminados if base.es_terminado_por_auto(p["estado"]))
+
+    por_estado = {}
+    for proceso in terminados:
+        if base.es_estado_agrupado(proceso["estado"]):
+            por_estado[proceso["estado"].strip().upper()] = por_estado.get(proceso["estado"].strip().upper(), 0) + 1
     logging.info(
-        "Excel: %d proceso(s) en total, %d de ellos TERMINADO POR AUTO (son los unicos que se organizan aqui).",
-        len(con_radicado) + len(terminados), por_auto,
+        "Excel: %d proceso(s) en total, %d terminado(s) -- son los unicos que se organizan aqui: %s.",
+        len(con_radicado) + len(terminados), sum(por_estado.values()),
+        ", ".join(f"{estado} ({cuantos})" for estado, cuantos in sorted(por_estado.items())) or "ninguno",
     )
 
     archivos, zips = listar_candidatos(carpeta_descargas)
+    if DIAS_HACIA_ATRAS == 1:
+        ventana = " (solo los de HOY)"
+    elif DIAS_HACIA_ATRAS:
+        ventana = f" (los de los ultimos {DIAS_HACIA_ATRAS} dias)"
+    else:
+        ventana = " (todos, sin importar la fecha)"
     logging.info(
         "Descargas (%s): %d archivo(s) PDF/DOCX y %d zip(s) por revisar%s.",
-        carpeta_descargas, len(archivos), len(zips),
-        f" (modificados en los ultimos {DIAS_HACIA_ATRAS} dias)" if DIAS_HACIA_ATRAS else "",
+        carpeta_descargas, len(archivos), len(zips), ventana,
     )
     if not archivos and not zips:
         logging.info("No hay nada que revisar en Descargas -- no se hizo ningun cambio.")
@@ -453,7 +525,8 @@ def procesar():
     revisar_zips(zips, indices, pendientes, resumen)
 
     logging.info(
-        "Resumen: %d auto(s) %s, %d que ya estaban organizados, %d archivo(s) que no eran autos (se ignoran), "
+        "Resumen: %d documento(s) %s, %d que ya estaban organizados, %d archivo(s) que no terminan ningun "
+        "proceso (se ignoran), "
         "%d que hay que revisar a mano.",
         resumen["organizados"], "se organizarian (MODO_PRUEBA activo)" if MODO_PRUEBA else "organizados",
         resumen["ya_estaban"], resumen["ignorados"], len(pendientes),

@@ -693,9 +693,10 @@ expediente judicial activo -- así que la carpeta **no** se nombra
 > Esto es el registro administrativo en el disco de procesos
 > (`CARPETA_PROCESOS` de `validar_renombrar_carpetas.py`), y sigue igual.
 > No confundir con `clasificar_procesos_ejecutivos.py`, que trabaja
-> sobre `INFORMACIÓN EXTRAPROCESAL` y ahí sí deja los `TERMINADO POR
-> AUTO` como un solo archivo renombrado dentro de `PROCESOS TERMINADOS
-> POR AUTO` (ver más abajo).
+> sobre su propia `CARPETA_PROCESOS` y ahí sí deja cada terminado como
+> un solo archivo renombrado dentro de la carpeta común de su estado
+> (`PROCESOS TERMINADOS POR AUTO`, `PROCESOS TERMINADOS POR PAGO`...,
+> ver más abajo).
 
 Los procesos con un `ESTADO PROCESAL` que no encaje en ninguna de esas
 dos reglas (ej. `"DESISTIMIENTO DE PRETENSIONES"`, `"DEVUELTA INCURRIO
@@ -831,38 +832,45 @@ PROCESAL` de cada una:
 
    Dónde queda ese documento depende del estado:
 
-   - **`TERMINADO POR AUTO`**: estos procesos **no llevan carpeta
-     propia**. El auto se guarda **renombrado con el número de proceso
-     del Excel** -- `"<numero>. <ESTADO PROCESAL EXACTO>"` + su
-     extensión, ej. `"245. TERMINADO POR AUTO.pdf"` -- dentro de la
-     carpeta única **`PROCESOS TERMINADOS POR AUTO`**, para tenerlos
-     todos juntos y ordenados por número en vez de repartidos en
-     cientos de carpetas con un solo archivo adentro. Si un proceso
-     trae más de un auto (ej. primera y segunda instancia), el
-     siguiente queda como `"245. TERMINADO POR AUTO_2.pdf"` -- nunca se
-     pisa ni se borra nada.
+   - **Cualquier `TERMINADO`** (por auto, por pago, por contrato/
+     prepago...): estos procesos **no llevan carpeta propia**. El
+     documento se guarda **renombrado con el número de proceso del
+     Excel** -- `"<numero>. <ESTADO PROCESAL EXACTO>"` + su extensión,
+     ej. `"245. TERMINADO POR AUTO.pdf"` o `"300. TERMINADO POR
+     PAGO.pdf"` -- dentro de la **carpeta común de su estado**:
 
-     Los autos que **corridas anteriores** hayan dejado en la carpeta
-     propia del proceso se recogen y renombran ahí mismo al empezar
-     cada corrida, y la carpeta vieja se borra **solo si quedó
+     | `ESTADO PROCESAL` | Carpeta | Archivo |
+     |---|---|---|
+     | `TERMINADO POR AUTO` | `PROCESOS TERMINADOS POR AUTO` | `245. TERMINADO POR AUTO.pdf` |
+     | `TERMINADO POR PAGO` | `PROCESOS TERMINADOS POR PAGO` | `300. TERMINADO POR PAGO.pdf` |
+     | `TERMINADO POR CONTRATO` | `PROCESOS TERMINADOS POR CONTRATO` | `412. TERMINADO POR CONTRATO.pdf` |
+
+     Así quedan todos juntos y ordenados por número, en vez de
+     repartidos en cientos de carpetas con un solo archivo adentro. Si
+     un proceso trae más de un documento (ej. primera y segunda
+     instancia), el siguiente queda como `"245. TERMINADO POR
+     AUTO_2.pdf"` -- nunca se pisa ni se borra nada.
+
+     Lo que **corridas anteriores** hayan dejado en la carpeta propia
+     del proceso se recoge y renombra ahí mismo al empezar cada
+     corrida, y la carpeta vieja se borra **solo si quedó
      completamente vacía**. Dentro de esas carpetas viejas solo se
-     mueve lo que de verdad parece el auto que termina el proceso
+     mueve lo que de verdad parece el documento que termina el proceso
      (mismo criterio que la descarga): una petición, una respuesta o un
      anexo suelto se quedan donde están, porque renombrarlos
      `"245. TERMINADO POR AUTO.pdf"` sería mentir sobre lo que son.
      Si a uno de estos procesos ya terminados le sigue llegando correo
      extraprocesal (ver `revisar_correo_pro.py`), ese correo tampoco se
-     mezcla con los autos: va a `"245. TERMINADO POR AUTO\CORREOS"`.
-   - **Los demás terminados** (pago, contrato/prepago, `NO INICIO`):
-     como siempre, carpeta propia `"<numero>. <ESTADO PROCESAL EXACTO
-     del Excel>"` (ej. `"300. TERMINADO POR PAGO"`) y el documento
+     mezcla ahí: va a `"245. TERMINADO POR AUTO\CORREOS"`.
+   - **`NO INICIO`** (nunca se presentó la demanda, así que no hay un
+     documento que lo termine): como siempre, carpeta propia
+     `"<numero>. <ESTADO PROCESAL EXACTO del Excel>"` y el documento
      conserva el nombre que traía en Drive.
 
 Con estas dos reglas, **toda** fila del Excel con `ESTADO PROCESAL`
-diligenciado queda organizada: con carpeta propia, o -- si es
-`TERMINADO POR AUTO` -- como un archivo con su número dentro de
-`PROCESOS TERMINADOS POR AUTO` (solo quedan por fuera las filas sin ese
-dato todavía).
+diligenciado queda organizada: con carpeta propia, o -- si es un
+terminado -- como un archivo con su número dentro de la carpeta común
+de su estado (solo quedan por fuera las filas sin ese dato todavía).
 
 **Procesos acumulados**: el Excel repite el mismo número de proceso en
 varias filas cuando agrupa varias cuentas bajo un mismo radicado
@@ -1240,12 +1248,12 @@ de cuenta**. Lo que no coincide con ningún proceso **no se pierde**: se
 guarda en `_SIN CLASIFICAR - REVISAR A MANO` (una subcarpeta por
 correo) para que lo revises a mano.
 
-Única excepción de destino: los procesos `TERMINADO POR AUTO` ya no
-tienen carpeta propia (su auto vive renombrado dentro de `PROCESOS
-TERMINADOS POR AUTO`), así que un correo que le siga llegando a uno de
-ellos se guarda en `"<numero>. TERMINADO POR AUTO\CORREOS"` -- aparte,
-para que la carpeta de autos quede con **un solo archivo por proceso**
-y nada más.
+Única excepción de destino: los procesos terminados ya no tienen
+carpeta propia (su documento vive renombrado dentro de `PROCESOS
+TERMINADOS POR AUTO`, `PROCESOS TERMINADOS POR PAGO`...), así que un
+correo que le siga llegando a uno de ellos se guarda en `"<numero>.
+TERMINADO POR AUTO\CORREOS"` -- aparte, para que esas carpetas queden
+con **un solo archivo por proceso** y nada más.
 
 ### Por qué este sí funciona (y el paso 2 de `clasificar_por_demandado.py` no)
 
@@ -1397,67 +1405,82 @@ Cada punto corresponde a un fallo real que se vio en la práctica:
 Necesita `credenciales_sgde.txt` (las mismas de siempre, contraseña de
 aplicación de Gmail -- ver más abajo).
 
-## Organizar los autos que ya bajaste a Descargas (sin tocar Drive) ⭐
+## Organizar desde Descargas lo que termina un proceso (sin tocar Drive) ⭐
 
 `organizar_autos_descargados.py` (o su iniciador
 `organizar_autos_descargados.bat`) es la forma **rápida** de organizar
-los autos: revisa **tu carpeta de Descargas**, no Google Drive. No
+los autos y demás documentos de terminación: revisa **tu carpeta de
+Descargas**, no Google Drive. No
 necesita credenciales, no depende de la red y no se demora horas -- solo
 mira lo que ya está en tu disco.
 
 Para cada archivo de Descargas (PDF/DOCX sueltos, en subcarpetas, o
 dentro de un `.zip`):
 
-1. Le lee el nombre y el texto y decide si es el **auto que termina un
-   proceso** -- auto de terminación, de aceptación de retiro de la
-   demanda, de desistimiento, de archivo, etc (mismo criterio que
-   `clasificar_procesos_ejecutivos.py`: no hace falta que diga
-   literalmente "auto"). Todo lo demás que tengas en Descargas se
-   ignora en silencio.
+1. Le lee el nombre y el texto y decide si es el **documento que
+   termina un proceso** -- auto de terminación, de aceptación de retiro
+   de la demanda, de desistimiento, de archivo, una terminación por
+   pago, etc (mismo criterio que `clasificar_procesos_ejecutivos.py`:
+   no hace falta que diga literalmente "auto"). Todo lo demás que
+   tengas en Descargas se ignora en silencio.
+
+   Si el **nombre** del archivo ya dice que es otra cosa (una demanda,
+   un memorial, unos anexos, un mandamiento, un embargo...) se descarta
+   aunque el texto de adentro mencione que se aceptó un retiro o que el
+   proceso terminó: un `02. ANEXOS DEMANDA.pdf` cuenta la historia del
+   proceso, no es el documento que lo cierra. Lo que sí manda es el
+   nombre cuando él mismo se anuncia como el cierre (`AUTO ACEPTA EL
+   RETIRO DE LA DEMANDA.pdf` se acepta, aunque diga "demanda").
 2. Lo empareja con su proceso del Excel por **radicado** (con o sin
    guiones), **cuenta** o **demandado** -- el mismo emparejamiento que
    usa `revisar_correo_pro.py` para los correos.
-3. Si ese proceso figura en el Excel como `TERMINADO POR AUTO`, **mueve
-   el archivo renombrado con el número de proceso** (ej. `245.
-   TERMINADO POR AUTO.pdf`) a la carpeta `PROCESOS TERMINADOS POR
-   AUTO`, la misma que usa `clasificar_procesos_ejecutivos.py`.
+3. Si ese proceso figura en el Excel como **`TERMINADO`** -- por auto,
+   por pago, por contrato/prepago, **cualquier terminado** -- **mueve
+   el archivo renombrado con el número de proceso** (`245. TERMINADO
+   POR AUTO.pdf`, `300. TERMINADO POR PAGO.pdf`) a la carpeta común de
+   ese estado (`PROCESOS TERMINADOS POR AUTO`, `PROCESOS TERMINADOS POR
+   PAGO`...), las mismas que usa `clasificar_procesos_ejecutivos.py`.
 
 Lo que **no se puede decidir solo, no se toca**: se queda en Descargas
 y sale listado en `autos_descargados_a_revisar.csv` (y en el log) con
 el motivo:
 
 - No coincide con ningún proceso del Excel.
-- Coincide con **varios** procesos terminados por auto (sin abrirlo no
-  hay forma de saber cuál es).
-- Coincide con un proceso que en el Excel **no** figura como `TERMINADO
-  POR AUTO` (ej. sigue como `ACTIVO`) -- ahí lo que hay que revisar es
-  el Excel, no el archivo. El reporte te dice el número y el estado.
+- Coincide con **varios** procesos terminados (sin abrirlo no hay forma
+  de saber cuál es).
+- Coincide con un proceso que en el Excel **no** figura como terminado
+  (ej. sigue como `ACTIVO`) -- ahí lo que hay que revisar es el Excel,
+  no el archivo. El reporte te dice el número y el estado.
 
 Detalles:
 
-- **Nunca borra ni sobreescribe nada.** Si el proceso ya tiene un auto
-  guardado (primera y segunda instancia), el nuevo queda como `245.
-  TERMINADO POR AUTO_2.pdf`.
-- Los `.zip` **no se tocan ni se borran**: si adentro viene el auto, se
-  extrae una copia ya renombrada y el zip se queda igual.
-- Por defecto revisa los archivos modificados en los **últimos 60
-  días** (`DIAS_HACIA_ATRAS`, ponlo en `0` para revisar todo) y **mueve**
-  el archivo, dejando Descargas limpia (`MOVER_EN_VEZ_DE_COPIAR = False`
-  si prefieres que se copie y el original se quede donde está).
+- **Nunca borra ni sobreescribe nada.** Si el proceso ya tiene un
+  documento guardado (primera y segunda instancia), el nuevo queda como
+  `245. TERMINADO POR AUTO_2.pdf`.
+- Los `.zip` **no se tocan ni se borran**: si adentro viene el
+  documento, se extrae una copia ya renombrada y el zip se queda igual.
+- Por defecto revisa **solo lo que bajaste hoy** (`DIAS_HACIA_ATRAS = 1`;
+  `2` = hoy y ayer, `7` = la última semana, `0` = todo sin importar la
+  fecha) y **mueve** el archivo, dejando Descargas limpia
+  (`MOVER_EN_VEZ_DE_COPIAR = False` si prefieres que se copie y el
+  original se quede donde está).
 - La subcarpeta `Procesados` de Descargas se omite siempre.
 - Respeta `MODO_PRUEBA` (por defecto `True`): primero corre así, revisa
   en el log qué movería y con qué nombre, y solo entonces ponlo en
   `False`.
-- **Solo necesita tres librerías** -- `pypdf`, `python-docx` y
-  `openpyxl` -- no `watchdog`, ni `playwright`, ni las de Google Drive.
-  El `.bat` las instala solo si te faltan, así que puedes usarlo sin
-  haber instalado el resto del proyecto.
+- **Solo necesita cuatro librerías** -- `pypdf`, `python-docx`,
+  `openpyxl` y `cryptography` -- no `watchdog`, ni `playwright`, ni las
+  de Google Drive. El `.bat` las instala solo si te faltan, así que
+  puedes usarlo sin haber instalado el resto del proyecto.
+  (`cryptography` es la que permite abrir los PDF cifrados con AES; sin
+  ella esos autos fallan con `cryptography>=3.1 is required for AES
+  algorithm` y se perderían.)
 
 > Este script y `clasificar_procesos_ejecutivos.py` se complementan:
 > este organiza lo que **tú** bajaste a Descargas; el otro sale a
-> **buscarlo a Drive** cuando no lo tienes. Los dos dejan el auto en el
-> mismo sitio y con el mismo nombre, así que puedes usar el que te
-> convenga sin que se pisen.
+> **buscarlo a Drive** cuando no lo tienes. Los dos dejan el documento
+> en el mismo sitio y con el mismo nombre, así que puedes usar el que
+> te convenga sin que se pisen.
 
 ## Listar terminados por auto o por pago (partes y radicado)
 

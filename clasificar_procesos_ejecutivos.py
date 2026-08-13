@@ -49,22 +49,25 @@ de negocio según el `ESTADO PROCESAL` de cada fila:
    `ARCHIVO_PENDIENTES_TERMINADOS` para que lo descargues a mano.
 
    Dónde queda ese documento depende del estado:
-     - `TERMINADO POR AUTO`: NO lleva carpeta propia. El auto se guarda
-       RENOMBRADO con el número de proceso del Excel -- `"<numero>.
-       <ESTADO PROCESAL EXACTO>"` + su extensión, ej. `"245. TERMINADO
-       POR AUTO.pdf"` -- dentro de la carpeta única
-       `PROCESOS TERMINADOS POR AUTO` (ver `CARPETA_TERMINADOS_POR_AUTO`),
-       para tenerlos todos juntos y no repartidos en cientos de
-       carpetas de un solo archivo. Si un proceso trae más de un auto
+     - CUALQUIER `TERMINADO` (por auto, por pago, por contrato/prepago,
+       etc): NO lleva carpeta propia. El documento se guarda RENOMBRADO
+       con el número de proceso del Excel -- `"<numero>. <ESTADO
+       PROCESAL EXACTO>"` + su extensión, ej. `"245. TERMINADO POR
+       AUTO.pdf"` o `"300. TERMINADO POR PAGO.pdf"` -- dentro de la
+       carpeta común de su estado: `PROCESOS TERMINADOS POR AUTO`,
+       `PROCESOS TERMINADOS POR PAGO`, etc (ver
+       `carpeta_agrupada_para`). Así quedan todos juntos y ordenados
+       por número, en vez de repartidos en cientos de carpetas con un
+       solo archivo adentro. Si un proceso trae más de un documento
        (ej. primera y segunda instancia), el segundo queda como
-       `"245. TERMINADO POR AUTO_2.pdf"` -- nunca se pisa nada. Los
-       autos que corridas ANTERIORES hayan dejado en la carpeta propia
-       del proceso se recogen y renombran ahí mismo al empezar cada
-       corrida (ver `mover_autos_de_carpetas_antiguas`).
-     - Los demás terminados (pago, contrato/prepago, `NO INICIO`):
-       como siempre, carpeta propia `"<numero>. <ESTADO PROCESAL
-       EXACTO del Excel>"` y el documento conserva el nombre que traía
-       en Drive.
+       `"245. TERMINADO POR AUTO_2.pdf"` -- nunca se pisa nada. Lo que
+       corridas ANTERIORES hayan dejado en la carpeta propia del
+       proceso se recoge y renombra ahí mismo al empezar cada corrida
+       (ver `mover_terminados_de_carpetas_antiguas`).
+     - `NO INICIO` (nunca se presentó la demanda, así que no hay un
+       documento que lo termine): como siempre, carpeta propia
+       `"<numero>. <ESTADO PROCESAL EXACTO del Excel>"` y el documento
+       conserva el nombre que traía en Drive.
 
 IMPORTANTE -- procesos "acumulados": el Excel repite el mismo número de
 proceso en más de una fila en dos casos distintos:
@@ -163,23 +166,27 @@ COLUMNA_RADICADO = "RADICADO"
 # PREPAGO, etc) se organiza con la carpeta "numero. radicado" de siempre.
 PREFIJOS_ESTADO_TERMINADO = ("TERMINADO", "NO INICIO")
 
-# Los procesos cuyo ESTADO PROCESAL empieza con "TERMINADO POR AUTO" NO
-# llevan una carpeta propia: el auto que los termina se guarda RENOMBRADO
-# con el numero de proceso del Excel (ej. "245. TERMINADO POR AUTO.pdf")
-# dentro de esta UNICA carpeta comun, para tenerlos todos juntos en vez
-# de repartidos en cientos de carpetas de un solo archivo. El resto de
-# terminados (por pago, por contrato/prepago, NO INICIO) sigue con su
-# carpeta "<numero>. <ESTADO PROCESAL>" de siempre.
-PREFIJO_ESTADO_TERMINADO_POR_AUTO = "TERMINADO POR AUTO"
-CARPETA_TERMINADOS_POR_AUTO = "PROCESOS TERMINADOS POR AUTO"
+# Los procesos cuyo ESTADO PROCESAL empieza con "TERMINADO" (por auto,
+# por pago, por contrato/prepago... CUALQUIER terminado) NO llevan una
+# carpeta propia: el documento que los termina se guarda RENOMBRADO con
+# el numero de proceso del Excel (ej. "245. TERMINADO POR AUTO.pdf",
+# "300. TERMINADO POR PAGO.pdf") dentro de UNA carpeta comun por estado
+# -- "PROCESOS TERMINADOS POR AUTO", "PROCESOS TERMINADOS POR PAGO",
+# etc (ver carpeta_agrupada_para) -- para tenerlos todos juntos y
+# ordenados por numero, en vez de repartidos en cientos de carpetas con
+# un solo archivo adentro.
+#
+# "NO INICIO" queda fuera a proposito: un proceso que nunca se presento
+# no tiene un documento que lo termine. Sigue con su carpeta propia.
+PREFIJOS_ESTADO_AGRUPADO = ("TERMINADO",)
 
-# En CARPETA_TERMINADOS_POR_AUTO va UNICAMENTE el auto de cada proceso
-# (un archivo por proceso, con el nombre del proceso). Si a un proceso
-# ya terminado por auto igual le llega un correo extraprocesal (ver
+# En esas carpetas comunes va UNICAMENTE el documento que termina cada
+# proceso (un archivo por proceso, con el nombre del proceso). Si a un
+# proceso ya terminado igual le llega un correo extraprocesal (ver
 # revisar_correo_pro.py), ese correo NO se mezcla ahi: se guarda en
-# "<numero>. TERMINADO POR AUTO\CORREOS", aparte, para no ensuciar la
-# carpeta de autos. Ver carpeta_de_correos().
-SUBCARPETA_CORREOS_TERMINADOS_POR_AUTO = "CORREOS"
+# "<numero>. <ESTADO PROCESAL>\CORREOS", aparte, para no ensuciar la
+# carpeta comun. Ver carpeta_de_correos().
+SUBCARPETA_CORREOS_TERMINADOS = "CORREOS"
 
 # Carpeta donde se crean las carpetas de cada proceso (y, dentro de
 # ella, "PROCESOS TERMINADOS POR AUTO"). A diferencia del resto del
@@ -415,27 +422,44 @@ def leer_procesos_control():
     return procesos
 
 
-def es_terminado_por_auto(estado: str) -> bool:
+def es_estado_agrupado(estado: str) -> bool:
     """
-    True si el ESTADO PROCESAL del Excel es "TERMINADO POR AUTO" (o
-    empieza por ahi, ej. "TERMINADO POR AUTO QUE ACEPTA EL RETIRO DE LA
-    DEMANDA"). Estos procesos no llevan carpeta propia: su auto se
-    guarda renombrado dentro de CARPETA_TERMINADOS_POR_AUTO.
+    True si el ESTADO PROCESAL del Excel es un "terminado" de cualquier
+    tipo -- por auto, por pago, por contrato/prepago, etc (ver
+    PREFIJOS_ESTADO_AGRUPADO). Estos procesos no llevan carpeta propia:
+    el documento que los termina se guarda renombrado dentro de la
+    carpeta comun de su estado (ver carpeta_agrupada_para).
     """
-    return estado.strip().upper().startswith(PREFIJO_ESTADO_TERMINADO_POR_AUTO)
+    return estado.strip().upper().startswith(PREFIJOS_ESTADO_AGRUPADO)
+
+
+def carpeta_agrupada_para(estado: str):
+    """
+    Nombre de la carpeta comun donde va el documento que termina un
+    proceso con este ESTADO PROCESAL -- "PROCESOS TERMINADOS POR AUTO",
+    "PROCESOS TERMINADOS POR PAGO", "PROCESOS TERMINADOS POR
+    CONTRATO"... (el estado del Excel viene en singular, "TERMINADO POR
+    PAGO", y la carpeta se lee mejor en plural). None si ese estado no
+    se agrupa (activos, suspendidos, NO INICIO, etc: carpeta propia de
+    siempre).
+    """
+    if not es_estado_agrupado(estado):
+        return None
+    estado_limpio = estado.strip().upper()
+    return organizador.sanear_nombre("PROCESOS " + estado_limpio.replace("TERMINADO", "TERMINADOS", 1))
 
 
 def carpeta_de_correos(proceso) -> Path:
     """
     Carpeta donde va un CORREO de este proceso (la usa tambien
     revisar_correo_pro.py). Para casi todos es la carpeta del proceso;
-    para los "TERMINADO POR AUTO" -- que ya no tienen carpeta propia,
-    sino un solo archivo dentro de CARPETA_TERMINADOS_POR_AUTO -- es
-    "<numero>. TERMINADO POR AUTO\\CORREOS", para que la carpeta de
-    autos quede con un unico archivo por proceso y nada mas.
+    para los terminados -- que ya no tienen carpeta propia, sino un solo
+    archivo dentro de la carpeta comun de su estado -- es "<numero>.
+    <ESTADO PROCESAL>\\CORREOS", para que esa carpeta comun quede con un
+    unico archivo por proceso y nada mas.
     """
     if proceso.get("nombre_archivo"):
-        return Path(CARPETA_PROCESOS) / proceso["nombre_carpeta"] / SUBCARPETA_CORREOS_TERMINADOS_POR_AUTO
+        return Path(CARPETA_PROCESOS) / proceso["nombre_carpeta"] / SUBCARPETA_CORREOS_TERMINADOS
     return Path(CARPETA_PROCESOS) / proceso["nombre_carpeta"]
 
 
@@ -460,7 +484,8 @@ def clasificar_procesos(procesos):
     propia. Su "nombre_carpeta" se sigue calculando igual (es la
     identidad del proceso: la clave para agrupar filas del mismo caso y
     para ARCHIVO_PROCESADOS), pero su destino en el disco es la carpeta
-    común CARPETA_TERMINADOS_POR_AUTO, y el auto que se descargue se
+    común de su estado (ver carpeta_agrupada_para), y el documento que
+    se descargue se
     guarda ahí con ese mismo nombre ("nombre_archivo", ej. "245.
     TERMINADO POR AUTO" + la extensión del documento). Por eso cada
     proceso lleva:
@@ -492,8 +517,9 @@ def clasificar_procesos(procesos):
         if proceso is None:
             proceso = dict(fila)
             proceso["nombre_carpeta"] = nombre_carpeta
-            if es_terminado_por_auto(estado):
-                proceso["carpeta_destino"] = CARPETA_TERMINADOS_POR_AUTO
+            carpeta_comun = carpeta_agrupada_para(estado)
+            if carpeta_comun:
+                proceso["carpeta_destino"] = carpeta_comun
                 proceso["nombre_archivo"] = nombre_carpeta
             else:
                 proceso["carpeta_destino"] = nombre_carpeta
@@ -1189,7 +1215,7 @@ def crear_todas_las_carpetas(procesos, carpetas_existentes, etiqueta):
     (que puede tardar horas para los ~925 procesos con radicado).
 
     Los procesos "TERMINADO POR AUTO" no reciben carpeta propia: todos
-    comparten CARPETA_TERMINADOS_POR_AUTO, que se crea UNA sola vez (su
+    comparten la carpeta comun de su estado, que se crea UNA sola vez (su
     auto se guarda ahi renombrado, ver procesar_terminado).
     """
     creadas = 0
@@ -1206,7 +1232,7 @@ def crear_todas_las_carpetas(procesos, carpetas_existentes, etiqueta):
             )
             # En MODO_PRUEBA no se crea nada, asi que se anota igual para
             # no repetir la misma linea por cada uno de los cientos de
-            # procesos que comparten CARPETA_TERMINADOS_POR_AUTO.
+            # procesos que comparten la misma carpeta comun.
             carpetas_existentes.add(nombre_carpeta)
         else:
             _crear_carpeta(destino)
@@ -1235,16 +1261,18 @@ def _contenido_normalizado_local(ruta: Path) -> str:
     return buscador._normalizar_para_comparar(ruta.name + " " + texto)
 
 
-def mover_autos_de_carpetas_antiguas(terminados, carpetas_existentes):
+def mover_terminados_de_carpetas_antiguas(terminados, carpetas_existentes):
     """
-    Corridas ANTERIORES (de antes de CARPETA_TERMINADOS_POR_AUTO) dejaron
-    cada auto dentro de la carpeta propia del proceso ("245. TERMINADO
-    POR AUTO"), con el nombre que traia en Drive. Este paso los recoge y
-    los deja donde van ahora: dentro de CARPETA_TERMINADOS_POR_AUTO y
-    renombrados con el numero del proceso ("245. TERMINADO POR AUTO.pdf").
+    Corridas ANTERIORES (de antes de las carpetas comunes por estado)
+    dejaron el documento que termina cada proceso dentro de la carpeta
+    propia del proceso ("245. TERMINADO POR AUTO"), con el nombre que
+    traia en Drive. Este paso los recoge y los deja donde van ahora:
+    dentro de la carpeta comun de su estado ("PROCESOS TERMINADOS POR
+    AUTO", "PROCESOS TERMINADOS POR PAGO"...) y renombrados con el
+    numero del proceso ("245. TERMINADO POR AUTO.pdf").
 
-    Solo toca las carpetas de procesos "TERMINADO POR AUTO", y dentro de
-    ellas SOLO los documentos que de verdad parecen el auto que termina
+    Solo toca las carpetas de procesos terminados, y dentro de ellas
+    SOLO los documentos que de verdad parecen el documento que termina
     el proceso (mismo criterio que la descarga: es_auto_terminador sobre
     el nombre y el texto del archivo). Cualquier otra cosa que alguien
     haya dejado ahi (una petición, una respuesta, un anexo suelto) se
@@ -1254,15 +1282,15 @@ def mover_autos_de_carpetas_antiguas(terminados, carpetas_existentes):
     Nunca pisa un archivo que ya exista en el destino (usa "..._2",
     "..._3", igual que una descarga nueva) y nunca borra un documento:
     la carpeta vieja se borra UNICAMENTE si quedo completamente vacia
-    despues de mover el auto. Respeta MODO_PRUEBA.
+    despues de mover el documento. Respeta MODO_PRUEBA.
     """
-    carpeta_comun = Path(CARPETA_PROCESOS) / CARPETA_TERMINADOS_POR_AUTO
     movidos = 0
     carpetas_vaciadas = 0
 
     for proceso in terminados:
         if not proceso["nombre_archivo"]:
-            continue  # terminado por pago/contrato/no inicio: conserva su carpeta propia
+            continue  # NO INICIO y demas: conserva su carpeta propia
+        carpeta_comun = Path(CARPETA_PROCESOS) / proceso["carpeta_destino"]
         nombre_viejo = proceso["nombre_carpeta"]
         if nombre_viejo not in carpetas_existentes:
             continue
@@ -1287,12 +1315,12 @@ def mover_autos_de_carpetas_antiguas(terminados, carpetas_existentes):
             if MODO_PRUEBA:
                 logging.info(
                     "[SIMULACION] Proceso %s: movería '%s' de '%s' a '%s' como '%s'.",
-                    proceso["numero"], ruta.name, nombre_viejo, CARPETA_TERMINADOS_POR_AUTO, nombre_nuevo,
+                    proceso["numero"], ruta.name, nombre_viejo, proceso["carpeta_destino"], nombre_nuevo,
                 )
                 movidos += 1
                 continue
             _crear_carpeta(carpeta_comun)
-            carpetas_existentes.add(CARPETA_TERMINADOS_POR_AUTO)
+            carpetas_existentes.add(proceso["carpeta_destino"])
             ruta_final = buscador._ruta_archivo_libre(carpeta_comun, nombre_nuevo)
             try:
                 os.replace(
@@ -1338,9 +1366,9 @@ def mover_autos_de_carpetas_antiguas(terminados, carpetas_existentes):
 
     if movidos or carpetas_vaciadas:
         logging.info(
-            "[Terminados por auto] %d auto(s) %s a '%s'; %d carpeta(s) vieja(s) vacia(s) borrada(s).",
+            "[Terminados] %d documento(s) %s a su carpeta comun; %d carpeta(s) vieja(s) vacia(s) borrada(s).",
             movidos, "se moverian (MODO_PRUEBA activo)" if MODO_PRUEBA else "movidos",
-            CARPETA_TERMINADOS_POR_AUTO, carpetas_vaciadas,
+            carpetas_vaciadas,
         )
 
 
@@ -1479,12 +1507,12 @@ def procesar_terminado(proceso, pendientes) -> bool:
     reintente la proxima vez. Corre en un hilo propio (ver
     _servicio_del_hilo) -- ver NUM_HILOS.
 
-    Para los "TERMINADO POR AUTO", el auto no se deja con el nombre que
-    traia en Drive: se guarda como "<numero del Excel>. <ESTADO
-    PROCESAL>.pdf" (ej. "245. TERMINADO POR AUTO.pdf") dentro de la
-    carpeta comun CARPETA_TERMINADOS_POR_AUTO. El resto de terminados
-    (pago/contrato/no inicio) sigue igual que antes: su propia carpeta y
-    el nombre original del documento.
+    Para los terminados (por auto, por pago, por contrato/prepago...) el
+    documento no se deja con el nombre que traia en Drive: se guarda
+    como "<numero del Excel>. <ESTADO PROCESAL>.pdf" (ej. "245.
+    TERMINADO POR AUTO.pdf") dentro de la carpeta comun de su estado
+    (ver carpeta_agrupada_para). Los "NO INICIO" siguen igual que antes:
+    su propia carpeta y el nombre original del documento.
     """
     servicio = _servicio_del_hilo()
     numero, estado, radicado = proceso["numero"], proceso["estado"], proceso["radicado"]
@@ -1570,8 +1598,8 @@ def procesar():
 
     # Antes de crear nada: los autos que corridas anteriores dejaron en la
     # carpeta propia de cada proceso se recogen en la carpeta comun
-    # CARPETA_TERMINADOS_POR_AUTO, renombrados con el numero del proceso.
-    mover_autos_de_carpetas_antiguas(terminados, carpetas_existentes)
+    # comun de su estado, renombrados con el numero del proceso.
+    mover_terminados_de_carpetas_antiguas(terminados, carpetas_existentes)
 
     # Se crean TODAS las carpetas de una vez, antes de ponerse a buscar
     # contenido -- para que las 1223 queden visibles en el disco desde
