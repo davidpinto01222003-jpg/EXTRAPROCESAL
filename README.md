@@ -1431,9 +1431,25 @@ dentro de un `.zip`):
    proceso, no es el documento que lo cierra. Lo que sí manda es el
    nombre cuando él mismo se anuncia como el cierre (`AUTO ACEPTA EL
    RETIRO DE LA DEMANDA.pdf` se acepta, aunque diga "demanda").
-2. Lo empareja con su proceso del Excel por **radicado** (con o sin
-   guiones), **cuenta** o **demandado** -- el mismo emparejamiento que
-   usa `revisar_correo_pro.py` para los correos.
+2. Lo empareja con su proceso del Excel por **radicado**, **cuenta** o
+   **demandado** -- el mismo emparejamiento que usa
+   `revisar_correo_pro.py` para los correos.
+
+   Cuando coinciden **varios** procesos, desempata por lo fuerte que
+   sea la coincidencia, en este orden, y **manda el primero que
+   aparezca** (si el documento trae el radicado de un proceso, es de
+   *ese* proceso, aunque de casualidad mencione la cuenta o el
+   demandado de otro):
+
+   | Orden | Criterio | Qué tan confiable |
+   |---|---|---|
+   | 1 | **Radicado completo**, 23 dígitos -- con o sin guiones/puntos/espacios (`68001-40-03-001-2024-00050-00` es el mismo número) | Casi nunca se repite: si coincide, es ese proceso |
+   | 2 | **Radicado corto**: `2024-00234` o `2024-234` (y sus variantes con el consecutivo al final) | Casi siempre acierta, pero dos juzgados pueden repetir año y consecutivo |
+   | 3 | **Número de cuenta** | Se puede compartir entre procesos |
+   | 4 | **Nombre del demandado** | El más débil: un demandado puede tener varios procesos |
+
+   El log y el reporte siempre dicen **por cuál criterio** se decidió,
+   para que puedas verificarlo de un vistazo.
 3. Si ese proceso figura en el Excel como **`TERMINADO`** -- por auto,
    por pago, por contrato/prepago, **cualquier terminado** -- **mueve
    el archivo renombrado con el número de proceso** (`245. TERMINADO
@@ -1446,8 +1462,9 @@ y sale listado en `autos_descargados_a_revisar.csv` (y en el log) con
 el motivo:
 
 - No coincide con ningún proceso del Excel.
-- Coincide con **varios** procesos terminados (sin abrirlo no hay forma
-  de saber cuál es).
+- Coincide con **varios** procesos terminados *por el mismo criterio*
+  (ej. dos juzgados con el mismo radicado corto) -- ahí ya no hay forma
+  de saber cuál es sin abrirlo.
 - Coincide con un proceso que en el Excel **no** figura como terminado
   (ej. sigue como `ACTIVO`) -- ahí lo que hay que revisar es el Excel,
   no el archivo. El reporte te dice el número y el estado.
@@ -1470,11 +1487,13 @@ Detalles:
   `False`.
 - **Solo necesita cuatro librerías** -- `pypdf`, `python-docx`,
   `openpyxl` y `cryptography` -- no `watchdog`, ni `playwright`, ni las
-  de Google Drive. El `.bat` las instala solo si te faltan, así que
-  puedes usarlo sin haber instalado el resto del proyecto.
-  (`cryptography` es la que permite abrir los PDF cifrados con AES; sin
-  ella esos autos fallan con `cryptography>=3.1 is required for AES
-  algorithm` y se perderían.)
+  de Google Drive. **Si te falta alguna, el script la instala solo** al
+  arrancar y sigue, así que puedes usarlo sin haber instalado el resto
+  del proyecto. (`cryptography` es la que permite abrir los PDF
+  cifrados con AES -- muy comunes en los autos del juzgado. Ninguna
+  librería la importa directamente, la usa `pypdf` por dentro, por eso
+  se revisa a propósito: si no, esos PDF fallarían con
+  `cryptography>=3.1 is required for AES algorithm` y se perderían.)
 
 > Este script y `clasificar_procesos_ejecutivos.py` se complementan:
 > este organiza lo que **tú** bajaste a Descargas; el otro sale a

@@ -71,10 +71,21 @@ import zipfile
 from pathlib import Path
 
 # Las UNICAS librerias que necesita este script (no watchdog, no
-# playwright, no las de Google Drive). "cryptography" es la que permite
-# abrir los PDF cifrados con AES -- sin ella esos autos fallan con
-# "cryptography>=3.1 is required for AES algorithm" y se pierden.
-LIBRERIAS_NECESARIAS = ["pypdf", "python-docx", "openpyxl", "cryptography"]
+# playwright, no las de Google Drive), como "modulo que se importa" ->
+# "paquete que hay que instalar".
+#
+# OJO con cryptography: NINGUN modulo del proyecto la importa, la usa
+# pypdf por dentro y SOLO cuando abre un PDF cifrado con AES. Por eso
+# hay que revisarla a proposito aqui: si se esperara a que fallara un
+# import, no se instalaria nunca, y esos PDF -- que suelen ser
+# justamente los autos que manda el juzgado -- se perderian con un
+# "cryptography>=3.1 is required for AES algorithm" en el log.
+LIBRERIAS_NECESARIAS = {
+    "pypdf": "pypdf",
+    "docx": "python-docx",
+    "openpyxl": "openpyxl",
+    "cryptography": "cryptography",
+}
 
 # Modulos del proyecto que se usan (alias -> archivo .py de al lado).
 _MODULOS_DEL_PROYECTO = {
@@ -85,41 +96,55 @@ _MODULOS_DEL_PROYECTO = {
 }
 
 
-def _cargar_modulos_del_proyecto():
-    for alias, modulo in _MODULOS_DEL_PROYECTO.items():
-        globals()[alias] = importlib.import_module(modulo)
+def _paquetes_que_faltan():
+    faltantes = []
+    for modulo, paquete in LIBRERIAS_NECESARIAS.items():
+        try:
+            importlib.import_module(modulo)
+        except ImportError:
+            faltantes.append(paquete)
+    return faltantes
 
 
-try:
-    _cargar_modulos_del_proyecto()
-except ImportError as _error:
-    # Falta una libreria. En vez del "ModuleNotFoundError: No module
-    # named 'X'" pelado (que no dice que hacer), se instalan solas y se
-    # reintenta -- asi el .bat funciona con doble clic en un PC nuevo,
-    # sin pelear con la terminal. Se usa print y no logging porque el
-    # logging todavia no esta configurado.
+def _asegurar_librerias():
+    """
+    Instala lo que falte y vuelve a revisar. Asi el .bat funciona con
+    doble clic en un PC nuevo, sin pelear con la terminal. Devuelve lo
+    que siguio faltando despues de intentar. Se usa print y no logging
+    porque el logging todavia no esta configurado.
+    """
+    faltantes = _paquetes_que_faltan()
+    if not faltantes:
+        return []
+
     print()
-    print(f"  Falta la libreria '{getattr(_error, 'name', None) or _error}'.")
-    print("  Instalando lo que hace falta (solo pasa la primera vez), espera un momento...")
+    print(f"  Falta(n) la(s) libreria(s): {', '.join(faltantes)}.")
+    print("  Instalando (solo pasa la primera vez), espera un momento...")
     print()
-    subprocess.run([sys.executable, "-m", "pip", "install", *LIBRERIAS_NECESARIAS], check=False)
+    subprocess.run([sys.executable, "-m", "pip", "install", *faltantes], check=False)
     print()
-    try:
-        _cargar_modulos_del_proyecto()
-    except ImportError as _error_2:
-        print()
-        print("=" * 70)
-        print(f"  NO SE PUDO INSTALAR: sigue faltando '{getattr(_error_2, 'name', None) or _error_2}'")
-        print()
-        print("  Abre una terminal EN ESTA MISMA CARPETA y corre a mano:")
-        print()
-        print("      pip install " + " ".join(LIBRERIAS_NECESARIAS))
-        print()
-        print("  Si eso falla, revisa que Python este bien instalado y que")
-        print("  tengas conexion a internet.")
-        print("=" * 70)
-        print()
-        raise SystemExit(1)
+    importlib.invalidate_caches()
+    return _paquetes_que_faltan()
+
+
+_faltantes = _asegurar_librerias()
+if _faltantes:
+    print()
+    print("=" * 70)
+    print(f"  NO SE PUDO INSTALAR: {', '.join(_faltantes)}")
+    print()
+    print("  Abre una terminal EN ESTA MISMA CARPETA y corre a mano:")
+    print()
+    print("      pip install " + " ".join(_faltantes))
+    print()
+    print("  Si eso falla, revisa que Python este bien instalado y que")
+    print("  tengas conexion a internet.")
+    print("=" * 70)
+    print()
+    raise SystemExit(1)
+
+for _alias, _modulo in _MODULOS_DEL_PROYECTO.items():
+    globals()[_alias] = importlib.import_module(_modulo)
 
 # ============================= CONFIGURACION =============================
 
@@ -284,6 +309,71 @@ def _el_nombre_lo_descarta(nombre: str, nombre_normalizado: str) -> bool:
     return any(marca in nombre_normalizado for marca in base.PALABRAS_PROCESAL_EXCLUIR)
 
 
+def coincidencias_por_nivel(contenido_normalizado: str, indices):
+    """
+    Los procesos que coinciden con este documento, SEPARADOS por que tan
+    fuerte es la coincidencia y en ese orden -- lo mismo que mira
+    base._procesos_que_coinciden_con_correo, pero sin mezclarlo todo en
+    una sola bolsa, para poder desempatar cuando salen varios:
+
+      1. RADICADO COMPLETO, los 23 digitos (con o sin guiones, puntos o
+         espacios entre sus grupos -- "68001-40-03-001-2024-00050-00" es
+         el mismo numero). Es tan especifico que practicamente no se
+         repite: si coincide, es ESE proceso.
+      2. RADICADO CORTO: "2024-00234" o "2024-234" (y sus variantes con
+         el consecutivo de instancia al final). Casi siempre acierta,
+         pero dos juzgados distintos pueden tener el mismo consecutivo
+         en el mismo año.
+      3. NUMERO DE CUENTA.
+      4. NOMBRE DEL DEMANDADO -- el mas debil: un mismo demandado puede
+         tener varios procesos.
+
+    Cada proceso aparece UNA sola vez, en el nivel mas fuerte donde haya
+    coincidido. Devuelve [(criterio, [procesos]), ...].
+    """
+    por_radicado, por_cuenta, por_demandado = indices
+    exactos, cortos, por_su_cuenta, por_su_demandado = [], [], [], []
+
+    radicados_del_texto = set(cruce_excel._radicados_en_texto(contenido_normalizado))
+    for radicado, procesos in por_radicado.items():
+        if radicado in radicados_del_texto:
+            exactos.extend(procesos)
+        elif any(buscador._nombre_coincide(contenido_normalizado, corto) for corto in buscador.radicados_cortos(radicado)):
+            cortos.extend(procesos)
+
+    for cuenta, procesos in por_cuenta.items():
+        if buscador._nombre_coincide(contenido_normalizado, cuenta):
+            por_su_cuenta.extend(procesos)
+
+    encabezado = base._quitar_membrete_juzgado(contenido_normalizado)[:base.VENTANA_DEMANDADO_CARACTERES]
+    for palabras, procesos in por_demandado.items():
+        if all(base._palabra_demandado_coincide(encabezado, palabra) for palabra in palabras):
+            por_su_demandado.extend(procesos)
+
+    niveles = [
+        ("el radicado completo (23 digitos)", exactos),
+        ("el radicado corto (ej. 2024-00234 o 2024-234)", cortos),
+        ("el numero de cuenta", por_su_cuenta),
+        ("el nombre del demandado", por_su_demandado),
+    ]
+
+    vistos = set()
+    resultado = []
+    for criterio, procesos in niveles:
+        unicos = []
+        for proceso in procesos:
+            if proceso["nombre_carpeta"] in vistos:
+                continue
+            vistos.add(proceso["nombre_carpeta"])
+            unicos.append(proceso)
+        resultado.append((criterio, unicos))
+    return resultado
+
+
+def _detalle(procesos) -> str:
+    return ", ".join(f"{p['numero']} ({p['estado']})" for p in procesos)
+
+
 def decidir(nombre: str, contenido_normalizado: str, indices):
     """
     Decide que hacer con UN documento (venga suelto o de un zip).
@@ -295,6 +385,15 @@ def decidir(nombre: str, contenido_normalizado: str, indices):
                               termina un proceso: se ignora en silencio
                               (es la mayoria de lo que hay en Descargas
                               y no tiene nada que ver).
+
+    Cuando coinciden VARIOS procesos, se desempata por la fuerza de la
+    coincidencia (ver coincidencias_por_nivel): manda el radicado
+    completo de 23 digitos; si no aparece, el radicado corto
+    ("2024-00234" o "2024-234"); despues la cuenta; y de ultimo el
+    nombre del demandado. Se decide con el PRIMER nivel que traiga
+    coincidencias y no se sigue bajando: si el documento trae el
+    radicado de un proceso, es de ESE proceso, aunque de casualidad
+    mencione la cuenta o el demandado de otro.
     """
     nombre_normalizado = buscador._normalizar_para_comparar(Path(nombre).name)
 
@@ -307,21 +406,29 @@ def decidir(nombre: str, contenido_normalizado: str, indices):
     if not _mencion_essa_ok(contenido_normalizado):
         return None, "parece el documento que termina un proceso, pero no menciona a ESSA/Electrificadora de Santander"
 
-    coincidencias = base._procesos_que_coinciden_con_correo(contenido_normalizado, indices)
-    if not coincidencias:
-        return None, "parece el documento que termina un proceso, pero no coincide con el radicado, la cuenta ni el demandado de ningun proceso del Excel"
+    for criterio, procesos in coincidencias_por_nivel(contenido_normalizado, indices):
+        if not procesos:
+            continue  # nada por este criterio: se prueba con el siguiente, mas debil
 
-    terminados = [p for p in coincidencias if base.es_estado_agrupado(p["estado"])]
+        terminados = [p for p in procesos if base.es_estado_agrupado(p["estado"])]
 
-    if not terminados:
-        detalle = ", ".join(f"{p['numero']} ({p['estado']})" for p in coincidencias)
-        return None, f"parece el documento que termina un proceso y coincide con {detalle}, pero en el Excel ninguno de esos figura como TERMINADO -- revisa el Excel"
+        if len(terminados) == 1:
+            return terminados[0], f"es el documento que termina el proceso (coincide por {criterio})"
 
-    if len(terminados) > 1:
-        detalle = ", ".join(f"{p['numero']} ({p['estado']})" for p in terminados)
-        return None, f"parece el documento que termina un proceso, pero coincide con VARIOS procesos terminados ({detalle}) -- revisalo a mano"
+        if len(terminados) > 1:
+            return None, (
+                f"parece el documento que termina un proceso y coincide por {criterio} con VARIOS procesos "
+                f"terminados ({_detalle(terminados)}) -- revisalo a mano"
+            )
 
-    return terminados[0], "es el documento que termina el proceso"
+        # Coincide, pero ninguno de esos figura como terminado. No se
+        # sigue bajando de nivel: el criterio mas fuerte ya hablo.
+        return None, (
+            f"parece el documento que termina un proceso y coincide por {criterio} con {_detalle(procesos)}, "
+            "pero en el Excel ninguno de esos figura como TERMINADO -- revisa el Excel"
+        )
+
+    return None, "parece el documento que termina un proceso, pero no coincide con el radicado, la cuenta ni el demandado de ningun proceso del Excel"
 
 
 # ==================== Guardar donde va ====================
