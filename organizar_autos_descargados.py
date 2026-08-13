@@ -54,10 +54,27 @@ import shutil
 import zipfile
 from pathlib import Path
 
-import buscar_faltantes_en_drive as buscador
-import clasificar_procesos_ejecutivos as base
-import procesos_juridicos as organizador
-import validar_renombrar_carpetas as cruce_excel
+try:
+    import buscar_faltantes_en_drive as buscador
+    import clasificar_procesos_ejecutivos as base
+    import procesos_juridicos as organizador
+    import validar_renombrar_carpetas as cruce_excel
+except ImportError as _error:
+    # Falta alguna libreria del proyecto. Sin esto solo se veria un
+    # "ModuleNotFoundError: No module named 'X'" pelado, que no dice que
+    # hay que hacer -- se muestra con print (todavia no hay logging).
+    print()
+    print("=" * 70)
+    print(f"  FALTA UNA LIBRERIA: {_error.name}")
+    print()
+    print("  Abre una terminal EN ESTA MISMA CARPETA y corre:")
+    print()
+    print("      pip install -r requirements.txt")
+    print()
+    print("  (instala de una vez todo lo que necesita el proyecto)")
+    print("=" * 70)
+    print()
+    raise SystemExit(1)
 
 # ============================= CONFIGURACION =============================
 
@@ -379,7 +396,25 @@ def revisar_zips(zips, indices, pendientes, resumen):
             _anotar(pendientes, str(ruta_zip.parent), ruta_zip.name, f"no se pudo abrir el zip: {error}")
 
 
+def faltan_librerias() -> bool:
+    """
+    pypdf no rompe el import (los modulos del proyecto lo cargan de forma
+    tolerante), pero sin el TODOS los PDF darian texto vacio: no se
+    reconoceria ningun auto y el script diria tranquilamente que no hay
+    nada que organizar. Mejor parar y decirlo claro.
+    """
+    if buscador.PdfReader is not None:
+        return False
+    logging.error("Falta la libreria 'pypdf', que es la que le lee el texto a los PDF.")
+    logging.error("Sin ella no se puede reconocer ningun auto. Instalala corriendo:  pip install pypdf")
+    logging.error("(o  pip install -r requirements.txt  para instalar de una vez todo lo del proyecto)")
+    return True
+
+
 def procesar():
+    if faltan_librerias():
+        return
+
     if not base.RUTA_EXCEL_CONTROL or not os.path.exists(base.RUTA_EXCEL_CONTROL):
         logging.error("No se encontro el Excel configurado en RUTA_EXCEL_CONTROL: %r", base.RUTA_EXCEL_CONTROL)
         return

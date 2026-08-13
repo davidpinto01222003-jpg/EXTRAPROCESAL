@@ -1448,6 +1448,10 @@ Detalles:
 - Respeta `MODO_PRUEBA` (por defecto `True`): primero corre así, revisa
   en el log qué movería y con qué nombre, y solo entonces ponlo en
   `False`.
+- **Solo necesita tres librerías** -- `pypdf`, `python-docx` y
+  `openpyxl` -- no `watchdog`, ni `playwright`, ni las de Google Drive.
+  El `.bat` las instala solo si te faltan, así que puedes usarlo sin
+  haber instalado el resto del proyecto.
 
 > Este script y `clasificar_procesos_ejecutivos.py` se complementan:
 > este organiza lo que **tú** bajaste a Descargas; el otro sale a

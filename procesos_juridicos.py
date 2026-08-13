@@ -70,15 +70,33 @@ import zipfile
 from email.header import decode_header
 from pathlib import Path
 
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
+# watchdog, pypdf y python-docx solo hacen falta para lo que ESTE script
+# hace (vigilar Descargas en tiempo real y leerle el texto a los
+# documentos). Los demas scripts del proyecto importan este modulo nada
+# mas para reutilizar sus funciones sueltas (sanear_nombre,
+# _ruta_larga_segura, CARPETA_DESCARGAS...), y no tienen por que morir
+# con un ModuleNotFoundError por una dependencia que no van a usar: si
+# falta alguna, se sigue adelante y solo falla -- con un mensaje claro --
+# la parte que de verdad la necesita.
+try:
+    from watchdog.events import FileSystemEventHandler
+    from watchdog.observers import Observer
+except ImportError:
+    FileSystemEventHandler = object  # para que la clase de abajo se pueda definir igual
+    Observer = None
 
 try:
     from pypdf import PdfReader
 except ImportError:
-    from PyPDF2 import PdfReader
+    try:
+        from PyPDF2 import PdfReader
+    except ImportError:
+        PdfReader = None
 
-import docx
+try:
+    import docx
+except ImportError:
+    docx = None
 
 # Cruce opcional con el informe de Excel: reutiliza la MISMA configuracion
 # (RUTA_EXCEL, HOJA_EXCEL, etc) que ya tengas en validar_renombrar_carpetas.py,
@@ -591,6 +609,12 @@ def extraer_zip(ruta_zip: str, carpeta_temp: str):
 
 
 def texto_de_pdf(ruta_pdf: str) -> str:
+    if PdfReader is None:
+        logging.warning(
+            "No se le puede leer el texto a %s: falta la libreria 'pypdf'. Instalala con:  pip install pypdf",
+            ruta_pdf,
+        )
+        return ""
     try:
         if os.path.getsize(ruta_pdf) > MAX_MB_PDF_PARA_CONTENIDO * 1024 * 1024:
             logging.warning(
@@ -607,6 +631,12 @@ def texto_de_pdf(ruta_pdf: str) -> str:
 
 
 def texto_de_docx(ruta_docx: str) -> str:
+    if docx is None:
+        logging.warning(
+            "No se le puede leer el texto a %s: falta la libreria 'python-docx'. Instalala con:  "
+            "pip install python-docx", ruta_docx,
+        )
+        return ""
     try:
         documento = docx.Document(ruta_docx)
         return "\n".join(p.text for p in documento.paragraphs)
@@ -793,6 +823,12 @@ def iniciar_vigilancia_manual():
     Path(CARPETA_TEMP_MANUAL).mkdir(parents=True, exist_ok=True)
     logging.info("[Manual] Procesando zips ya existentes en %s ...", CARPETA_DESCARGAS)
     procesar_zips_manuales_existentes()
+
+    if Observer is None:
+        raise RuntimeError(
+            "Falta la libreria 'watchdog', que es la que permite vigilar la carpeta de Descargas en tiempo "
+            "real. Instalala con:  pip install watchdog   (o  pip install -r requirements.txt  para todas)."
+        )
 
     logging.info("[Manual] Vigilando %s por si descargas algo a mano...", CARPETA_DESCARGAS)
     observador = Observer()
