@@ -2,27 +2,20 @@
 cd /d "%~dp0"
 
 echo ============================================================
-echo  Organizando los AUTOS que ya bajaste a tu carpeta de
-echo  Descargas: se renombran con el numero de proceso del Excel
-echo  y se guardan en "PROCESOS TERMINADOS POR AUTO".
+echo  Organizando lo que ya bajaste a tu carpeta de Descargas y
+echo  que TERMINA un proceso: se renombra con el numero de
+echo  proceso del Excel y se guarda en "PROCESOS TERMINADOS POR
+echo  AUTO" / "POR PAGO" / etc, segun el estado.
 echo  (NO busca nada en Google Drive ni en el correo)
 echo  (organizar_autos_descargados.py)...
 echo ============================================================
+echo.
 
-rem Este script solo necesita estas librerias (no watchdog, no
-rem playwright, no las de Google Drive). Si falta alguna, se instala
-rem sola la primera vez y ya no vuelve a pasar. "cryptography" es la
-rem que permite abrir los PDF cifrados con AES -- sin ella, esos autos
-rem dan "cryptography>=3.1 is required for AES algorithm" y se pierden.
-python -c "import openpyxl, pypdf, docx, cryptography" >nul 2>&1
-if errorlevel 1 (
-    echo.
-    echo  Faltan librerias. Instalandolas una sola vez, espera un momento...
-    echo.
-    python -m pip install pypdf python-docx openpyxl cryptography
-    echo.
-)
-
+rem Sin bloques de varias lineas entre parentesis -- if ... ( ) -- ni
+rem redirecciones: cmd.exe se cierra en silencio con esos bloques si el
+rem .bat tiene saltos de linea de Unix, y el script no arrancaba. Si
+rem falta alguna libreria, el propio .py la instala y reintenta.
 python organizar_autos_descargados.py
 
+echo.
 pause

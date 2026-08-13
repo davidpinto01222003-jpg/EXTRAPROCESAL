@@ -60,34 +60,66 @@ Windows.
 """
 
 import datetime
+import importlib
 import io
 import logging
 import os
 import shutil
+import subprocess
+import sys
 import zipfile
 from pathlib import Path
 
+# Las UNICAS librerias que necesita este script (no watchdog, no
+# playwright, no las de Google Drive). "cryptography" es la que permite
+# abrir los PDF cifrados con AES -- sin ella esos autos fallan con
+# "cryptography>=3.1 is required for AES algorithm" y se pierden.
+LIBRERIAS_NECESARIAS = ["pypdf", "python-docx", "openpyxl", "cryptography"]
+
+# Modulos del proyecto que se usan (alias -> archivo .py de al lado).
+_MODULOS_DEL_PROYECTO = {
+    "buscador": "buscar_faltantes_en_drive",
+    "base": "clasificar_procesos_ejecutivos",
+    "organizador": "procesos_juridicos",
+    "cruce_excel": "validar_renombrar_carpetas",
+}
+
+
+def _cargar_modulos_del_proyecto():
+    for alias, modulo in _MODULOS_DEL_PROYECTO.items():
+        globals()[alias] = importlib.import_module(modulo)
+
+
 try:
-    import buscar_faltantes_en_drive as buscador
-    import clasificar_procesos_ejecutivos as base
-    import procesos_juridicos as organizador
-    import validar_renombrar_carpetas as cruce_excel
+    _cargar_modulos_del_proyecto()
 except ImportError as _error:
-    # Falta alguna libreria del proyecto. Sin esto solo se veria un
-    # "ModuleNotFoundError: No module named 'X'" pelado, que no dice que
-    # hay que hacer -- se muestra con print (todavia no hay logging).
+    # Falta una libreria. En vez del "ModuleNotFoundError: No module
+    # named 'X'" pelado (que no dice que hacer), se instalan solas y se
+    # reintenta -- asi el .bat funciona con doble clic en un PC nuevo,
+    # sin pelear con la terminal. Se usa print y no logging porque el
+    # logging todavia no esta configurado.
     print()
-    print("=" * 70)
-    print(f"  FALTA UNA LIBRERIA: {_error.name}")
+    print(f"  Falta la libreria '{getattr(_error, 'name', None) or _error}'.")
+    print("  Instalando lo que hace falta (solo pasa la primera vez), espera un momento...")
     print()
-    print("  Abre una terminal EN ESTA MISMA CARPETA y corre:")
+    subprocess.run([sys.executable, "-m", "pip", "install", *LIBRERIAS_NECESARIAS], check=False)
     print()
-    print("      pip install -r requirements.txt")
-    print()
-    print("  (instala de una vez todo lo que necesita el proyecto)")
-    print("=" * 70)
-    print()
-    raise SystemExit(1)
+    try:
+        _cargar_modulos_del_proyecto()
+    except ImportError as _error_2:
+        print()
+        print("=" * 70)
+        print(f"  NO SE PUDO INSTALAR: sigue faltando '{getattr(_error_2, 'name', None) or _error_2}'")
+        print()
+        print("  Abre una terminal EN ESTA MISMA CARPETA y corre a mano:")
+        print()
+        print("      pip install " + " ".join(LIBRERIAS_NECESARIAS))
+        print()
+        print("  Si eso falla, revisa que Python este bien instalado y que")
+        print("  tengas conexion a internet.")
+        print("=" * 70)
+        print()
+        raise SystemExit(1)
 
 # ============================= CONFIGURACION =============================
 

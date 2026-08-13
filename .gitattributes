@@ -1,0 +1,5 @@
+# Los .bat los ejecuta cmd.exe en Windows: necesitan saltos de linea CRLF.
+# Con saltos de linea de Unix, cmd se cierra en silencio al llegar a un
+# bloque de varias lineas entre parentesis (if ... ( ... )) y el .bat no
+# corre nada.
+*.bat text eol=crlf
