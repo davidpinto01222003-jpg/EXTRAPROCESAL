@@ -730,10 +730,24 @@ def _nombre_para_carpeta_manual(correo) -> str:
     return organizador.sanear_nombre(f"{fecha} - {asunto}")
 
 
+def carpeta_visible_del_proceso(proceso) -> str:
+    """
+    Carpeta destino del correo tal como se ve dentro de CARPETA_PROCESOS
+    (ej. "245. TERMINADO POR AUTO\\CORREOS") -- para el log y el reporte,
+    para que digan la carpeta donde de verdad quedo el correo.
+    """
+    return os.path.relpath(base.carpeta_de_correos(proceso), CARPETA_PROCESOS)
+
+
 def guardar_en_proceso(correo, proceso) -> int:
-    """Guarda el correo (adjuntos, o su texto si no trae) en la carpeta del proceso."""
-    destino = Path(CARPETA_PROCESOS) / proceso["nombre_carpeta"]
-    return base._guardar_correo(correo, destino)
+    """
+    Guarda el correo (adjuntos, o su texto si no trae) en la carpeta del
+    proceso. Para un proceso "TERMINADO POR AUTO" no hay carpeta propia
+    (su auto vive renombrado en "PROCESOS TERMINADOS POR AUTO"), asi que
+    el correo va a su subcarpeta "CORREOS" -- ver
+    clasificar_procesos_ejecutivos.carpeta_de_correos.
+    """
+    return base._guardar_correo(correo, base.carpeta_de_correos(proceso))
 
 
 def guardar_sin_clasificar(correo) -> int:
@@ -794,18 +808,19 @@ def revisar_correo(correo, indices, resumen, filas_reporte, filas_sin_coincidenc
         return
 
     for proceso in procesos:
-        filas_reporte.append((asunto, fecha_texto, motivo_tipo, proceso["numero"], proceso["nombre_carpeta"]))
+        carpeta_visible = carpeta_visible_del_proceso(proceso)
+        filas_reporte.append((asunto, fecha_texto, motivo_tipo, proceso["numero"], carpeta_visible))
         if MODO_PRUEBA:
             logging.info(
                 "[SIMULACION] '%s'%s -> proceso %s ('%s').",
-                asunto, detalle_tipo, proceso["numero"], proceso["nombre_carpeta"],
+                asunto, detalle_tipo, proceso["numero"], carpeta_visible,
             )
             resumen["clasificados"] += 1
             continue
         guardados = guardar_en_proceso(correo, proceso)
         logging.info(
             "[Clasificado] '%s'%s -> proceso %s ('%s'), %d archivo(s).",
-            asunto, detalle_tipo, proceso["numero"], proceso["nombre_carpeta"], guardados,
+            asunto, detalle_tipo, proceso["numero"], carpeta_visible, guardados,
         )
         resumen["clasificados"] += 1
 

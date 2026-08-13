@@ -41,14 +41,30 @@ de negocio según el `ESTADO PROCESAL` de cada fila:
 2. Procesos terminados por pago, por auto, por contrato/prepago, o que
    nunca se presentaron (`ESTADO PROCESAL` que empieza con `TERMINADO`
    o `NO INICIO` -- igual que `crear_carpetas_terminados_castigo.py`):
-   la carpeta se nombra `"<numero>. <ESTADO PROCESAL EXACTO del Excel>"`
-   (ej. `"245. TERMINADO POR AUTO"`), y SOLO se sube el documento que
-   deja constancia de que el proceso NO sigue su curso -- un auto de
-   terminación, de aceptación de retiro de la demanda, de
-   desistimiento, etc (ver `es_auto_terminador`, no exige que aparezca
-   literalmente la palabra "AUTO"). Si no se encuentra ese documento en
-   Drive, el proceso queda listado en `ARCHIVO_PENDIENTES_TERMINADOS`
-   para que lo descargues a mano.
+   SOLO se sube el documento que deja constancia de que el proceso NO
+   sigue su curso -- un auto de terminación, de aceptación de retiro de
+   la demanda, de desistimiento, etc (ver `es_auto_terminador`, no
+   exige que aparezca literalmente la palabra "AUTO"). Si no se
+   encuentra ese documento en Drive, el proceso queda listado en
+   `ARCHIVO_PENDIENTES_TERMINADOS` para que lo descargues a mano.
+
+   Dónde queda ese documento depende del estado:
+     - `TERMINADO POR AUTO`: NO lleva carpeta propia. El auto se guarda
+       RENOMBRADO con el número de proceso del Excel -- `"<numero>.
+       <ESTADO PROCESAL EXACTO>"` + su extensión, ej. `"245. TERMINADO
+       POR AUTO.pdf"` -- dentro de la carpeta única
+       `PROCESOS TERMINADOS POR AUTO` (ver `CARPETA_TERMINADOS_POR_AUTO`),
+       para tenerlos todos juntos y no repartidos en cientos de
+       carpetas de un solo archivo. Si un proceso trae más de un auto
+       (ej. primera y segunda instancia), el segundo queda como
+       `"245. TERMINADO POR AUTO_2.pdf"` -- nunca se pisa nada. Los
+       autos que corridas ANTERIORES hayan dejado en la carpeta propia
+       del proceso se recogen y renombran ahí mismo al empezar cada
+       corrida (ver `mover_autos_de_carpetas_antiguas`).
+     - Los demás terminados (pago, contrato/prepago, `NO INICIO`):
+       como siempre, carpeta propia `"<numero>. <ESTADO PROCESAL
+       EXACTO del Excel>"` y el documento conserva el nombre que traía
+       en Drive.
 
 IMPORTANTE -- procesos "acumulados": el Excel repite el mismo número de
 proceso en más de una fila en dos casos distintos:
@@ -146,6 +162,24 @@ COLUMNA_RADICADO = "RADICADO"
 # otro estado (ACTIVO, SUSPENDIDO, REORGANIZACION, REMITIDA A CASTIGO/
 # PREPAGO, etc) se organiza con la carpeta "numero. radicado" de siempre.
 PREFIJOS_ESTADO_TERMINADO = ("TERMINADO", "NO INICIO")
+
+# Los procesos cuyo ESTADO PROCESAL empieza con "TERMINADO POR AUTO" NO
+# llevan una carpeta propia: el auto que los termina se guarda RENOMBRADO
+# con el numero de proceso del Excel (ej. "245. TERMINADO POR AUTO.pdf")
+# dentro de esta UNICA carpeta comun, para tenerlos todos juntos en vez
+# de repartidos en cientos de carpetas de un solo archivo. El resto de
+# terminados (por pago, por contrato/prepago, NO INICIO) sigue con su
+# carpeta "<numero>. <ESTADO PROCESAL>" de siempre.
+PREFIJO_ESTADO_TERMINADO_POR_AUTO = "TERMINADO POR AUTO"
+CARPETA_TERMINADOS_POR_AUTO = "PROCESOS TERMINADOS POR AUTO"
+
+# En CARPETA_TERMINADOS_POR_AUTO va UNICAMENTE el auto de cada proceso
+# (un archivo por proceso, con el nombre del proceso). Si a un proceso
+# ya terminado por auto igual le llega un correo extraprocesal (ver
+# revisar_correo_pro.py), ese correo NO se mezcla ahi: se guarda en
+# "<numero>. TERMINADO POR AUTO\CORREOS", aparte, para no ensuciar la
+# carpeta de autos. Ver carpeta_de_correos().
+SUBCARPETA_CORREOS_TERMINADOS_POR_AUTO = "CORREOS"
 
 # Carpeta donde se crean las carpetas de cada proceso. A diferencia del
 # resto del proyecto (que usa CARPETA_PROCESOS de validar_renombrar_carpetas.py,
@@ -373,6 +407,30 @@ def leer_procesos_control():
     return procesos
 
 
+def es_terminado_por_auto(estado: str) -> bool:
+    """
+    True si el ESTADO PROCESAL del Excel es "TERMINADO POR AUTO" (o
+    empieza por ahi, ej. "TERMINADO POR AUTO QUE ACEPTA EL RETIRO DE LA
+    DEMANDA"). Estos procesos no llevan carpeta propia: su auto se
+    guarda renombrado dentro de CARPETA_TERMINADOS_POR_AUTO.
+    """
+    return estado.strip().upper().startswith(PREFIJO_ESTADO_TERMINADO_POR_AUTO)
+
+
+def carpeta_de_correos(proceso) -> Path:
+    """
+    Carpeta donde va un CORREO de este proceso (la usa tambien
+    revisar_correo_pro.py). Para casi todos es la carpeta del proceso;
+    para los "TERMINADO POR AUTO" -- que ya no tienen carpeta propia,
+    sino un solo archivo dentro de CARPETA_TERMINADOS_POR_AUTO -- es
+    "<numero>. TERMINADO POR AUTO\\CORREOS", para que la carpeta de
+    autos quede con un unico archivo por proceso y nada mas.
+    """
+    if proceso.get("nombre_archivo"):
+        return Path(CARPETA_PROCESOS) / proceso["nombre_carpeta"] / SUBCARPETA_CORREOS_TERMINADOS_POR_AUTO
+    return Path(CARPETA_PROCESOS) / proceso["nombre_carpeta"]
+
+
 def clasificar_procesos(procesos):
     """
     Separa las filas leidas en dos listas de trabajo: con_radicado
@@ -388,6 +446,20 @@ def clasificar_procesos(procesos):
     varias cuentas) se FUSIONAN en un único proceso de trabajo, sumando
     sus cuentas/demandados/filas del Excel -- nunca se crean carpetas
     "_2", "_3" por tener más de una cuenta.
+
+    EXCEPCIÓN -- "TERMINADO POR AUTO" (ver
+    PREFIJO_ESTADO_TERMINADO_POR_AUTO): esos procesos no llevan carpeta
+    propia. Su "nombre_carpeta" se sigue calculando igual (es la
+    identidad del proceso: la clave para agrupar filas del mismo caso y
+    para ARCHIVO_PROCESADOS), pero su destino en el disco es la carpeta
+    común CARPETA_TERMINADOS_POR_AUTO, y el auto que se descargue se
+    guarda ahí con ese mismo nombre ("nombre_archivo", ej. "245.
+    TERMINADO POR AUTO" + la extensión del documento). Por eso cada
+    proceso lleva:
+      - nombre_carpeta:  identidad del proceso (no cambia).
+      - carpeta_destino: carpeta REAL en el disco donde va su contenido.
+      - nombre_archivo:  con qué nombre se guarda lo que se descargue,
+                         o None para dejarle su nombre original.
     """
     con_radicado_por_nombre = {}
     terminados_por_nombre = {}
@@ -412,6 +484,12 @@ def clasificar_procesos(procesos):
         if proceso is None:
             proceso = dict(fila)
             proceso["nombre_carpeta"] = nombre_carpeta
+            if es_terminado_por_auto(estado):
+                proceso["carpeta_destino"] = CARPETA_TERMINADOS_POR_AUTO
+                proceso["nombre_archivo"] = nombre_carpeta
+            else:
+                proceso["carpeta_destino"] = nombre_carpeta
+                proceso["nombre_archivo"] = None
             proceso["cuentas"] = []
             proceso["demandados"] = []
             proceso["filas_excel"] = []
@@ -1101,10 +1179,14 @@ def crear_todas_las_carpetas(procesos, carpetas_existentes, etiqueta):
     carpetas queden visibles en el disco desde el principio, en vez de
     ir apareciendo intercaladas a medida que el script busca contenido
     (que puede tardar horas para los ~925 procesos con radicado).
+
+    Los procesos "TERMINADO POR AUTO" no reciben carpeta propia: todos
+    comparten CARPETA_TERMINADOS_POR_AUTO, que se crea UNA sola vez (su
+    auto se guarda ahi renombrado, ver procesar_terminado).
     """
     creadas = 0
     for proceso in procesos:
-        nombre_carpeta = proceso["nombre_carpeta"]
+        nombre_carpeta = proceso["carpeta_destino"]
         if nombre_carpeta in carpetas_existentes:
             continue
         destino = Path(CARPETA_PROCESOS) / nombre_carpeta
@@ -1114,6 +1196,10 @@ def crear_todas_las_carpetas(procesos, carpetas_existentes, etiqueta):
                 "[SIMULACION] Proceso %s (%s, fila(s) %s): se crearia la carpeta '%s'.",
                 proceso["numero"], proceso["estado"], filas, nombre_carpeta,
             )
+            # En MODO_PRUEBA no se crea nada, asi que se anota igual para
+            # no repetir la misma linea por cada uno de los cientos de
+            # procesos que comparten CARPETA_TERMINADOS_POR_AUTO.
+            carpetas_existentes.add(nombre_carpeta)
         else:
             _crear_carpeta(destino)
             carpetas_existentes.add(nombre_carpeta)
@@ -1123,6 +1209,131 @@ def crear_todas_las_carpetas(procesos, carpetas_existentes, etiqueta):
             )
         creadas += 1
     logging.info("%s: %d carpeta(s) %s.", etiqueta, creadas, "simuladas (MODO_PRUEBA activo)" if MODO_PRUEBA else "creadas")
+
+
+def _contenido_normalizado_local(ruta: Path) -> str:
+    """
+    Nombre + texto de un archivo que YA esta en el disco, normalizado
+    igual que _info_documento (que lee el de Drive) -- para poder
+    aplicarle es_auto_terminador a lo que dejaron corridas anteriores.
+    """
+    extension = ruta.suffix.lower()
+    ruta_segura = organizador._ruta_larga_segura(str(ruta))
+    texto = ""
+    if extension == ".pdf":
+        texto = organizador.texto_de_pdf(ruta_segura)
+    elif extension == ".docx" and organizador.docx is not None:
+        texto = organizador.texto_de_docx(ruta_segura)
+    return buscador._normalizar_para_comparar(ruta.name + " " + texto)
+
+
+def mover_autos_de_carpetas_antiguas(terminados, carpetas_existentes):
+    """
+    Corridas ANTERIORES (de antes de CARPETA_TERMINADOS_POR_AUTO) dejaron
+    cada auto dentro de la carpeta propia del proceso ("245. TERMINADO
+    POR AUTO"), con el nombre que traia en Drive. Este paso los recoge y
+    los deja donde van ahora: dentro de CARPETA_TERMINADOS_POR_AUTO y
+    renombrados con el numero del proceso ("245. TERMINADO POR AUTO.pdf").
+
+    Solo toca las carpetas de procesos "TERMINADO POR AUTO", y dentro de
+    ellas SOLO los documentos que de verdad parecen el auto que termina
+    el proceso (mismo criterio que la descarga: es_auto_terminador sobre
+    el nombre y el texto del archivo). Cualquier otra cosa que alguien
+    haya dejado ahi (una petición, una respuesta, un anexo suelto) se
+    queda donde esta: renombrarla "245. TERMINADO POR AUTO.pdf" seria
+    mentir sobre lo que es.
+
+    Nunca pisa un archivo que ya exista en el destino (usa "..._2",
+    "..._3", igual que una descarga nueva) y nunca borra un documento:
+    la carpeta vieja se borra UNICAMENTE si quedo completamente vacia
+    despues de mover el auto. Respeta MODO_PRUEBA.
+    """
+    carpeta_comun = Path(CARPETA_PROCESOS) / CARPETA_TERMINADOS_POR_AUTO
+    movidos = 0
+    carpetas_vaciadas = 0
+
+    for proceso in terminados:
+        if not proceso["nombre_archivo"]:
+            continue  # terminado por pago/contrato/no inicio: conserva su carpeta propia
+        nombre_viejo = proceso["nombre_carpeta"]
+        if nombre_viejo not in carpetas_existentes:
+            continue
+        carpeta_vieja = Path(CARPETA_PROCESOS) / nombre_viejo
+
+        try:
+            archivos = [ruta for ruta in carpeta_vieja.iterdir() if ruta.is_file()]
+        except OSError as error:
+            logging.warning("Proceso %s: no se pudo leer la carpeta '%s', se omite: %s", proceso["numero"], nombre_viejo, error)
+            continue
+
+        for ruta in archivos:
+            if not es_auto_terminador(_contenido_normalizado_local(ruta)):
+                logging.info(
+                    "   (se deja '%s' en '%s': no parece el auto que termina el proceso %s)",
+                    ruta.name, nombre_viejo, proceso["numero"],
+                )
+                continue
+
+            extension = ruta.suffix or ".pdf"
+            nombre_nuevo = organizador.sanear_nombre(f"{proceso['nombre_archivo']}{extension}")
+            if MODO_PRUEBA:
+                logging.info(
+                    "[SIMULACION] Proceso %s: movería '%s' de '%s' a '%s' como '%s'.",
+                    proceso["numero"], ruta.name, nombre_viejo, CARPETA_TERMINADOS_POR_AUTO, nombre_nuevo,
+                )
+                movidos += 1
+                continue
+            _crear_carpeta(carpeta_comun)
+            carpetas_existentes.add(CARPETA_TERMINADOS_POR_AUTO)
+            ruta_final = buscador._ruta_archivo_libre(carpeta_comun, nombre_nuevo)
+            try:
+                os.replace(
+                    organizador._ruta_larga_segura(str(ruta)),
+                    organizador._ruta_larga_segura(str(ruta_final)),
+                )
+            except OSError as error:
+                logging.warning(
+                    "Proceso %s: no se pudo mover '%s' (¿archivo abierto, o bloqueado por OneDrive/antivirus?); "
+                    "se deja donde esta y se sigue: %s", proceso["numero"], ruta.name, error,
+                )
+                continue
+            logging.info("[Movido] Proceso %s: '%s' -> %s", proceso["numero"], ruta.name, ruta_final)
+            movidos += 1
+
+        if MODO_PRUEBA:
+            continue
+        resto = list(carpeta_vieja.iterdir())
+        if resto:
+            # Lo normal aqui es la subcarpeta CORREOS (correos que le
+            # siguieron llegando al proceso ya terminado, ver
+            # carpeta_de_correos) -- eso no es nada que revisar. Solo se
+            # advierte si quedaron archivos sueltos que no se pudieron mover.
+            if all(ruta.is_dir() for ruta in resto):
+                logging.info(
+                    "Proceso %s: se conserva la carpeta '%s' porque tiene subcarpeta(s) (%s).",
+                    proceso["numero"], nombre_viejo, ", ".join(sorted(r.name for r in resto)),
+                )
+            else:
+                logging.info(
+                    "Proceso %s: se conserva la carpeta '%s' con %d archivo(s) que no son el auto "
+                    "(o que no se pudieron mover) -- revisala cuando puedas.",
+                    proceso["numero"], nombre_viejo, sum(1 for r in resto if r.is_file()),
+                )
+            continue
+        try:
+            os.rmdir(organizador._ruta_larga_segura(str(carpeta_vieja)))
+        except OSError as error:
+            logging.warning("Proceso %s: no se pudo borrar la carpeta vacia '%s': %s", proceso["numero"], nombre_viejo, error)
+            continue
+        carpetas_existentes.discard(nombre_viejo)
+        carpetas_vaciadas += 1
+
+    if movidos or carpetas_vaciadas:
+        logging.info(
+            "[Terminados por auto] %d auto(s) %s a '%s'; %d carpeta(s) vieja(s) vacia(s) borrada(s).",
+            movidos, "se moverian (MODO_PRUEBA activo)" if MODO_PRUEBA else "movidos",
+            CARPETA_TERMINADOS_POR_AUTO, carpetas_vaciadas,
+        )
 
 
 def _listar_carpetas_existentes():
@@ -1160,9 +1371,34 @@ def _marcar_como_procesado(nombre_carpeta: str):
             f.write(nombre_carpeta + "\n")
 
 
-def _descargar_archivo(servicio, archivo, destino: Path) -> Path:
+def _nombre_destino(archivo, nombre_base: str) -> str:
+    """
+    Nombre final del archivo descargado cuando se va a RENOMBRAR (ej.
+    "245. TERMINADO POR AUTO.pdf"): 'nombre_base' + la extension que le
+    corresponde al documento. Los archivos nativos de Google (Doc,
+    Sheet, Slide) se exportan a PDF, asi que su extension siempre es
+    ".pdf"; para el resto se conserva la del original (aqui casi siempre
+    .pdf tambien -- ver buscador._es_pdf_o_exportable). La extension es
+    obligatoria: sin ella, un nombre como "245. TERMINADO POR AUTO"
+    haria que Path lo interpretara como extension ". TERMINADO POR AUTO".
+    """
+    if archivo["mimeType"] in buscador.MIME_EXPORTAR:
+        extension = buscador.MIME_EXPORTAR[archivo["mimeType"]][0]
+    else:
+        extension = Path(archivo.get("name", "")).suffix or ".pdf"
+    return organizador.sanear_nombre(f"{nombre_base}{extension}")
+
+
+def _descargar_archivo(servicio, archivo, destino: Path, nombre_base: str = None) -> Path:
+    """
+    Descarga 'archivo' de Drive dentro de 'destino'. Con 'nombre_base'
+    se guarda RENOMBRADO (ver _nombre_destino); sin el, conserva su
+    nombre original de Drive. Nunca pisa un archivo que ya exista: si el
+    nombre esta ocupado (ej. un proceso con auto de primera y de segunda
+    instancia) se guarda como "..._2", "..._3", etc.
+    """
     _crear_carpeta(destino)
-    nombre_seguro = organizador.sanear_nombre(archivo["name"])
+    nombre_seguro = _nombre_destino(archivo, nombre_base) if nombre_base else organizador.sanear_nombre(archivo["name"])
     ruta_local = buscador._ruta_archivo_libre(destino, nombre_seguro)
     if archivo["mimeType"] in buscador.MIME_EXPORTAR:
         buscador._exportar_google_doc(servicio, archivo["id"], archivo["mimeType"], ruta_local)
@@ -1186,7 +1422,7 @@ def procesar_con_radicado(proceso):
     """
     servicio = _servicio_del_hilo()
     numero, radicado = proceso["numero"], proceso["radicado"]
-    nombre_carpeta = proceso["nombre_carpeta"]
+    nombre_carpeta = proceso["carpeta_destino"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
 
     archivos = _buscar_archivos(servicio, radicado, proceso["cuentas"])
@@ -1234,10 +1470,18 @@ def procesar_terminado(proceso, pendientes) -> bool:
     proxima corrida) -- si queda pendiente, devuelve False para que se
     reintente la proxima vez. Corre en un hilo propio (ver
     _servicio_del_hilo) -- ver NUM_HILOS.
+
+    Para los "TERMINADO POR AUTO", el auto no se deja con el nombre que
+    traia en Drive: se guarda como "<numero del Excel>. <ESTADO
+    PROCESAL>.pdf" (ej. "245. TERMINADO POR AUTO.pdf") dentro de la
+    carpeta comun CARPETA_TERMINADOS_POR_AUTO. El resto de terminados
+    (pago/contrato/no inicio) sigue igual que antes: su propia carpeta y
+    el nombre original del documento.
     """
     servicio = _servicio_del_hilo()
     numero, estado, radicado = proceso["numero"], proceso["estado"], proceso["radicado"]
-    nombre_carpeta = proceso["nombre_carpeta"]
+    nombre_carpeta = proceso["carpeta_destino"]
+    nombre_archivo = proceso["nombre_archivo"]
     destino = Path(CARPETA_PROCESOS) / nombre_carpeta
 
     if not _terminos_busqueda(radicado, proceso["cuentas"]):
@@ -1259,9 +1503,13 @@ def procesar_terminado(proceso, pendientes) -> bool:
             continue
 
         if MODO_PRUEBA:
-            logging.info("[SIMULACION] Proceso %s (%s): subiria '%s' (termina el proceso) a '%s'.", numero, estado, archivo["name"], nombre_carpeta)
+            logging.info(
+                "[SIMULACION] Proceso %s (%s): subiria '%s' (termina el proceso) a '%s'%s.",
+                numero, estado, archivo["name"], nombre_carpeta,
+                f", renombrado como '{_nombre_destino(archivo, nombre_archivo)}'" if nombre_archivo else "",
+            )
         else:
-            ruta = _descargar_archivo(servicio, archivo, destino)
+            ruta = _descargar_archivo(servicio, archivo, destino, nombre_archivo)
             logging.info("[Descargado] Proceso %s (%s): '%s' -> %s", numero, estado, archivo["name"], ruta)
         encontrado = True
         # No se corta el ciclo: puede haber mas de un documento relevante (ej. primera y segunda instancia).
@@ -1311,6 +1559,11 @@ def procesar():
             )
 
     carpetas_existentes = _listar_carpetas_existentes()
+
+    # Antes de crear nada: los autos que corridas anteriores dejaron en la
+    # carpeta propia de cada proceso se recogen en la carpeta comun
+    # CARPETA_TERMINADOS_POR_AUTO, renombrados con el numero del proceso.
+    mover_autos_de_carpetas_antiguas(terminados, carpetas_existentes)
 
     # Se crean TODAS las carpetas de una vez, antes de ponerse a buscar
     # contenido -- para que las 1223 queden visibles en el disco desde

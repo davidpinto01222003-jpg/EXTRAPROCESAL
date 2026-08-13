@@ -690,6 +690,13 @@ expediente judicial activo -- así que la carpeta **no** se nombra
   prepago, etc) o con **`NO INICIO`**: **solo el número** -- ej.
   `"145."`.
 
+> Esto es el registro administrativo en el disco de procesos
+> (`CARPETA_PROCESOS` de `validar_renombrar_carpetas.py`), y sigue igual.
+> No confundir con `clasificar_procesos_ejecutivos.py`, que trabaja
+> sobre `INFORMACIÓN EXTRAPROCESAL` y ahí sí deja los `TERMINADO POR
+> AUTO` como un solo archivo renombrado dentro de `PROCESOS TERMINADOS
+> POR AUTO` (ver más abajo).
+
 Los procesos con un `ESTADO PROCESAL` que no encaje en ninguna de esas
 dos reglas (ej. `"DESISTIMIENTO DE PRETENSIONES"`, `"DEVUELTA INCURRIO
 EN GASTOS"`) se dejan **fuera a propósito** -- no se crea carpeta para
@@ -814,19 +821,48 @@ PROCESAL` de cada una:
 
 2. **Terminados por pago, por auto, por contrato/prepago, o que nunca
    se presentaron** (`ESTADO PROCESAL` que empieza con `TERMINADO` o
-   `NO INICIO` -- igual que `crear_carpetas_terminados_castigo.py`): la
-   carpeta se nombra `"<numero>. <ESTADO PROCESAL EXACTO del Excel>"`
-   (ej. `"245. TERMINADO POR AUTO"`), y **solo** se sube el documento
-   que deja constancia de que el proceso **no sigue su curso**
-   (termina por pago, acepta el retiro de la demanda, decreta
-   desistimiento/archivo, etc) -- no hace falta que diga literalmente
-   "auto". Si no se encuentra ese documento, el proceso queda listado
-   en `terminados_sin_auto_pendientes.csv` para que lo descargues a
-   mano.
+   `NO INICIO` -- igual que `crear_carpetas_terminados_castigo.py`):
+   **solo** se sube el documento que deja constancia de que el proceso
+   **no sigue su curso** (termina por pago, acepta el retiro de la
+   demanda, decreta desistimiento/archivo, etc) -- no hace falta que
+   diga literalmente "auto". Si no se encuentra ese documento, el
+   proceso queda listado en `terminados_sin_auto_pendientes.csv` para
+   que lo descargues a mano.
+
+   Dónde queda ese documento depende del estado:
+
+   - **`TERMINADO POR AUTO`**: estos procesos **no llevan carpeta
+     propia**. El auto se guarda **renombrado con el número de proceso
+     del Excel** -- `"<numero>. <ESTADO PROCESAL EXACTO>"` + su
+     extensión, ej. `"245. TERMINADO POR AUTO.pdf"` -- dentro de la
+     carpeta única **`PROCESOS TERMINADOS POR AUTO`**, para tenerlos
+     todos juntos y ordenados por número en vez de repartidos en
+     cientos de carpetas con un solo archivo adentro. Si un proceso
+     trae más de un auto (ej. primera y segunda instancia), el
+     siguiente queda como `"245. TERMINADO POR AUTO_2.pdf"` -- nunca se
+     pisa ni se borra nada.
+
+     Los autos que **corridas anteriores** hayan dejado en la carpeta
+     propia del proceso se recogen y renombran ahí mismo al empezar
+     cada corrida, y la carpeta vieja se borra **solo si quedó
+     completamente vacía**. Dentro de esas carpetas viejas solo se
+     mueve lo que de verdad parece el auto que termina el proceso
+     (mismo criterio que la descarga): una petición, una respuesta o un
+     anexo suelto se quedan donde están, porque renombrarlos
+     `"245. TERMINADO POR AUTO.pdf"` sería mentir sobre lo que son.
+     Si a uno de estos procesos ya terminados le sigue llegando correo
+     extraprocesal (ver `revisar_correo_pro.py`), ese correo tampoco se
+     mezcla con los autos: va a `"245. TERMINADO POR AUTO\CORREOS"`.
+   - **Los demás terminados** (pago, contrato/prepago, `NO INICIO`):
+     como siempre, carpeta propia `"<numero>. <ESTADO PROCESAL EXACTO
+     del Excel>"` (ej. `"300. TERMINADO POR PAGO"`) y el documento
+     conserva el nombre que traía en Drive.
 
 Con estas dos reglas, **toda** fila del Excel con `ESTADO PROCESAL`
-diligenciado recibe una carpeta (solo quedan sin carpeta las filas sin
-ese dato todavía).
+diligenciado queda organizada: con carpeta propia, o -- si es
+`TERMINADO POR AUTO` -- como un archivo con su número dentro de
+`PROCESOS TERMINADOS POR AUTO` (solo quedan por fuera las filas sin ese
+dato todavía).
 
 **Procesos acumulados**: el Excel repite el mismo número de proceso en
 varias filas cuando agrupa varias cuentas bajo un mismo radicado
@@ -1203,6 +1239,13 @@ comparando contra el Excel por **demandado**, **radicado** o **número
 de cuenta**. Lo que no coincide con ningún proceso **no se pierde**: se
 guarda en `_SIN CLASIFICAR - REVISAR A MANO` (una subcarpeta por
 correo) para que lo revises a mano.
+
+Única excepción de destino: los procesos `TERMINADO POR AUTO` ya no
+tienen carpeta propia (su auto vive renombrado dentro de `PROCESOS
+TERMINADOS POR AUTO`), así que un correo que le siga llegando a uno de
+ellos se guarda en `"<numero>. TERMINADO POR AUTO\CORREOS"` -- aparte,
+para que la carpeta de autos quede con **un solo archivo por proceso**
+y nada más.
 
 ### Por qué este sí funciona (y el paso 2 de `clasificar_por_demandado.py` no)
 
