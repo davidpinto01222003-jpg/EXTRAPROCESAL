@@ -180,6 +180,21 @@ PREFIJOS_ESTADO_TERMINADO = ("TERMINADO", "NO INICIO")
 # no tiene un documento que lo termine. Sigue con su carpeta propia.
 PREFIJOS_ESTADO_AGRUPADO = ("TERMINADO",)
 
+# Un RETIRO (o un DESISTIMIENTO) de la demanda termina el proceso por
+# auto, aunque el Excel no lo escriba con la palabra "TERMINADO": el
+# juzgado profiere un auto que acepta el retiro y el proceso no sigue su
+# curso. Asi que un proceso con uno de estos ESTADO PROCESAL cuenta como
+# terminado y su documento va a la MISMA carpeta que los terminados por
+# auto (ver carpeta_agrupada_para).
+#
+# El archivo, eso si, conserva el ESTADO EXACTO del Excel en su nombre
+# (ej. "812. RETIRO DE LA DEMANDA.pdf", no "812. TERMINADO POR AUTO.pdf"):
+# queda junto a los autos, que es lo util, pero sin decir del proceso
+# algo que el Excel no dice.
+PREFIJOS_ESTADO_COMO_TERMINADO_POR_AUTO = ("RETIRO", "RETIRADA", "DESISTIMIENTO", "DESISTIDA")
+
+CARPETA_TERMINADOS_POR_AUTO = "PROCESOS TERMINADOS POR AUTO"
+
 # En esas carpetas comunes va UNICAMENTE el documento que termina cada
 # proceso (un archivo por proceso, con el nombre del proceso). Si a un
 # proceso ya terminado igual le llega un correo extraprocesal (ver
@@ -305,13 +320,24 @@ PALABRAS_PROCESAL_EXCLUIR = [
 # desistimiento o archivo, etc) -- NO hace falta que el documento diga
 # literalmente "AUTO", con que aparezca cualquiera de estas frases
 # alcanza (ver es_auto_terminador).
+#
+# El RETIRO DE LA DEMANDA cuenta como una terminación por auto, y se
+# escribe de muchas formas ("retiro de la demanda", "retiro de
+# demanda", "retiro demanda", "se retira la demanda"...): están todas
+# porque cualquiera de ellas cierra el proceso igual. Lo que NO puede
+# entrar aquí es la palabra "RETIRO" sola: "retiro de títulos
+# judiciales" (sacar la plata depositada) es de lo más común en un
+# proceso ejecutivo y no lo termina -- por eso cada frase de retiro
+# nombra explícitamente la demanda o la acción.
 PALABRAS_PROCESO_NO_CONTINUA = [
     "TERMINA EL PROCESO", "TERMINACION DEL PROCESO", "SE DA POR TERMINADO",
     "TERMINADO EL PROCESO", "PROCESO TERMINADO", "DECLARA TERMINADO EL PROCESO",
     "TERMINACION POR PAGO", "TERMINACION POR CONTRATO", "TERMINACION DE LA OBLIGACION",
     "DECRETA LA TERMINACION", "DECRETA TERMINACION",
-    "ACEPTA EL RETIRO", "ACEPTA RETIRO DE LA DEMANDA", "RETIRO DE LA DEMANDA",
-    "SE RETIRA LA DEMANDA", "DESISTIMIENTO DEL PROCESO", "DESISTIMIENTO DE LA DEMANDA",
+    "ACEPTA EL RETIRO", "ACEPTA RETIRO",
+    "RETIRO DE LA DEMANDA", "RETIRO DE DEMANDA", "RETIRO DEMANDA",
+    "RETIRA LA DEMANDA", "RETIRAR LA DEMANDA", "RETIRO DE LA ACCION",
+    "DESISTIMIENTO DEL PROCESO", "DESISTIMIENTO DE LA DEMANDA",
     "APRUEBA EL DESISTIMIENTO", "ARCHIVA EL PROCESO", "ARCHIVESE EL PROCESO",
     "ARCHIVO DEL PROCESO", "CULMINA EL PROCESO", "FINALIZA EL PROCESO",
     "NO CONTINUA EL PROCESO", "CESE DE LA ACCION EJECUTIVA", "DA POR CONCLUIDO EL PROCESO",
@@ -422,15 +448,24 @@ def leer_procesos_control():
     return procesos
 
 
+def es_retiro_o_desistimiento(estado: str) -> bool:
+    """True si el ESTADO PROCESAL es un retiro/desistimiento de la demanda -- cuenta como terminado por auto."""
+    return estado.strip().upper().startswith(PREFIJOS_ESTADO_COMO_TERMINADO_POR_AUTO)
+
+
 def es_estado_agrupado(estado: str) -> bool:
     """
-    True si el ESTADO PROCESAL del Excel es un "terminado" de cualquier
-    tipo -- por auto, por pago, por contrato/prepago, etc (ver
-    PREFIJOS_ESTADO_AGRUPADO). Estos procesos no llevan carpeta propia:
-    el documento que los termina se guarda renombrado dentro de la
-    carpeta comun de su estado (ver carpeta_agrupada_para).
+    True si el ESTADO PROCESAL del Excel dice que el proceso ya no sigue
+    su curso: cualquier "TERMINADO" (por auto, por pago, por contrato/
+    prepago, ver PREFIJOS_ESTADO_AGRUPADO) y tambien los retiros y
+    desistimientos de la demanda (ver
+    PREFIJOS_ESTADO_COMO_TERMINADO_POR_AUTO). Estos procesos no llevan
+    carpeta propia: el documento que los termina se guarda renombrado
+    dentro de la carpeta comun que les corresponde (ver
+    carpeta_agrupada_para).
     """
-    return estado.strip().upper().startswith(PREFIJOS_ESTADO_AGRUPADO)
+    estado_limpio = estado.strip().upper()
+    return estado_limpio.startswith(PREFIJOS_ESTADO_AGRUPADO) or es_retiro_o_desistimiento(estado_limpio)
 
 
 def carpeta_agrupada_para(estado: str):
@@ -439,13 +474,17 @@ def carpeta_agrupada_para(estado: str):
     proceso con este ESTADO PROCESAL -- "PROCESOS TERMINADOS POR AUTO",
     "PROCESOS TERMINADOS POR PAGO", "PROCESOS TERMINADOS POR
     CONTRATO"... (el estado del Excel viene en singular, "TERMINADO POR
-    PAGO", y la carpeta se lee mejor en plural). None si ese estado no
+    PAGO", y la carpeta se lee mejor en plural). Un retiro o un
+    desistimiento de la demanda va a la carpeta de los terminados POR
+    AUTO: es un auto del juzgado el que lo cierra. None si ese estado no
     se agrupa (activos, suspendidos, NO INICIO, etc: carpeta propia de
     siempre).
     """
-    if not es_estado_agrupado(estado):
-        return None
     estado_limpio = estado.strip().upper()
+    if es_retiro_o_desistimiento(estado_limpio):
+        return CARPETA_TERMINADOS_POR_AUTO
+    if not estado_limpio.startswith(PREFIJOS_ESTADO_AGRUPADO):
+        return None
     return organizador.sanear_nombre("PROCESOS " + estado_limpio.replace("TERMINADO", "TERMINADOS", 1))
 
 
@@ -479,16 +518,19 @@ def clasificar_procesos(procesos):
     sus cuentas/demandados/filas del Excel -- nunca se crean carpetas
     "_2", "_3" por tener más de una cuenta.
 
-    EXCEPCIÓN -- "TERMINADO POR AUTO" (ver
-    PREFIJO_ESTADO_TERMINADO_POR_AUTO): esos procesos no llevan carpeta
-    propia. Su "nombre_carpeta" se sigue calculando igual (es la
+    Cuenta como "terminado" cualquier `TERMINADO`, `NO INICIO`, y
+    también los retiros/desistimientos de la demanda (ver
+    `es_estado_agrupado`): en todos ellos lo que hay que buscar es el
+    documento que cierra el proceso, no información no procesal.
+
+    EXCEPCIÓN -- los terminados (ver `es_estado_agrupado`) no llevan
+    carpeta propia. Su "nombre_carpeta" se sigue calculando igual (es la
     identidad del proceso: la clave para agrupar filas del mismo caso y
     para ARCHIVO_PROCESADOS), pero su destino en el disco es la carpeta
     común de su estado (ver carpeta_agrupada_para), y el documento que
-    se descargue se
-    guarda ahí con ese mismo nombre ("nombre_archivo", ej. "245.
-    TERMINADO POR AUTO" + la extensión del documento). Por eso cada
-    proceso lleva:
+    se descargue se guarda ahí con ese mismo nombre ("nombre_archivo",
+    ej. "245. TERMINADO POR AUTO" + la extensión del documento). Por eso
+    cada proceso lleva:
       - nombre_carpeta:  identidad del proceso (no cambia).
       - carpeta_destino: carpeta REAL en el disco donde va su contenido.
       - nombre_archivo:  con qué nombre se guarda lo que se descargue,
@@ -505,7 +547,10 @@ def clasificar_procesos(procesos):
 
         numero, estado = fila["numero"], fila["estado"]
 
-        if estado.upper().startswith(PREFIJOS_ESTADO_TERMINADO):
+        if estado.upper().startswith(PREFIJOS_ESTADO_TERMINADO) or es_retiro_o_desistimiento(estado):
+            # Un retiro/desistimiento de la demanda tampoco sigue su
+            # curso: se trata como terminado (se busca el auto que lo
+            # cierra, no informacion no procesal).
             base = terminados_folder._nombre_carpeta_para(numero, estado) or f"{numero}. {estado}"
             grupo = terminados_por_nombre
         else:

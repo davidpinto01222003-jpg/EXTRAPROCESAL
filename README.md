@@ -862,6 +862,15 @@ PROCESAL` de cada una:
      Si a uno de estos procesos ya terminados le sigue llegando correo
      extraprocesal (ver `revisar_correo_pro.py`), ese correo tampoco se
      mezcla ahí: va a `"245. TERMINADO POR AUTO\CORREOS"`.
+   - **Retiro o desistimiento de la demanda** (`ESTADO PROCESAL` que
+     empieza con `RETIRO`, `RETIRADA`, `DESISTIMIENTO` o `DESISTIDA`):
+     **cuenta como terminación por auto**, aunque el Excel no use la
+     palabra "terminado" -- es un auto del juzgado el que acepta el
+     retiro y cierra el proceso. Va a `PROCESOS TERMINADOS POR AUTO`,
+     junto a los demás autos. El archivo, eso sí, conserva el estado
+     exacto del Excel en su nombre (`812. RETIRO DE LA DEMANDA.pdf`, no
+     `812. TERMINADO POR AUTO.pdf`): queda donde es útil, sin decir del
+     proceso algo que el Excel no dice.
    - **`NO INICIO`** (nunca se presentó la demanda, así que no hay un
      documento que lo termine): como siempre, carpeta propia
      `"<numero>. <ESTADO PROCESAL EXACTO del Excel>"` y el documento
@@ -1418,11 +1427,18 @@ Para cada archivo de Descargas (PDF/DOCX sueltos, en subcarpetas, o
 dentro de un `.zip`):
 
 1. Le lee el nombre y el texto y decide si es el **documento que
-   termina un proceso** -- auto de terminación, de aceptación de retiro
-   de la demanda, de desistimiento, de archivo, una terminación por
-   pago, etc (mismo criterio que `clasificar_procesos_ejecutivos.py`:
-   no hace falta que diga literalmente "auto"). Todo lo demás que
-   tengas en Descargas se ignora en silencio.
+   termina un proceso** -- auto de terminación, de archivo, una
+   terminación por pago, un **retiro de la demanda** (escrito como sea:
+   "retiro de la demanda", "retiro de demanda", "se retira la demanda",
+   "acepta retiro"...), un desistimiento, etc (mismo criterio que
+   `clasificar_procesos_ejecutivos.py`: no hace falta que diga
+   literalmente "auto"). Todo lo demás que tengas en Descargas se
+   ignora en silencio.
+
+   Ojo con un caso que **no** cuenta: el *retiro de títulos judiciales*
+   (sacar la plata depositada) es de lo más común en un ejecutivo y no
+   termina nada, así que la palabra "retiro" sola nunca alcanza -- la
+   frase tiene que nombrar la demanda o la acción.
 
    Si el **nombre** del archivo ya dice que es otra cosa (una demanda,
    un memorial, unos anexos, un mandamiento, un embargo...) se descarta
@@ -1451,8 +1467,9 @@ dentro de un `.zip`):
    El log y el reporte siempre dicen **por cuál criterio** se decidió,
    para que puedas verificarlo de un vistazo.
 3. Si ese proceso figura en el Excel como **`TERMINADO`** -- por auto,
-   por pago, por contrato/prepago, **cualquier terminado** -- **mueve
-   el archivo renombrado con el número de proceso** (`245. TERMINADO
+   por pago, por contrato/prepago, **cualquier terminado**, más los
+   retiros y desistimientos de la demanda -- **mueve el archivo
+   renombrado con el número de proceso** (`245. TERMINADO
    POR AUTO.pdf`, `300. TERMINADO POR PAGO.pdf`) a la carpeta común de
    ese estado (`PROCESOS TERMINADOS POR AUTO`, `PROCESOS TERMINADOS POR
    PAGO`...), las mismas que usa `clasificar_procesos_ejecutivos.py`.
