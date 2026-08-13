@@ -135,7 +135,7 @@ import validar_renombrar_carpetas as cruce_excel
 # ============================= CONFIGURACION =============================
 
 # Ruta al informe de Excel de procesos ejecutivos (.xlsm).
-RUTA_EXCEL_CONTROL = r"C:\Users\Francy\OneDrive\INFORME ENTREGA ESSA\3. CONTROL PROCESOS EJECUTIVOS ESSA 29072026 .xlsm"
+RUTA_EXCEL_CONTROL = r"C:\Users\Owner\Documents\CJURIDICO\3. CONTROL PROCESOS EJECUTIVOS ESSA 29072026.xlsm"
 
 # Hoja del Excel a leer -- "ACTIVOS" es la hoja que se mantiene al dia
 # (la que editas tu). NO usar "DatosProcesados1" ni las demas hojas
@@ -181,11 +181,19 @@ CARPETA_TERMINADOS_POR_AUTO = "PROCESOS TERMINADOS POR AUTO"
 # carpeta de autos. Ver carpeta_de_correos().
 SUBCARPETA_CORREOS_TERMINADOS_POR_AUTO = "CORREOS"
 
-# Carpeta donde se crean las carpetas de cada proceso. A diferencia del
-# resto del proyecto (que usa CARPETA_PROCESOS de validar_renombrar_carpetas.py,
+# Carpeta donde se crean las carpetas de cada proceso (y, dentro de
+# ella, "PROCESOS TERMINADOS POR AUTO"). A diferencia del resto del
+# proyecto (que usa CARPETA_PROCESOS de validar_renombrar_carpetas.py,
 # un disco duro externo detectado por etiqueta), este script tiene su
 # PROPIO destino fijo -- no depende de ningun disco externo.
-CARPETA_PROCESOS = r"C:\Users\Francy\Documents\INFORMACIÓN EXTRAPROCESAL"
+#
+# OJO: apunta directo a "Documents", asi que "PROCESOS TERMINADOS POR
+# AUTO" queda ahi mismo. Si algun dia corres la busqueda en Drive
+# (clasificar_procesos_ejecutivos.py), esa si crea UNA CARPETA POR
+# PROCESO (mas de mil) aqui adentro -- si prefieres que no se mezclen
+# con el resto de tus documentos, cambia esta linea por algo como
+# r"C:\Users\Owner\Documents\INFORMACIÓN EXTRAPROCESAL".
+CARPETA_PROCESOS = r"C:\Users\Owner\Documents"
 
 ARCHIVO_LOG = os.path.join(os.path.dirname(__file__), "clasificar_procesos_ejecutivos.log")
 
