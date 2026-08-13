@@ -1397,6 +1397,64 @@ Cada punto corresponde a un fallo real que se vio en la práctica:
 Necesita `credenciales_sgde.txt` (las mismas de siempre, contraseña de
 aplicación de Gmail -- ver más abajo).
 
+## Organizar los autos que ya bajaste a Descargas (sin tocar Drive) ⭐
+
+`organizar_autos_descargados.py` (o su iniciador
+`organizar_autos_descargados.bat`) es la forma **rápida** de organizar
+los autos: revisa **tu carpeta de Descargas**, no Google Drive. No
+necesita credenciales, no depende de la red y no se demora horas -- solo
+mira lo que ya está en tu disco.
+
+Para cada archivo de Descargas (PDF/DOCX sueltos, en subcarpetas, o
+dentro de un `.zip`):
+
+1. Le lee el nombre y el texto y decide si es el **auto que termina un
+   proceso** -- auto de terminación, de aceptación de retiro de la
+   demanda, de desistimiento, de archivo, etc (mismo criterio que
+   `clasificar_procesos_ejecutivos.py`: no hace falta que diga
+   literalmente "auto"). Todo lo demás que tengas en Descargas se
+   ignora en silencio.
+2. Lo empareja con su proceso del Excel por **radicado** (con o sin
+   guiones), **cuenta** o **demandado** -- el mismo emparejamiento que
+   usa `revisar_correo_pro.py` para los correos.
+3. Si ese proceso figura en el Excel como `TERMINADO POR AUTO`, **mueve
+   el archivo renombrado con el número de proceso** (ej. `245.
+   TERMINADO POR AUTO.pdf`) a la carpeta `PROCESOS TERMINADOS POR
+   AUTO`, la misma que usa `clasificar_procesos_ejecutivos.py`.
+
+Lo que **no se puede decidir solo, no se toca**: se queda en Descargas
+y sale listado en `autos_descargados_a_revisar.csv` (y en el log) con
+el motivo:
+
+- No coincide con ningún proceso del Excel.
+- Coincide con **varios** procesos terminados por auto (sin abrirlo no
+  hay forma de saber cuál es).
+- Coincide con un proceso que en el Excel **no** figura como `TERMINADO
+  POR AUTO` (ej. sigue como `ACTIVO`) -- ahí lo que hay que revisar es
+  el Excel, no el archivo. El reporte te dice el número y el estado.
+
+Detalles:
+
+- **Nunca borra ni sobreescribe nada.** Si el proceso ya tiene un auto
+  guardado (primera y segunda instancia), el nuevo queda como `245.
+  TERMINADO POR AUTO_2.pdf`.
+- Los `.zip` **no se tocan ni se borran**: si adentro viene el auto, se
+  extrae una copia ya renombrada y el zip se queda igual.
+- Por defecto revisa los archivos modificados en los **últimos 60
+  días** (`DIAS_HACIA_ATRAS`, ponlo en `0` para revisar todo) y **mueve**
+  el archivo, dejando Descargas limpia (`MOVER_EN_VEZ_DE_COPIAR = False`
+  si prefieres que se copie y el original se quede donde está).
+- La subcarpeta `Procesados` de Descargas se omite siempre.
+- Respeta `MODO_PRUEBA` (por defecto `True`): primero corre así, revisa
+  en el log qué movería y con qué nombre, y solo entonces ponlo en
+  `False`.
+
+> Este script y `clasificar_procesos_ejecutivos.py` se complementan:
+> este organiza lo que **tú** bajaste a Descargas; el otro sale a
+> **buscarlo a Drive** cuando no lo tienes. Los dos dejan el auto en el
+> mismo sitio y con el mismo nombre, así que puedes usar el que te
+> convenga sin que se pisen.
+
 ## Listar terminados por auto o por pago (partes y radicado)
 
 `listar_terminados_auto_pago.py` (o su iniciador
