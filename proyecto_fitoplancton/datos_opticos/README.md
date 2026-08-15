@@ -33,3 +33,18 @@ del archivo de origen y por eso esa campaña queda fuera del reparto de la absor
 Se recorrieron todas las celdas de las siete hojas de los siete libros, incluidas filas
 y columnas ocultas y nombres definidos. No hay nitratos, ni fosfatos, ni silicatos, ni
 sólidos suspendidos totales, ni coordenadas geográficas, ni fechas de campaña.
+
+## Censo final de los libros
+
+Se hizo un segundo censo, esta vez de bloques numéricos y no de etiquetas, para descartar
+que quedara información sin usar. Los bloques que no se aprovechan son estos, y en los
+tres casos por buena razón:
+
+| Bloque | Por qué no se usa |
+|---|---|
+| Espectros de aCDOM modelados, en todos los libros | Reconstrucción exponencial del espectro medido, que sí se usa |
+| Hoja `Varias longitudes de onda` | Extracto del espectro completo a diez longitudes de onda, ya disponible en las hojas de origen |
+| Tabla de códigos BC en el libro de la campaña lluviosa de 2023 | Correspondencia entre el código de estación y el código de laboratorio del CDOM, sin valor analítico |
+| Bloque Q a AC de `aphy-Especifico` en esa misma campaña | Celdas con error de división, porque esa campaña no tiene clorofila |
+
+Con eso, todo lo que contiene información aprovechable quedó incorporado al análisis.

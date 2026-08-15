@@ -467,6 +467,17 @@ cap += tabla([2500, 1600, 1500, 1500, 2900], [
     ['Salinidad', '+0,0031', '0,0017', '0,077', 'Marginal'],
     ['Logaritmo de la turbidez', '+0,0313', '0,0203', '0,127', 'No significativo'],
     ['Ajuste global', 'R cuadrado de 0,096', '', '', 'R cuadrado ajustado de 0,070']])
+cap += par('Los libros de espectros aportan dos variables ópticas que la base ambiental no recoge y que '
+           'pueden entrar al modelo: la absorción del material no algal a 443 nm, que es el equivalente '
+           'óptico de los sólidos suspendidos, y la absorción de la materia orgánica disuelta a la misma '
+           'longitud de onda. Sobre las 46 estaciones que disponen de las cinco variables, el ajuste sube '
+           'de un coeficiente de determinación de 0,119 a uno de 0,262, y de 0,056 a 0,170 en su versión '
+           'ajustada. El único término significativo del modelo ampliado es la absorción de la materia '
+           'orgánica disuelta, con un coeficiente negativo y una probabilidad de 0,009, lo que refuerza la '
+           'lectura estuarina: donde hay más materia orgánica disuelta, que es donde descarga el Canal del '
+           'Dique, el índice baja y las células son mayores. La mejora es real pero insuficiente, y '
+           'confirma que el paso siguiente pasa por incorporar la clorofila a de todas las campañas y los '
+           'nutrientes.')
 cap += par('La temperatura, la salinidad y la turbidez explican en conjunto menos del diez por ciento de '
            'la variabilidad del índice, y solo la temperatura resulta significativa. El resultado delimita '
            'el alcance del modelo descriptivo: la estructura de tamaños del fitoplancton en la bahía no '
