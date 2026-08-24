@@ -1,18 +1,35 @@
-// Datos comunes de los tres derechos de petición
-const PETICIONARIO = {
+// Datos de los derechos de petición por prescripción de multas de tránsito
+
+// Membrete (constante: es el papel del abogado, no del peticionario)
+const MEMBRETE = {
+  tel: "+57 317 866 6318",
+  email: "22jorgecaicedo@gmail.com",
+};
+
+// ---------------------------------------------------------------- peticionarios
+const RAFAEL = {
   nombre: "RAFAEL LÓPEZ GUTIÉRREZ",
   cc: "1.098.650.278",
   domicilio: "____________________",
-  email: "RafaelJoshua2611@gmail.com",
-  tp: "____________",
-  cel: "____________",
-  direccion: "________________________________",
-  ciudadFirma: "Bucaramanga",
-  // Membrete (Jorge David Caicedo Pinto)
-  telMembrete: "+57 317 866 6318",
-  emailMembrete: "22jorgecaicedo@gmail.com",
-  fechaLarga: "agosto de 2026",
+  emailNotif: "RafaelJoshua2611@gmail.com",
   ciudadNotif: "____________________",
+  direccion: "________________________________",
+  cel: "____________",
+  ciudadFirma: "Bucaramanga",
+  fechaLarga: "agosto de 2026",
+};
+
+const BRAHAYAN = {
+  nombre: "BRAHAYAN CAMILO ROSSO VACCA",
+  cc: "1.095.834.547",
+  domicilio: "____________________",
+  // no se suministró correo propio: se usa el del membrete, como en el modelo de Aguachica
+  emailNotif: "22jorgecaicedo@gmail.com",
+  ciudadNotif: "____________________",
+  direccion: "________________________________",
+  cel: "____________",
+  ciudadFirma: "Bucaramanga",
+  fechaLarga: "agosto de 2026",
 };
 
 const DESTINOS = [
@@ -22,6 +39,7 @@ const DESTINOS = [
     dependencia: "Grupo de Cobro Coactivo / Oficina Asesora Jurídica",
     ciudad: "Bucaramanga, Santander",
     nombreCorto: "Bucaramanga",
+    pet: RAFAEL,
     comparendos: [
       {
         numero: "68001000000020138305",
@@ -73,6 +91,7 @@ const DESTINOS = [
     dependencia: "O quien haga sus veces como autoridad de tránsito – Cobro Coactivo",
     ciudad: "Curití, Santander",
     nombreCorto: "Curití",
+    pet: RAFAEL,
     comparendos: [
       {
         numero: "99999999000003896745",
@@ -96,6 +115,7 @@ const DESTINOS = [
     dependencia: "O quien haga sus veces como autoridad de tránsito – Cobro Coactivo",
     ciudad: "El Playón, Santander",
     nombreCorto: "El Playón",
+    pet: RAFAEL,
     comparendos: [
       {
         numero: "99999999000004573988",
@@ -113,6 +133,30 @@ const DESTINOS = [
       },
     ],
   },
+  {
+    archivo: "DP-PRESCRIPCION-FLORIDABLANCA",
+    entidad: "DIRECCIÓN DE TRÁNSITO DE FLORIDABLANCA",
+    dependencia: "O quien haga sus veces como autoridad de tránsito – Cobro Coactivo",
+    ciudad: "Floridablanca, Santander",
+    nombreCorto: "Floridablanca",
+    pet: BRAHAYAN,
+    comparendos: [
+      {
+        numero: "68276000000020098264",
+        fechaCorta: "27/07/2021",
+        fechaLarga: "27 de julio de 2021",
+        hora: "17:40",
+        lugar: "PARALELA ORIENTAL, Floridablanca",
+        codigo: "C24",
+        infraccion: "Conducir motocicleta sin observar las normas establecidas en el presente código.",
+        resolucion: "2021-319",
+        fechaResolucion: "9 de octubre de 2021",
+        coactivo: "MG-2060",
+        fechaCoactivo: "17 de mayo de 2023",
+        placa: null,
+      },
+    ],
+  },
 ];
 
-module.exports = { PETICIONARIO, DESTINOS };
+module.exports = { MEMBRETE, DESTINOS };

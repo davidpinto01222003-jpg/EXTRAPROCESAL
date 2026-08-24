@@ -4,7 +4,7 @@ const {
   Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle,
   Header, Footer, ImageRun, PageOrientation, LevelFormat, convertInchesToTwip,
 } = require("docx");
-const { PETICIONARIO: P, DESTINOS } = require("./datos.js");
+const { MEMBRETE, DESTINOS } = require("./datos.js");
 
 const FUENTE = "Arial";
 const T = 22; // 11 pt
@@ -63,9 +63,9 @@ const pie = () => new Footer({
       children: [
         // los glifos van en Segoe UI Symbol, igual que en el membrete original
         new TextRun({ text: "\u260E", font: "Segoe UI Symbol", size: 17, color: "777777" }),
-        new TextRun({ text: "  " + P.telMembrete + "      ", font: FUENTE, size: 17, color: "777777" }),
+        new TextRun({ text: "  " + MEMBRETE.tel + "      ", font: FUENTE, size: 17, color: "777777" }),
         new TextRun({ text: "\u2709", font: "Segoe UI Symbol", size: 17, color: "777777" }),
-        new TextRun({ text: "  " + P.emailMembrete, font: FUENTE, size: 17, color: "777777" }),
+        new TextRun({ text: "  " + MEMBRETE.email, font: FUENTE, size: 17, color: "777777" }),
       ],
     }),
   ],
@@ -73,6 +73,7 @@ const pie = () => new Footer({
 
 // ---------- cuerpo (modelo Aguachica) ----------
 function construirCuerpo(d) {
+  const P = d.pet;
   const n = d.comparendos.length;
   const pl = n > 1;
   const h = [];
@@ -166,7 +167,7 @@ function construirCuerpo(d) {
   h.push(par([run("Teléfono: ", { bold: true }), run(P.cel)], { after: 180 }));
   h.push(par([
     run("Y las notificaciones por correo electrónico a la dirección "),
-    run(P.email, { bold: true }),
+    run(P.emailNotif, { bold: true }),
   ], { after: 420 }));
 
   // ----- firma -----
@@ -194,7 +195,7 @@ const numeracion = {
 (async () => {
   for (const d of DESTINOS) {
     const doc = new Document({
-      creator: P.nombre,
+      creator: d.pet.nombre,
       title: `Derecho de Petición – Prescripción – ${d.nombreCorto}`,
       description: "Derecho de petición para declaratoria oficiosa de prescripción de sanciones por infracciones de tránsito",
       styles: { default: { document: { run: { font: FUENTE, size: T } } } },
