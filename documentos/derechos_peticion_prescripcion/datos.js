@@ -2,13 +2,17 @@
 const PETICIONARIO = {
   nombre: "RAFAEL LÓPEZ GUTIÉRREZ",
   cc: "1.098.650.278",
-  ccExp: "Bucaramanga, Santander",
+  domicilio: "____________________",
   email: "RafaelJoshua2611@gmail.com",
   tp: "____________",
   cel: "____________",
   direccion: "________________________________",
   ciudadFirma: "Bucaramanga",
-  fechaLarga: "24 de agosto de 2026",
+  // Membrete (Jorge David Caicedo Pinto)
+  telMembrete: "+57 317 866 6318",
+  emailMembrete: "22jorgecaicedo@gmail.com",
+  fechaLarga: "agosto de 2026",
+  ciudadNotif: "____________________",
 };
 
 const DESTINOS = [
