@@ -1,0 +1,49 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Certificaciones anexas
+!FOOTER Certificaciones anexas al documento de constitución
+#T Certificación de pago del capital suscrito
+#ST NOVA BIENESTAR INTEGRAL S.A.S. — En constitución
+#R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
+#SP
+#P Los suscritos, **MARIANA LÓPEZ CASTAÑO**, identificada con cédula de ciudadanía n.º 1.039.672.481 expedida en Medellín, en su calidad de **representante legal** designada de la sociedad NOVA BIENESTAR INTEGRAL S.A.S., y **[NOMBRE DEL CONTADOR PÚBLICO]**, identificado(a) con cédula de ciudadanía n.º [__________] y portador(a) de la tarjeta profesional n.º [__________] expedida por la Junta Central de Contadores, en su calidad de **contador(a) público(a) independiente** de la sociedad,
+#C **CERTIFICAN:**
+#P **PRIMERO.** Que la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.** se constituyó mediante documento privado suscrito el primero (1) de octubre de dos mil veintiséis (2026), en la ciudad de Medellín (Antioquia), por los señores Mariana López Castaño y Felipe Andrés Gómez Vélez.
+#P **SEGUNDO.** Que el **capital autorizado** de la sociedad asciende a la suma de **MIL DOSCIENTOS MILLONES DE PESOS ($1.200.000.000) moneda corriente**, representado en un millón doscientas mil (1.200.000) acciones ordinarias, nominativas y de capital, de valor nominal de mil pesos ($1.000) cada una.
+#P **TERCERO.** Que el **capital suscrito** de la sociedad asciende a la suma de **SEISCIENTOS MILLONES DE PESOS ($600.000.000) moneda corriente**, representado en seiscientas mil (600.000) acciones ordinarias, nominativas y de capital, de valor nominal de mil pesos ($1.000) cada una, distribuidas así:
+#TW 34,17,17,16,16
+#TH Accionista | Documento | Acciones | Valor suscrito | Porcentaje
+#TR Mariana López Castaño | C.C. 1.039.672.481 | 390.000 | $390.000.000 | 65 %
+#TR Felipe Andrés Gómez Vélez | C.C. 1.152.846.390 | 210.000 | $210.000.000 | 35 %
+#TH TOTALES | | 600.000 | $600.000.000 | 100 %
+#P **CUARTO.** Que el **capital pagado** de la sociedad asciende a la suma de **SEISCIENTOS MILLONES DE PESOS ($600.000.000) moneda corriente**, equivalente al **cien por ciento (100 %)** del capital suscrito, el cual fue cancelado **íntegramente en dinero en efectivo** por los accionistas en el acto de constitución, mediante consignación en la cuenta bancaria abierta a nombre de la sociedad en formación, cuyos soportes reposan en la contabilidad social.
+#P **QUINTO.** Que, en consecuencia, **no existe saldo pendiente de pago** por concepto de acciones suscritas y, por tanto, no resulta aplicable el plazo máximo de dos (2) años previsto en el **artículo 9.º de la Ley 1258 de 2008**, sin perjuicio de que dicho plazo rija para las emisiones de acciones que la sociedad realice con posterioridad.
+#P **SEXTO.** Que **no se efectuaron aportes en especie ni en industria**, razón por la cual no fue necesario el avalúo unánime de los accionistas de que trata el artículo 398 del Código de Comercio, ni el otorgamiento de escritura pública en los términos del parágrafo 2.º del artículo 5.º de la Ley 1258 de 2008.
+#P **SÉPTIMO.** Que los **activos totales** de la sociedad, a la fecha de esta certificación, ascienden a la suma de **SEISCIENTOS MILLONES DE PESOS ($600.000.000) moneda corriente**, cifra que se reportará como total de activos en el formulario del Registro Único Empresarial y Social (RUES).
+#P **OCTAVO.** Que la sociedad abrirá un **establecimiento de comercio** denominado **"NOVA BIENESTAR"**, ubicado en la carrera 37 n.º 10A-58, oficina 804, de Medellín, cuyos activos vinculados ascienden a **CINCUENTA Y CINCO MILLONES DE PESOS ($55.000.000) moneda corriente**.
+#P La presente certificación se expide en Medellín (Antioquia), al primer (1) día del mes de octubre de dos mil veintiséis (2026), con destino a la Cámara de Comercio de Medellín para Antioquia y a las demás entidades que la requieran.
+#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal||[NOMBRE DEL CONTADOR PÚBLICO]|C.C. n.º ____________|T.P. n.º ____________ - JCC|Contador(a) público(a)
+#PB
+#T Declaración juramentada de cumplimiento de requisitos
+#ST Ley 1780 de 2016 — Pequeña empresa joven
+#R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
+#SP
+#P **Señores**
+#P **CÁMARA DE COMERCIO DE MEDELLÍN PARA ANTIOQUIA**
+#P Departamento de Registros Públicos
+#P Medellín (Antioquia)
+#SP
+#P **Referencia:** Solicitud de aplicación del beneficio de exención del pago de los derechos de matrícula mercantil, artículo 3.º de la Ley 1780 de 2016 — **NOVA BIENESTAR INTEGRAL S.A.S.**
+#SP
+#P Respetados señores:
+#P Los suscritos accionistas constituyentes de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, obrando en nombre propio y en representación de la sociedad en formación, declaramos **bajo la gravedad del juramento**, que se entiende prestado con la firma del presente documento, lo siguiente:
+#P **PRIMERO — Inicio de la actividad económica.** Que la sociedad **inicia su actividad económica principal** con posterioridad a la promulgación de la Ley 1780 de 2016 y, concretamente, a partir de la fecha de inscripción de su documento de constitución en el registro mercantil.
+#P **SEGUNDO — Requisito de participación accionaria juvenil.** Que la accionista **MARIANA LÓPEZ CASTAÑO**, identificada con cédula de ciudadanía n.º 1.039.672.481 de Medellín, tiene **treinta (30) años de edad** —esto es, se encuentra en el rango de dieciocho (18) a treinta y cinco (35) años exigido por la ley— y es titular de **trescientas noventa mil (390.000) acciones**, equivalentes al **sesenta y cinco por ciento (65 %)** del capital suscrito, participación que supera **la mitad más uno** de las acciones en circulación, tal como lo exige el numeral 2.º del artículo 2.º de la Ley 1780 de 2016 para las personas jurídicas.
+#P **TERCERO — Requisito de planta de personal.** Que la sociedad iniciará operaciones con **nueve (9) trabajadores**, cifra que no supera el límite de **cincuenta (50) trabajadores** previsto en la ley.
+#P **CUARTO — Requisito de activos totales.** Que los **activos totales** de la sociedad ascienden a **SEISCIENTOS MILLONES DE PESOS ($600.000.000)**, suma que no supera el equivalente a **cinco mil (5.000) salarios mínimos legales mensuales vigentes**.
+#P **QUINTO — Solicitud.** Que, en virtud de lo anterior, y por reunir la totalidad de los requisitos previstos en los artículos 2.º y 3.º de la Ley 1780 de 2016, reglamentados por el Decreto 639 de 2017 (incorporado al Decreto Único Reglamentario 1074 de 2015), solicitamos respetuosamente la aplicación del beneficio de **exención del pago de los derechos de matrícula mercantil y de su primera renovación**.
+#P **SEXTO — Alcance del beneficio.** Que conocemos y aceptamos que el beneficio solicitado **no comprende** el impuesto de registro de carácter departamental, los derechos de inscripción de actos y documentos, los derechos de inscripción de libros, ni el valor de los certificados y formularios; y que, conforme al parágrafo del artículo 3.º de la Ley 1780 de 2016, la exención **no exceptúa** a la sociedad del cumplimiento de sus obligaciones tributarias, laborales y mercantiles.
+#P **SÉPTIMO — Conservación del beneficio.** Que conocemos que, para conservar la exención en la primera renovación, deberemos renovar la matrícula mercantil **a más tardar el 31 de marzo** del año siguiente y mantener las condiciones que dieron origen al beneficio, so pena de su pérdida.
+#P **OCTAVO — Veracidad.** Que la información aquí consignada es veraz y que autorizamos su verificación por parte de la Cámara de Comercio y de las autoridades competentes, asumiendo las consecuencias legales que se deriven de cualquier inexactitud.
+#P Atentamente,
+#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Accionista (65 %) - Representante legal||FELIPE ANDRÉS GÓMEZ VÉLEZ|C.C. 1.152.846.390 de Envigado|Accionista (35 %) - Representante legal suplente
+#SP
+#I Anexo sugerido: copia ampliada al 150 % de las cédulas de ciudadanía de ambos accionistas y del representante legal y su suplente, conforme lo solicita el levantamiento de información.

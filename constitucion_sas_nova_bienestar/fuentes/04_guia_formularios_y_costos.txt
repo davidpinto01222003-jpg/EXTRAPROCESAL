@@ -1,0 +1,186 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Guía de formularios y liquidación de derechos
+!FOOTER Guía de diligenciamiento de formularios — CCMA
+#T Guía de diligenciamiento de formularios y liquidación de derechos de registro
+#ST Constitución de NOVA BIENESTAR INTEGRAL S.A.S. ante la Cámara de Comercio de Medellín para Antioquia
+#P Este documento reúne, en un solo instrumento de trabajo, **la totalidad de los formularios que deben diligenciarse** para obtener la matrícula mercantil de la sociedad NOVA BIENESTAR INTEGRAL S.A.S. y de su establecimiento de comercio, con el valor concreto que debe consignarse en cada campo a partir del levantamiento de información, así como la **liquidación estimada de los derechos e impuestos** que causa el trámite.
+#I Advertencia metodológica: la numeración de casillas de los formularios (en especial la del formulario 001 de la DIAN y la del formulario RUES) es modificada periódicamente por la DIAN y por Confecámaras. Por esa razón, esta guía identifica cada campo **por su nombre**, no por su número de casilla, y debe contrastarse con la versión del formulario vigente al momento de la radicación. Los valores de los derechos se calculan con la **Unidad de Valor Básico (UVB) de 2026, fijada en $12.110** por la Resolución 3488 del 31 de diciembre de 2025 del Ministerio de Hacienda y Crédito Público.
+#1 1. Ruta del trámite y orden de los formularios
+#P El orden en que se diligencian los formularios no es indiferente: el número del formulario del RUT alimenta el formulario adicional de registro con otras entidades, y la matrícula del establecimiento de comercio depende de la matrícula previa de la persona jurídica. La secuencia correcta es la siguiente:
+#TW 8,32,60
+#TH Paso | Actuación | Observación
+#TR 1 | Consulta de homonimia del nombre en el RUES | Verificar que la denominación "NOVA BIENESTAR INTEGRAL S.A.S." no esté registrada por otro comerciante en el país (artículo 35 del Código de Comercio). Se realiza gratuitamente en www.rues.org.co.
+#TR 2 | Consulta de la clasificación por actividad económica (CIIU) | Determinar los códigos CIIU Rev. 4 A.C. principal y secundarios.
+#TR 3 | Consulta de uso del suelo | Verificar ante la Curaduría o la Secretaría de Gestión y Control Territorial de Medellín que la dirección permita la actividad.
+#TR 4 | Suscripción y autenticación del documento privado de constitución | Presentación personal ante el secretario de la Cámara o reconocimiento ante notario (artículo 40 del Código de Comercio).
+#TR 5 | Solicitud del RUT provisional (pre-RUT) ante la DIAN | Formulario 001. Genera el número de formulario que se traslada al formulario adicional de registro con otras entidades.
+#TR 6 | Diligenciamiento de la carátula única empresarial y sus anexos | Persona jurídica y establecimiento de comercio.
+#TR 7 | Diligenciamiento del formulario adicional de registro con otras entidades | DIAN, Municipio de Medellín y demás entidades.
+#TR 8 | Liquidación y pago del impuesto de registro | Gobernación de Antioquia; puede recaudarse a través de la Cámara por convenio.
+#TR 9 | Radicación del expediente y pago de derechos de registro | Presencial o virtual, en la sede virtual de la Cámara.
+#TR 10 | Inscripción de los libros de comercio | Libro de registro de accionistas y libro de actas de la asamblea.
+#TR 11 | Formalización del RUT y asignación definitiva del NIT | Una vez inscrita la sociedad, la DIAN formaliza el RUT.
+#TR 12 | Inscripción en el Registro de Información Tributaria (RIT) del Municipio de Medellín | Impuesto de industria y comercio.
+#P **Nota sobre la oportunidad del trámite.** El artículo 31 del Código de Comercio dispone que la solicitud de matrícula debe presentarse **dentro del mes siguiente** a la fecha en que la persona jurídica fue creada. Como el documento de constitución tiene fecha del **1.º de octubre de 2026**, la solicitud debe radicarse a más tardar el **1.º de noviembre de 2026**. La radicación extemporánea no impide la matrícula, pero expone a la sociedad a la sanción del artículo 37 del mismo código.
+#1 2. Formulario del Registro Único Tributario (RUT) — Formulario 001 de la DIAN
+#P Se diligencia en línea en el portal de la DIAN, seleccionando la opción de inscripción para persona jurídica **sin NIT asignado**. El documento resultante es el **RUT provisional o "pre-RUT"**, que debe imprimirse y anexarse al expediente de la Cámara. La DIAN formaliza el RUT y asigna el NIT definitivo una vez la Cámara comunica la matrícula.
+#TW 38,62
+#TH Campo del formulario 001 | Valor que debe diligenciarse
+#TR Tipo de contribuyente | Persona jurídica
+#TR Tipo de inscripción | Inscripción por primera vez, sin NIT asignado
+#TR Razón social | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR Nombre comercial | NOVA BIENESTAR
+#TR Sigla | (No se registra sigla distinta de la denominación)
+#TR País / Departamento / Municipio | Colombia / Antioquia / Medellín
+#TR Dirección principal | Carrera 37 n.º 10A-58, oficina 804
+#TR Correo electrónico | contacto@novabienestarintegral.com
+#TR Teléfono | 315 684 9271
+#TR Actividad económica principal (CIIU) | **8692** — Actividades de apoyo terapéutico
+#TR Actividad económica secundaria (CIIU) | **9311** — Gestión de instalaciones deportivas
+#TR Otra actividad (CIIU) | **9609** — Otras actividades de servicios personales n.c.p.
+#TR Fecha de inicio de actividad | 1.º de octubre de 2026
+#TR Representante legal | Mariana López Castaño — C.C. 1.039.672.481
+#TR Calidad de representante | Representante legal principal
+#TR Responsabilidades tributarias | Las que correspondan según el régimen: responsable de IVA (o no responsable, según los servicios efectivamente prestados y las exclusiones del artículo 476 del Estatuto Tributario), declarante de renta del régimen ordinario, agente de retención en la fuente e informante de exógena.
+#TR Condición de importador / exportador / usuario aduanero | **No aplica**, conforme al levantamiento de información
+#P **Punto crítico de verificación.** La denominación social registrada en el formulario del RUT debe ser **idéntica**, carácter por carácter, a la registrada en el formulario RUES y en el formulario adicional de registro con otras entidades. Lo mismo aplica al número telefónico. Cualquier discrepancia genera devolución del trámite.
+#P **Sobre el IVA.** Los servicios de salud humana prestados por instituciones prestadoras habilitadas se encuentran **excluidos** del impuesto sobre las ventas conforme al numeral 3.º del artículo 476 del Estatuto Tributario; en cambio, los servicios de gimnasio, acondicionamiento físico y bienestar corporal son **gravados**. Como NOVA BIENESTAR INTEGRAL S.A.S. desarrollará ambas líneas de negocio, deberá inscribirse como responsable de IVA y llevar contabilidad que permita diferenciar los ingresos excluidos de los gravados.
+#1 3. Carátula única empresarial y anexos (formularios del RUES)
+#P Los formularios del **Registro Único Empresarial y Social** están integrados por una **carátula única empresarial** —común a todos los registros— y por los **anexos** que correspondan según el sujeto que se matricula. Para este caso deben diligenciarse **dos** anexos: el de persona jurídica y el de establecimiento de comercio.
+#2 3.1. Carátula única empresarial — datos generales de la sociedad
+#TW 38,62
+#TH Campo | Valor que debe diligenciarse
+#TR Tipo de trámite | Matrícula (no renovación ni actualización)
+#TR Fecha de diligenciamiento | Fecha de radicación del trámite
+#TR Clase de persona | Persona jurídica
+#TR Tipo de organización jurídica | Sociedad por acciones simplificada
+#TR Categoría de la matrícula | Sociedad comercial
+#TR Razón social | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR Sigla | No aplica
+#TR Número de identificación tributaria (NIT) | El asignado en el RUT provisional, **sin dígito de verificación** en el cuerpo y con este en la casilla destinada al efecto
+#TR Fecha de constitución | 1.º de octubre de 2026
+#TR Domicilio principal (departamento / municipio) | Antioquia / Medellín
+#TR Dirección del domicilio principal | Carrera 37 n.º 10A-58, oficina 804
+#TR Barrio / zona | El correspondiente a la dirección (zona urbana)
+#TR Teléfono comercial 1 / celular | 315 684 9271
+#TR Correo electrónico comercial | contacto@novabienestarintegral.com
+#TR Dirección para notificación judicial | Carrera 37 n.º 10A-58, oficina 804, Medellín (Antioquia)
+#TR Correo electrónico de notificación judicial | contacto@novabienestarintegral.com
+#TR Página web | (Opcional)
+#TR Actividad económica principal (CIIU) | 8692
+#TR Actividades secundarias (CIIU) | 9311 y 9609
+#TR Fecha de inicio de la actividad económica principal | 1.º de octubre de 2026
+#TR Tamaño de la empresa | Microempresa o pequeña empresa, según el Decreto 957 de 2019 y el sector servicios (se determina por ingresos por actividades ordinarias)
+#TR Total de activos | $600.000.000
+#TR Total de pasivos | $0
+#TR Patrimonio | $600.000.000
+#TR Número total de personas ocupadas | 9
+#TR Número de mujeres empleadas | 5
+#TR Número de mujeres en cargos directivos | 2
+#TR Porcentaje de empleados temporales | 0 %
+#TR ¿Implementa procesos de innovación? | No
+#TR ¿Es importador, exportador o usuario aduanero? | No aplica
+#TR Beneficio Ley 1780 de 2016 | **Sí** — marcar la casilla y anexar la declaración juramentada correspondiente
+#TR Representante legal | Mariana López Castaño — C.C. 1.039.672.481 de Medellín
+#TR Firma | Del representante legal designado
+#2 3.2. Anexo de matrícula de persona jurídica
+#P Este anexo recoge la información societaria que se traslada al certificado de existencia y representación legal. Debe coincidir literalmente con el documento privado de constitución.
+#TW 38,62
+#TH Campo | Valor que debe diligenciarse
+#TR Denominación | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR Tipo societario | Sociedad por acciones simplificada (Ley 1258 de 2008)
+#TR Documento de constitución | Documento privado del 1.º de octubre de 2026
+#TR Domicilio | Medellín (Antioquia)
+#TR Término de duración | Indefinido
+#TR Objeto social | Prestación de servicios de bienestar, rehabilitación física y acondicionamiento integral (objeto determinado)
+#TR Capital autorizado | $1.200.000.000 — 1.200.000 acciones — valor nominal $1.000
+#TR Capital suscrito | $600.000.000 — 600.000 acciones — valor nominal $1.000
+#TR Capital pagado | $600.000.000 — 600.000 acciones — valor nominal $1.000
+#TR Clase de acciones | Ordinarias, nominativas y de capital
+#TR Representante legal principal | Mariana López Castaño — C.C. 1.039.672.481 de Medellín
+#TR Representante legal suplente | Felipe Andrés Gómez Vélez — C.C. 1.152.846.390 de Envigado
+#TR Órgano de administración | Asamblea general de accionistas y representante legal (sin junta directiva)
+#TR Revisor fiscal | No se designa (no obligatorio)
+#TR Facultades y limitaciones del representante legal | Autorización previa de la asamblea para actos superiores a 500 SMLMV y para gravar o enajenar inmuebles
+#P **Advertencia específica de la Cámara de Comercio de Medellín.** En materia de capital, la guía registral de esta Cámara exige indicar **simultáneamente** tres datos por cada uno de los tres capitales: (i) la cuantía en pesos, (ii) el número de acciones y (iii) el valor nominal de cada acción; y, tratándose del capital suscrito, además la **clase de acciones**. La omisión de cualquiera de estos elementos da lugar a devolución del documento.
+#2 3.3. Anexo de matrícula de establecimiento de comercio
+#P Se diligencia un anexo por cada establecimiento. En este caso, uno solo.
+#TW 38,62
+#TH Campo | Valor que debe diligenciarse
+#TR Tipo de trámite | Matrícula
+#TR Nombre del establecimiento | NOVA BIENESTAR
+#TR Propietario | NOVA BIENESTAR INTEGRAL S.A.S. — NIT asignado
+#TR Dirección del establecimiento | Carrera 37 n.º 10A-58, oficina 804
+#TR Municipio / departamento | Medellín / Antioquia
+#TR Teléfono | 315 684 9271
+#TR Correo electrónico | contacto@novabienestarintegral.com
+#TR Fecha de apertura | 1.º de octubre de 2026
+#TR Actividad económica (CIIU) | 8692 (principal); 9311 y 9609 (secundarias)
+#TR Total de activos vinculados al establecimiento | $55.000.000
+#TR Número de personas ocupadas en el establecimiento | 9
+#TR ¿Es sucursal o agencia? | No; es establecimiento de comercio
+#TR Firma | Del representante legal
+#2 3.4. Formulario adicional de registro con otras entidades
+#P Es el formulario mediante el cual la Cámara traslada la información a la DIAN, al municipio y a las demás entidades vinculadas al Centro de Atención Empresarial. Su diligenciamiento es **obligatorio** y su omisión impide la formalización del RUT.
+#TW 38,62
+#TH Campo | Valor que debe diligenciarse
+#TR Número del formulario de la DIAN | El número del **formulario 001 (pre-RUT)** obtenido en el paso 5. Este es el campo cuya omisión genera con mayor frecuencia la devolución del trámite.
+#TR Razón social | NOVA BIENESTAR INTEGRAL S.A.S. (idéntica a la del RUT y del RUES)
+#TR Dirección de notificación | Carrera 37 n.º 10A-58, oficina 804, Medellín
+#TR Teléfono | 315 684 9271 (idéntico al del RUT y del RUES)
+#TR Municipio donde ejerce la actividad | Medellín
+#TR Actividad para efectos del impuesto de industria y comercio | La correspondiente a los códigos CIIU declarados, para la inscripción en el RIT del Municipio de Medellín
+#TR Número de empleados | 9
+#TR Datos del contador o revisor fiscal | Los del contador público independiente que certifica el capital (no hay revisor fiscal)
+#1 4. Documentos que deben acompañar los formularios
+#TW 8,40,52
+#TH N.º | Documento | Fundamento y observación
+#TR 1 | Documento privado de constitución, con presentación personal o autenticación | Artículo 5.º de la Ley 1258 de 2008 y artículo 40 del Código de Comercio
+#TR 2 | Carta de aceptación del cargo de representante legal principal | Artículo 42 del Decreto Ley 2150 de 1995
+#TR 3 | Carta de aceptación del cargo de representante legal suplente | Artículo 42 del Decreto Ley 2150 de 1995
+#TR 4 | Fotocopia ampliada de la cédula de ciudadanía de los accionistas y de los representantes legales | Requerimiento del levantamiento de información y práctica registral de la Cámara
+#TR 5 | Certificación de pago del capital suscrito | Soporte del capital pagado que se declara en los formularios
+#TR 6 | Declaración juramentada de cumplimiento de la Ley 1780 de 2016 | Artículos 2.º y 3.º de la Ley 1780 de 2016 y Decreto 639 de 2017
+#TR 7 | RUT provisional (pre-RUT) | Decreto 1074 de 2015 y Resolución de la DIAN sobre el RUT
+#TR 8 | Recibo de pago del impuesto de registro | Ley 223 de 1995 y Decreto 650 de 1996
+#TR 9 | Solicitud de inscripción de libros de comercio | Artículo 175 del Decreto Ley 019 de 2012
+#1 5. Liquidación estimada de derechos e impuestos
+#P La liquidación se practica sobre dos bases distintas que no deben confundirse: el **impuesto de registro** es un tributo departamental que se liquida sobre el **capital suscrito**; los **derechos de registro** son la contraprestación por el servicio registral y se liquidan en **UVB** o sobre los **activos**, según el concepto.
+#TW 42,20,20,18
+#TH Concepto | Base o tarifa | Valor estimado 2026 | Fundamento
+#TR Impuesto de registro (constitución de sociedad por acciones) | 0,7 % sobre el capital suscrito de $600.000.000 | **$4.200.000** | Artículos 226 a 230 de la Ley 223 de 1995; artículo 6.º del Decreto 650 de 1996; ordenanza departamental de Antioquia
+#TR Derechos de inscripción del documento de constitución | 6 UVB | **$72.660** | Artículos 2.2.2.46.1.1 y ss. del Decreto 1074 de 2015, modificado por el Decreto 045 de 2024
+#TR Matrícula mercantil de la persona jurídica (activos $600.000.000 = 49.545,8 UVB) | Rango superior de la tabla | **$0 — EXENTA** | Artículo 3.º de la Ley 1780 de 2016
+#TR Matrícula mercantil del establecimiento "NOVA BIENESTAR" (activos $55.000.000 = 4.541,7 UVB) | Rango 1 (de 0 a 6.500 UVB), con reducción del 50 % | Según tabla vigente | Decreto 1074 de 2015, modificado por el Decreto 045 de 2024
+#TR Inscripción del libro de registro de accionistas | 2 UVB | **$24.220** | Artículo 175 del Decreto Ley 019 de 2012
+#TR Inscripción del libro de actas de asamblea | 2 UVB | **$24.220** | Artículo 175 del Decreto Ley 019 de 2012
+#TR Certificado de existencia y representación legal (por ejemplar) | 1 UVB | **$12.110** | Tabla de tarifas 2026
+#TR Formularios del RUES | Sin costo cuando se diligencian en la sede virtual | $0 | Práctica registral vigente
+#P **Total aproximado, sin incluir la matrícula del establecimiento ni certificados adicionales: $4.321.100.** El componente determinante del costo no es el derecho registral sino el **impuesto de registro**, que representa más del noventa y siete por ciento (97 %) del valor total del trámite.
+#2 5.1. Dos advertencias sobre la liquidación
+#P **Primera — el impuesto de registro no está exento.** El beneficio de la Ley 1780 de 2016 recae exclusivamente sobre los **derechos de matrícula mercantil** que percibe la Cámara de Comercio. El impuesto de registro es una **renta de propiedad de los departamentos** (Ley 223 de 1995) y la Cámara solo actúa como recaudadora por convenio; ninguna norma de la Ley 1780 lo exonera. Afirmar lo contrario en el trámite generaría una liquidación oficial de corrección y, eventualmente, sanción por inexactitud.
+#P **Segunda — el alcance de la exención sobre el establecimiento de comercio.** El artículo 3.º de la Ley 1780 de 2016 se refiere genéricamente a "la matrícula mercantil". Existen dos lecturas posibles: una **restrictiva**, según la cual el beneficio cubre únicamente la matrícula del sujeto —la persona jurídica—, por ser esta la que ostenta la calidad de pequeña empresa joven; y una **extensiva**, que lo hace cobijar también la matrícula de los establecimientos de comercio de propiedad de esa empresa, por tratarse de matrículas causadas por el mismo sujeto beneficiario. La práctica de las cámaras de comercio no es uniforme. Para el caso de NOVA BIENESTAR INTEGRAL S.A.S. se recomienda **liquidar el trámite bajo la lectura restrictiva** —esto es, previendo el pago de la matrícula del establecimiento— y solicitar por escrito el pronunciamiento de la Cámara; si esta aplica la lectura extensiva, el resultado será un menor valor a pagar y no un vicio del trámite.
+#1 6. Lista de verificación previa a la radicación
+#L La denominación consultada en el RUES no presenta homonimia.
+#L El documento privado contiene las siete menciones del artículo 5.º de la Ley 1258 de 2008.
+#L El documento privado tiene presentación personal de **ambos** accionistas o reconocimiento notarial de contenido y firma.
+#L Las cartas de aceptación indican nombre completo, número de documento y manifestación expresa de aceptación.
+#L La razón social es idéntica en el RUT, en la carátula única empresarial y en el formulario adicional de registro con otras entidades.
+#L El teléfono es idéntico en los tres formularios.
+#L El número del formulario 001 de la DIAN fue trasladado al formulario adicional de registro con otras entidades.
+#L Los tres capitales indican cuantía, número de acciones, valor nominal y, el suscrito, la clase de acciones.
+#L La suma de las acciones suscritas por los accionistas coincide exactamente con el capital suscrito declarado.
+#L Se marcó la casilla de beneficio de la Ley 1780 de 2016 y se anexó la declaración juramentada.
+#L Se anexó el comprobante de pago del impuesto de registro.
+#L Se diligenció el anexo de establecimiento de comercio con sus activos vinculados.
+#1 7. Trámites posteriores a la matrícula
+#TW 30,70
+#TH Trámite | Contenido y oportunidad
+#TR Formalización del RUT y NIT definitivo | La DIAN formaliza el RUT una vez la Cámara reporta la matrícula. Debe verificarse que las responsabilidades tributarias quedaron correctamente registradas.
+#TR Inscripción en el RIT del Municipio de Medellín | Registro de Información Tributaria para efectos del impuesto de industria y comercio, avisos y tableros.
+#TR Habilitación de servicios de salud | Inscripción en el Registro Especial de Prestadores de Servicios de Salud (REPS) y habilitación de los servicios de fisioterapia y rehabilitación ante la autoridad sanitaria, conforme a la Resolución 3100 de 2019. **Sin habilitación no puede prestarse el servicio, aunque la sociedad ya exista.**
+#TR Apertura de cuenta bancaria definitiva | Con el certificado de existencia y representación legal y el RUT.
+#TR Afiliación al sistema de seguridad social y aportes parafiscales | Para los nueve (9) trabajadores: EPS, fondo de pensiones, ARL, caja de compensación familiar, SENA e ICBF.
+#TR Sistema de Gestión de Seguridad y Salud en el Trabajo | Decreto 1072 de 2015 y estándares mínimos de la Resolución 0312 de 2019.
+#TR Obligaciones del establecimiento abierto al público | Uso del suelo, concepto sanitario, seguridad humana y sistemas contra incendio, y pago de derechos de autor (Sayco y Acinpro) si se difunde música.
+#TR Política de tratamiento de datos personales | Ley 1581 de 2012; especialmente relevante por el manejo de **datos sensibles de salud** de los usuarios.
+#TR Renovación de la matrícula mercantil | Antes del **31 de marzo de 2027**, para conservar el beneficio de exención de la primera renovación previsto en la Ley 1780 de 2016.

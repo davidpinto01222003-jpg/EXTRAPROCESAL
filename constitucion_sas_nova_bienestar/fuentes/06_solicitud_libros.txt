@@ -1,0 +1,47 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Inscripción de libros de comercio
+!FOOTER Solicitud de inscripción de libros
+#T Solicitud de inscripción de libros de comercio
+#ST NOVA BIENESTAR INTEGRAL S.A.S.
+#R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
+#SP
+#P **Señores**
+#P **CÁMARA DE COMERCIO DE MEDELLÍN PARA ANTIOQUIA**
+#P Departamento de Registros Públicos
+#P Medellín (Antioquia)
+#SP
+#P **Referencia:** Solicitud de inscripción de los libros de comercio sujetos a registro — **NOVA BIENESTAR INTEGRAL S.A.S.**
+#SP
+#P Respetados señores:
+#P **MARIANA LÓPEZ CASTAÑO**, mayor de edad, identificada con la cédula de ciudadanía número **1.039.672.481** expedida en Medellín (Antioquia), obrando en calidad de **representante legal** de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, calidad que se acredita con el certificado de existencia y representación legal expedido por esa Cámara, me permito solicitar la **inscripción en el registro mercantil** de los libros que a continuación se relacionan:
+#TW 8,26,14,14,20,18
+#TH N.º | Nombre del libro | Uso destinado | N.º de hojas | Numeración | Soporte
+#TR 1 | Libro de registro de accionistas | Registro de la titularidad de las acciones, sus enajenaciones, gravámenes y limitaciones de dominio | 100 | De 1 a 100 | Hojas continuas
+#TR 2 | Libro de actas de la asamblea general de accionistas | Registro de las actas de las reuniones ordinarias, extraordinarias, universales y no presenciales | 200 | De 1 a 200 | Hojas continuas
+#P **Fundamento de la solicitud.** El **artículo 175 del Decreto Ley 019 de 2012** modificó el régimen de registro de libros y dispuso que solo deben inscribirse en el registro mercantil **el libro de registro de accionistas y el libro de actas de asamblea de accionistas**, quedando excluidos de esa formalidad los libros de contabilidad. La inscripción es requisito de eficacia probatoria: conforme a los artículos 195 y 406 del Código de Comercio, la calidad de accionista frente a la sociedad y frente a terceros se acredita mediante la inscripción en el libro de registro de accionistas, y las decisiones de la asamblea se prueban con las actas asentadas en el libro correspondiente.
+#P **Manifestaciones.** Declaro que los libros cuya inscripción se solicita **no han sido utilizados** y que sus hojas se encuentran en blanco y debidamente numeradas en forma continua y sucesiva; que la sociedad **no tiene libros previamente registrados** que deban ser cancelados o reemplazados, por tratarse de su primera inscripción; y que se cancelarán los derechos de inscripción correspondientes, liquidados a razón de **dos (2) Unidades de Valor Básico** por cada libro.
+#P Agradezco la atención prestada a la presente solicitud.
+#P Atentamente,
+#SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S.
+#PB
+#T Libro de registro de accionistas
+#ST NOVA BIENESTAR INTEGRAL S.A.S. — Folio n.º 1
+#P **Nota de apertura.** El presente libro se abre el primero (1) de octubre de dos mil veintiséis (2026), previa su inscripción en el registro mercantil de la Cámara de Comercio de Medellín para Antioquia, con destino al registro de la titularidad de las acciones en que se divide el capital suscrito de la sociedad NOVA BIENESTAR INTEGRAL S.A.S., de sus enajenaciones, traspasos, embargos, prendas, usufructos, anticresis y demás gravámenes o limitaciones de dominio, de conformidad con los artículos 195 y 406 del Código de Comercio y el artículo 12 de los estatutos sociales.
+#2 Inscripción n.º 1 — Suscripción inicial de acciones
+#TW 30,70
+#TH Concepto | Contenido
+#TR Fecha de la inscripción | 1.º de octubre de 2026
+#TR Título que sirve de causa | Documento privado de constitución del 1.º de octubre de 2026
+#TR Capital suscrito | $600.000.000
+#TR Número total de acciones suscritas | 600.000 acciones ordinarias, nominativas y de capital
+#TR Valor nominal por acción | $1.000
+#P **Titulares inscritos:**
+#TW 26,20,14,16,12,12
+#TH Accionista | Documento de identidad | N.º de acciones | Valor | Participación | Título n.º
+#TR Mariana López Castaño | C.C. 1.039.672.481 de Medellín | 390.000 | $390.000.000 | 65 % | 001
+#TR Felipe Andrés Gómez Vélez | C.C. 1.152.846.390 de Envigado | 210.000 | $210.000.000 | 35 % | 002
+#TH TOTALES | | 600.000 | $600.000.000 | 100 % |
+#P **Anotación sobre restricciones a la negociación.** Se deja constancia, para efectos de su oponibilidad conforme al inciso final del artículo 13 de la Ley 1258 de 2008, de que las acciones inscritas en este libro se encuentran sujetas a las siguientes restricciones estatutarias: (i) **derecho de preferencia en la negociación** a favor de la sociedad y de los demás accionistas, cuya inobservancia produce la **ineficacia de pleno derecho** de la enajenación (artículo 14 de los estatutos); y (ii) **autorización previa de la asamblea general de accionistas**, adoptada con el voto favorable del setenta por ciento (70 %) de las acciones suscritas, para toda enajenación a favor de personas que no sean accionistas, restricción vigente por diez (10) años contados desde la inscripción del documento de constitución en el registro mercantil (artículo 15 de los estatutos). Estas restricciones se harán constar igualmente en los títulos representativos de las acciones.
+#P **Anotación sobre gravámenes.** A la fecha de esta inscripción, las acciones no soportan embargo, prenda, usufructo, anticresis ni limitación alguna del dominio.
+#SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S.
+#SP
+#I Los folios siguientes quedan destinados a las inscripciones posteriores de traspasos, emisiones, gravámenes y limitaciones de dominio, las cuales deberán practicarse en estricto orden cronológico y numerarse en forma continua.

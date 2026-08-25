@@ -1,0 +1,68 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Aceptaciones de cargo
+!FOOTER Aceptaciones de cargo
+#T Carta de aceptación de cargo
+#ST Representante legal principal
+#R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
+#SP
+#P **Señores**
+#P **CÁMARA DE COMERCIO DE MEDELLÍN PARA ANTIOQUIA**
+#P Departamento de Registros Públicos
+#P Medellín (Antioquia)
+#SP
+#P **Referencia:** Aceptación del cargo de **representante legal principal** de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, constituida mediante documento privado del primero (1) de octubre de dos mil veintiséis (2026).
+#SP
+#P Respetados señores:
+#P Yo, **MARIANA LÓPEZ CASTAÑO**, mujer, mayor de edad, identificada con la cédula de ciudadanía número **1.039.672.481** expedida en Medellín (Antioquia), domiciliada y residente en el municipio de Medellín, obrando en nombre propio, por medio del presente escrito manifiesto de manera expresa, libre, voluntaria e inequívoca que **ACEPTO** la designación que se me hizo como **REPRESENTANTE LEGAL PRINCIPAL** de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, según consta en el artículo transitorio 1.º del documento privado de constitución de la referencia.
+#P En cumplimiento de lo dispuesto en el **artículo 42 del Decreto Ley 2150 de 1995**, según el cual "para la inscripción de nombramientos de administradores y revisores fiscales se requerirá la aceptación previa de las personas designadas", dejo constancia de la siguiente información:
+#TW 40,60
+#TH Concepto | Información
+#TR Nombre completo | Mariana López Castaño
+#TR Tipo y número de documento | Cédula de ciudadanía n.º 1.039.672.481
+#TR Lugar de expedición | Medellín (Antioquia)
+#TR Cargo aceptado | Representante legal principal
+#TR Sociedad | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR Domicilio de la sociedad | Medellín (Antioquia)
+#TR Dirección de notificación | Carrera 37 n.º 10A-58, oficina 804, Medellín
+#TR Correo electrónico | contacto@novabienestarintegral.com
+#TR Teléfono | 315 684 9271
+#P Asimismo, y bajo la gravedad del juramento, **DECLARO**:
+#N 1. Que conozco íntegramente los estatutos sociales de NOVA BIENESTAR INTEGRAL S.A.S. y, en particular, las facultades y limitaciones que el artículo 28 de dichos estatutos impone al representante legal, entre ellas la necesidad de autorización previa de la asamblea general de accionistas para celebrar actos o contratos cuya cuantía individual exceda de quinientos (500) salarios mínimos legales mensuales vigentes.
+#N 2. Que conozco y asumo los deberes propios de los administradores previstos en el **artículo 23 de la Ley 222 de 1995**, esto es, obrar de buena fe, con lealtad y con la diligencia de un buen hombre de negocios, en interés de la sociedad y teniendo en cuenta los intereses de sus asociados.
+#N 3. Que conozco el régimen de responsabilidad solidaria e ilimitada consagrado en el **artículo 200 del Código de Comercio** y en el **artículo 27 de la Ley 1258 de 2008**.
+#N 4. Que **no me encuentro incursa** en causal alguna de inhabilidad, incompatibilidad o prohibición legal, estatutaria o contractual para ejercer el comercio ni para desempeñar el cargo aceptado, y que no he sido condenada por delitos contra el patrimonio económico, la fe pública, la administración pública, el orden económico y social, ni por delitos relacionados con el lavado de activos o la financiación del terrorismo.
+#N 5. Que autorizo a la Cámara de Comercio de Medellín para Antioquia el **tratamiento de mis datos personales**, exclusivamente para los fines propios del registro mercantil y del Registro Único Empresarial y Social (RUES), en los términos de la Ley 1581 de 2012 y del Decreto 1074 de 2015.
+#P Atentamente,
+#SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal principal|NOVA BIENESTAR INTEGRAL S.A.S.
+#PB
+#T Carta de aceptación de cargo
+#ST Representante legal suplente
+#R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
+#SP
+#P **Señores**
+#P **CÁMARA DE COMERCIO DE MEDELLÍN PARA ANTIOQUIA**
+#P Departamento de Registros Públicos
+#P Medellín (Antioquia)
+#SP
+#P **Referencia:** Aceptación del cargo de **representante legal suplente** de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, constituida mediante documento privado del primero (1) de octubre de dos mil veintiséis (2026).
+#SP
+#P Respetados señores:
+#P Yo, **FELIPE ANDRÉS GÓMEZ VÉLEZ**, hombre, mayor de edad, identificado con la cédula de ciudadanía número **1.152.846.390** expedida en Envigado (Antioquia), domiciliado y residente en el municipio de Envigado, obrando en nombre propio, por medio del presente escrito manifiesto de manera expresa, libre, voluntaria e inequívoca que **ACEPTO** la designación que se me hizo como **REPRESENTANTE LEGAL SUPLENTE** de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, según consta en el artículo transitorio 1.º del documento privado de constitución de la referencia.
+#P En cumplimiento de lo dispuesto en el **artículo 42 del Decreto Ley 2150 de 1995**, dejo constancia de la siguiente información:
+#TW 40,60
+#TH Concepto | Información
+#TR Nombre completo | Felipe Andrés Gómez Vélez
+#TR Tipo y número de documento | Cédula de ciudadanía n.º 1.152.846.390
+#TR Lugar de expedición | Envigado (Antioquia)
+#TR Cargo aceptado | Representante legal suplente
+#TR Sociedad | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR Domicilio de la sociedad | Medellín (Antioquia)
+#TR Dirección de notificación | Carrera 37 n.º 10A-58, oficina 804, Medellín
+#TR Correo electrónico | contacto@novabienestarintegral.com
+#TR Teléfono | 315 684 9271
+#P Asimismo, y bajo la gravedad del juramento, **DECLARO**:
+#N 1. Que conozco íntegramente los estatutos sociales de NOVA BIENESTAR INTEGRAL S.A.S. y que, en mi condición de suplente, reemplazaré al representante legal principal en sus faltas absolutas, temporales o accidentales, con las mismas facultades y limitaciones previstas en el artículo 28 de los estatutos, **sin necesidad de acreditar la falta del principal frente a terceros**.
+#N 2. Que conozco y asumo los deberes de los administradores previstos en el **artículo 23 de la Ley 222 de 1995** y el régimen de responsabilidad del **artículo 200 del Código de Comercio** y del **artículo 27 de la Ley 1258 de 2008**.
+#N 3. Que **no me encuentro incurso** en causal alguna de inhabilidad, incompatibilidad o prohibición legal, estatutaria o contractual para ejercer el comercio ni para desempeñar el cargo aceptado.
+#N 4. Que autorizo a la Cámara de Comercio de Medellín para Antioquia el **tratamiento de mis datos personales**, exclusivamente para los fines propios del registro mercantil y del Registro Único Empresarial y Social (RUES), en los términos de la Ley 1581 de 2012 y del Decreto 1074 de 2015.
+#P Atentamente,
+#SIG FELIPE ANDRÉS GÓMEZ VÉLEZ|C.C. 1.152.846.390 de Envigado|Representante legal suplente|NOVA BIENESTAR INTEGRAL S.A.S.
