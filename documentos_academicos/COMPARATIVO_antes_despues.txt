@@ -1,6 +1,6 @@
-COMPARATIVO ANTES / DESPUÉS — segmentos resaltados reescritos
+COMPARATIVO ANTES / DESPUES - segmentos resaltados reescritos
+(original del autor  ->  version humanizada, 3 pasadas)
 ==============================================================================
-
 
 ##############################################################################
 ## 1.1 Contexto general
@@ -9,55 +9,55 @@ COMPARATIVO ANTES / DESPUÉS — segmentos resaltados reescritos
 [084.0]
 --- ANTES ---
 Dice menos de lo que aparenta cuando se la mira en serie. Colombia registraba 425 puntos en 2015 y 412 en 2018. El descenso venía en curso antes de que las aulas cerraran, y cargarlo entero a la cuenta de la pandemia ahorra el trabajo de preguntar qué ocurría desde antes con la enseñanza de la lectura.
---- DESPUÉS ---
-Puesta en serie, sin embargo, dice menos de lo que aparenta: 425 puntos en 2015, 412 en 2018, 409 en 2022. El descenso ya venía en curso cuando las aulas cerraron. Cargarlo entero a la cuenta de la pandemia tiene la ventaja de ahorrarse una pregunta bastante más incómoda, que es qué venía ocurriendo desde antes con la enseñanza de la lectura.
+--- DESPUES ---
+Puesta en serie, sin embargo, dice menos de lo que aparenta: 425 puntos en 2015, 412 en 2018, 409 en 2022. El descenso ya venía en curso cuando las aulas cerraron. Cargarlo entero a la cuenta de la pandemia tiene la ventaja de ahorrarse una pregunta bastante más incómoda: qué venía ocurriendo desde antes con la enseñanza de la lectura.
 
 [085.0]
 --- ANTES ---
 Lo que la pandemia sí alteró fue la materia con la que hoy se enseña a leer. La reorganización de urgencia de 2020 dejó un sedimento de prácticas mixtas que conviven sin nombre propio: clases presenciales, sesiones sincrónicas por videollamada y un caudal de trabajo asincrónico administrado desde plataformas. Hrastinski (2019) advierte que la expresión aprendizaje combinado no designa un modelo sino una familia de arreglos muy dispares entre sí. Esa imprecisión pesa aquí por una razón concreta. En el aula híbrida, la consigna de lectura dejó de ser algo que un docente dice y pasó a ser algo que una interfaz determina. Quien fija el plazo, el número de intentos permitidos y el formato exigido de la respuesta no siempre es quien enseña.
---- DESPUÉS ---
-Lo que la pandemia sí alteró fue la materia misma con la que hoy se enseña a leer. De la reorganización de urgencia de 2020 quedó un sedimento de prácticas mixtas que nadie acabó de bautizar, donde la clase presencial convive con sesiones sincrónicas por videollamada y con un caudal de trabajo asincrónico administrado desde plataformas. Hrastinski (2019) advierte que bajo la expresión aprendizaje combinado caben arreglos tan dispares entre sí que el término apenas alcanza a designar una familia. Lo que está en juego con esa imprecisión desborda el vocabulario. En el aula híbrida la consigna de lectura pasó de ser algo que un docente dice a ser algo que una interfaz determina, y el plazo, los intentos permitidos y el formato exigido de respuesta suelen venir fijados por alguien que no enseña.
+--- DESPUES ---
+Lo que la pandemia sí alteró fue la materia misma con la que hoy se enseña a leer. De la reorganización de urgencia de 2020 quedó un sedimento de prácticas mixtas que nadie acabó de bautizar, donde la clase presencial convive con sesiones sincrónicas por videollamada y con un caudal de trabajo asincrónico administrado desde plataformas. Hrastinski (2019) advierte que bajo la expresión aprendizaje combinado caben arreglos tan dispares entre sí que el término apenas alcanza a designar una familia. Y lo que está en juego con esa imprecisión desborda el vocabulario. En el aula híbrida la consigna de lectura pasó de ser algo que un docente dice a ser algo que una interfaz determina, y el plazo, los intentos permitidos y el formato exigido de respuesta suelen venir fijados por alguien que no enseña.
 
 [086.0]
 --- ANTES ---
 A ese cambio material se le sumó una obligación jurídica. El Decreto 1421 de 2017 reglamentó la atención educativa a la población con discapacidad y convirtió el Plan Individual de Ajustes Razonables en pieza exigible de la gestión escolar, con lo cual la respuesta a la diferencia dejó de depender del criterio discrecional de cada establecimiento. Entre la norma y su cumplimiento hay, sin embargo, una distancia. Ahí sitúa su advertencia más incómoda el informe de seguimiento de la educación en el mundo (Organización de las Naciones Unidas para la Educación, la Ciencia y la Cultura, 2020). Los sistemas educativos siguen produciendo exclusión mediante sus operaciones más ordinarias, clasificar, evaluar y agrupar, incluso cuando su discurso oficial es inclusivo.
---- DESPUÉS ---
+--- DESPUES ---
 A ese cambio material se le sumó una obligación jurídica. El Decreto 1421 de 2017 reglamentó la atención educativa a la población con discapacidad y convirtió el Plan Individual de Ajustes Razonables en pieza exigible de la gestión escolar, con lo cual la respuesta a la diferencia dejó de depender del criterio discrecional de cada establecimiento. Entre la norma y su cumplimiento hay, sin embargo, una distancia, y es ahí donde el informe de seguimiento de la educación en el mundo (Organización de las Naciones Unidas para la Educación, la Ciencia y la Cultura, 2020) sitúa su advertencia más incómoda: los sistemas educativos siguen produciendo exclusión mediante sus operaciones más ordinarias —clasificar, evaluar, agrupar— incluso cuando su discurso oficial es inclusivo.
 
 [087.0]
 --- ANTES ---
 Un desempeño lector que lleva una década sin repuntar, un aula que la técnica reorganizó sin que nadie acabara de decidirlo, una obligación jurídica que ya no admite discrecionalidad. Cada uno de esos planos tiene su propia literatura y se deja explicar por separado. El fenómeno que aquí se investiga ocurre en el punto donde se enredan.
---- DESPUÉS ---
-Tenemos entonces un desempeño lector que lleva una década sin repuntar, un aula que la técnica reorganizó sin que nadie acabara de decidirlo y una obligación jurídica que ya no admite discrecionalidad. Cada uno de esos planos tiene su propia literatura y se deja explicar por separado, cosa que en buena medida ya se ha hecho. El fenómeno que aquí interesa ocurre más bien en el punto donde los tres se enredan, y ese enredo no se deja repartir entre las literaturas que lo tocan por separado.
+--- DESPUES ---
+Tenemos entonces un desempeño lector que lleva una década sin repuntar, un aula que la técnica reorganizó sin que nadie acabara de decidirlo y una obligación jurídica que ya no admite discrecionalidad. Cada uno de esos planos tiene su propia literatura y admite explicarse por separado, cosa que en buena medida ya se ha hecho. El fenómeno que aquí interesa ocurre más bien en el punto donde los tres se enredan, y ese enredo no se deja repartir entre las literaturas que lo tocan una a una.
 
 
 ##############################################################################
-## 1.2 Importancia del fenómeno
+## 1.2 Importancia del fenomeno
 ##############################################################################
 
 [089.0]
 --- ANTES ---
 La dislexia entra en ese enredo con un peso que las cifras alcanzan a estimar. Carrillo Gallego et al. (2011) hallaron una prevalencia del 11,8 % de dificultades específicas del aprendizaje de la lectura en población escolar hispanohablante, con oscilaciones por curso que van del 15,2 % en segundo grado al 10,9 % en sexto. Más decisivo que la magnitud es lo que Snowling et al. (2020) establecieron sobre la naturaleza del objeto: la dislexia no es una categoría discreta que se separe del resto de los lectores, sino una posición dentro del continuo de la habilidad lectora, determinada por factores de riesgo que se acumulan e interactúan.
---- DESPUÉS ---
-La dislexia entra en ese enredo con un peso que las cifras alcanzan a estimar. Carrillo Gallego et al. (2011) hallaron una prevalencia del 11,8 % de dificultades específicas del aprendizaje de la lectura en población escolar hispanohablante, con oscilaciones por curso que van del 15,2 % en segundo grado al 10,9 % en sexto. Ahora bien, más decisivo que la magnitud resulta lo que Snowling et al. (2020) establecieron sobre la naturaleza del objeto, y es que la dislexia es una posición dentro del continuo de la habilidad lectora, determinada por factores de riesgo que se acumulan e interactúan, antes que una categoría discreta separada del resto de los lectores.
+--- DESPUES ---
+En ese enredo la dislexia entra con un peso que las cifras alcanzan a estimar. Carrillo Gallego et al. (2011) hallaron una prevalencia del 11,8 % de dificultades específicas del aprendizaje de la lectura en población escolar hispanohablante, con oscilaciones por curso que van del 15,2 % en segundo grado al 10,9 % en sexto. Ahora bien, más decisivo que la magnitud es lo que Snowling et al. (2020) establecieron sobre la naturaleza del objeto. La dislexia, para ellos, es una posición dentro del continuo de la habilidad lectora —determinada por factores de riesgo que se acumulan e interactúan— antes que una categoría discreta separada del resto de los lectores.
 
 [090.0]
 --- ANTES ---
 Conviene detenerse en la implicación, porque orienta todo lo que sigue. Si la dislexia es un punto de un continuo, el corte que separa la lentitud tolerable de la lentitud patológica lo traza alguien, en algún lugar, con algún criterio. En la escuela ese criterio rara vez pertenece a una persona identificable, y con mayor frecuencia está inscrito en reglas que no se enuncian.
---- DESPUÉS ---
-Conviene detenerse en la implicación, porque orienta buena parte de lo que sigue. Si la dislexia es un punto de un continuo, entonces el corte que separa la lentitud tolerable de la lentitud patológica lo traza alguien, en algún lugar, con algún criterio. Y en la escuela ese criterio rara vez pertenece a una persona identificable; con mayor frecuencia está inscrito en reglas que nadie se molesta en enunciar porque a nadie se le ocurre que haya que enunciarlas.
+--- DESPUES ---
+Conviene detenerse en la implicación, porque orienta buena parte de lo que sigue. Si la dislexia es un punto de un continuo, ¿quién traza el corte que separa la lentitud tolerable de la lentitud patológica? Alguien lo traza, en algún lugar y con algún criterio. Y en la escuela ese criterio rara vez pertenece a una persona identificable. Con mayor frecuencia está inscrito en reglas que nadie se molesta en enunciar porque a nadie se le ocurre que haya que enunciarlas.
 
 [091.0]
 --- ANTES ---
 Hay además una razón material para sospechar del escenario híbrido. Delgado et al. (2018) reunieron 54 estudios con más de 170.000 participantes y encontraron que la comprensión de textos informativos resulta mejor en papel que en pantalla, con una diferencia que crece cuando la tarea impone un límite temporal. Es exactamente la combinación que la plataforma escolar produce por defecto, pantalla más cronómetro. Ninguno de esos parámetros se fijó pensando en un lector disléxico, lo que no los vuelve neutrales respecto de él.
---- DESPUÉS ---
-Al escenario híbrido cabe sospecharlo, además, por una razón material. Delgado et al. (2018) reunieron 54 estudios con más de 170.000 participantes y encontraron que la comprensión de textos informativos resulta mejor en papel que en pantalla, con una diferencia que crece cuando la tarea impone un límite temporal. Pantalla más cronómetro: es exactamente la combinación que la plataforma escolar produce por defecto. Ninguno de esos dos parámetros se fijó pensando en un lector disléxico, lo cual está lejos de volverlos neutrales respecto de él.
+--- DESPUES ---
+Al escenario híbrido cabe sospecharlo, además, por una razón material. Delgado et al. (2018) reunieron 54 estudios con más de 170.000 participantes y encontraron que la comprensión de textos informativos resulta mejor en papel que en pantalla, con una diferencia que crece cuando la tarea impone un límite temporal. Pantalla y cronómetro a la vez: exactamente lo que la plataforma escolar produce por defecto. Ninguno de esos dos parámetros se fijó pensando en un lector disléxico, lo cual está lejos de volverlos neutrales respecto de él.
 
 [092.0]
 --- ANTES ---
 Describir una vez más el perfil cognitivo de la dislexia sería redundante, pues la psicolingüística lleva décadas en ese terreno y lo ha cubierto con solvencia. La pregunta que queda abierta es otra y toca a la escuela: de qué manera su propia organización de la lectura participa en fabricar aquello que más tarde reconocerá como dificultad.
---- DESPUÉS ---
-Describir una vez más el perfil cognitivo de la dislexia sería redundante. La psicolingüística lleva décadas en ese terreno y lo ha cubierto con solvencia. La pregunta que queda abierta toca a la escuela, y es de qué manera su propia organización de la lectura participa en fabricar aquello que más tarde reconocerá como dificultad.
+--- DESPUES ---
+Describir una vez más el perfil cognitivo de la dislexia sería redundante. La psicolingüística lleva décadas en ese terreno y lo ha cubierto con solvencia. La pregunta que queda abierta toca a la escuela: cómo participa su propia organización de la lectura en fabricar aquello que más tarde reconocerá como dificultad.
 
 
 ##############################################################################
@@ -67,102 +67,102 @@ Describir una vez más el perfil cognitivo de la dislexia sería redundante. La 
 [094.0]
 --- ANTES ---
 Sostener esa afirmación exige un aparato epistemológico que no reparta el problema entre un sujeto deficitario y una institución neutral. Morin (1994) propuso reemplazar el paradigma de disyunción, reducción y simplificación por uno de distinción, conjunción e implicación, De ahí provienen los operadores con que este estudio construye su objeto, y su empleo se justifica solo en la medida en que el fenómeno los sostenga.
---- DESPUÉS ---
+--- DESPUES ---
 Sostener semejante afirmación exige un aparato epistemológico que no reparta el problema entre un sujeto deficitario y una institución neutral. Morin (1994) propuso reemplazar el paradigma de disyunción, reducción y simplificación por uno de distinción, conjunción e implicación. De ahí provienen los operadores con que este estudio construye su objeto, y su empleo se justifica solo en la medida en que el fenómeno los sostenga.
 
 [095.0]
 --- ANTES ---
 La recursividad organizacional sostiene que los productos son al mismo tiempo productores de aquello que los produce. Trasladada al aula, la fórmula pierde su aire abstracto. La gramática escolar de lectura fabrica la experiencia disléxica al constituirla como desviación; esa experiencia, una vez administrada mediante apoyos y ajustes, le devuelve a la gramática la confirmación de que su umbral era el correcto. Queda por saber si la relación tiene un punto de inicio localizable o si funciona sin él, y eso lo resuelve el trabajo de campo, no el marco teórico.
---- DESPUÉS ---
-La recursividad organizacional sostiene que los productos son al mismo tiempo productores de aquello que los produce. Trasladada al aula, la fórmula pierde su aire abstracto. La gramática escolar de lectura fabrica la experiencia disléxica al constituirla como desviación, y esa experiencia, una vez administrada mediante apoyos y ajustes, le devuelve a la gramática la confirmación de que su umbral era el correcto. Si la relación tiene un punto de inicio localizable, o si funciona sin él, es algo que habrá de resolver el trabajo de campo y no el marco teórico.
+--- DESPUES ---
+Según la recursividad organizacional, los productos son al mismo tiempo productores de aquello que los produce. Trasladada al aula, la fórmula pierde su aire abstracto. La gramática escolar de lectura fabrica la experiencia disléxica al constituirla como desviación, y esa experiencia, una vez administrada mediante apoyos y ajustes, le devuelve a la gramática la confirmación de que su umbral era el correcto. Si la relación tiene un punto de inicio localizable, o si funciona sin él, es algo que habrá de resolver el trabajo de campo y no el marco teórico.
 
 [096.0]
 --- ANTES ---
 De la dialógica se sigue algo más incómodo: dos exigencias que se contradicen sin que ninguna pueda descartarse en favor de la otra. La escuela debe homogeneizar, porque certifica. Debe diferenciar, porque incluye. El aula híbrida agudiza el conflicto al inscribir la homogeneización en los parámetros mismos de la plataforma, donde un solo valor rige para el curso entero. Disolver esa contradicción no está entre los propósitos de esta investigación; observar cómo se administra, semana a semana, sí.
---- DESPUÉS ---
+--- DESPUES ---
 De la dialógica se sigue algo más incómodo, y son dos exigencias que se contradicen sin que ninguna pueda descartarse en favor de la otra. La escuela debe homogeneizar, porque certifica. Debe diferenciar, porque incluye. El aula híbrida agudiza el conflicto al inscribir la homogeneización en los parámetros mismos de la plataforma, donde un solo valor rige para el curso entero. Disolver esa contradicción no está entre los propósitos de esta investigación; observar cómo se la administra, semana a semana, sí lo está.
 
 [097.0]
 --- ANTES ---
 La multidimensionalidad hace un trabajo más modesto y no menos necesario: impide reducir al estudiante a su perfil neurocognitivo. Quien lee es también un cuerpo con ritmo propio, un expediente evaluado contra cronologías estandarizadas (Terigi, 2010) y alguien que sabe perfectamente cómo lo miran sus compañeros cuando le toca leer en voz alta.
---- DESPUÉS ---
-La multidimensionalidad hace un trabajo más modesto y no por ello menos necesario, pues impide reducir al estudiante a su perfil neurocognitivo. Quien lee es también un cuerpo con ritmo propio y un expediente evaluado contra cronologías estandarizadas (Terigi, 2010). Es, además, alguien que sabe perfectamente cómo lo miran sus compañeros cuando le toca leer en voz alta.
+--- DESPUES ---
+Más modesto, y no por ello menos necesario, resulta el trabajo de la multidimensionalidad: impedir que el estudiante quede reducido a su perfil neurocognitivo. Quien lee es también un cuerpo con ritmo propio y un expediente evaluado contra cronologías estandarizadas (Terigi, 2010). Es, además, alguien que sabe perfectamente cómo lo miran sus compañeros cuando le toca leer en voz alta.
 
 [098.0]
 --- ANTES ---
 Con estos operadores el fenómeno queda planteado como algo que resultaría de la interacción entre actores escolares, tecnologías de enseñanza y condiciones de neurodivergencia, sin preexistir en ninguno de esos términos por separado. Las categorías se emplean porque el fenómeno parece exigirlas: hay retroacción documentable entre la norma y su propia gestión, y hay dos mandatos institucionales simultáneamente vigentes y contrarios. Si el campo mostrara que la relación es lineal o que los mandatos no colisionan, el vocabulario sobraría y habría que abandonarlo.
---- DESPUÉS ---
+--- DESPUES ---
 Con estos operadores el fenómeno queda planteado como algo que resultaría de la interacción entre actores escolares, tecnologías de enseñanza y condiciones de neurodivergencia, sin preexistir en ninguno de esos términos por separado. Las categorías se emplean porque el fenómeno parece exigirlas: hay retroacción documentable entre la norma y su propia gestión, y hay dos mandatos institucionales simultáneamente vigentes y contrarios. Si el campo mostrara que la relación es lineal, o que los mandatos no colisionan, el vocabulario sobraría y habría que abandonarlo sin mayor duelo.
 
 
 ##############################################################################
-## 2.1 Descripción del problema
+## 2.1 Descripcion del problema
 ##############################################################################
 
 [102.0]
 --- ANTES ---
 Las aulas híbridas de educación media reconocen la lectura mediante criterios que nadie discute porque casi nadie los enuncia. Un estudiante lee bien cuando lee con cierta velocidad, en cierto orden y con cierta estabilidad de significado, y cuando alguno de esos rasgos falla el sistema no interroga el criterio sino al lector. La variabilidad perceptiva y temporal queda así traducida en déficit personal, mientras las condiciones desde las cuales se produce la traducción conservan su posición de referencia sin verse obligadas a justificarse. Que la traducción opere sin que su criterio quede expuesto es lo que esta investigación interroga.
---- DESPUÉS ---
+--- DESPUES ---
 En las aulas híbridas de educación media la lectura se reconoce mediante criterios que nadie discute, y no se discuten porque casi nadie los enuncia. Un estudiante lee bien cuando lee con cierta velocidad, en cierto orden y con cierta estabilidad de significado; si alguno de esos rasgos falla, el sistema interroga al lector y deja el criterio en paz. La variabilidad perceptiva y temporal queda así traducida en déficit personal, mientras las condiciones desde las cuales se produce la traducción conservan su posición de referencia sin verse obligadas a justificarse nunca. Que la traducción opere sin que su criterio quede expuesto es lo que esta investigación se propone interrogar.
 
 [103.0]
 --- ANTES ---
 La dislexia funciona aquí como punto de entrada y no como objeto definitivo. Lo que se investiga son las condiciones bajo las cuales una variación en el modo de leer llega a ser reconocida como dislexia escolarmente relevante, y esas condiciones no están dadas de antemano: hay que reconstruirlas.
---- DESPUÉS ---
+--- DESPUES ---
 La dislexia funciona aquí como punto de entrada más que como objeto definitivo. Lo que se investiga son las condiciones bajo las cuales una variación en el modo de leer llega a ser reconocida como dislexia escolarmente relevante, y tales condiciones no vienen dadas de antemano: hay que reconstruirlas.
 
 [104.0]
 --- ANTES ---
 El inventario era lo de menos. Lo que explicaron fue la persistencia: esas reglas sobreviven a las reformas porque constituyen el fondo desde el cual las reformas se piensan. Viñao (2002) llevó la tesis al terreno iberoamericano y documentó cómo las culturas escolares poseen un tiempo propio con el que absorben y reconfiguran lo que llega de afuera. A Terigi (2010) se debe la pieza que faltaba del lado del aprendizaje lector: las cronologías de aprendizaje, ese supuesto según el cual existe un único ritmo esperable de progresión, supuesto que vuelve anomalía toda trayectoria que no lo siga.
---- DESPUÉS ---
+--- DESPUES ---
 El inventario, con todo, era lo de menos. Lo que esos autores explicaron fue la persistencia, esto es, por qué esas reglas sobreviven a las reformas: porque constituyen el fondo desde el cual las reformas se piensan. Viñao (2002) llevó la tesis al terreno iberoamericano y documentó cómo las culturas escolares poseen un tiempo propio con el que absorben y reconfiguran lo que llega de afuera. La pieza que faltaba, del lado del aprendizaje lector, se la debemos a Terigi (2010) y a su noción de cronologías de aprendizaje, ese supuesto según el cual existiría un único ritmo esperable de progresión, supuesto que vuelve anomalía toda trayectoria que no lo siga.
 
 [105.0]
 --- ANTES ---
 Leídas juntas, las tres contribuciones sitúan el problema en un lugar bastante preciso. La escuela exige uniformidad porque su función certificadora se lo demanda; la población escolar es heterogénea porque la variabilidad lectora es constitutiva y no excepcional (Snowling et al., 2020). La dificultad no habita en el estudiante ni en la institución. Está en la relación entre ambos, y ninguna de las dos partes puede repararla por su cuenta.
---- DESPUÉS ---
+--- DESPUES ---
 Leídas juntas, las tres contribuciones sitúan el problema en un lugar bastante preciso. La escuela exige uniformidad porque su función certificadora se lo demanda; la población escolar, en cambio, es heterogénea, dado que la variabilidad lectora resulta constitutiva y no excepcional (Snowling et al., 2020). La dificultad, entonces, no habita en el estudiante ni tampoco en la institución: está en la relación entre ambos, y ninguna de las dos partes puede repararla por su cuenta.
 
 [106.0]
 --- ANTES ---
 Que esa relación no sea inocua lo confirma la investigación reciente. León Mora (2021) demostró que incluso los modelos pedagógicos que se declaran complejos y transdisciplinares conservan estructuras de interacción bastante estables, desde las cuales el aprendizaje lector sigue moldeándose igual. Miranda-Merizalde y Núñez Naranjo (2025), desde la neurociencia aplicada a la inclusión, y Ramos Ventura (2025), desde la revisión latinoamericana del diseño universal para el aprendizaje, llegan por vías distintas al mismo diagnóstico: las estrategias disponibles optimizan funciones ejecutivas, atención y rendimiento del estudiante dentro de marcos pedagógicos que nadie discute. La corrección recae sobre el lector; el marco permanece sin examen.
---- DESPUÉS ---
-Que esa relación no sea inocua lo confirma la investigación reciente. León Mora (2021) demostró que incluso los modelos pedagógicos que se declaran complejos y transdisciplinares conservan estructuras de interacción bastante estables, desde las cuales el aprendizaje lector sigue moldeándose igual que antes. Por vías distintas llegan al mismo diagnóstico Miranda-Merizalde y Núñez Naranjo (2025), desde la neurociencia aplicada a la inclusión, y Ramos Ventura (2025), desde la revisión latinoamericana del diseño universal para el aprendizaje: las estrategias disponibles optimizan funciones ejecutivas, atención y rendimiento del estudiante dentro de marcos pedagógicos que nadie discute, de suerte que toda la corrección recae sobre el lector y el marco se queda sin examinar.
+--- DESPUES ---
+Que esa relación no sea inocua lo confirma la investigación reciente. León Mora (2021) demostró que incluso los modelos pedagógicos que se declaran complejos y transdisciplinares conservan estructuras de interacción notablemente estables, desde las cuales el aprendizaje lector sigue moldeándose igual que antes. Por vías distintas llegan al mismo diagnóstico Miranda-Merizalde y Núñez Naranjo (2025), desde la neurociencia aplicada a la inclusión, y Ramos Ventura (2025), desde la revisión latinoamericana del diseño universal para el aprendizaje: las estrategias disponibles optimizan funciones ejecutivas, atención y rendimiento del estudiante dentro de marcos pedagógicos que nadie discute, de suerte que toda la corrección recae sobre el lector y el marco se queda sin examinar.
 
 
 ##############################################################################
-## 2.2 Manifestaciones en el aula híbrida
+## 2.2 Manifestaciones en el aula hibrida
 ##############################################################################
 
 [108.0]
 --- ANTES ---
 La arquitectura técnica de la consigna es el primer lugar donde mirar. Las plataformas de gestión del aprendizaje que usan los colegios colombianos organizan la lectura mediante formularios con temporizador, cuestionarios de opción múltiple que admiten un solo envío y foros que cierran a una hora fija. Un criterio pedagógico discutible, la fluidez, queda así convertido en un parámetro técnico inapelable: el tiempo de respuesta. La penalización de la lentitud deja de ser una decisión que alguien tomó y pasa a ser un efecto del diseño, lo que la vuelve a la vez invisible
---- DESPUÉS ---
-Conviene empezar por la arquitectura técnica de la consigna. Las plataformas de gestión del aprendizaje que usan los colegios colombianos organizan la lectura mediante formularios con temporizador, cuestionarios de opción múltiple que admiten un solo envío y foros que cierran a una hora fija. Un criterio pedagógico discutible, el de la fluidez, queda así convertido en un parámetro técnico inapelable, el tiempo de respuesta. Penalizar la lentitud deja de ser una decisión que alguien tomó y se vuelve un efecto del diseño, con lo cual resulta a la vez invisible
+--- DESPUES ---
+Conviene empezar por la arquitectura técnica de la consigna. Las plataformas de gestión del aprendizaje que usan los colegios colombianos organizan la lectura mediante formularios con temporizador, cuestionarios de opción múltiple que admiten un solo envío y foros que cierran a una hora fija. Un criterio pedagógico discutible, el de la fluidez, queda así convertido en un parámetro técnico inapelable, el tiempo de respuesta. Penalizar la lentitud deja de ser una decisión que alguien tomó para volverse un efecto del diseño, y eso la hace a la vez invisible
 
 [108.1]
 --- ANTES ---
 La evidencia de Delgado et al. (2018) sobre el efecto conjunto de pantalla y tiempo limitado indica que ese diseño no es neutro respecto de quién comprende.
---- DESPUÉS ---
+--- DESPUES ---
 Y la evidencia de Delgado et al. (2018) sobre el efecto conjunto de pantalla y tiempo limitado indica que ese diseño dista de ser neutro respecto de quién comprende.
 
 [109.0]
 --- ANTES ---
 Entre los dos segmentos del aula hay además una asimetría que ninguno de los dos compensa. En el tramo sincrónico, leer en voz alta y responder de inmediato expone la disfluencia ante treinta compañeros. En el asincrónico desaparece el docente y con él la posibilidad de preguntar, de modo que descifrar enunciados escritos extensos queda a cargo del estudiante y de su familia. Lo que enfrenta es una alternancia de exigencias distintas, cada una con su propia barrera.
---- DESPUÉS ---
+--- DESPUES ---
 Entre los dos segmentos del aula hay además una asimetría que ninguno de los dos compensa. En el tramo sincrónico, leer en voz alta y responder de inmediato expone la disfluencia ante treinta compañeros. En el asincrónico desaparece el docente y con él la posibilidad de preguntar, de modo que descifrar enunciados escritos extensos queda a cargo del estudiante y de su familia. Lo que el estudiante encuentra es la alternancia de dos exigencias distintas, cada una con su barrera propia.
 
 [110.0]
 --- ANTES ---
 En la evaluación el efecto se vuelve más costoso. La comprensión lectora se valora casi siempre mediante productos escritos, de modo que una misma calificación mide de una sola vez la comprensión, la ortografía y la velocidad de escritura. Un estudiante puede entender un texto con precisión y aparecer en el sistema como si no lo hubiera entendido. El registro documenta entonces un déficit que el propio instrumento produjo.
---- DESPUÉS ---
-En la evaluación el efecto se vuelve más costoso. La comprensión lectora se valora casi siempre mediante productos escritos, con lo cual una misma calificación termina midiendo de una sola vez la comprensión, la ortografía y la velocidad de escritura. Un estudiante puede entender un texto con precisión y aparecer en el sistema como si no lo hubiera entendido; el registro documenta entonces un déficit que el propio instrumento acaba de producir.
+--- DESPUES ---
+En la evaluación el efecto se vuelve más costoso. La comprensión lectora se valora casi siempre mediante productos escritos, de modo que una misma calificación termina midiendo de una sola vez la comprensión, la ortografía y la velocidad de escritura. Un estudiante puede entender un texto con precisión y aparecer en el sistema como si no lo hubiera entendido, y el registro documenta entonces un déficit que el propio instrumento acaba de producir.
 
 [111.0]
 --- ANTES ---
 Queda la gestión de los ajustes razonables. El Decreto 1421 de 2017 obliga a formular el Plan Individual de Ajustes Razonables, pero el instrumento fue concebido para el salón presencial y no siempre encuentra traducción en plataformas cuyos parámetros son comunes para todo el curso. Conceder tiempo adicional resulta sencillo cuando el docente controla el reloj; bastante más difícil cuando lo controla un formulario. Arteaga Gualán et al. (2024) añaden, en revisión sistemática, que la falta de formación docente específica limita de manera consistente la eficacia de cualquier estrategia que se intente.
---- DESPUÉS ---
-La distancia se hace más visible todavía en la gestión de los ajustes razonables. El Decreto 1421 de 2017 obliga a formular el Plan Individual de Ajustes Razonables, pero el instrumento fue concebido para el salón presencial y no siempre encuentra traducción en plataformas cuyos parámetros son comunes para todo el curso. Conceder tiempo adicional resulta sencillo cuando el docente controla el reloj; bastante más difícil cuando lo controla un formulario. Arteaga Gualán et al. (2024) añaden, en revisión sistemática, que la falta de formación docente específica recorta sistemáticamente la eficacia de cualquier estrategia que se intente.
+--- DESPUES ---
+Donde la distancia se hace más visible todavía es en la gestión de los ajustes razonables. El Decreto 1421 de 2017 obliga a formular el Plan Individual de Ajustes Razonables, pero el instrumento fue concebido para el salón presencial y no siempre encuentra traducción en plataformas cuyos parámetros son comunes para todo el curso. Conceder tiempo adicional resulta sencillo cuando el docente controla el reloj; bastante más difícil cuando lo controla un formulario. Arteaga Gualán et al. (2024) añaden, en revisión sistemática, que la falta de formación docente específica recorta sistemáticamente la eficacia de cualquier estrategia que se intente.
 
 
 ##############################################################################
@@ -172,32 +172,32 @@ La distancia se hace más visible todavía en la gestión de los ajustes razonab
 [113.0]
 --- ANTES ---
 Descrito así, el problema admitiría leerse como una suma de fallas corregibles una por una. Hay razones para dudarlo. Las manifestaciones descritas parecen sostenerse entre sí, y entonces corregir cualquiera de ellas por separado dejaría intactas a las demás.
---- DESPUÉS ---
+--- DESPUES ---
 Descrito así, el problema admitiría leerse como una suma de fallas corregibles una por una. Cabe dudarlo, porque las manifestaciones descritas parecen sostenerse entre sí y corregir cualquiera de ellas por separado dejaría intactas a las demás.
 
 [114.0]
 --- ANTES ---
 Considérese el circuito que une la norma de fluidez con el registro del déficit. La institución fija un umbral de velocidad, el estudiante no lo alcanza, el sistema anota la brecha, la anotación justifica intensificar el ejercicio de fluidez, y esa intensificación reafirma el umbral como criterio legítimo. Si opera de ese modo, produciría estabilidad sin producir aprendizaje, y en ningún momento obligaría a revisar el umbral inicial.
---- DESPUÉS ---
+--- DESPUES ---
 Considérese el circuito que une la norma de fluidez con el registro del déficit. La institución fija un umbral de velocidad, el estudiante no lo alcanza, el sistema anota la brecha, la anotación justifica intensificar el ejercicio de fluidez, y esa intensificación reafirma el umbral como criterio legítimo. Si el circuito opera de ese modo, produciría estabilidad sin producir aprendizaje, y en ningún momento obligaría a revisar el umbral inicial.
 
 [115.0]
 --- ANTES ---
 Entre el apoyo y la marca ocurre otro tanto, y con una dificultad añadida. La institución concede tiempo extra o formatos alternativos, el estudiante recibe un trato visiblemente distinto, esa visibilidad refuerza su identidad de alumno con dificultad, y la identidad justifica que el apoyo continúe. El ajuste es obligatorio y es necesario. Produce además un efecto de señalamiento que la escuela no tematiza, porque lo considera el precio inevitable de incluir.
---- DESPUÉS ---
+--- DESPUES ---
 Entre el apoyo y la marca ocurre otro tanto, con una dificultad añadida. La institución concede tiempo extra o formatos alternativos, el estudiante recibe un trato visiblemente distinto, esa visibilidad refuerza su identidad de alumno con dificultad, y la identidad justifica que el apoyo continúe. Nada de esto quita que el ajuste sea obligatorio y necesario. Produce además un efecto de señalamiento que la escuela no tematiza, quizá porque lo considera el precio inevitable de incluir.
 
 [116.0]
 --- ANTES ---
 Hay un tercer enlace, entre la mediación tecnológica y la pérdida del proceso. La plataforma guarda resultados y no procesos: el docente ve la nota, no cuántas veces el estudiante volvió al segundo párrafo, dónde se detuvo, qué releyó. Desaparecido el proceso del campo de observación, la única información disponible para decidir pedagógicamente es la que confirma el déficit.
---- DESPUÉS ---
+--- DESPUES ---
 Un tercer enlace une la mediación tecnológica con la pérdida del proceso. La plataforma guarda resultados y no procesos: el docente ve la nota, no cuántas veces el estudiante volvió al segundo párrafo, dónde se detuvo, qué releyó. Desaparecido el proceso del campo de observación, la única información disponible para decidir pedagógicamente es justamente la que confirma el déficit.
 
 [117.0]
 --- ANTES ---
 Lo que el aula híbrida agrega es una capa de código que fija el primero de ellos en los ajustes por defecto, con lo cual la diferenciación queda relegada al margen de lo que cada docente logre negociar con la interfaz.
---- DESPUÉS ---
-Lo que el aula híbrida agrega es una capa de código que fija el primero de esos mandatos en los ajustes por defecto, con lo cual la diferenciación queda relegada al margen de lo que cada docente logre negociar con la interfaz.
+--- DESPUES ---
+Lo que el aula híbrida agrega es una capa de código que fija el primero de esos mandatos en los ajustes por defecto, con lo cual la diferenciación queda relegada al margen que cada docente logre negociarle a la interfaz.
 
 
 ##############################################################################
@@ -207,501 +207,501 @@ Lo que el aula híbrida agrega es una capa de código que fija el primero de eso
 [121.0]
 --- ANTES ---
 Los efectos de dejar el fenómeno sin comprender desbordan bastante lo pedagógico. En las trayectorias educativas, los circuitos descritos se traducen en reprobación, extraedad y salida temprana del sistema. El informe de seguimiento de la educación en el mundo (Organización de las Naciones Unidas para la Educación, la Ciencia y la Cultura, 2020) documenta que la clasificación escolar ordinaria es una de las vías principales por las cuales los sistemas educativos excluyen, sin que sea necesario que alguien se lo proponga. En un país cuyo desempeño lector agregado se ubica 67 puntos por debajo del promedio de la Organización para la Cooperación y el Desarrollo Económicos, ese efecto se acumula sobre estudiantes que ya partían en desventaja.
---- DESPUÉS ---
-Los efectos de dejar el fenómeno sin comprender desbordan con holgura lo pedagógico. En las trayectorias educativas, los circuitos descritos se traducen en reprobación, extraedad y salida temprana del sistema. El informe de seguimiento de la educación en el mundo (Organización de las Naciones Unidas para la Educación, la Ciencia y la Cultura, 2020) documenta que la clasificación escolar ordinaria es una de las vías principales por las cuales los sistemas educativos excluyen, y lo hacen sin que nadie tenga que proponérselo. En un país cuyo desempeño lector agregado se ubica 67 puntos por debajo del promedio de la Organización para la Cooperación y el Desarrollo Económicos, ese efecto se acumula sobre estudiantes que ya partían en desventaja.
+--- DESPUES ---
+Dejar el fenómeno sin comprender tiene efectos que desbordan con holgura lo pedagógico. En las trayectorias educativas, los circuitos descritos se traducen en reprobación, extraedad y salida temprana del sistema. El informe de seguimiento de la educación en el mundo (Organización de las Naciones Unidas para la Educación, la Ciencia y la Cultura, 2020) deja constancia de que la clasificación escolar ordinaria es una de las vías principales por las cuales los sistemas educativos excluyen, y lo hacen sin que nadie tenga que proponérselo. En un país cuyo desempeño lector agregado se ubica 67 puntos por debajo del promedio de la Organización para la Cooperación y el Desarrollo Económicos, ese efecto se acumula sobre estudiantes que ya partían en desventaja.
 
 [122.0]
 --- ANTES ---
 Pedagógicamente, la ausencia de una comprensión sistémica condena la respuesta institucional a la remediación individual. Se multiplican los planes de apoyo mientras la consigna permanece igual, y el colegio gasta esfuerzo en compensar un efecto cuya causa sigue en su lugar. Arteaga Gualán et al. (2024) constatan que las intervenciones documentadas se concentran en la estrategia didáctica de aula y rara vez alcanzan el diseño curricular o la política institucional, que es donde el problema tiene su origen.
---- DESPUÉS ---
-Pedagógicamente, la ausencia de una comprensión sistémica condena la respuesta institucional a la remediación individual. Se multiplican los planes de apoyo sin que la consigna varíe un ápice, y el colegio gasta esfuerzo en compensar un efecto cuya causa sigue tranquilamente en su lugar. Arteaga Gualán et al. (2024) constatan, en este sentido, que las intervenciones documentadas se concentran en la estrategia didáctica de aula y rara vez alcanzan el diseño curricular o la política institucional, que es donde el problema tiene su origen.
+--- DESPUES ---
+Pedagógicamente, la ausencia de una comprensión sistémica condena la respuesta institucional a la remediación individual. Se multiplican los planes de apoyo sin que la consigna varíe un ápice, y el colegio gasta esfuerzo en compensar un efecto cuya causa sigue tranquilamente en su lugar. Las intervenciones documentadas, constatan Arteaga Gualán et al. (2024), se concentran en la estrategia didáctica de aula y rara vez alcanzan el diseño curricular o la política institucional, que es donde el problema tiene su origen.
 
 [123.0]
 --- ANTES ---
 Hay también un problema ético, y es el más difícil de mirar de frente. Atribuir el fracaso lector al estudiante equivale a una forma de injusticia epistémica: se lo evalúa sobre un texto que la institución escogió, en un tiempo que la institución fijó y con un criterio que la institución no somete a discusión, y después se le imputa el resultado como si fuera un rasgo suyo. Su propia experiencia de lectura, que sería la mejor fuente disponible para entender qué ocurre, queda descalificada de antemano.
---- DESPUÉS ---
+--- DESPUES ---
 Está en juego, además, un problema ético, quizá el más difícil de mirar de frente. Atribuir el fracaso lector al estudiante equivale a una forma de injusticia epistémica: se lo evalúa sobre un texto que la institución escogió, en un tiempo que la institución fijó y con un criterio que la institución no somete a discusión, y después se le imputa el resultado como si fuera un rasgo suyo. Su propia experiencia de lectura, que sería con diferencia la mejor fuente disponible para entender qué ocurre, queda descalificada de antemano.
 
 [124.0]
 --- ANTES ---
 En lo institucional y normativo, la desatención expone a los colegios a un incumplimiento material del Decreto 1421 de 2017 y de la Ley 1618 de 2013. Diligenciar el Plan Individual de Ajustes Razonables no remueve la barrera cuando la barrera está escrita en el diseño de la tarea y no en la disposición del profesor. Se cumple el expediente sin que el derecho quede garantizado.
---- DESPUÉS ---
+--- DESPUES ---
 En lo institucional y normativo, la desatención expone a los colegios a un incumplimiento material del Decreto 1421 de 2017 y de la Ley 1618 de 2013. Diligenciar el Plan Individual de Ajustes Razonables no remueve la barrera cuando la barrera está escrita en el diseño de la tarea y no en la disposición del profesor, de suerte que se cumple el expediente sin que el derecho quede por ello garantizado.
 
 [125.0]
 --- ANTES ---
 Sostener el fenómeno sin examinarlo significa mantener en funcionamiento un dispositivo que produce exclusión mientras documenta inclusión. De ahí que valga la pena investigarlo.
---- DESPUÉS ---
-Sostener el fenómeno sin examinarlo significa, en suma, mantener en funcionamiento un dispositivo que documenta inclusión y produce exclusión. El diagnóstico, así enunciado, no es nuevo; lo que falta es el trabajo empírico que muestre por dónde pasa exactamente el circuito, y de ahí que valga la pena investigarlo.
+--- DESPUES ---
+Sostener el fenómeno sin examinarlo significa, en suma, mantener en funcionamiento un dispositivo que documenta inclusión y produce exclusión. El diagnóstico, así enunciado, no es nuevo. Falta el trabajo empírico que muestre por dónde pasa exactamente el circuito, y de ahí que valga la pena investigarlo.
 
 
 ##############################################################################
-## 3. Balance bibliográfico
+## 3. Balance bibliografico
 ##############################################################################
 
 [128.0]
 --- ANTES ---
 El campo que este estudio convoca no es uno solo. Confluyen en él la psicolingüística de la dislexia, la historia de la organización escolar, la investigación sobre lectura digital y la tradición fenomenológica y compleja, y confluyen sin acuerdo previo. Del examen crítico y comparativo de esa producción sale el balance de qué se ha investigado, cómo se lo ha investigado y qué queda todavía sin investigar en la intersección entre dislexia, gramáticas escolares de lectura y aulas híbridas.
---- DESPUÉS ---
+--- DESPUES ---
 Cuatro campos concurren en este estudio y concurren sin acuerdo previo entre ellos: la psicolingüística de la dislexia, la historia de la organización escolar, la investigación sobre lectura digital y la tradición fenomenológica y compleja. Del examen crítico y comparativo de esa producción sale el balance de qué se ha investigado, cómo se lo ha investigado y qué queda todavía sin investigar en la intersección entre dislexia, gramáticas escolares de lectura y aulas híbridas.
 
 [130.0]
 --- ANTES ---
 La revisión cubrió la producción publicada entre 1994 y 2025 en los cuatro campos mencionados. El punto de partida temporal no es arbitrario, pues 1994 es el año en que Tyack y Tobin formularon la gramática de la escolarización, categoría matriz de la que deriva la propuesta conceptual de este trabajo.
---- DESPUÉS ---
-La revisión cubrió la producción publicada entre 1994 y 2025 en los cuatro campos mencionados. La fecha de arranque obedece a una razón precisa, y es que en 1994 Tyack y Tobin formularon la gramática de la escolarización, categoría matriz de la que deriva la propuesta conceptual de este trabajo.
+--- DESPUES ---
+Se revisó la producción publicada entre 1994 y 2025 en los cuatro campos mencionados. La fecha de arranque obedece a una razón precisa, y es que en 1994 Tyack y Tobin formularon la gramática de la escolarización, categoría matriz de la que deriva la propuesta conceptual de este trabajo.
 
 [131.0]
 --- ANTES ---
 El criterio de admisión fue exigente y tuvo un costo: solo entró producción arbitrada o de editorial académica reconocida, en español, inglés o francés, y únicamente si cada pieza tocaba al menos dos de los cuatro campos. Ese filtro dejó fuera bastante literatura valiosa, aunque encerrada en su propia disciplina. Quedaron fuera también los materiales de divulgación sin respaldo empírico y las guías clínicas dirigidas a familias. Las bases consultadas fueron Scopus, Web of Science, Scielo, Redalyc, Dialnet y ERIC.
---- DESPUÉS ---
-El criterio de admisión fue exigente y tuvo su costo. Solo entró producción arbitrada o de editorial académica reconocida, en español, inglés o francés, y únicamente si cada pieza tocaba al menos dos de los cuatro campos. Ese filtro dejó fuera bastante literatura valiosa, aunque encerrada en su propia disciplina, y dejó fuera también los materiales de divulgación sin respaldo empírico y las guías clínicas dirigidas a familias. Las bases consultadas fueron Scopus, Web of Science, Scielo, Redalyc, Dialnet y ERIC.
+--- DESPUES ---
+El criterio de admisión fue exigente y tuvo su costo. Solo entró producción arbitrada o de editorial académica reconocida, en español, inglés o francés, y únicamente si cada pieza tocaba al menos dos de los cuatro campos. Ese filtro dejó fuera literatura valiosa, aunque encerrada en su propia disciplina, y dejó fuera también los materiales de divulgación sin respaldo empírico y las guías clínicas dirigidas a familias. Las bases consultadas fueron Scopus, Web of Science, Scielo, Redalyc, Dialnet y ERIC.
 
 [132.0]
 --- ANTES ---
 Tres territorios quedaron excluidos de manera deliberada: la intervención logopédica, la evaluación psicométrica diferencial y la genética conductual de las dificultades lectoras. Son pertinentes para entender la dislexia, y por eso la exclusión pide justificarse. Ninguno de los tres opera en el nivel donde este estudio busca, que es el de la regla institucional y su efecto perceptivo.
---- DESPUÉS ---
+--- DESPUES ---
 Tres territorios quedaron excluidos deliberadamente: la intervención logopédica, la evaluación psicométrica diferencial y la genética conductual de las dificultades lectoras. Son pertinentes para entender la dislexia, y por eso mismo la exclusión pide justificarse. Ninguno de los tres opera en el nivel donde este estudio busca, que es el de la regla institucional y su efecto perceptivo.
 
 [134.0]
 --- ANTES ---
 Los enfoques que organizan la literatura difieren entre sí menos por sus hallazgos que por aquello que cada uno considera que la dislexia es.
---- DESPUÉS ---
-Los enfoques que organizan la literatura difieren entre sí menos por sus hallazgos que por aquello que cada uno considera que la dislexia es.
+--- DESPUES ---
+¿En qué difieren entre sí los enfoques que organizan la literatura? Menos en sus hallazgos, a decir verdad, que en aquello que cada uno da por sentado que la dislexia es.
 
 [135.0]
 --- ANTES ---
 La tradición fonológica localiza el núcleo del problema en la representación y el acceso a la estructura sonora del lenguaje. Ramus et al. (2003) pusieron a competir las hipótesis fonológica, auditiva, visual, cerebelosa y magnocelular en un estudio de casos múltiples con adultos disléxicos: el déficit fonológico estaba presente en prácticamente toda la muestra, mientras los sensoriales aparecían solo en un subgrupo. La jerarquía explicativa que salió de ahí todavía organiza el campo. Goswami (2015) no la discute de frente; formuló tres desafíos a las teorías sensoriales y propuso que las dificultades fonológicas podrían derivarse de una alteración en el muestreo oscilatorio de la señal acústica, con lo cual lo fonológico conserva su centralidad y deja de ser la causa última.
---- DESPUÉS ---
-La tradición fonológica localiza el núcleo del problema en la representación y el acceso a la estructura sonora del lenguaje. Ramus et al. (2003) pusieron a competir las hipótesis fonológica, auditiva, visual, cerebelosa y magnocelular en un estudio de casos múltiples con adultos disléxicos, y el resultado fue que el déficit fonológico estaba presente en prácticamente toda la muestra mientras los sensoriales aparecían solo en un subgrupo. La jerarquía explicativa que salió de ahí todavía organiza el campo. Goswami (2015) no la discute de frente: formuló tres desafíos a las teorías sensoriales y propuso que las dificultades fonológicas podrían derivarse de una alteración en el muestreo oscilatorio de la señal acústica, con lo cual lo fonológico conserva su centralidad y a la vez deja de ser la causa última.
+--- DESPUES ---
+La tradición fonológica localiza el núcleo del problema en la representación y el acceso a la estructura sonora del lenguaje. Ramus et al. (2003) pusieron a competir las hipótesis fonológica, auditiva, visual, cerebelosa y magnocelular en un estudio de casos múltiples con adultos disléxicos, y el resultado fue que el déficit fonológico estaba presente en prácticamente toda la muestra mientras los sensoriales aparecían solo en un subgrupo. La jerarquía explicativa que salió de ahí todavía organiza el campo. Goswami (2015) no la discute de frente: formuló tres desafíos a las teorías sensoriales y propuso que las dificultades fonológicas podrían derivarse de una alteración en el muestreo oscilatorio de la señal acústica, y así lo fonológico conserva su centralidad y a la vez deja de ser la causa última.
 
 [136.0]
 --- ANTES ---
 Snowling et al. (2020) cambiaron las reglas del debate. Sostienen que la dislexia es el extremo de un continuo determinado por la acumulación de factores de riesgo genéticos y ambientales, planteamiento del que se siguen dos consecuencias: la búsqueda de una causa única queda sin objeto y el diagnóstico pasa a ser un juicio probabilístico antes que la identificación de una entidad.
---- DESPUÉS ---
+--- DESPUES ---
 Snowling et al. (2020) cambiaron las reglas del debate al sostener que la dislexia es el extremo de un continuo determinado por la acumulación de factores de riesgo genéticos y ambientales. Del planteamiento se siguen dos consecuencias: la búsqueda de una causa única queda sin objeto, y el diagnóstico pasa a ser un juicio probabilístico antes que la identificación de una entidad.
 
 [137.0]
 --- ANTES ---
 Más lejos van quienes cuestionan la existencia útil del objeto. Elliott y Grigorenko (2014) argumentan que no hay evidencia de que los estudiantes rotulados como disléxicos requieran intervenciones cualitativamente distintas de las que benefician a cualquier lector con dificultades, de donde concluyen que el rótulo cumple funciones administrativas más que pedagógicas. Singer (1999), desde otra tradición y con otro propósito, había introducido la noción de neurodiversidad para retirar la diferencia cognitiva del registro de la patología.
---- DESPUÉS ---
+--- DESPUES ---
 Más lejos van quienes cuestionan la existencia útil del objeto. Elliott y Grigorenko (2014) argumentan que no hay evidencia de que los estudiantes rotulados como disléxicos requieran intervenciones cualitativamente distintas de las que benefician a cualquier lector con dificultades, de donde concluyen que el rótulo cumple funciones administrativas más que pedagógicas. Desde otra tradición y con otro propósito, Singer (1999) había introducido años antes la noción de neurodiversidad para retirar la diferencia cognitiva del registro de la patología.
 
 [138.0]
 --- ANTES ---
 Queda una posición que reformula la pregunta desde su base. Dehaene (2009) propuso la hipótesis del reciclaje neuronal, según la cual la lectura reutiliza circuitos cerebrales destinados originalmente al reconocimiento visual de objetos, lo que la convierte en tecnología cultural y no en capacidad natural. Maturana y Varela (1984) aportan el acoplamiento estructural y el determinismo estructural, con los que el aprendizaje puede pensarse como historia de interacciones recurrentes que modifica a los dos términos de la relación. Y Barrios-Tao (2016) recuerda, desde el debate iberoamericano, que el diálogo entre neurociencias y educación no puede reducirse al cerebro aislado, porque el entorno sociocultural, la salud y las condiciones de vida influyen sobre lo que ocurre en el aula tanto como la maduración neuronal.
---- DESPUÉS ---
-Una última posición reformula la pregunta desde su base. Dehaene (2009) propuso la hipótesis del reciclaje neuronal, según la cual la lectura reutiliza circuitos cerebrales destinados originalmente al reconocimiento visual de objetos, lo que la convierte en tecnología cultural y no en capacidad natural. Maturana y Varela (1984) aportan el acoplamiento estructural y el determinismo estructural, con los que el aprendizaje puede pensarse como historia de interacciones recurrentes que modifica a los dos términos de la relación. Y Barrios-Tao (2016) recuerda, desde el debate iberoamericano, que el diálogo entre neurociencias y educación no puede reducirse al cerebro aislado, porque el entorno sociocultural, la salud y las condiciones de vida influyen sobre lo que ocurre en el aula tanto como la maduración neuronal.
+--- DESPUES ---
+Una última posición reformula la pregunta desde su base. Dehaene (2009) propuso la hipótesis del reciclaje neuronal, según la cual la lectura reutiliza circuitos cerebrales destinados originalmente al reconocimiento visual de objetos, y la convierte por tanto en tecnología cultural y no en capacidad natural. Maturana y Varela (1984) aportan el acoplamiento estructural y el determinismo estructural, con los que el aprendizaje puede pensarse como historia de interacciones recurrentes que modifica a los dos términos de la relación. Y Barrios-Tao (2016) recuerda, desde el debate iberoamericano, que el diálogo entre neurociencias y educación no puede reducirse al cerebro aislado, porque el entorno sociocultural, la salud y las condiciones de vida influyen sobre lo que ocurre en el aula tanto como la maduración neuronal.
 
 [139.0]
 --- ANTES ---
 Estos enfoques no se suman: sostienen tesis incompatibles sobre qué clase de cosa es la dislexia. El desacuerdo se retoma más adelante, porque de él depende buena parte de lo que aquí se propone.
---- DESPUÉS ---
-Estos enfoques no se suman entre sí, y ese es el punto: sostienen tesis incompatibles sobre qué clase de cosa es la dislexia. El desacuerdo se retoma más adelante, porque de él depende buena parte de lo que aquí se propone.
+--- DESPUES ---
+Estos enfoques no se suman entre sí, y ese es el punto: sostienen tesis incompatibles sobre qué clase de cosa es la dislexia. Pero el desacuerdo se retoma más adelante, porque de él depende buena parte de la propuesta.
 
 [146.0]
 --- ANTES ---
 La producción de las últimas dos décadas se ordena en torno a unos pocos movimientos. El más consolidado es el abandono progresivo de los modelos de déficit único en favor de explicaciones multifactoriales y dimensionales, que la síntesis de Snowling et al. (2020) selló y que le ha restado bastante prestigio a las causas simples. En paralelo creció la investigación sobre soporte y comprensión, impulsada por el metaanálisis de Delgado et al. (2018), con un interés cada vez mayor por la temporalidad de la tarea como variable que modula el efecto, más que por el dispositivo en sí.
---- DESPUÉS ---
-La producción de las últimas dos décadas se ordena en torno a unos pocos movimientos. El más consolidado es el abandono progresivo de los modelos de déficit único en favor de explicaciones multifactoriales y dimensionales, movimiento que la síntesis de Snowling et al. (2020) selló y que le ha restado bastante prestigio a las causas simples. En paralelo creció la investigación sobre soporte y comprensión, impulsada por el metaanálisis de Delgado et al. (2018), con un interés cada vez mayor por la temporalidad de la tarea como variable que modula el efecto, más que por el dispositivo en sí mismo.
+--- DESPUES ---
+En torno a unos pocos movimientos se ordena la producción de las últimas dos décadas. El más consolidado es el abandono progresivo de los modelos de déficit único en favor de explicaciones multifactoriales y dimensionales, movimiento que la síntesis de Snowling et al. (2020) selló y que le ha restado prestigio a las causas simples. En paralelo creció la investigación sobre soporte y comprensión, impulsada por el metaanálisis de Delgado et al. (2018), con un interés cada vez mayor por la temporalidad de la tarea como variable que modula el efecto, más que por el dispositivo en sí mismo.
 
 [147.0]
 --- ANTES ---
 El diseño universal para el aprendizaje se adoptó, entretanto, como marco de política pública. Ramos Ventura (2025) documenta esa expansión en América Latina y anota una tensión que merece atención: la accesibilidad y la flexibilización amplían el repertorio de intervención mientras el aprendizaje sigue organizándose desde modelos de adaptación del estudiante al marco existente.
---- DESPUÉS ---
-El diseño universal para el aprendizaje se adoptó, entretanto, como marco de política pública. Ramos Ventura (2025) documenta esa expansión en América Latina y anota de paso una tensión que merece atención: la accesibilidad y la flexibilización amplían el repertorio de intervención, y con todo el aprendizaje sigue organizándose desde modelos de adaptación del estudiante al marco existente.
+--- DESPUES ---
+Entretanto, el diseño universal para el aprendizaje se adoptó como marco de política pública. Ramos Ventura (2025) le sigue el rastro a esa expansión en América Latina y anota de paso una tensión que merece atención: la accesibilidad y la flexibilización amplían el repertorio de intervención, y con todo el aprendizaje sigue organizándose desde modelos de adaptación del estudiante al marco existente.
 
 [148.0]
 --- ANTES ---
 Del lado latinoamericano aumentó también la producción sobre estrategias didácticas para la dislexia, con predominio de revisiones sistemáticas y estudios descriptivos de corta duración, según se desprende tanto de Arteaga Gualán et al. (2024) como de Miranda-Merizalde y Núñez Naranjo (2025). Y el pensamiento complejo se incorporó a la investigación educativa iberoamericana con más fuerza en la fundamentación general que en el diseño metodológico concreto, como muestra León Mora (2021).
---- DESPUÉS ---
+--- DESPUES ---
 Del lado latinoamericano aumentó también la producción sobre estrategias didácticas para la dislexia, con predominio de revisiones sistemáticas y estudios descriptivos de corta duración, según se desprende tanto de Arteaga Gualán et al. (2024) como de Miranda-Merizalde y Núñez Naranjo (2025). El pensamiento complejo, por su parte, se incorporó a la investigación educativa iberoamericana con más fuerza en la fundamentación general que en el diseño metodológico concreto, como muestra León Mora (2021).
 
 [150.0]
 --- ANTES ---
 Falta investigación que trate la dislexia como fenómeno coproducido por la organización escolar. La psicolingüística estudia al lector, la sociología de la educación estudia la institución, y la revisión no encontró trabajos que documenten empíricamente el circuito que une las condiciones escolares de reconocimiento con la constitución de la experiencia disléxica.
---- DESPUÉS ---
-Falta investigación que trate la dislexia como fenómeno coproducido por la organización escolar. La psicolingüística estudia al lector y la sociología de la educación estudia la institución; la revisión no encontró trabajos que documenten empíricamente el circuito que une las condiciones escolares de reconocimiento con la constitución de la experiencia disléxica.
+--- DESPUES ---
+Falta investigación que trate la dislexia como fenómeno coproducido por la organización escolar. La psicolingüística estudia al lector y la sociología de la educación estudia la institución, y la revisión no encontró trabajos que documenten empíricamente el circuito que une las condiciones escolares de reconocimiento con la constitución de la experiencia disléxica.
 
 [153.0]
 --- ANTES ---
 Y falta investigación colombiana que examine si el Decreto 1421 de 2017 llega efectivamente al diseño de las consignas en entornos mediados por plataformas, o si se detiene en el diligenciamiento del Plan Individual de Ajustes Razonables.
---- DESPUÉS ---
+--- DESPUES ---
 Falta, por último, investigación colombiana que examine si el Decreto 1421 de 2017 llega efectivamente al diseño de las consignas en entornos mediados por plataformas, o si se detiene antes, en el diligenciamiento del Plan Individual de Ajustes Razonables.
 
 [155.0]
 --- ANTES ---
 El campo no es un consenso acumulado. Hay en él fricciones que este estudio asume en lugar de suavizarlas.
---- DESPUÉS ---
+--- DESPUES ---
 Lejos de ser un consenso acumulado, el campo está atravesado por fricciones que este estudio asume en lugar de suavizarlas.
 
 [156.0]
 --- ANTES ---
 La fricción ontológica enfrenta a Snowling et al. (2020), para quienes la dislexia posee realidad empírica como punto de un continuo, con Elliott y Grigorenko (2014) y con Singer (1999), para quienes el rótulo carece de utilidad educativa diferencial o patologiza indebidamente una variación. La investigación no toma partido por adhesión. Reformula el desacuerdo: si la dislexia es un punto de un continuo, el corte que la delimita es una decisión institucional y no un hecho natural, y esa decisión es justamente lo que aquí se estudia. La disputa deja de ser un obstáculo y se convierte en el punto de entrada.
---- DESPUÉS ---
+--- DESPUES ---
 La fricción ontológica enfrenta a Snowling et al. (2020), para quienes la dislexia posee realidad empírica como punto de un continuo, con Elliott y Grigorenko (2014) y con Singer (1999), para quienes el rótulo carece de utilidad educativa diferencial o patologiza indebidamente una variación. La investigación no toma partido por adhesión; prefiere reformular el desacuerdo. Si la dislexia es un punto de un continuo, el corte que la delimita es una decisión institucional antes que un hecho natural, y esa decisión es justamente lo que aquí se estudia. La disputa deja entonces de ser un obstáculo para volverse punto de entrada, aunque la reformulación no zanje el desacuerdo de fondo.
 
 [157.0]
 --- ANTES ---
 En el plano epistemológico chocan la explicación neurocognitiva, que busca mecanismos en el nivel subpersonal, y la comprensión fenomenológica, que busca sentido en el nivel de la experiencia vivida. Para Merleau-Ponty (1945/1957) la percepción es una relación del cuerpo con el mundo antes que el registro de un estímulo, tesis difícil de conciliar con cualquier lectura estrictamente representacional del procesamiento fonológico. Maturana y Varela (1984) y Barrios-Tao (2016) ofrecen el modo de habitar la fricción sin resolverla por reducción, y Nicolescu (2009) la reformula al plantear que lo contradictorio en un nivel de realidad puede no serlo en otro.
---- DESPUÉS ---
+--- DESPUES ---
 En el plano epistemológico chocan la explicación neurocognitiva, que busca mecanismos en el nivel subpersonal, y la comprensión fenomenológica, que busca sentido en el nivel de la experiencia vivida. Para Merleau-Ponty (1945/1957) la percepción es una relación del cuerpo con el mundo antes que el registro de un estímulo, tesis difícil de conciliar con cualquier lectura estrictamente representacional del procesamiento fonológico. Maturana y Varela (1984) y Barrios-Tao (2016) ofrecen el modo de habitar la fricción sin resolverla por reducción; Nicolescu (2009) la reformula al plantear que lo contradictorio en un nivel de realidad puede no serlo en otro.
 
 [158.0]
 --- ANTES ---
 Pedagógicamente, se oponen el mandato de equidad, que exige criterios comunes para certificar, y el de inclusión, que exige respuesta diferenciada. Booth y Ainscow (2015) reconocen en esa oposición el
---- DESPUÉS ---
-Pedagógicamente se oponen, por último, el mandato de equidad, que exige criterios comunes para certificar, y el de inclusión, que exige respuesta diferenciada. Booth y Ainscow (2015) reconocen en esa oposición el
+--- DESPUES ---
+Pedagógicamente se oponen, además, el mandato de equidad, que exige criterios comunes para certificar, y el de inclusión, que exige respuesta diferenciada. Booth y Ainscow (2015) reconocen en esa oposición el
 
 [159.0]
 --- ANTES ---
 Queda la fricción tecnológica, que confronta la promesa de personalización de los entornos digitales con la evidencia de estandarización que documentan Delgado et al. (2018) y Mangen y van der Weel (2016). La plataforma se presenta como instrumento de individualización y funciona de hecho como instrumento de uniformización de la tarea. Esa contradicción está en el centro de la indagación empírica que aquí se propone.
---- DESPUÉS ---
-La fricción tecnológica, en fin, confronta la promesa de personalización de los entornos digitales con la evidencia de estandarización que documentan Delgado et al. (2018) y Mangen y van der Weel (2016). La plataforma se presenta como instrumento de individualización y funciona de hecho como instrumento de uniformización de la tarea. Esa contradicción está en el centro de la indagación empírica que aquí se propone.
+--- DESPUES ---
+Y está, por último, la fricción tecnológica, que confronta la promesa de personalización de los entornos digitales con la evidencia de estandarización que reúnen Delgado et al. (2018) y Mangen y van der Weel (2016). La plataforma se presenta como instrumento de individualización y funciona de hecho como instrumento de uniformización de la tarea. Esa contradicción está en el centro de la indagación empírica que aquí se propone.
 
 [161.0]
 --- ANTES ---
 La literatura revisada tiene límites que acotan sus conclusiones, y este estudio los toma como advertencias para su propio diseño antes que como reproches.
---- DESPUÉS ---
-La literatura revisada tiene límites que acotan sus conclusiones, y este estudio los toma como advertencias para su propio diseño antes que como reproches.
+--- DESPUES ---
+No conviene pasar por alto los límites que acotan las conclusiones de la literatura revisada. Este estudio los toma como advertencias para su propio diseño antes que como reproches.
 
 [162.0]
 --- ANTES ---
 La investigación psicolingüística trabaja predominantemente en laboratorio, con alta validez interna y baja transferibilidad a las condiciones ordinarias del aula: Ramus et al. (2003), por ejemplo, estudiaron una muestra reducida de adultos universitarios, lo que hace arriesgada cualquier extrapolación a adolescentes escolarizados. A ello se añade que los criterios de identificación de la dislexia varían entre estudios, dificultad que Snowling et al. (2020) reconocen expresamente y que impide comparar prevalencias y efectos con seguridad; Carrillo Gallego et al. (2011) advierten en la misma dirección que la cifra cambia según el punto de corte y el instrumento empleado.
---- DESPUÉS ---
-La investigación psicolingüística trabaja predominantemente en laboratorio, con alta validez interna y baja transferibilidad a las condiciones ordinarias del aula. Ramus et al. (2003), por ejemplo, estudiaron una muestra reducida de adultos universitarios, lo que hace arriesgada cualquier extrapolación a adolescentes escolarizados. A ello se añade que los criterios de identificación de la dislexia varían entre estudios, dificultad que Snowling et al. (2020) reconocen expresamente y que impide comparar prevalencias y efectos con seguridad; Carrillo Gallego et al. (2011) advierten en la misma dirección que la cifra cambia según el punto de corte y el instrumento empleado.
+--- DESPUES ---
+Trabajada predominantemente en laboratorio, la investigación psicolingüística gana en validez interna lo que pierde en transferibilidad a las condiciones ordinarias del aula. Ramus et al. (2003), por ejemplo, estudiaron una muestra reducida de adultos universitarios, y eso vuelve arriesgada cualquier extrapolación a adolescentes escolarizados. A ello se añade que los criterios de identificación de la dislexia varían entre estudios, dificultad que Snowling et al. (2020) reconocen expresamente y que impide comparar prevalencias y efectos con seguridad; Carrillo Gallego et al. (2011) advierten en la misma dirección que la cifra cambia según el punto de corte y el instrumento empleado.
 
 [163.0]
 --- ANTES ---
 El corpus arrastra además un sesgo lingüístico considerable. La mayor parte de la evidencia proviene de estudios en inglés, cuya opacidad ortográfica difiere de la transparencia del español, con consecuencias directas sobre cómo se manifiesta conductualmente la dificultad.
---- DESPUÉS ---
+--- DESPUES ---
 El corpus arrastra además un sesgo lingüístico considerable, ya que la mayor parte de la evidencia proviene de estudios en inglés, cuya opacidad ortográfica difiere de la transparencia del español, con consecuencias directas sobre cómo se manifiesta conductualmente la dificultad.
 
 [164.0]
 --- ANTES ---
 Tampoco están exentos de problemas los metaanálisis sobre soporte de lectura: Delgado et al. (2018) admiten heterogeneidad entre los estudios primarios y dificultad para controlar el tipo de dispositivo, la extensión del texto y la familiaridad previa del lector. En la producción latinoamericana predominan, por su parte, los diseños transversales de corta duración, con escasa medición de la sostenibilidad de los efectos, según reportan Arteaga Gualán et al. (2024) y Ramos Ventura (2025).
---- DESPUÉS ---
-Tampoco están exentos de problemas los metaanálisis sobre soporte de lectura. Delgado et al. (2018) admiten heterogeneidad entre los estudios primarios y dificultad para controlar el tipo de dispositivo, la extensión del texto y la familiaridad previa del lector. En la producción latinoamericana predominan, por su parte, los diseños transversales de corta duración, con escasa medición de la sostenibilidad de los efectos, según reportan Arteaga Gualán et al. (2024) y Ramos Ventura (2025).
+--- DESPUES ---
+Tampoco están exentos de problemas los metaanálisis sobre soporte de lectura. Delgado et al. (2018) admiten heterogeneidad entre los estudios primarios y dificultad para controlar el tipo de dispositivo, la extensión del texto y la familiaridad previa del lector. En la producción latinoamericana predominan, por lo demás, los diseños transversales de corta duración, con escasa medición de la sostenibilidad de los efectos, según reportan Arteaga Gualán et al. (2024) y Ramos Ventura (2025).
 
 [165.0]
 --- ANTES ---
 Y el pensamiento complejo, cuando entra en la investigación educativa iberoamericana, suele quedarse en la fundamentación sin derivar procedimientos concretos de recolección y análisis, límite que León Mora (2021) hace explícito y que este trabajo procura no repetir.
---- DESPUÉS ---
+--- DESPUES ---
 Y el pensamiento complejo, cuando entra en la investigación educativa iberoamericana, suele quedarse en la fundamentación sin derivar procedimientos concretos de recolección y análisis, límite que León Mora (2021) hace explícito y que este trabajo procura no repetir.
 
 [167.0]
 --- ANTES ---
 Vacíos, tensiones y límites convergen en el mismo punto, y allí se justifica esta tesina. Su objeto es la intersección que la literatura no cubre: la configuración recursiva entre las gramáticas escolares de lectura y la experiencia lectora disléxica en el aula híbrida de educación media colombiana.
---- DESPUÉS ---
+--- DESPUES ---
 Vacíos, tensiones y límites convergen en el mismo punto, y allí se justifica esta tesina. Su objeto es la intersección que la literatura no cubre, esto es, la configuración recursiva entre las gramáticas escolares de lectura y la experiencia lectora disléxica en el aula híbrida de educación media colombiana.
 
 [168.0]
 --- ANTES ---
 La originalidad descansa en unas pocas decisiones. Invierte, para empezar, la dirección analítica dominante: en lugar de preguntar qué le pasa al estudiante disléxico en la escuela, pregunta qué hace la escuela para que una variación perceptiva y temporal se convierta en dislexia escolarmente relevante
---- DESPUÉS ---
+--- DESPUES ---
 La originalidad descansa en unas pocas decisiones. Para empezar, invierte la dirección analítica dominante: en lugar de preguntar qué le pasa al estudiante disléxico en la escuela, pregunta qué hace la escuela para que una variación perceptiva y temporal se convierta en dislexia escolarmente relevante
 
 
 ##############################################################################
-## 5. Justificación
+## 5. Justificacion
 ##############################################################################
 
 [184.0]
 --- ANTES ---
 En lo metodológico, el trabajo da forma operativa al principio de recursividad organizacional, que la investigación educativa iberoamericana suele invocar sin traducir en procedimientos, según el límite que León Mora (2021) documenta.
---- DESPUÉS ---
-En lo metodológico, el trabajo procura dar forma operativa al principio de recursividad organizacional, que la investigación educativa iberoamericana suele invocar sin traducirlo en procedimientos, según el límite que León Mora (2021) documenta.
+--- DESPUES ---
+En lo metodológico, el trabajo procura dar forma operativa al principio de recursividad organizacional, que la investigación educativa iberoamericana suele invocar sin traducirlo en procedimientos, según el límite que León Mora (2021) deja señalado.
 
 [186.0]
 --- ANTES ---
 Para el docente de lenguaje de educación media, el estudio produce criterios verificables con los cuales diseñar consignas en plataforma: cuánto tiempo conceder y a partir de qué punto el cronómetro deja de medir comprensión; qué extensión y qué estructura debe tener el enunciado; cómo separar la valoración de lo comprendido de la valoración de lo escrito; qué formatos alternativos conviene tener listos desde el inicio. Ese repertorio responde de manera directa al déficit de formación específica que Arteaga Gualán et al. (2024) documentan.
---- DESPUÉS ---
-Para el docente de lenguaje de educación media, el estudio produce criterios verificables con los cuales diseñar consignas en plataforma: cuánto tiempo conceder y a partir de qué punto el cronómetro deja de medir comprensión; qué extensión y qué estructura debe tener el enunciado; cómo separar la valoración de lo comprendido de la valoración de lo escrito; qué formatos alternativos conviene tener listos desde el inicio. Ese repertorio responde con bastante precisión al déficit de formación específica que Arteaga Gualán et al. (2024) documentan.
+--- DESPUES ---
+Para el docente de lenguaje de educación media, el estudio produce criterios verificables con los cuales diseñar consignas en plataforma: cuánto tiempo conceder y a partir de qué punto el cronómetro deja de medir comprensión; qué extensión y qué estructura debe tener el enunciado; cómo separar la valoración de lo comprendido de la valoración de lo escrito; qué formatos alternativos conviene tener listos desde el inicio. Ese repertorio responde con precisión al déficit de formación específica que Arteaga Gualán et al. (2024) reportan.
 
 [187.0]
 --- ANTES ---
 El equipo de orientación escolar gana una herramienta para leer la institución y no solamente al estudiante, con lo cual el Plan Individual de Ajustes Razonables puede pasar de registro que se archiva a instrumento que rediseña la tarea.
---- DESPUÉS ---
-El equipo de orientación escolar gana una herramienta para leer la institución y no solamente al estudiante, con lo cual el Plan Individual de Ajustes Razonables puede pasar de registro que se archiva a instrumento que rediseña la tarea.
+--- DESPUES ---
+Para el equipo de orientación escolar el resultado es una herramienta con la que leer la institución y no solamente al estudiante; con ella el Plan Individual de Ajustes Razonables puede pasar de registro que se archiva a instrumento que rediseña la tarea.
 
 [188.0]
 --- ANTES ---
 Al establecimiento le queda una ruta para examinar sus propias condiciones de reconocimiento de la lectura en entornos híbridos, aplicable en los procesos ordinarios de mejoramiento institucional sin necesidad de recursos adicionales.
---- DESPUÉS ---
+--- DESPUES ---
 Al establecimiento le queda una ruta para examinar sus propias condiciones de reconocimiento de la lectura en entornos híbridos, aplicable en los procesos ordinarios de mejoramiento institucional y sin necesidad de recursos adicionales.
 
 [190.0]
 --- ANTES ---
 El desempeño lector del país se sitúa 67 puntos por debajo del promedio de la Organización para la Cooperación y el Desarrollo Económicos, y más de la mitad de los estudiantes evaluados no alcanza el nivel básico de competencia (Ministerio de Educación Nacional, 2023). En ese escenario, quien llega a la educación media con una dificultad específica del aprendizaje de la lectura acumula desventajas que ninguna estrategia individual compensa. El estudio contribuye a hacer visible el componente institucional de ese riesgo, que es precisamente el que las políticas de remediación no alcanzan porque no lo miran.
---- DESPUÉS ---
+--- DESPUES ---
 El desempeño lector del país se sitúa 67 puntos por debajo del promedio de la Organización para la Cooperación y el Desarrollo Económicos, y más de la mitad de los estudiantes evaluados no alcanza el nivel básico de competencia (Ministerio de Educación Nacional, 2023). En ese escenario, quien llega a la educación media con una dificultad específica del aprendizaje de la lectura acumula desventajas que ninguna estrategia individual alcanza a compensar. El estudio contribuye a hacer visible el componente institucional de ese riesgo, que es precisamente el que las políticas de remediación no alcanzan, porque ni siquiera lo miran.
 
 
 ##############################################################################
-## 7. Marco teórico-conceptual
+## 7. Marco teorico-conceptual
 ##############################################################################
 
 [206.0]
 --- ANTES ---
 Ninguna de las tradiciones que sostienen este estudio basta por sí sola. Ponerlas a trabajar juntas, señalando dónde se apoyan y dónde chocan, conduce a una definición del objeto que ninguna habría producido en solitario. Los conceptos que se introducen funcionan como herramientas de investigación, revisables si el campo los vuelve inadecuados, y no como definiciones cerradas que obliguen al fenómeno a coincidir con ellas.
---- DESPUÉS ---
-Ninguna de las tradiciones que sostienen este estudio basta por sí sola. Ponerlas a trabajar juntas, señalando dónde se apoyan y dónde chocan, conduce a una definición del objeto que ninguna de ellas habría producido en solitario. Los conceptos que se introducen funcionan como herramientas de investigación, revisables si el campo los vuelve inadecuados, y no como definiciones cerradas que obliguen al fenómeno a coincidir con ellas.
+--- DESPUES ---
+Ninguna de las tradiciones en que este estudio se apoya basta por sí sola. Ponerlas a trabajar juntas, señalando dónde se apoyan y dónde chocan, conduce a una definición del objeto que ninguna de ellas habría producido en solitario. Los conceptos que se introducen funcionan como herramientas de investigación, revisables si el campo los vuelve inadecuados, y no como definiciones cerradas que obliguen al fenómeno a coincidir con ellas.
 
 [208.0]
 --- ANTES ---
 Morin (1994) define la complejidad como el tejido de eventos, acciones, interacciones, retroacciones y determinaciones que constituye el mundo fenoménico, y de ahí desprende varios operadores. El dialógico mantiene la dualidad dentro de la unidad y asocia términos complementarios y antagonistas sin obligarlos a fundirse; el de recursividad organizacional rompe la causalidad lineal al establecer que los productos son también productores de aquello que los produce. Interesa sobre todo el hologramático, según el cual la parte está en el todo y el todo en la parte, porque es él quien autoriza el estudio intensivo de unos pocos casos: si la organización se repite en cada fragmento, un aula bien observada dice más que el promedio de cincuenta.
---- DESPUÉS ---
+--- DESPUES ---
 Morin (1994) define la complejidad como el tejido de eventos, acciones, interacciones, retroacciones y determinaciones que constituye el mundo fenoménico, y de ahí desprende varios operadores. El dialógico mantiene la dualidad dentro de la unidad y asocia términos complementarios y antagonistas sin obligarlos a fundirse. El de recursividad organizacional rompe la causalidad lineal al establecer que los productos son también productores de aquello que los produce. Interesa sobre todo, con todo, el hologramático, según el cual la parte está en el todo y el todo en la parte, porque es él quien autoriza el estudio intensivo de unos pocos casos: si la organización se repite en cada fragmento, un aula bien observada dice más que el promedio de cincuenta.
 
 [209.0]
 --- ANTES ---
 Morin (1999) añade que una enseñanza pertinente debe ocuparse del contexto, de lo global y de lo multidimensional, y advierte contra la ceguera que produce la fragmentación disciplinaria. Nicolescu (2009) ofrece la salida técnica con su planteamiento sobre los niveles de realidad, según el cual lo contradictorio en un nivel puede dejar de serlo en otro.
---- DESPUÉS ---
+--- DESPUES ---
 Morin (1999) añade que una enseñanza pertinente debe ocuparse del contexto, de lo global y de lo multidimensional, y advierte contra la ceguera que produce la fragmentación disciplinaria. La salida técnica la ofrece Nicolescu (2009) con su planteamiento sobre los niveles de realidad, según el cual lo contradictorio en un nivel puede dejar de serlo en otro.
 
 [214.0]
 --- ANTES ---
 Viñao (2002) mostró que esas regularidades tienen historia propia y que las culturas escolares reinterpretan las innovaciones según sus lógicas de continuidad. Y Terigi (2010) nombró con las cronologías de aprendizaje el supuesto de una secuencia temporal única, que convierte en problema individual toda trayectoria que se salga de ella.
---- DESPUÉS ---
+--- DESPUES ---
 Viñao (2002) mostró después que esas regularidades tienen historia propia y que las culturas escolares reinterpretan las innovaciones según sus lógicas de continuidad. Terigi (2010) nombró después, con las cronologías de aprendizaje el supuesto de una secuencia temporal única, que convierte en problema individual toda trayectoria que se salga de ella.
 
 [215.0]
 --- ANTES ---
 De allí se deriva la categoría propia. Una gramática escolar de lectura es el conjunto de reglas tácitas, criterios de desempeño, formatos de tarea y dispositivos de evaluación con los que una institución define, sin decirlo, qué cuenta como leer bien, en cuánto tiempo debe hacerse y con qué evidencias debe demostrarse. La escuela moderna sostiene el aprendizaje lector sobre trayectorias lineales de progreso, secuencialidad, velocidad y estabilización del significado, y esas estructuras sobreviven incluso cuando el discurso pedagógico se llena de complejidad y formación integral (León Mora, 2021). La categoría se sitúa en un nivel intermedio, más abajo que la política educativa y más arriba que la decisión de cada profesor, y es ahí donde este estudio busca.
---- DESPUÉS ---
+--- DESPUES ---
 De allí se deriva la categoría propia de este trabajo. Una gramática escolar de lectura es el conjunto de reglas tácitas, criterios de desempeño, formatos de tarea y dispositivos de evaluación con los que una institución define, sin decirlo, qué cuenta como leer bien, en cuánto tiempo debe hacerse y con qué evidencias debe demostrarse. La escuela moderna sostiene el aprendizaje lector sobre trayectorias lineales de progreso, secuencialidad, velocidad y estabilización del significado, y esas estructuras sobreviven incluso cuando el discurso pedagógico se llena de complejidad y formación integral (León Mora, 2021). La categoría se sitúa en un nivel intermedio, más abajo que la política educativa y más arriba que la decisión de cada profesor, y es ahí donde este estudio busca.
 
 [217.0]
 --- ANTES ---
 Leer es antes una experiencia del cuerpo que un procesamiento de información. Merleau-Ponty (1945/1957) sostiene que percibir no consiste en recibir un dato sino en sostener una relación corporal con el mundo. El cuerpo orienta y produce sentido; no se limita a recibirlo. Maturana y Varela (1984) desarrollan el acoplamiento estructural y el determinismo estructural, con los cuales el aprendizaje puede pensarse como historia de interacciones recurrentes que transforma tanto al organismo como al entorno. Desde ahí, alfabetizarse no es adquirir una técnica: es reorganizar formas de atención, de secuencialidad y de procesamiento perceptivo dentro de un espacio institucional que las regula.
---- DESPUÉS ---
-Leer es antes una experiencia del cuerpo que un procesamiento de información. Merleau-Ponty (1945/1957) sostiene que percibir no consiste en recibir un dato sino en sostener una relación corporal con el mundo: el cuerpo orienta y produce sentido, no se limita a recibirlo. Maturana y Varela (1984) desarrollan el acoplamiento estructural y el determinismo estructural, con los cuales el aprendizaje puede pensarse como historia de interacciones recurrentes que transforma tanto al organismo como al entorno. Desde ahí, alfabetizarse resulta ser bastante más que adquirir una técnica: supone reorganizar formas de atención, de secuencialidad y de procesamiento perceptivo dentro de un espacio institucional que las regula.
+--- DESPUES ---
+Leer es antes una experiencia del cuerpo que un procesamiento de información. Merleau-Ponty (1945/1957) sostiene que percibir no consiste en recibir un dato sino en sostener una relación corporal con el mundo: el cuerpo orienta y produce sentido, no se limita a recibirlo. Maturana y Varela (1984) desarrollan el acoplamiento estructural y el determinismo estructural, con los cuales el aprendizaje puede pensarse como historia de interacciones recurrentes que transforma tanto al organismo como al entorno. Desde ahí, alfabetizarse resulta ser mucho más que adquirir una técnica: supone reorganizar formas de atención, de secuencialidad y de procesamiento perceptivo, y hacerlo dentro de un espacio institucional que las regula.
 
 [218.0]
 --- ANTES ---
 Barrios-Tao (2016) sitúa esta orientación en el debate iberoamericano al recordar que las relaciones entre neurociencias y educación no pueden reducirse al cerebro aislado, pues "factores como salud, ambiente vital, ejercicio físico y aspectos como plasticidad, madurez cerebral y neuronas espejo son relevantes para considerar el influjo del entorno sociocultural en la educación" (p. 398). Dehaene (2009) aporta la pieza complementaria con el reciclaje neuronal, hipótesis según la cual la lectura reutiliza circuitos previos y constituye por tanto una invención cultural, de donde se sigue que toda dificultad lectora es siempre relativa a un artefacto histórico y no a un orden natural. Wolf (2018) extiende el argumento al soporte digital y plantea que la lectura fragmentada de pantalla interfiere en la construcción del circuito de lectura profunda.
---- DESPUÉS ---
+--- DESPUES ---
 Barrios-Tao (2016) sitúa esta orientación en el debate iberoamericano al recordar que las relaciones entre neurociencias y educación no pueden reducirse al cerebro aislado, pues “factores como salud, ambiente vital, ejercicio físico y aspectos como plasticidad, madurez cerebral y neuronas espejo son relevantes para considerar el influjo del entorno sociocultural en la educación” (p. 398). La pieza complementaria la aporta Dehaene (2009) con el reciclaje neuronal, hipótesis según la cual la lectura reutiliza circuitos previos y constituye por tanto una invención cultural, de donde se sigue que toda dificultad lectora es siempre relativa a un artefacto histórico y no a un orden natural. Wolf (2018) extiende el argumento al soporte digital y plantea que la lectura fragmentada de pantalla interfiere en la construcción del circuito de lectura profunda.
 
 [220.0]
 --- ANTES ---
 Hrastinski (2019) documenta que el aprendizaje combinado carece de definición unívoca y propone entenderlo como familia de arreglos que integran enseñanza presencial y en línea en proporciones variables. Este estudio adopta una definición más restringida y más útil para su objeto. El aula híbrida es una ecología de la consigna, un arreglo material y temporal donde la tarea de lectura se reparte en dos tramos. Uno sincrónico, gobernado por la copresencia y la respuesta inmediata. Otro asincrónico, gobernado por la plataforma y la autorregulación del estudiante.
---- DESPUÉS ---
-Hrastinski (2019) documenta que el aprendizaje combinado carece de definición unívoca y propone entenderlo como familia de arreglos que integran enseñanza presencial y en línea en proporciones variables. Este estudio adopta una definición más restringida, y más útil para su objeto. El aula híbrida es aquí una ecología de la consigna, un arreglo material y temporal donde la tarea de lectura se reparte en dos tramos: uno sincrónico, gobernado por la copresencia y la respuesta inmediata; otro asincrónico, gobernado por la plataforma y la autorregulación del estudiante.
+--- DESPUES ---
+Según Hrastinski (2019), el aprendizaje combinado carece de definición unívoca y conviene entenderlo como familia de arreglos que integran enseñanza presencial y en línea en proporciones variables. Este estudio adopta una definición más restringida, y más útil para su objeto. El aula híbrida es aquí una ecología de la consigna, un arreglo material y temporal donde la tarea de lectura se reparte en dos tramos: uno sincrónico, gobernado por la copresencia y la respuesta inmediata; otro asincrónico, gobernado por la plataforma y la autorregulación del estudiante.
 
 [221.0]
 --- ANTES ---
 Mangen y van der Weel (2016) proponen un marco que considera de manera conjunta las dimensiones cognitiva, ergonómica, emocional y material de la lectura, y sostienen que el soporte no transporta el contenido sino que forma parte del acto lector. Delgado et al. (2018) le dan respaldo cuantitativo a esa tesis en el terreno de la comprensión de textos informativos y señalan la limitación temporal como condición que modula el efecto. De ambos se desprende el supuesto operativo con el que este trabajo mira las plataformas: la interfaz codifica una gramática de lectura y la aplica por igual a todos los estudiantes del curso, sin que nadie haya decidido explícitamente que así sea.
---- DESPUÉS ---
-Mangen y van der Weel (2016) proponen un marco que considera conjuntamente las dimensiones cognitiva, ergonómica, emocional y material de la lectura, y sostienen que el soporte no transporta el contenido sino que forma parte del acto lector. Delgado et al. (2018) le dan respaldo cuantitativo a esa tesis en el terreno de la comprensión de textos informativos y señalan la limitación temporal como condición que modula el efecto. De ambos se desprende el supuesto operativo con el que este trabajo mira las plataformas, a saber, que la interfaz codifica una gramática de lectura y la aplica por igual a todos los estudiantes del curso, sin que nadie haya decidido explícitamente que así sea.
+--- DESPUES ---
+Mangen y van der Weel (2016) proponen un marco que considera conjuntamente las dimensiones cognitiva, ergonómica, emocional y material de la lectura, y a su juicio el soporte no transporta el contenido: forma parte del acto lector. Delgado et al. (2018) le dan respaldo cuantitativo a esa tesis en el terreno de la comprensión de textos informativos y señalan la limitación temporal como condición que modula el efecto. De ambos se desprende el supuesto operativo con el que este trabajo mira las plataformas, a saber, que la interfaz codifica una gramática de lectura y la aplica por igual a todos los estudiantes del curso, sin que nadie haya decidido explícitamente que así sea.
 
 [223.0]
 --- ANTES ---
 Meyer et al. (2014) formulan el diseño universal para el aprendizaje como marco que multiplica las formas de representación, de acción y expresión, y de implicación, con el propósito de reducir barreras del entorno en lugar de compensar déficits del sujeto. El Center for Applied Special Technology (2018) sistematiza esas pautas para su uso curricular, y Ramos Ventura (2025) documenta su difusión latinoamericana junto con su límite práctico, pues el aprendizaje sigue organizándose desde modelos de adaptación del estudiante. Booth y Ainscow (2015) aportan un dispositivo de autoevaluación institucional que corre el foco desde el estudiante hacia las culturas, las políticas y las prácticas del establecimiento.
---- DESPUÉS ---
-Meyer et al. (2014) formulan el diseño universal para el aprendizaje como marco que multiplica las formas de representación, de acción y expresión, y de implicación, con el propósito de reducir barreras del entorno en lugar de compensar déficits del sujeto. El Center for Applied Special Technology (2018) sistematiza esas pautas para su uso curricular, y Ramos Ventura (2025) documenta su difusión latinoamericana junto con su límite práctico, dado que el aprendizaje sigue organizándose desde modelos de adaptación del estudiante. Booth y Ainscow (2015) aportan, en otra dirección, un dispositivo de autoevaluación institucional que corre el foco desde el estudiante hacia las culturas, las políticas y las prácticas del establecimiento.
+--- DESPUES ---
+Meyer et al. (2014) formulan el diseño universal para el aprendizaje como marco que multiplica las formas de representación, de acción y expresión, y de implicación, con el propósito de reducir barreras del entorno en lugar de compensar déficits del sujeto. El Center for Applied Special Technology (2018) sistematiza esas pautas para su uso curricular, y Ramos Ventura (2025) rastrea su difusión latinoamericana junto con su límite práctico, dado que el aprendizaje sigue organizándose desde modelos de adaptación del estudiante. Booth y Ainscow (2015) aportan, en otra dirección, un dispositivo de autoevaluación institucional que corre el foco desde el estudiante hacia las culturas, las políticas y las prácticas del establecimiento.
 
 [224.0]
 --- ANTES ---
 En Colombia el marco lo componen la Ley 115 de 1994, que define la educación como servicio público con función social; la Ley 1618 de 2013, que garantiza el ejercicio pleno de los derechos de las personas con discapacidad; y el Decreto 1421 de 2017, que reglamenta la atención educativa a esa población, define los ajustes razonables y hace obligatorio el Plan Individual de Ajustes Razonables. Este estudio no audita el cumplimiento formal de esa normativa. Le interesa la distancia entre el papel firmado y la consigna que el estudiante abre el martes en la plataforma.
---- DESPUÉS ---
+--- DESPUES ---
 En Colombia el marco lo componen la Ley 115 de 1994, que define la educación como servicio público con función social; la Ley 1618 de 2013, que garantiza el ejercicio pleno de los derechos de las personas con discapacidad; y el Decreto 1421 de 2017, que reglamenta la atención educativa a esa población, define los ajustes razonables y hace obligatorio el Plan Individual de Ajustes Razonables. Este estudio no audita el cumplimiento formal de esa normativa. Le interesa más bien la distancia entre el papel firmado y la consigna que el estudiante abre el martes en la plataforma.
 
 [226.0]
 --- ANTES ---
 Las tradiciones convocadas convergen sin homogeneizarse. La psicolingüística aporta el carácter dimensional de la variabilidad lectora; la sociología de la organización escolar, el carácter institucional y no natural de la norma; la fenomenología y la cognición enactiva, la corporalidad de la percepción; la investigación sobre lectura digital, la materialidad del soporte. Lo que ninguna de ellas tiene por sí misma lo pone el pensamiento complejo: el operador para pensar la relación entre esos planos como circuito y no como cadena.
---- DESPUÉS ---
-Las tradiciones convocadas convergen sin homogeneizarse. La psicolingüística aporta el carácter dimensional de la variabilidad lectora; la sociología de la organización escolar, el carácter institucional y no natural de la norma; la fenomenología y la cognición enactiva, la corporalidad de la percepción; la investigación sobre lectura digital, la materialidad del soporte. Lo que ninguna de ellas tiene por sí misma lo pone el pensamiento complejo, que es el operador para pensar la relación entre esos planos como circuito y no como cadena.
+--- DESPUES ---
+Convergen las tradiciones convocadas sin homogeneizarse por ello. La psicolingüística aporta el carácter dimensional de la variabilidad lectora; la sociología de la organización escolar, el carácter institucional y no natural de la norma; la fenomenología y la cognición enactiva, la corporalidad de la percepción; la investigación sobre lectura digital, la materialidad del soporte. Lo que ninguna de ellas tiene por sí misma lo pone el pensamiento complejo, que es el operador para pensar la relación entre esos planos como circuito y no como cadena.
 
 [227.0]
 --- ANTES ---
 De ahí resulta la definición que sostiene el trabajo. Si la variabilidad lectora es dimensional, si la norma escolar es una construcción histórica, si la percepción es corporal y situada, y si el soporte digital codifica y uniformiza esa norma, entonces la experiencia disléxica en el aula híbrida resultaría de la interacción entre esos planos, y comprenderla exigiría no reducir ninguno a los otros.
---- DESPUÉS ---
-De ahí resulta la definición que sostiene el trabajo. Si la variabilidad lectora es dimensional, si la norma escolar es una construcción histórica, si la percepción es corporal y situada, y si el soporte digital codifica y uniformiza esa norma, entonces la experiencia disléxica en el aula híbrida resultaría de la interacción entre esos planos, y comprenderla exigiría no reducir ninguno a los otros.
+--- DESPUES ---
+De ahí resulta la definición de la que parte el trabajo. Si la variabilidad lectora es dimensional, si la norma escolar es una construcción histórica, si la percepción es corporal y situada, y si el soporte digital codifica y uniformiza esa norma, entonces la experiencia disléxica en el aula híbrida resultaría de la interacción entre esos planos, y comprenderla exigiría no reducir ninguno a los otros.
 
 
 ##############################################################################
-## 8. Hipótesis y categorías
+## 8. Hipotesis y categorias
 ##############################################################################
 
 [231.0]
 --- ANTES ---
 El estudio no propone una relación entre variables medibles. Formula una proposición provisional que orienta la entrada al campo y que el campo puede desmentir, corregir o volver irrelevante.
---- DESPUÉS ---
+--- DESPUES ---
 El estudio no propone una relación entre variables medibles. Formula una proposición provisional que orienta la entrada al campo y que el campo puede desmentir, corregir o volver irrelevante.
 
 [232.0]
 --- ANTES ---
 Las consignas escolares de lectura del aula híbrida organizarían condiciones de inteligibilidad desde las cuales ciertas formas de relación con el texto llegan a reconocerse como lectura, mientras otras modalidades de relación perceptiva con el texto y con las temporalidades escolares tienden a traducirse como déficit, desajuste o insuficiencia. Cabría además que esa traducción, al ser gestionada mediante ajustes y apoyos, reafirmara las condiciones que la hicieron posible.
---- DESPUÉS ---
+--- DESPUES ---
 Las consignas escolares de lectura del aula híbrida organizarían condiciones de inteligibilidad desde las cuales ciertas formas de relación con el texto llegan a reconocerse como lectura, mientras otras modalidades de relación perceptiva con el texto y con las temporalidades escolares tienden a traducirse como déficit, desajuste o insuficiencia. Cabría además que esa traducción, al ser gestionada mediante ajustes y apoyos, reafirmara las condiciones que la hicieron posible.
 
 [233.0]
 --- ANTES ---
 La proposición admite ser falsada en dos puntos. Puede ocurrir que las condiciones de reconocimiento no formen un conjunto reconocible, sino prácticas dispersas sin regularidad; y puede ocurrir que la gestión del ajuste, en lugar de reafirmar la norma, la erosione. Cualquiera de las dos situaciones obligaría a reformular el problema antes que a descartar el dato. La experiencia lectora de los estudiantes diagnosticados con dislexia funciona aquí como posición de observación y no como objeto de examen.
---- DESPUÉS ---
-La proposición admite ser falsada en dos puntos. Puede ocurrir que las condiciones de reconocimiento no lleguen a formar conjunto reconocible alguno y se dispersen en prácticas sin regularidad; y puede ocurrir que la gestión del ajuste, lejos de reafirmar la norma, la erosione. Cualquiera de las dos situaciones obligaría a reformular el problema antes que a descartar el dato. Conviene subrayar, en todo caso, que la experiencia lectora de los estudiantes diagnosticados con dislexia funciona aquí como posición de observación y no como objeto de examen.
+--- DESPUES ---
+La proposición admite ser falsada en dos puntos. Puede ocurrir que las condiciones de reconocimiento no lleguen a formar conjunto reconocible alguno y se dispersen en prácticas sin regularidad; y puede ocurrir que la gestión del ajuste, lejos de reafirmar la norma, la erosione. Ni una ni otra situación autorizaría a descartar el dato; obligaría, más bien, a reformular el problema. Conviene subrayar, en todo caso, que la experiencia lectora de los estudiantes diagnosticados con dislexia funciona aquí como posición de observación y no como objeto de examen.
 
 [235.0]
 --- ANTES ---
 Las instituciones estudiadas operan con una gramática escolar de lectura que no está escrita en ninguna parte y cuyos criterios de secuencialidad, velocidad y estabilización del significado funcionan como umbrales de normalidad aplicados sin distinción.
---- DESPUÉS ---
+--- DESPUES ---
 Las instituciones estudiadas operan con una gramática escolar de lectura que no está escrita en ninguna parte y cuyos criterios de secuencialidad, velocidad y estabilización del significado funcionan como umbrales de normalidad aplicados sin distinción.
 
 [236.0]
 --- ANTES ---
 Esa gramática la codifica el diseño técnico de las plataformas, que la aplica de manera uniforme; el ajuste razonable queda entonces relegado a lo que cada docente logre negociar y no alcanza el núcleo de la tarea.
---- DESPUÉS ---
-Esa gramática la codifica el diseño técnico de las plataformas, que la aplica sin variación, con lo cual el ajuste razonable queda relegado a lo que cada docente logre negociar y no alcanza el núcleo de la tarea.
+--- DESPUES ---
+Esa gramática la codifica el diseño técnico de las plataformas, que la aplica sin variación, razón por la cual el ajuste razonable queda relegado al margen de negociación de cada docente y no alcanza el núcleo de la tarea.
 
 [237.0]
 --- ANTES ---
 Frente a ella, la experiencia lectora de estos estudiantes es multidimensional y no se agota en la decodificación: comprende dimensiones temporales, corporales, emocionales e identitarias que ningún instrumento de evaluación escolar registra.
---- DESPUÉS ---
+--- DESPUES ---
 Frente a ella, la experiencia lectora de estos estudiantes es multidimensional y no se agota en la decodificación, pues comprende dimensiones temporales, corporales, emocionales e identitarias que ningún instrumento de evaluación escolar registra.
 
 [238.0]
 --- ANTES ---
 Existen prácticas docentes que reconfiguran la consigna e interrumpen localmente el circuito, y que permanecen invisibles para la política institucional porque nadie las ha sistematizado. En ellas está la base empírica del modelo que este estudio se propone construir.
---- DESPUÉS ---
+--- DESPUES ---
 Existen prácticas docentes que reconfiguran la consigna e interrumpen localmente el circuito, y que permanecen invisibles para la política institucional porque nadie las ha sistematizado, y es en ellas donde está la base empírica del modelo que este estudio se propone construir.
 
 
 ##############################################################################
-## 9. Diseño metodológico
+## 9. Diseno metodologico
 ##############################################################################
 
 [246.0]
 --- ANTES ---
 El estudio es cualitativo, de orientación etnográfica y filosófica, e inscrito en el paradigma de la complejidad. La elección se sigue de la naturaleza del objeto y no de una preferencia de escuela ni de la disponibilidad de un procedimiento: una configuración recursiva entre norma institucional y experiencia perceptiva no puede capturarse midiendo variables independientes, porque su rasgo definitorio es justamente que los términos no se dejan separar. Lo que interesa es reconstruir, desde la experiencia lectora de estudiantes diagnosticados con dislexia, las condiciones bajo las cuales ciertas formas de leer resultan organizadas, interpretadas y reguladas. No se medirán desempeños ni se verificarán indicadores clínicos.
---- DESPUÉS ---
+--- DESPUES ---
 El estudio es cualitativo, de orientación etnográfica y filosófica, e inscrito en el paradigma de la complejidad. La elección se sigue de la naturaleza del objeto, no de una preferencia de escuela ni de la disponibilidad de un procedimiento: una configuración recursiva entre norma institucional y experiencia perceptiva difícilmente puede capturarse midiendo variables independientes, porque su rasgo definitorio es justamente que los términos no se dejan separar. Lo que interesa es reconstruir, desde la experiencia lectora de estudiantes diagnosticados con dislexia, las condiciones bajo las cuales ciertas formas de leer resultan organizadas, interpretadas y reguladas. No se medirán desempeños ni se verificarán indicadores clínicos, entre otras razones porque el objeto no está hecho de eso.
 
 [247.0]
 --- ANTES ---
 Siguiendo a García (2006), el sistema de análisis se define por decisiones que conviene dejar explícitas. Sus límites son los del aula de lenguaje en modalidad híbrida de educación media. Opera en el diseño institucional de la consigna, en la práctica docente y en la experiencia estudiantil, sin que ninguno de esos niveles se subordine de antemano a los otros. Su escala temporal es la de un ciclo académico completo, porque una relación de retroalimentación solo se hace observable si se la sigue durante más de un giro.
---- DESPUÉS ---
-Siguiendo a García (2006), el sistema de análisis se define por decisiones que conviene dejar explícitas. Sus límites son los del aula de lenguaje en modalidad híbrida de educación media. Opera en el diseño institucional de la consigna, en la práctica docente y en la experiencia estudiantil, sin que ninguno de esos niveles se subordine de antemano a los otros. Su escala temporal es la de un ciclo académico completo, y lo es por una razón sencilla: una relación de retroalimentación solo se hace observable si se la sigue durante más de un giro.
+--- DESPUES ---
+Siguiendo a García (2006), el sistema de análisis se define por decisiones que conviene dejar explícitas. Sus límites son los del aula de lenguaje en modalidad híbrida de educación media. Opera en el diseño institucional de la consigna, en la práctica docente y en la experiencia estudiantil, sin que ninguno de esos niveles se subordine de antemano a los otros. Su escala temporal es la de un ciclo académico completo, y lo es por una razón sencilla (una relación de retroalimentación solo se hace observable si se la sigue durante más de un giro).
 
 [249.0]
 --- ANTES ---
 El diseño es un estudio de casos múltiples con orientación fenomenológica y hermenéutica. El componente de caso conserva la densidad contextual que exige comprender una gramática institucional, y encuentra su justificación en el principio hologramático. Lo fenomenológico orienta la reconstrucción de la experiencia vivida; lo hermenéutico gobierna la lectura de documentos y consignas, tratados aquí como textos que dicen más de lo que enuncian.
---- DESPUÉS ---
-El diseño es un estudio de casos múltiples con orientación fenomenológica y hermenéutica. El componente de caso conserva la densidad contextual que exige comprender una gramática institucional, y encuentra su justificación en el principio hologramático. Lo fenomenológico orienta la reconstrucción de la experiencia vivida; lo hermenéutico gobierna la lectura de documentos y consignas, tratados aquí como textos que dicen más de lo que enuncian.
+--- DESPUES ---
+Se trata de un estudio de casos múltiples con orientación fenomenológica y hermenéutica. El componente de caso conserva la densidad contextual que exige comprender una gramática institucional, y encuentra su justificación en el principio hologramático. Lo fenomenológico orienta la reconstrucción de la experiencia vivida; lo hermenéutico gobierna la lectura de documentos y consignas, tratados aquí como textos que, por lo demás, dicen más de lo que enuncian.
 
 [250.0]
 --- ANTES ---
 La organización metodológica permanece deliberadamente abierta. Las dinámicas del aula no se presentan como una secuencia previsible, y la comprensión inicial del problema tampoco tiene por qué mantenerse intacta durante el proceso. Queda excluida de entrada cualquier pretensión de generalización universal sobre la dislexia o de tipología neurocognitiva cerrada.
---- DESPUÉS ---
+--- DESPUES ---
 La organización metodológica permanece deliberadamente abierta, porque las dinámicas del aula no se presentan como una secuencia previsible y la comprensión inicial del problema tampoco tiene por qué mantenerse intacta durante el proceso. Queda excluida de entrada, eso sí, cualquier pretensión de generalización universal sobre la dislexia o de tipología neurocognitiva cerrada.
 
 [252.0]
 --- ANTES ---
 El trabajo de campo se desarrolla en instituciones educativas de Bogotá, D. C., Colombia, que atienden décimo y undécimo grado y operan con modalidades híbridas en el área de lenguaje. La muestra es intencional y de criterio, sin pretensión probabilística.
---- DESPUÉS ---
+--- DESPUES ---
 El trabajo de campo se desarrolla en instituciones educativas de Bogotá, D. C., Colombia, que atienden décimo y undécimo grado y operan con modalidades híbridas en el área de lenguaje. La muestra es intencional y de criterio, sin pretensión probabilística.
 
 [256.0]
 --- ANTES ---
 Estas cifras son un piso y no un techo. El cierre lo determinará la saturación teórica de las categorías, que puede exigir ampliar el corpus o incorporar participantes no previstos.
---- DESPUÉS ---
+--- DESPUES ---
 Estas cifras funcionan como piso y no como techo. El cierre lo determinará la saturación teórica de las categorías, que bien puede exigir ampliar el corpus o incorporar participantes no previstos.
 
 [258.0]
 --- ANTES ---
 Ninguna de estas técnicas alcanza por sí sola un objeto repartido entre la norma escrita, la práctica docente y la vivencia del estudiante. Cada una recoge algo que las otras no alcanzan, y el conjunto está armado para cubrir los tres niveles del sistema.
---- DESPUÉS ---
+--- DESPUES ---
 Ninguna de estas técnicas alcanza por sí sola un objeto repartido entre la norma escrita, la práctica docente y la vivencia del estudiante. Cada una recoge algo que las otras no alcanzan, y el conjunto está armado para cubrir los tres niveles del sistema.
 
 [259.0]
 --- ANTES ---
 La observación participante registra lo que ningún documento consigna: interacciones perceptivas y corporales, formas de atención, ritmos, tiempos de respuesta, pausas, relecturas, silencios, interrupciones, modos de encarar la consigna. Se concentra en el punto donde la temporalidad escolar y el ritmo singular del estudiante entran en conflicto, y para ello se prevén dieciocho sesiones repartidas entre los dos tramos del aula.
---- DESPUÉS ---
+--- DESPUES ---
 La observación participante registra lo que ningún documento consigna: interacciones perceptivas y corporales, formas de atención, ritmos, tiempos de respuesta, pausas, relecturas, silencios, interrupciones, modos de encarar la consigna. Se concentra en el punto donde la temporalidad escolar y el ritmo singular del estudiante entran en conflicto, y para ello se prevén dieciocho sesiones repartidas entre los dos tramos del aula.
 
 [260.0]
 --- ANTES ---
 Donde lo observado adquiere espesor es en el diario de campo. Allí quedan las relaciones entre regulación pedagógica, interpretación institucional del error y experiencias perceptivas que no encajan de inmediato en lo esperado; y allí quedan también las variaciones que el propio problema, y las categorías con que se lo mira, vayan sufriendo durante el trabajo.
---- DESPUÉS ---
+--- DESPUES ---
 Donde lo observado adquiere espesor es en el diario de campo. Allí quedan las relaciones entre regulación pedagógica, interpretación institucional del error y experiencias perceptivas que no encajan de inmediato en lo esperado; allí quedan también las variaciones que el propio problema, y las categorías con que se lo mira, vayan sufriendo durante el trabajo.
 
 [261.0]
 --- ANTES ---
 Las rejillas de análisis cumplen una función que la codificación tiende a estropear: mantener unidas, mientras se analiza, la temporalidad lectora, la interacción con la consigna, los ritmos de respuesta, las formas de atención y la regulación institucional, todas ellas ligadas a los procesos por los cuales una experiencia termina tratada como error, déficit, lentitud o desajuste. Su diseño admite relaciones que el campo vuelva relevantes y que no estaban previstas.
---- DESPUÉS ---
-Las rejillas de análisis cumplen una función que la codificación tiende a estropear, que es mantener unidas, mientras se analiza, la temporalidad lectora, la interacción con la consigna, los ritmos de respuesta, las formas de atención y la regulación institucional, todas ellas ligadas a los procesos por los cuales una experiencia termina tratada como error, déficit, lentitud o desajuste. Su diseño admite relaciones que el campo vuelva relevantes y que no estaban previstas.
+--- DESPUES ---
+Cumplen las rejillas de análisis una función que la codificación tiende a estropear, que es mantener unidas, mientras se analiza, la temporalidad lectora, la interacción con la consigna, los ritmos de respuesta, las formas de atención y la regulación institucional, todas ellas ligadas a los procesos por los cuales una experiencia termina tratada como error, déficit, lentitud o desajuste. Su diseño admite relaciones que el campo vuelva relevantes y que no estaban previstas.
 
 [262.0]
 --- ANTES ---
 Del lado documental, el análisis interpretativo de consignas rastrea los supuestos pedagógicos que organizan temporalidades, ritmos de atención y maneras de transitar el texto, apoyado en una matriz de ocho descriptores: extensión del enunciado, densidad léxica, presencia de temporizador, número de intentos permitidos, formato de respuesta exigido, criterio de calificación declarado, disponibilidad de formatos alternativos y grado de diferenciación entre estudiantes.
---- DESPUÉS ---
+--- DESPUES ---
 Del lado documental, el análisis interpretativo de consignas rastrea los supuestos pedagógicos que organizan temporalidades, ritmos de atención y maneras de transitar el texto, apoyado en una matriz de ocho descriptores: extensión del enunciado, densidad léxica, presencia de temporizador, número de intentos permitidos, formato de respuesta exigido, criterio de calificación declarado, disponibilidad de formatos alternativos y grado de diferenciación entre estudiantes.
 
 [263.0]
 --- ANTES ---
 Queda la entrevista fenomenológica en profundidad, en dos rondas. La primera reconstruye la experiencia lectora en su desarrollo temporal y corporal a partir de episodios concretos y no de opiniones generales. La segunda le devuelve al estudiante una interpretación provisional y recoge su reacción, de modo que profundiza y valida en el mismo movimiento.
---- DESPUÉS ---
+--- DESPUES ---
 La entrevista fenomenológica en profundidad, prevista en dos rondas, cierra el conjunto. La primera reconstruye la experiencia lectora en su desarrollo temporal y corporal a partir de episodios concretos, no de opiniones generales. La segunda le devuelve al estudiante una interpretación provisional y recoge su reacción, de modo que profundiza y valida en un mismo movimiento.
 
 [269.0]
 --- ANTES ---
 Recolección y análisis corren en parte al mismo tiempo, de modo que los momentos del análisis se solapan en lugar de sucederse. Empieza con una codificación abierta del corpus completo, apoyada en ATLAS.ti, que parte de las cuatro categorías iniciales y deja lugar a las que emerjan. Sobre ella descansa un análisis relacional: las categorías forman redes, aparecen los circuitos de retroalimentación, y ahí el principio de recursividad deja de ser un enunciado y adquiere la forma de un diagrama que después se contrasta con los participantes. La triangulación opera en tres planos, entre fuentes, entre técnicas y entre teorías, y es este último, la lectura de un mismo fragmento desde la clave psicolingüística, la institucional y la fenomenológica, el que pone efectivamente a prueba el principio dialógico. El modelo llega al final, por abstracción de las prácticas de reconfiguración halladas y de los puntos donde el circuito se interrumpe.
---- DESPUÉS ---
+--- DESPUES ---
 Recolección y análisis corren en parte al mismo tiempo, así que los momentos del análisis se solapan en lugar de sucederse. Todo empieza con una codificación abierta del corpus completo, apoyada en ATLAS.ti, que parte de las cuatro categorías iniciales y deja lugar a las que emerjan. Sobre ella descansa un análisis relacional: las categorías forman redes, aparecen los circuitos de retroalimentación, y ahí el principio de recursividad deja de ser un enunciado y adquiere la forma de un diagrama que después se contrasta con los participantes. La triangulación opera en tres planos, entre fuentes, entre técnicas y entre teorías, y es este último —la lectura de un mismo fragmento desde la clave psicolingüística, la institucional y la fenomenológica— el que pone efectivamente a prueba el principio dialógico. El modelo llega al final, por abstracción de las prácticas de reconfiguración halladas y de los puntos donde el circuito se interrumpe.
 
 [271.0]
 --- ANTES ---
 Las decisiones que anteceden no derivan de un modelo metodológico adoptado de antemano. Derivan del problema, y su validez depende de que sigan sirviéndole; si dejan de hacerlo, se cambian. El rigor no consiste aquí en sostener un procedimiento, sino en no dejar que el procedimiento decida por adelantado qué podrá ser encontrado.
---- DESPUÉS ---
-Las decisiones que anteceden no derivan de un modelo metodológico adoptado de antemano. Derivan del problema, y su validez depende de que sigan sirviéndole; si dejan de hacerlo, se cambian. El rigor no consiste aquí en sostener un procedimiento a toda costa, sino en no dejar que el procedimiento decida por adelantado qué podrá ser encontrado.
+--- DESPUES ---
+Ninguna de las decisiones que anteceden deriva de un modelo metodológico adoptado de antemano. Derivan del problema, y su validez depende de que sigan sirviéndole; si dejan de hacerlo, se cambian. El rigor no consiste aquí en sostener un procedimiento a toda costa, sino en no dejar que el procedimiento decida por adelantado qué podrá ser encontrado.
 
 [272.0]
 --- ANTES ---
 Nada de lo que se registre será tratado como copia transparente de la situación. Un fragmento de observación, una respuesta en entrevista o el enunciado de una consigna son registros; se vuelven evidencia solo cuando se los pone en relación con una pregunta y bajo condiciones que puedan enunciarse; la interpretación es un tercer momento, y la afirmación que el estudio finalmente sostenga es un cuarto. Confundirlos es el modo más rápido de convertir una lectura en un hecho. Cada afirmación de peso quedará por ello acompañada de aquello que la sostiene, de la evidencia en que se apoya, de las condiciones bajo las cuales vale y de los límites que la acotan.
---- DESPUÉS ---
-Nada de lo que se registre será tratado como copia transparente de la situación. Un fragmento de observación, una respuesta en entrevista o el enunciado de una consigna son registros, y se vuelven evidencia solo cuando se los pone en relación con una pregunta y bajo condiciones que puedan enunciarse; la interpretación es un tercer momento, y la afirmación que el estudio finalmente sostenga, un cuarto. Confundir esos planos es el modo más rápido de convertir una lectura en un hecho. De ahí que cada afirmación de peso quede acompañada de aquello que la sostiene, de la evidencia en que se apoya, de las condiciones bajo las cuales vale y de los límites que la acotan.
+--- DESPUES ---
+Nada de lo que se registre será tratado como copia transparente de la situación. Un fragmento de observación, una respuesta en entrevista o el enunciado de una consigna son registros, y se vuelven evidencia solo cuando se los pone en relación con una pregunta y bajo condiciones que puedan enunciarse; la interpretación es un tercer momento, y la afirmación que el estudio finalmente sostenga, un cuarto. Confundir esos planos es el modo más rápido de convertir una lectura en un hecho. Cada afirmación de peso quedará por eso acompañada de aquello que la respalda, de la evidencia en que se apoya, de las condiciones bajo las cuales vale y de los límites que la acotan.
 
 [273.0]
 --- ANTES ---
 La evidencia que no coincida con lo esperado no se descartará como error de campo. Puede indicar que la categoría es inadecuada, que el instrumento captura otra cosa, que la relación supuesta no existe o que el problema estaba mal formulado. Cuál de esas alternativas corresponde es algo que deberá argumentarse en cada caso, no resolverse por comodidad.
---- DESPUÉS ---
-La evidencia que no coincida con lo esperado no se descartará como error de campo. Puede indicar que la categoría es inadecuada, que el instrumento captura otra cosa, que la relación supuesta no existe o que el problema estaba mal formulado. Cuál de esas alternativas corresponde es algo que deberá argumentarse en cada caso, y no resolverse por comodidad.
+--- DESPUES ---
+Cuando la evidencia no coincida con lo esperado, no se la descartará como error de campo. Puede indicar que la categoría es inadecuada, que el instrumento captura otra cosa, que la relación supuesta no existe o que el problema estaba mal formulado. Cuál de esas alternativas corresponde es algo que deberá argumentarse en cada caso, y no resolverse por comodidad.
 
 [274.0]
 --- ANTES ---
 Los resultados tienen que poder volver sobre lo que los hizo posibles. Si el trabajo empírico obliga a revisar el marco teórico, la delimitación del problema o las propias decisiones metodológicas, esa revisión forma parte del resultado y se documenta como tal. Esta apertura no autoriza el relativismo: toda interpretación deberá estar argumentada, sustentada y expuesta al contraste, y ninguna analogía funcionará como demostración.
---- DESPUÉS ---
+--- DESPUES ---
 Los resultados tienen que poder volver sobre lo que los hizo posibles. Si el trabajo empírico obliga a revisar el marco teórico, la delimitación del problema o las propias decisiones metodológicas, esa revisión forma parte del resultado y se documenta como tal. Semejante apertura no autoriza el relativismo: toda interpretación deberá estar argumentada, sustentada y expuesta al contraste, y ninguna analogía funcionará como demostración.
 
 [275.0]
 --- ANTES ---
 Queda excluido, por último, presentar como hallazgo aquello que ya estaba contenido en las premisas con que se construyó el objeto. Si el estudio encuentra circuitos de retroalimentación porque el marco los presupuso, no habrá encontrado nada. La prueba de que la investigación produjo conocimiento será que algo del campo resista a las categorías con que se lo miró.
---- DESPUÉS ---
-Queda excluido, por último, presentar como hallazgo aquello que ya estaba contenido en las premisas con que se construyó el objeto. Si el estudio encuentra circuitos de retroalimentación porque el marco los presupuso, no habrá encontrado nada. La prueba de que la investigación produjo conocimiento será que algo del campo resista a las categorías con que se lo miró.
+--- DESPUES ---
+Queda excluido, por último, presentar como hallazgo aquello que ya estaba contenido en las premisas con que se construyó el objeto. Si el estudio encuentra circuitos de retroalimentación porque el marco los presupuso, no habrá encontrado nada. ¿Qué probaría entonces que la investigación produjo conocimiento? Que algo del campo se resista a las categorías con que se lo miró.
 
 [277.0]
 --- ANTES ---
 Los cuatro criterios convencionales se traducen aquí en compromisos verificables. La credibilidad descansa en la permanencia prolongada en el campo durante un ciclo completo, en la triangulación y en la validación comunicativa con los participantes. La transferibilidad no se afirma: se ofrece mediante una descripción densa del contexto, y es el lector quien juzga qué resulta aplicable a su escenario. La dependencia queda cubierta por la auditoría del director de tesis sobre una bitácora que registra cada decisión metodológica y su motivo; la confirmabilidad, por la conservación del corpus primario junto con la explicitación de la posición del investigador. A esos cuatro el enfoque obliga a añadir un quinto, la reflexividad, entendida con Morin (1999) como inclusión del observador en lo observado: de ahí que el diario reflexivo se analice como fuente y no se archive como anexo.
---- DESPUÉS ---
-Los cuatro criterios convencionales se traducen aquí en compromisos verificables. La credibilidad descansa en la permanencia prolongada en el campo durante un ciclo completo, en la triangulación y en la validación comunicativa con los participantes. La transferibilidad no se afirma, se ofrece: mediante una descripción densa del contexto, y es el lector quien juzga qué resulta aplicable a su escenario. La dependencia queda cubierta por la auditoría del director de tesis sobre una bitácora que registra cada decisión metodológica y su motivo; la confirmabilidad, por la conservación del corpus primario junto con la explicitación de la posición del investigador. A esos cuatro el enfoque obliga a añadir un quinto, la reflexividad, entendida con Morin (1999) como inclusión del observador en lo observado, y de ahí que el diario reflexivo se analice como fuente en lugar de archivarse como anexo.
+--- DESPUES ---
+Aquí los cuatro criterios convencionales se traducen en compromisos verificables. La credibilidad descansa en la permanencia prolongada en el campo durante un ciclo completo, en la triangulación y en la validación comunicativa con los participantes. La transferibilidad no se afirma: se ofrece mediante una descripción densa del contexto, y es el lector quien juzga qué resulta aplicable a su escenario. La dependencia queda cubierta por la auditoría del director de tesis sobre una bitácora que registra cada decisión metodológica y su motivo; la confirmabilidad, por la conservación del corpus primario junto con la explicitación de la posición del investigador. A esos cuatro el enfoque obliga a añadir un quinto, la reflexividad, entendida con Morin (1999) como inclusión del observador en lo observado, razón por la cual el diario reflexivo se analiza como fuente y no se archiva como anexo.
 
 [279.0]
 --- ANTES ---
 Una metodología que se declara flexible sin prever cómo cambiar termina siendo rígida en la práctica. De ahí que el diseño fije tres puntos de revisión formal, uno al término de cada fase de campo, para evaluar la pertinencia de las categorías, la suficiencia de las técnicas y la conveniencia de incorporar fuentes nuevas. Cada modificación queda documentada con su justificación, de modo que la adaptación no cueste trazabilidad.
---- DESPUÉS ---
+--- DESPUES ---
 Una metodología que se declara flexible sin prever cómo cambiar termina siendo rígida en la práctica. De ahí que el diseño fije tres puntos de revisión formal, uno al término de cada fase de campo, para evaluar la pertinencia de las categorías, la suficiencia de las técnicas y la conveniencia de incorporar fuentes nuevas. Cada modificación queda documentada con su justificación, de modo que la adaptación no cueste trazabilidad.
 
 [281.0]
 --- ANTES ---
 El estudio se somete a aprobación del comité de ética institucional, obtiene consentimiento informado de acudientes, docentes y orientadores, y asentimiento de los estudiantes menores de edad. Codificación de identidades y anonimización documental cubren la confidencialidad, y el retiro puede solicitarse en cualquier momento sin consecuencia alguna.
---- DESPUÉS ---
+--- DESPUES ---
 El estudio se somete a aprobación del comité de ética institucional, obtiene consentimiento informado de acudientes, docentes y orientadores, y asentimiento de los estudiantes menores de edad. La confidencialidad queda cubierta mediante codificación de identidades y anonimización documental, y el retiro puede solicitarse en cualquier momento, sin consecuencia alguna.
 
 [282.0]
 --- ANTES ---
 Investigar sobre estudiantes ya rotulados obliga a resguardos que van más allá del trámite. Las entrevistas evitan cualquier formulación que refuerce la identidad deficitaria del estudiante y se centran en describir situaciones, no en evaluar capacidades. Los hallazgos institucionales se devuelven a los colegios con ánimo de mejoramiento y nunca de auditoría, para no exponer a los docentes que abrieron sus aulas. Y el estudio no practica valoración diagnóstica ni interviene en los procesos de evaluación en curso; cualquier situación que requiera atención profesional se remite a los canales institucionales.
---- DESPUÉS ---
-Investigar sobre estudiantes ya rotulados obliga, sin embargo, a resguardos que van más allá del trámite. Las entrevistas evitan cualquier formulación que refuerce la identidad deficitaria del estudiante y se centran en describir situaciones antes que en evaluar capacidades. Los hallazgos institucionales se devuelven a los colegios con ánimo de mejoramiento y nunca de auditoría, para no exponer a los docentes que abrieron sus aulas. El estudio, en fin, no practica valoración diagnóstica ni interviene en los procesos de evaluación en curso; cualquier situación que requiera atención profesional se remite a los canales institucionales.
+--- DESPUES ---
+Investigar sobre estudiantes ya rotulados obliga, sin embargo, a resguardos que van más allá del trámite. Las entrevistas evitan cualquier formulación que refuerce la identidad deficitaria del estudiante y se centran en describir situaciones antes que en evaluar capacidades. Los hallazgos institucionales se devuelven a los colegios con ánimo de mejoramiento y nunca de auditoría, para no exponer a los docentes que abrieron sus aulas. El estudio, en fin, no practica valoración diagnóstica ni interviene en los procesos de evaluación en curso, y cualquier situación que requiera atención profesional se remite a los canales institucionales.
 
 
 ##############################################################################
@@ -711,29 +711,29 @@ Investigar sobre estudiantes ya rotulados obliga, sin embargo, a resguardos que 
 [308.0]
 --- ANTES ---
 anticipa hallazgos. Fija las condiciones bajo las cuales una investigación resulta posible y señala aquello que todavía no puede resolver.
---- DESPUÉS ---
+--- DESPUES ---
 anticipa hallazgos. Fija las condiciones bajo las cuales una investigación resulta posible y señala, de paso, aquello que todavía no puede resolver.
 
 [309.0]
 --- ANTES ---
 El problema quedó delimitado sin quedar clausurado. Está situado en un territorio, en una etapa escolar y en una modalidad de enseñanza; se sostiene con evidencia empírica, teórica y normativa; y se formula como pregunta por una relación cuya forma todavía no se conoce. La delimitación permite investigar, y no decide qué habrá de encontrarse.
---- DESPUÉS ---
+--- DESPUES ---
 El problema quedó delimitado sin quedar clausurado. Está situado en un territorio, en una etapa escolar y en una modalidad de enseñanza; se sostiene con evidencia empírica, teórica y normativa; y se formula como pregunta por una relación cuya forma todavía no se conoce. La delimitación permite investigar sin decidir por adelantado qué habrá de encontrarse, que es a esta altura del trabajo todo lo que puede pedírsele.
 
 [310.0]
 --- ANTES ---
 Las categorías tomadas del pensamiento complejo hacen trabajo dentro del diseño y no solo dentro del marco. La recursividad se traduce en un procedimiento de diagramación que puede fallar si las relaciones no la sostienen. La tensión entre saberes obliga a una triangulación teórica que exige leer un mismo fragmento desde claves incompatibles. Y la multidimensionalidad da forma a las dimensiones que estructuran el protocolo de entrevista. Ninguna de ellas se emplea como adjetivo del proyecto.
---- DESPUÉS ---
-Las categorías tomadas del pensamiento complejo hacen trabajo dentro del diseño y no solo dentro del marco. La recursividad se traduce en un procedimiento de diagramación que puede fallar si las relaciones no la sostienen. La tensión entre saberes obliga a una triangulación teórica que exige leer un mismo fragmento desde claves incompatibles. Y la multidimensionalidad da forma a las dimensiones que estructuran el protocolo de entrevista. Ninguna de ellas se emplea, en suma, como adjetivo del proyecto, y ninguna sobrevivirá a la versión final si el campo no la respalda.
+--- DESPUES ---
+Dentro del diseño, y no solo dentro del marco, hacen trabajo las categorías tomadas del pensamiento complejo. La recursividad se traduce en un procedimiento de diagramación que puede fallar si las relaciones no la confirman. La tensión entre saberes obliga a una triangulación teórica que exige leer un mismo fragmento desde claves incompatibles. Y la multidimensionalidad da forma a las dimensiones que estructuran el protocolo de entrevista. Ninguna de ellas se emplea, en suma, como adjetivo del proyecto, y si el campo no las respalda no llegarán a la versión final.
 
 [311.0]
 --- ANTES ---
 El producto no se agota en comprender. Deja un modelo de análisis, criterios pedagógicos y un instrumento de autoevaluación institucional, con capacidad de actuar sobre el problema que los originó. Su valor dependerá de que hayan salido del campo y no de las premisas con que se entró en él.
---- DESPUÉS ---
+--- DESPUES ---
 Comprender es solo una parte de lo que este trabajo deja. Deja un modelo de análisis, criterios pedagógicos y un instrumento de autoevaluación institucional, con capacidad de actuar sobre el problema que los originó. Su valor dependerá de que hayan salido del campo y no de las premisas con que se entró en él.
 
 [312.0]
 --- ANTES ---
 Queda, finalmente, lo que el protocolo no puede cerrar. El desarrollo hará surgir preguntas que hoy no están a la vista, y algunas ya se dejan intuir: si los criterios servirían en básica primaria, cómo se comportarían estos circuitos en instituciones rurales con conectividad intermitente, qué efecto tendrían sobre el desempeño lector, cosa que exigiría otro diseño. Y por debajo de todas ellas persiste una cuestión que el proyecto abre sin resolver: hasta dónde pueden seguir siendo las mismas las condiciones que hacen reconocible una lectura, cuando aquello que parecía simplemente apartarse de ellas empieza también a volverlas visibles.
---- DESPUÉS ---
+--- DESPUES ---
 Queda, finalmente, lo que el protocolo no puede cerrar. El desarrollo hará surgir preguntas que hoy no están a la vista, aunque algunas ya se dejan intuir: si los criterios servirían en básica primaria, cómo se comportarían estos circuitos en instituciones rurales con conectividad intermitente, qué efecto tendrían sobre el desempeño lector, cosa que exigiría otro diseño. Y por debajo de todas ellas persiste una cuestión que el proyecto abre sin resolver: hasta dónde pueden seguir siendo las mismas las condiciones que hacen reconocible una lectura, cuando aquello que parecía simplemente apartarse de ellas empieza también a volverlas visibles.
