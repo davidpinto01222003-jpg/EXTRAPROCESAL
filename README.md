@@ -1429,6 +1429,43 @@ largas, metadatos raros, o simplemente se traba) usa
   Excel, un PDF, el antivirus escaneándola) -- ciérralo e inténtalo de
   nuevo.
 
+## Buscar convocatorias públicas de servicios jurídicos (SECOP II)
+
+`buscar_convocatorias.bat` (o `python buscar_convocatorias_secop.py`)
+revisa el portal de **datos abiertos del SECOP II** y te dice qué
+convocatorias públicas de servicios jurídicos se publicaron en los
+últimos días: cobro de cartera, procesos ejecutivos, defensa judicial,
+tutelas, asesoría jurídica, etc.
+
+- Cada corrida muestra **solo lo nuevo**: recuerda lo ya reportado en
+  `buscar_convocatorias_secop_vistas.txt`. Si quieres ver otra vez todo,
+  córrelo con `--todo`.
+- Deja el listado completo en `buscar_convocatorias_secop.csv` (se abre
+  con Excel) y el detalle en `buscar_convocatorias_secop.log`.
+- Descarta lo que ya no sirve: procesos adjudicados, terminados,
+  cancelados o desiertos, y el ruido típico (medicina legal, suministros,
+  vigilancia).
+- Filtra por palabra clave **y** por código UNSPSC, porque muchas
+  entidades clasifican mal los procesos jurídicos y solo con el código se
+  perderían la mitad.
+- Toda la configuración está al inicio del `.py`, en el bloque
+  `CONFIGURACION`: días hacia atrás, palabras clave, palabras a excluir,
+  códigos UNSPSC, departamentos de interés, valor mínimo y modalidades a
+  descartar. Por defecto busca en todo el país y sin valor mínimo.
+- No necesita instalar nada: usa solo la librería estándar de Python.
+- Si algún día deja de traer datos, córrelo con `--diagnostico`: te
+  muestra los nombres de campo que devuelve hoy la API, por si Colombia
+  Compra los cambió.
+
+Ojo: los datos abiertos se actualizan **una vez al día**, así que un
+proceso publicado esta mañana puede aparecer hasta mañana. Para procesos
+con cierre corto, la fuente de verdad sigue siendo la búsqueda pública del
+SECOP II.
+
+El plan completo de registro en el SECOP II, la lista de documentos y la
+estrategia para buscar y ganar convocatorias está en
+[`PLAN_SECOP_OSCAR_CONSULTORES.md`](PLAN_SECOP_OSCAR_CONSULTORES.md).
+
 ## Si algo falla
 
 - El sitio del SGDE puede cambiar de diseño con el tiempo, lo que puede
