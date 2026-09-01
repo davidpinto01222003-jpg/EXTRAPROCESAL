@@ -21,16 +21,32 @@ sociedad por acciones simplificada*.
 | 04 | Guía de formularios RUES y liquidación de derechos | Campo por campo del RUT, la carátula única empresarial, los anexos y el formulario de otras entidades, más la liquidación de costos. |
 | 05 | Memorando jurídico justificativo | Explica y defiende cada documento y cada decisión estatutaria. |
 | 06 | Solicitud de inscripción de libros y libro de registro de accionistas | Registro de los libros del art. 175 del D.L. 019/2012. |
+| 07 | Formularios del RUES — hojas de transcripción | Carátula única (2 páginas), anexo de persona jurídica, anexo de establecimiento y formulario de otras entidades, campo por campo. |
+| 08 | Formulario 001 del RUT — hoja de transcripción | Ruta del trámite en línea ante la DIAN y análisis de las responsabilidades tributarias. |
+| 09 | Títulos de acciones y comprobantes de aporte | Títulos 001 y 002 con las menciones del art. 401 C.Co. y los soportes contables del capital. |
+| 10 | Presentación personal, reconocimiento notarial y poder | Las dos vías de autenticación del art. 40 C.Co. y el poder especial para radicar. |
+| 11 | Impuesto de registro y planilla de radicación | Liquidación del impuesto departamental y lista de chequeo para la ventanilla. |
+| 12 | Acta n.º 1 de la asamblea general de accionistas | Reunión universal de puesta en marcha y folio de apertura del libro de actas. |
+| 13 | Solicitudes ante otras entidades | Uso del suelo, REPS y habilitación en salud, RIT de Medellín, y cuadro de trámites restantes. |
+| 14 | Memorando complementario | Explica y defiende cada documento de la segunda parte, con la ruta cronológica consolidada. |
 
-## Actuaciones que restan (segunda mitad del expediente)
+## Formatos oficiales que hay que descargar
 
-Formularios preimpresos y trámites que solo pueden materializarse ante las
-entidades: pre-RUT (formulario 001 DIAN), carátula única empresarial y anexos,
-formulario adicional de registro con otras entidades, presentación personal o
-autenticación notarial, pago del impuesto de registro ante la Gobernación de
-Antioquia, copias ampliadas de cédulas, uso del suelo y concepto sanitario,
-inscripción en el REPS y habilitación de servicios de salud, e inscripción en el
-RIT de Medellín. El detalle está en el documento 04 y en la sección VII del 05.
+Estos formatos no pueden ser elaborados por el solicitante: deben obtenerse del
+formato preimpreso de la Cámara o del portal de la entidad correspondiente. Los documentos 07 y 08 son
+**hojas de transcripción**: fijan el valor de cada campo, pero no sustituyen el
+formato oficial.
+
+| Formato | Dónde se obtiene |
+|---------|------------------|
+| Carátula única empresarial y anexos | camaramedellin.com.co → «Crear empresa» → «Formatos y formularios»; también en rues.org.co → «Formatos CAE» (archivo de Medellín) |
+| Instructivo del formulario RUES | Mismo sitio de la Cámara, junto a los formularios |
+| Formulario adicional de registro con otras entidades | Taquilla de la Cámara o su sede virtual |
+| Formulario 001 — RUT | Portal transaccional de la DIAN, opción «inscripción en el RUT por Cámara de Comercio». No existe versión descargable en blanco |
+| Liquidación del impuesto de registro | Portal tributario de la Gobernación de Antioquia, o liquidación de la Cámara si opera el convenio de recaudo |
+
+La ruta cronológica completa de los 19 pasos está en la sección III del
+documento 14.
 
 ## Cómo regenerar los documentos
 

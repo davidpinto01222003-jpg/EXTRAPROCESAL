@@ -1,0 +1,93 @@
+!HEADER Memorando complementario — Segunda parte del expediente
+!FOOTER Memorando complementario — segunda parte del expediente
+#T Memorando complementario
+#ST Explicación de la segunda parte del expediente de constitución — NOVA BIENESTAR INTEGRAL S.A.S.
+#1 I. Qué contiene esta segunda parte y por qué
+#P La primera parte del expediente reunió los documentos que **crean** la sociedad: el acto constitutivo, las aceptaciones de cargo, la certificación de capital, la declaración de la Ley 1780, la solicitud de libros y las guías. Esta segunda parte reúne los documentos que la **inscriben, la formalizan y la habilitan para operar**.
+#P La distinción no es formal. Una sociedad puede estar perfectamente constituida en el papel y ser inútil en la práctica: sin RUT no puede facturar, sin autenticación no se inscribe, sin impuesto de registro pagado la Cámara no la matricula, sin títulos de acciones los accionistas no pueden probar su participación frente a un tercero, y sin habilitación sanitaria no puede atender un solo paciente. Cada documento de esta segunda parte cierra una de esas brechas.
+#2 Sobre los formatos oficiales
+#P Una precisión necesaria, porque condiciona el uso de estos documentos. **Tres de los instrumentos de esta etapa no pueden ser elaborados por el solicitante**: la carátula única empresarial del RUES, sus anexos y el formulario adicional de registro con otras entidades son formatos preimpresos que expide la Cámara de Comercio, y el formulario 001 del RUT solo existe como formulario electrónico generado por la DIAN. Ninguna reproducción, por fiel que sea, es admisible en ventanilla.
+#P Lo que sí puede prepararse de antemano —y es lo que se hizo— es la **hoja de transcripción**: el documento que fija, campo por campo, el valor exacto que se escribirá en el formato oficial. Los documentos 07 y 08 cumplen esa función y llevan la advertencia expresa de que no sustituyen el formato.
+#TW 34,66
+#TH Formato oficial | Dónde se obtiene
+#TR Carátula única empresarial y anexos (persona jurídica, establecimiento de comercio) | Sitio de la Cámara de Comercio de Medellín para Antioquia, sección "Crear empresa" → "Formatos y formularios"; y en el portal del RUES, sección "Formatos CAE", que publica el archivo correspondiente a Medellín.
+#TR Instructivo de diligenciamiento del formulario RUES | Mismo sitio de la Cámara, junto a los formularios.
+#TR Formulario adicional de registro con otras entidades | Se entrega en taquilla con la carátula, o se diligencia en la sede virtual de la Cámara.
+#TR Formulario 001 — Registro Único Tributario | Portal transaccional de la DIAN, opción de inscripción en el RUT por Cámara de Comercio. No existe versión descargable en blanco.
+#TR Liquidación del impuesto de registro | Portal tributario de la Gobernación de Antioquia, o liquidación practicada por la Cámara cuando opera el convenio de recaudo.
+#1 II. Documento por documento
+#2 07 — Formularios del RUES: hojas de transcripción
+#P **Qué resuelve.** Que ninguna decisión quede pendiente en la ventanilla. Recorre las dos páginas de la carátula única, el anexo de persona jurídica, el anexo de establecimiento de comercio y el formulario de otras entidades, y fija el valor de cada campo, incluidos los que deben quedar en blanco.
+#P **Por qué es distinto del documento 04.** Aquel es la **guía explicativa**: dice por qué la actividad principal es la 8692 y no la 9311, por qué el beneficio de la Ley 1780 no cubre el impuesto de registro, cuánto cuesta el trámite. Este es la **hoja operativa**: agota los campos, incluidos los triviales, en el orden del formulario. Uno se estudia antes; el otro se lleva a la mano.
+#P **El punto que más devoluciones evita.** La sección 6 del documento cruza cinco datos —razón social, NIT, teléfono, dirección y correo— entre los tres formularios. La discrepancia entre ellos es la causa más frecuente de devolución del trámite, y es enteramente evitable.
+#2 08 — Formulario 001 del RUT
+#P **Qué resuelve.** El orden del trámite. El RUT provisional debe obtenerse **antes** de radicar en la Cámara, porque su número de formulario se transcribe en el formulario adicional de registro con otras entidades. Invertir el orden bloquea el trámite.
+#P **La parte que exige criterio jurídico.** Las responsabilidades tributarias. Marcar una que no corresponde crea obligaciones formales inexistentes cuyo incumplimiento se sanciona; omitir una que sí corresponde genera sanción por extemporaneidad. El documento analiza cada una para este caso concreto y explica por qué la sociedad debe inscribirse como responsable de IVA aunque preste servicios de salud excluidos.
+#P **El riesgo tributario específico.** NOVA BIENESTAR INTEGRAL S.A.S. tendrá dos líneas de negocio con tratamiento opuesto en el impuesto sobre las ventas: la rehabilitación física habilitada está **excluida** por el numeral 3.º del artículo 476 del Estatuto Tributario; el gimnasio y el bienestar corporal están **gravados**. Tratar toda la operación como excluida por el solo hecho de estar habilitada como prestadora de servicios de salud es un error costoso y frecuente. De ahí la obligación de llevar contabilidad que discrimine ambos ingresos y de aplicar proporcionalidad en los impuestos descontables comunes.
+#2 09 — Títulos de acciones y comprobantes de aporte
+#P **Qué resuelve.** La prueba de la participación accionaria y el soporte contable del capital.
+#P **Fundamento.** Artículos 399 a 402 del Código de Comercio, aplicables por la remisión del artículo 45 de la Ley 1258 de 2008. El artículo 401 fija las menciones del título y ordena expedirlos en series continuas con las firmas del representante legal y del secretario.
+#P **Por qué títulos definitivos y no certificados provisionales.** El artículo 400 del Código de Comercio dispone que, mientras el valor de las acciones no esté cubierto íntegramente, solo pueden expedirse **certificados provisionales**. Como en este caso el capital suscrito fue pagado en su totalidad en el acto de constitución, procede expedir **títulos definitivos** y las acciones se califican como **liberadas**. Esta es una consecuencia directa de la decisión sobre el capital que se defendió en el numeral V.5 del memorando de la primera parte: si el pago se hubiera diferido a dos años, habrían debido expedirse certificados provisionales.
+#P **La anotación que no puede faltar.** El inciso final del artículo 13 de la Ley 1258 de 2008 supedita la oponibilidad de las restricciones a la negociación a que **consten en los títulos**. Por eso ambos títulos incorporan la advertencia sobre el derecho de preferencia y sobre la autorización previa de la asamblea. Sin esa mención, un tercero adquirente de buena fe podría alegar que la restricción no le es oponible, y toda la arquitectura de protección construida en los artículos 14 y 15 de los estatutos quedaría en el aire.
+#P **Los comprobantes de ingreso.** Documentan el hecho que la certificación de capital afirma. Son el soporte que un banco, un contratante o la DIAN pedirán para verificar que el capital declarado efectivamente ingresó.
+#2 10 — Autenticación del documento privado y poder
+#P **Qué resuelve.** La condición de autenticidad sin la cual el documento privado no se inscribe.
+#P **Fundamento.** Artículo 40 del Código de Comercio: todo documento sujeto a registro que no sea auténtico por su naturaleza ni reconocido por las partes debe presentarse personalmente por sus otorgantes ante el secretario de la cámara.
+#P **Por qué se ofrecen dos vías.** Porque los accionistas están domiciliados en municipios distintos —Mariana en Medellín, Felipe en Envigado—. La presentación personal ante la Cámara exige que ambos concurran el mismo día a la misma sede; el reconocimiento notarial permite que cada uno comparezca en la notaría de su municipio, en días distintos. Para este caso concreto la vía notarial es la más práctica, aunque tenga costo.
+#P **Sobre el poder.** Es opcional. Solo se necesita si radica el expediente alguien distinto del representante legal, porque la facultad de Mariana ya consta en el artículo transitorio 3.º de los estatutos. Se redactó con **limitación expresa**: habilita para tramitar, no para obligar a la sociedad ni para recibir dineros. Un poder general en este punto sería un riesgo innecesario.
+#2 11 — Impuesto de registro y planilla de radicación
+#P **Qué resuelve.** El componente económico del trámite y el control de la radicación.
+#P **La confusión que evita.** El impuesto de registro no es un derecho cameral. Es un **tributo departamental** de la Ley 223 de 1995, cuyo titular es el departamento de Antioquia; la Cámara solo lo recauda por convenio. De ahí que la exención de la Ley 1780 —que recae sobre los derechos de matrícula que percibe la Cámara— **no lo cubra**. Sostener lo contrario en el trámite conduce a una liquidación oficial de corrección.
+#P **La base gravable.** El artículo 6.º del Decreto 650 de 1996 fija como base, en la constitución de sociedades por acciones, el **capital suscrito**. Tomar el capital autorizado de $1.200.000.000 duplicaría el impuesto. La base correcta es $600.000.000 y el impuesto, a la tarifa de 0,7 %, asciende a **$4.200.000**.
+#P **Por qué se verificó la ausencia de prima en colocación.** Porque cuando el acto implica constituir o incrementar la prima, esa porción tributa a una tarifa especial reducida. Las acciones de NOVA BIENESTAR INTEGRAL S.A.S. se emitieron **a la par**, por su valor nominal de $1.000, de modo que no hay prima y toda la base tributa a la tarifa ordinaria. Es una verificación que muchos omiten.
+#P **La planilla.** Quince documentos, diez verificaciones y el registro del resultado. Su utilidad es prosaica pero real: la mayoría de las devoluciones no obedecen a errores de derecho sino a un formulario sin firmar o a un teléfono escrito de dos maneras distintas.
+#2 12 — Acta n.º 1 de la asamblea general de accionistas
+#P **Aclaración necesaria.** Esta acta **no es un requisito de la matrícula**. Los nombramientos ya constan en el artículo transitorio 1.º del documento de constitución, y es ese documento —no un acta— el que la Cámara inscribe. Presentarla como requisito registral sería un error.
+#P **Entonces, ¿por qué se elabora?** Por dos razones. La primera es práctica: una sociedad recién constituida debe adoptar decisiones que no caben en los estatutos —designar contador, autorizar la apertura de cuentas bancarias, autorizar los actos de puesta en marcha que superan la limitación de cuantía del artículo 28, fijar la remuneración de los administradores—. La segunda es documental: el libro de actas debe abrirse con una primera anotación, y una sociedad cuyo libro de actas está vacío tiene dificultades para acreditar sus decisiones ante bancos, aseguradoras y contratantes.
+#P **La decisión más relevante del acta.** El punto séptimo. El artículo 28 de los estatutos exige autorización previa de la asamblea para actos superiores a 500 SMLMV. Esa limitación, que protege al accionista minoritario, tendría un efecto perverso si no se anticipara: paralizaría el arrendamiento de la sede y la compra de equipos, que son precisamente los actos con los que la sociedad arranca. El acta resuelve la tensión mediante una **autorización especial, de cuantía limitada y con vigencia de doce meses**, que habilita los actos de puesta en marcha sin desmontar la limitación estatutaria. Es un buen ejemplo de cómo una cláusula de gobierno corporativo debe administrarse, no solo redactarse.
+#P **Su naturaleza de reunión universal.** Se estructuró como reunión universal —sin convocatoria previa— porque está presente el 100 % de las acciones suscritas, hipótesis expresamente prevista en el parágrafo tercero del artículo 20 de los estatutos y en el artículo 182 del Código de Comercio. Y se dejó constancia de la renuncia a la convocatoria y al derecho de inspección, conforme al artículo 21 de la Ley 1258 de 2008.
+#2 13 — Solicitudes ante otras entidades
+#P **Qué resuelve.** El tránsito entre existir y poder operar.
+#P **El requisito determinante.** La **habilitación de servicios de salud**. La rehabilitación física —fisioterapia, terapia ocupacional, terapia respiratoria— es servicio de salud sujeto a habilitación conforme a la Resolución 3100 de 2019. El prestador queda inscrito y el servicio habilitado **a partir de la autorización en el REPS**, y solo desde ese momento puede ofertar y prestar. Antes de eso, la sociedad existe, tiene NIT y está matriculada, pero no puede atender pacientes.
+#P **La dualidad regulatoria del negocio.** Conviene tenerla presente porque atraviesa todo el expediente: la línea de rehabilitación es servicio de salud —habilitación, historia clínica, ReTHUS, IVA excluido—; la línea de gimnasio y bienestar corporal no lo es —concepto sanitario y de bomberos, IVA gravado, derechos de autor por música ambiental—. Son dos regímenes distintos operando en la misma dirección física y bajo el mismo NIT.
+#P **Los cinco requisitos de la Ley 232 de 1995.** Uso del suelo, condiciones sanitarias y de seguridad, derechos de autor, matrícula mercantil vigente y comunicación de apertura. Se sistematizaron en el cuadro A del documento porque su incumplimiento habilita el cierre del establecimiento por la autoridad de policía, con independencia de que la sociedad esté perfectamente constituida.
+#P **Lo que se verificó y no resultó exigible.** El registro de las bases de datos ante la Superintendencia de Industria y Comercio. La obligación depende de que los activos totales superen los topes fijados por la reglamentación, y con activos de $600.000.000 la sociedad queda por debajo. Se dejó anotada la necesidad de revisarlo cada año, porque el crecimiento del patrimonio puede activarla.
+#1 III. Ruta cronológica consolidada
+#P Reunidos los documentos de las dos partes, la secuencia completa es la siguiente. El orden importa: varios pasos son insumo del siguiente.
+#TW 8,30,32,30
+#TH N.º | Actuación | Documento del expediente | Producto
+#TR 1 | Consulta de homonimia en el RUES | Doc. 04, paso 1 | Verificación de disponibilidad del nombre
+#TR 2 | Consulta de uso del suelo | Doc. 13 | Concepto de viabilidad urbanística
+#TR 3 | Suscripción del documento de constitución | Doc. 01 | Acto constitutivo firmado
+#TR 4 | Presentación personal o reconocimiento notarial | Doc. 10 | Documento auténtico
+#TR 5 | Aceptación de los cargos | Doc. 02 | Aceptaciones firmadas
+#TR 6 | Certificación de capital y declaración Ley 1780 | Doc. 03 | Soportes del capital y del beneficio
+#TR 7 | Inscripción en el RUT (pre-RUT) | Doc. 08 | RUT provisional con número de formulario
+#TR 8 | Diligenciamiento de los formularios del RUES | Docs. 04 y 07 | Carátula, anexos y formulario de otras entidades
+#TR 9 | Liquidación y pago del impuesto de registro | Doc. 11 | Comprobante de pago por $4.200.000
+#TR 10 | Radicación en la Cámara | Doc. 11, planilla | Matrícula de la sociedad y del establecimiento
+#TR 11 | Inscripción de libros | Doc. 06 | Libros de accionistas y de actas registrados
+#TR 12 | Formalización del RUT y NIT definitivo | Doc. 08, paso 8 | RUT formalizado
+#TR 13 | Expedición de títulos de acciones | Doc. 09 | Títulos 001 y 002, y folio del libro de accionistas
+#TR 14 | Asamblea de puesta en marcha | Doc. 12 | Acta n.º 1 asentada en el libro
+#TR 15 | Inscripción en el RIT de Medellín | Doc. 13 | Registro para el impuesto de industria y comercio
+#TR 16 | Habilitación de servicios de salud | Doc. 13 | Inscripción en el REPS y servicios habilitados
+#TR 17 | Requisitos de funcionamiento del establecimiento | Doc. 13, cuadro A | Conceptos sanitario y de bomberos
+#TR 18 | Trámites laborales y de seguridad social | Doc. 13, cuadro B | Nueve trabajadores afiliados
+#TR 19 | Renovación de la matrícula | Doc. 13, cuadro D | Antes del 31 de marzo de 2027, exenta
+#1 IV. Advertencias finales
+#P **Sobre el orden.** Tres precedencias son inflexibles y su inversión bloquea el trámite: el RUT provisional debe obtenerse antes de diligenciar el formulario de otras entidades, porque su número se transcribe allí; el impuesto de registro debe pagarse antes de la inscripción, porque la Cámara verifica el pago como condición para registrar; y la matrícula de la sociedad debe existir antes de la del establecimiento, porque esta se apoya en aquella.
+#P **Sobre el plazo.** El artículo 31 del Código de Comercio exige solicitar la matrícula dentro del mes siguiente a la creación de la persona jurídica. Con documento fechado el 1.º de octubre de 2026, el plazo vence el **1.º de noviembre de 2026**. Y mientras no haya inscripción, quienes actúen por cuenta de la sociedad responden solidaria e ilimitadamente frente a terceros, conforme al artículo 7.º de la Ley 1258 de 2008.
+#P **Sobre lo que no puede improvisarse.** Los formatos oficiales del RUES y el formulario 001 de la DIAN. Todo lo demás de este expediente puede llevarse redactado; esos cuatro documentos se obtienen únicamente de la Cámara y de la DIAN. Las hojas de transcripción de los documentos 07 y 08 existen precisamente para que el diligenciamiento de esos formatos sea mecánico.
+#1 V. Fuentes consultadas para esta segunda parte
+#L Código de Comercio, artículos 31, 37, 40, 182, 189, 399, 400, 401, 402, 406 y 515.
+#L Ley 1258 de 2008, artículos 7.º, 13, 21, 24, 28 y 45.
+#L Ley 232 de 1995, artículo 2.º (requisitos de funcionamiento de establecimientos de comercio).
+#L Ley 223 de 1995, artículos 226 a 235, y Decreto 650 de 1996, artículo 6.º (impuesto de registro y base gravable).
+#L Estatuto Tributario, artículos 114-1 y 476, numeral 3.º.
+#L Decreto Ley 019 de 2012, artículo 175 (libros sujetos a registro).
+#L Ley 1581 de 2012, artículo 5.º (datos sensibles), y su reglamentación sobre el Registro Nacional de Bases de Datos.
+#L Decreto 1072 de 2015 y Resolución 0312 de 2019 (seguridad y salud en el trabajo).
+#L Resolución 3100 de 2019 del Ministerio de Salud y Protección Social (inscripción de prestadores y habilitación de servicios de salud).
+#L Cámara de Comercio de Medellín para Antioquia: formatos y formularios de creación de empresa e instructivo de diligenciamiento del formulario RUES.
+#L Portal del Registro Único Empresarial y Social, sección de formatos del Centro de Atención Empresarial.

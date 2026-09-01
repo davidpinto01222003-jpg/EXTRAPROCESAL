@@ -1,0 +1,81 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Acta n.º 1 de la asamblea general de accionistas
+!FOOTER Acta n.º 1 — Libro de actas
+#T Libro de actas de la asamblea general de accionistas
+#ST NOVA BIENESTAR INTEGRAL S.A.S. — Folio de apertura
+#P **Nota de apertura.** El presente libro se abre el primero (1) de octubre de dos mil veintiséis (2026), previa su inscripción en el registro mercantil de la Cámara de Comercio de Medellín para Antioquia, con destino al asiento de las actas de las reuniones ordinarias, extraordinarias, universales y no presenciales de la asamblea general de accionistas de la sociedad NOVA BIENESTAR INTEGRAL S.A.S., de conformidad con los artículos 189 del Código de Comercio, 175 del Decreto Ley 019 de 2012 y 24 de los estatutos sociales.
+#P **Advertencia sobre la naturaleza de esta acta.** El acta que sigue **no es un requisito de la matrícula mercantil**: los nombramientos de los administradores ya constan en el artículo transitorio 1.º del documento privado de constitución, y es ese documento —no un acta— el que la Cámara inscribe. Su elaboración obedece a una razón distinta: una sociedad recién constituida necesita adoptar un conjunto de decisiones de puesta en marcha que no caben en los estatutos, y el libro de actas debe abrirse con una primera anotación. Omitir esta actuación es una informalidad frecuente que después dificulta acreditar decisiones ante bancos, aseguradoras y contratantes.
+#PB
+#T Acta n.º 1
+#ST Asamblea general de accionistas — Reunión universal de instalación
+#2 1. Datos de la reunión
+#TW 35,65
+#TH Concepto | Contenido
+#TR Sociedad | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR NIT | ____________
+#TR Clase de reunión | Extraordinaria — **universal**, sin convocatoria previa
+#TR Fecha | Primero (1) de octubre de dos mil veintiséis (2026)
+#TR Hora de inicio | 10:00 a. m.
+#TR Lugar | Carrera 37 n.º 10A-58, oficina 804, Medellín (Antioquia) — domicilio principal
+#TR Fundamento de la reunión universal | Parágrafo tercero del artículo 20 de los estatutos y artículo 182 del Código de Comercio: hallándose presente la totalidad de las acciones suscritas, la asamblea puede reunirse sin convocatoria previa y en cualquier lugar.
+#2 2. Verificación del quórum
+#TW 34,20,16,15,15
+#TH Accionista | Documento | Acciones | Participación | Asistencia
+#TR Mariana López Castaño | C.C. 1.039.672.481 | 390.000 | 65 % | Personal
+#TR Felipe Andrés Gómez Vélez | C.C. 1.152.846.390 | 210.000 | 35 % | Personal
+#TH TOTALES | | 600.000 | 100 % | 100 %
+#P Verificada la asistencia, se constata que se encuentra presente el **cien por ciento (100 %) de las acciones suscritas**, con lo cual existe **quórum deliberatorio** conforme al artículo 23 de los estatutos y se configura la **reunión universal**. Ambos accionistas manifiestan expresamente que renuncian a la convocatoria previa y al derecho de inspección respecto de esta sesión, en los términos del artículo 21 de la Ley 1258 de 2008.
+#2 3. Designación de presidente y secretario
+#P Por unanimidad se designa como **presidente** de la reunión a la señora **MARIANA LÓPEZ CASTAÑO** y como **secretario** al señor **FELIPE ANDRÉS GÓMEZ VÉLEZ**, quienes aceptan sus designaciones.
+#2 4. Orden del día
+#N 1. Verificación del quórum.
+#N 2. Designación de presidente y secretario.
+#N 3. Lectura y aprobación del orden del día.
+#N 4. Ratificación de la constitución de la sociedad y de los nombramientos de representante legal principal y suplente.
+#N 5. Designación del contador público de la sociedad.
+#N 6. Autorización para la apertura de cuentas bancarias.
+#N 7. Autorización para la celebración del contrato de arrendamiento de la sede y de los actos de puesta en marcha que excedan la cuantía del artículo 28 de los estatutos.
+#N 8. Instrucciones sobre la habilitación de servicios de salud.
+#N 9. Aprobación de la política de tratamiento de datos personales.
+#N 10. Fijación de la remuneración de los administradores.
+#N 11. Autorización para adelantar los trámites de registro.
+#N 12. Lectura y aprobación del acta.
+#P Sometido a consideración, el orden del día es **aprobado por unanimidad**, con el voto favorable de 600.000 acciones, equivalentes al 100 % de las acciones suscritas.
+#2 5. Desarrollo del orden del día
+#3 Punto cuarto — Ratificación de la constitución y de los nombramientos
+#P Los accionistas ratifican en todas sus partes el documento privado de constitución suscrito en esta misma fecha, así como la designación de **MARIANA LÓPEZ CASTAÑO**, identificada con C.C. 1.039.672.481 de Medellín, como **representante legal principal**, y de **FELIPE ANDRÉS GÓMEZ VÉLEZ**, identificado con C.C. 1.152.846.390 de Envigado, como **representante legal suplente**. Se deja constancia de que ambos han aceptado por escrito sus cargos y de que las respectivas cartas de aceptación se acompañan al expediente de registro.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#3 Punto quinto — Designación del contador público
+#P Se designa como **contador público** de la sociedad a **[NOMBRE DEL CONTADOR]**, identificado(a) con C.C. n.º ____________ y tarjeta profesional n.º ____________ expedida por la Junta Central de Contadores, quien tendrá a su cargo la teneduría de la contabilidad conforme a la Ley 1314 de 2009 y la expedición de las certificaciones que la ley exija.
+#P Se deja constancia de que la sociedad **no está obligada a designar revisor fiscal**, por no alcanzar los umbrales del parágrafo 2.º del artículo 13 de la Ley 43 de 1990, y de que, mientras esa condición se mantenga, las certificaciones legalmente exigidas serán expedidas por el contador público independiente aquí designado, conforme al parágrafo del artículo 28 de la Ley 1258 de 2008 y al artículo 30 de los estatutos.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#3 Punto sexto — Autorización para apertura de cuentas bancarias
+#P Se autoriza a la representante legal para abrir, manejar y cancelar cuentas corrientes, de ahorro y demás productos financieros a nombre de la sociedad en las entidades vigiladas por la Superintendencia Financiera de Colombia que estime convenientes, y para suscribir los documentos de vinculación, los formatos de conocimiento del cliente y las autorizaciones de consulta y reporte a centrales de riesgo.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#3 Punto séptimo — Autorización de actos de puesta en marcha
+#P El artículo 28 de los estatutos exige autorización previa de la asamblea para celebrar actos cuya cuantía individual exceda de **quinientos (500) salarios mínimos legales mensuales vigentes**. Para no entorpecer el inicio de operaciones, la asamblea autoriza expresamente a la representante legal para celebrar, dentro de los doce (12) meses siguientes a esta fecha, los siguientes actos:
+#L El **contrato de arrendamiento** del inmueble ubicado en la carrera 37 n.º 10A-58, oficina 804, de Medellín, y sus prórrogas.
+#L La **adquisición de equipos y dotación** para la prestación de los servicios de rehabilitación física y acondicionamiento, hasta por un valor acumulado de **doscientos millones de pesos ($200.000.000)**.
+#L La **contratación del personal** necesario para operar con nueve (9) trabajadores, y las afiliaciones al sistema de seguridad social integral y a la caja de compensación familiar.
+#L La contratación de las **pólizas de seguro** de responsabilidad civil profesional y de responsabilidad civil extracontractual que la actividad exige.
+#P Se precisa que esta autorización es **especial y de cuantía limitada**: no modifica el artículo 28 de los estatutos ni releva a la representante legal de solicitar autorización para actos distintos de los aquí enumerados.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#3 Punto octavo — Habilitación de servicios de salud
+#P La asamblea instruye a la representante legal para que, **antes de iniciar la prestación de cualquier servicio de rehabilitación física**, adelante la inscripción de la sociedad en el **Registro Especial de Prestadores de Servicios de Salud (REPS)** y obtenga la **habilitación** de los servicios correspondientes ante la autoridad sanitaria competente, conforme a la Resolución 3100 de 2019 del Ministerio de Salud y Protección Social y al parágrafo segundo del artículo 4.º de los estatutos.
+#P Se deja expresa constancia de que la prestación de servicios de salud sin habilitación expone a la sociedad al cierre del servicio y a sanciones sanitarias, y a los administradores a responsabilidad personal por incumplimiento del deber de diligencia del artículo 23 de la Ley 222 de 1995. La representante legal informará a la asamblea sobre el avance del trámite.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#3 Punto noveno — Política de tratamiento de datos personales
+#P Considerando que la sociedad tratará **datos sensibles de salud** de sus usuarios, sujetos al régimen reforzado del artículo 5.º de la Ley 1581 de 2012, la asamblea instruye a la representante legal para adoptar la **política de tratamiento de la información**, diseñar los formatos de autorización previa, expresa e informada, y adelantar el registro de las bases de datos cuando la sociedad quede obligada a ello.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#3 Punto décimo — Remuneración de los administradores
+#P Se fija la remuneración de la representante legal principal en la suma de **$____________ mensuales**, y se establece que el representante legal suplente **no percibirá remuneración** por el solo hecho de ostentar el cargo, sin perjuicio de la que le corresponda si llegare a ejercerlo efectivamente o si celebra con la sociedad un contrato de trabajo o de prestación de servicios, caso este último en el cual deberá observarse el régimen de conflictos de interés del parágrafo segundo del artículo 28 de los estatutos.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#3 Punto undécimo — Autorización para los trámites de registro
+#P Se ratifica la facultad conferida a la representante legal en el artículo transitorio 3.º de los estatutos para adelantar ante la Cámara de Comercio de Medellín para Antioquia, la Dirección de Impuestos y Aduanas Nacionales, la Gobernación de Antioquia y la Secretaría de Hacienda del Municipio de Medellín todos los trámites de matrícula, inscripción de libros, formalización del RUT, liquidación y pago del impuesto de registro e inscripción en el Registro de Información Tributaria, con facultad de conferir poder especial a un tercero para su radicación.
+#P **Aprobado por unanimidad**, con 600.000 votos a favor.
+#2 6. Aprobación del acta y clausura
+#P No habiendo otro asunto que tratar, se suspende la reunión por el término de quince (15) minutos para la elaboración del acta. Reanudada la sesión, se da lectura al texto que antecede, el cual es **aprobado por unanimidad** con el voto favorable de 600.000 acciones, equivalentes al 100 % de las acciones suscritas. Se levanta la sesión siendo las 11:30 a. m.
+#P En constancia se firma por el presidente y el secretario de la reunión, conforme al artículo 189 del Código de Comercio y al artículo 24 de los estatutos.
+#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Presidente de la reunión||FELIPE ANDRÉS GÓMEZ VÉLEZ|C.C. 1.152.846.390 de Envigado|Secretario de la reunión
+#SP
+#HR
+#P **Nota sobre la inscripción de esta acta.** Esta acta **no se inscribe** en el registro mercantil, porque ninguna de sus decisiones constituye acto sujeto a registro: los nombramientos ya constan en el documento de constitución y las autorizaciones son de eficacia interna. Se asienta únicamente en el libro de actas. Si en el futuro la asamblea adopta decisiones sujetas a registro —reformas estatutarias, cambio de administradores, disolución—, deberá inscribirse **copia autorizada** del acta correspondiente, conforme al artículo 189 del Código de Comercio.

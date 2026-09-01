@@ -1,0 +1,99 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Impuesto de registro y planilla de radicación
+!FOOTER Impuesto de registro y control de radicación
+#T Impuesto de registro y planilla de radicación
+#ST NOVA BIENESTAR INTEGRAL S.A.S.
+#1 1. Naturaleza del impuesto de registro
+#P El impuesto de registro es un **tributo departamental**, no un derecho cameral. Fue creado por los artículos 226 a 235 de la **Ley 223 de 1995** y reglamentado por el **Decreto 650 de 1996**. Grava la inscripción de actos, contratos o negocios jurídicos documentales en los que sean parte o beneficiarios los particulares y que deban registrarse en las cámaras de comercio o en las oficinas de registro de instrumentos públicos.
+#P Tres consecuencias prácticas se derivan de esa naturaleza:
+#L El titular del tributo es el **departamento de Antioquia**, no la Cámara de Comercio. Esta actúa únicamente como **recaudadora por convenio**, cuando el convenio existe.
+#L La **exención de la Ley 1780 de 2016 no lo cubre**. Ese beneficio recae exclusivamente sobre los derechos de matrícula mercantil que percibe la Cámara. Ninguna norma de la Ley 1780 exonera del impuesto de registro.
+#L La Cámara **verifica previamente el pago** antes de inscribir el acto. Sin comprobante de pago o de exención, no hay inscripción.
+#1 2. Base gravable en la constitución de esta sociedad
+#P El artículo 6.º del Decreto 650 de 1996 establece que, tratándose de la **constitución de sociedades por acciones**, la base gravable está constituida por el **capital suscrito**. No por el capital autorizado ni por el capital pagado.
+#P Esta precisión importa en el caso concreto: si se tomara el capital autorizado de $1.200.000.000 como base, el impuesto se duplicaría indebidamente. La base correcta es el capital suscrito de **$600.000.000**.
+#P Debe verificarse además que **no exista prima en colocación de acciones**. Cuando el acto implica la constitución o el incremento de la prima, la ley prevé una tarifa especial reducida para esa porción. En este caso las acciones se emitieron **a la par**, por su valor nominal de $1.000, de modo que no hay prima y toda la base tributa a la tarifa ordinaria.
+#1 3. Liquidación
+#TW 45,30,25
+#TH Concepto | Determinación | Valor
+#TR Naturaleza del acto | Acto con cuantía sujeto a registro en cámara de comercio | —
+#TR Base gravable | Capital suscrito (artículo 6.º del Decreto 650 de 1996) | $600.000.000
+#TR Tarifa aplicable | 0,7 %, dentro del rango de 0,3 % a 0,7 % del artículo 230 de la Ley 223 de 1995, según la ordenanza departamental de Antioquia | 0,7 %
+#TR Prima en colocación de acciones | No existe; acciones emitidas a la par | $0
+#TH IMPUESTO DE REGISTRO A PAGAR | $600.000.000 × 0,7 % | **$4.200.000**
+#P **Verificación aritmética:** $600.000.000 × 0,007 = $4.200.000.
+#P **Tarifa a confirmar.** El rango legal es de 0,3 % a 0,7 % y corresponde a la asamblea departamental fijar la tarifa dentro de ese rango mediante ordenanza. La liquidación anterior asume el tope de 0,7 %, que es el aplicado en Antioquia. Antes de pagar, conviene confirmar la tarifa vigente en el portal tributario de la Gobernación de Antioquia o en la liquidación que expida la propia Cámara, porque una tarifa menor reduciría el valor a pagar.
+#1 4. Dónde y cómo se paga
+#TW 30,70
+#TH Vía | Procedimiento
+#TR A través de la Cámara de Comercio | Cuando existe convenio de recaudo, la Cámara liquida el impuesto en el mismo acto de radicación y lo cobra junto con los derechos de registro. Es la vía más simple y la que evita errores de liquidación.
+#TR Directamente ante la Gobernación de Antioquia | A través del portal tributario del departamento, generando la liquidación en línea y pagando por los canales autorizados; o en una notaría del departamento habilitada para el recaudo.
+#P **Plazo.** El impuesto debe pagarse **antes** de la inscripción, porque la Cámara verifica su pago como condición para registrar. En la práctica se paga el mismo día de la radicación.
+#P **Documento a conservar.** El recibo o comprobante de pago debe archivarse en el expediente societario: es el soporte del gasto para efectos contables y tributarios, y el documento que se exhibe si la autoridad departamental cuestiona la liquidación.
+#PB
+#T Formato de liquidación del impuesto de registro
+#ST Hoja de trabajo para la radicación
+#TW 45,55
+#TH Campo | Contenido
+#TR Departamento | ANTIOQUIA
+#TR Entidad recaudadora | Cámara de Comercio de Medellín para Antioquia (por convenio) o Gobernación de Antioquia
+#TR Sujeto pasivo | NOVA BIENESTAR INTEGRAL S.A.S. (en constitución)
+#TR NIT | El asignado en el RUT provisional
+#TR Dirección | Carrera 37 n.º 10A-58, oficina 804, Medellín
+#TR Acto sujeto a registro | Constitución de sociedad por acciones simplificada
+#TR Documento | Documento privado del 1.º de octubre de 2026
+#TR Registro en que se inscribe | Registro mercantil — libro IX
+#TR Clase de acto | Con cuantía
+#TR Base gravable | $600.000.000 (capital suscrito)
+#TR Tarifa | 0,7 %
+#TR Valor del impuesto | $4.200.000
+#TR Exenciones aplicables | Ninguna. La exención de la Ley 1780 de 2016 no cubre el impuesto de registro.
+#TR Fecha de pago | ____ / ____ / 2026
+#TR Número de recibo | ____________
+#SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S.
+#PB
+#T Planilla de control de radicación
+#ST Lista de chequeo para la ventanilla
+#P Esta planilla se lleva impresa a la radicación. Cada casilla se marca en el momento de verificar el documento; ninguna debe quedar en blanco al llegar a la ventanilla.
+#2 A. Documentos que se radican
+#TW 8,52,10,10,20
+#TH N.º | Documento | Folios | ✓ | Observación
+#TR 1 | Documento privado de constitución, con presentación personal o reconocimiento notarial de las dos firmas | | |
+#TR 2 | Carta de aceptación del cargo de representante legal principal | | |
+#TR 3 | Carta de aceptación del cargo de representante legal suplente | | |
+#TR 4 | Fotocopia ampliada de la cédula de Mariana López Castaño | | |
+#TR 5 | Fotocopia ampliada de la cédula de Felipe Andrés Gómez Vélez | | |
+#TR 6 | Certificación de pago del capital suscrito | | |
+#TR 7 | Declaración juramentada Ley 1780 de 2016 | | |
+#TR 8 | RUT provisional (pre-RUT) impreso | | |
+#TR 9 | Carátula única empresarial (dos páginas), firmada | | |
+#TR 10 | Anexo de matrícula de persona jurídica, firmado | | |
+#TR 11 | Anexo de matrícula de establecimiento de comercio, firmado | | |
+#TR 12 | Formulario adicional de registro con otras entidades, firmado | | |
+#TR 13 | Comprobante de pago del impuesto de registro | | |
+#TR 14 | Solicitud de inscripción de libros | | |
+#TR 15 | Poder especial, si radica un tercero | | |
+#2 B. Verificaciones antes de entregar
+#TW 60,10,30
+#TH Verificación | ✓ | Responsable
+#TR La razón social es idéntica en los tres formularios y en el documento de constitución | | Representante legal
+#TR El teléfono es idéntico en los tres formularios | | Representante legal
+#TR El número del formulario 001 de la DIAN quedó transcrito en el formulario de otras entidades | | Representante legal
+#TR Los tres capitales indican valor, número de acciones y valor nominal | | Representante legal
+#TR El capital suscrito indica además la clase de acciones | | Representante legal
+#TR La suma de acciones de los accionistas es 600.000 y coincide con el capital suscrito | | Representante legal
+#TR Se marcó la casilla de beneficio de la Ley 1780 y se anexó la declaración | | Representante legal
+#TR Los formularios están firmados y, si el formato lo exige, con huella | | Representante legal
+#TR No hay tachones ni enmendaduras en ningún formulario | | Representante legal
+#TR La consulta de homonimia se realizó y no arrojó coincidencias | | Representante legal
+#2 C. Resultado de la radicación
+#TW 45,55
+#TH Concepto | Contenido
+#TR Fecha de radicación | ____ / ____ / 2026
+#TR Número de recibo de caja | ____________
+#TR Valor total pagado | $____________
+#TR Fecha estimada de entrega | ____ / ____ / 2026
+#TR Número de matrícula mercantil de la sociedad | ____________
+#TR Número de matrícula del establecimiento | ____________
+#TR Número y libro de inscripción del documento | ________ del libro IX
+#TR NIT definitivo asignado | ____________
+#TR ¿Hubo devolución? Causa | ____________

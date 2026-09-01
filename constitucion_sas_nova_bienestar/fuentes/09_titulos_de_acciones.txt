@@ -1,0 +1,91 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Títulos de acciones y comprobantes de aporte
+!FOOTER Títulos de acciones y comprobantes de aporte
+#T Títulos de acciones y comprobantes de aporte
+#ST NOVA BIENESTAR INTEGRAL S.A.S.
+#1 Nota preliminar
+#P La expedición de los títulos representativos de las acciones no es un requisito de la matrícula mercantil, pero sí es una **obligación legal de la sociedad** una vez constituida, y su omisión es una de las informalidades más frecuentes en las S.A.S. colombianas.
+#P Su fundamento está en los artículos 399 a 402 del Código de Comercio, aplicables a la sociedad por acciones simplificada por remisión del artículo 45 de la Ley 1258 de 2008. El **artículo 401** fija las menciones que el título debe contener y ordena que se expidan en **series continuas** con las firmas del representante legal y del secretario. El **artículo 400** dispone que, mientras el valor de las acciones no esté cubierto íntegramente, solo pueden expedirse **certificados provisionales**; como en este caso el capital suscrito fue pagado en su totalidad en el acto de constitución, procede expedir **títulos definitivos**.
+#P Los títulos deben expedirse una vez inscrito el documento de constitución en el registro mercantil, porque solo entonces existe la sociedad y puede identificarse el número de matrícula. Por eso los espacios correspondientes se dejan señalados.
+#PB
+#C **NOVA BIENESTAR INTEGRAL S.A.S.**
+#C Sociedad por acciones simplificada — NIT ____________
+#C Domicilio principal: Medellín (Antioquia)
+#HR
+#T Título de acciones n.º 001
+#TW 40,60
+#TH Concepto | Contenido
+#TR Titular | MARIANA LÓPEZ CASTAÑO
+#TR Documento de identidad | Cédula de ciudadanía n.º 1.039.672.481 expedida en Medellín (Antioquia)
+#TR Domicilio del titular | Medellín (Antioquia)
+#TR Número de acciones representadas | **TRESCIENTAS NOVENTA MIL (390.000)**
+#TR Valor nominal de cada acción | MIL PESOS ($1.000) moneda corriente
+#TR Valor total del título | **TRESCIENTOS NOVENTA MILLONES DE PESOS ($390.000.000) moneda corriente**
+#TR Clase de acciones | Ordinarias, nominativas y de capital
+#TR Estado de pago | **LIBERADAS** — íntegramente pagadas en dinero
+#TR Participación en el capital suscrito | 65 %
+#TR Acto de constitución | Documento privado del 1.º de octubre de 2026, inscrito en el registro mercantil de la Cámara de Comercio de Medellín para Antioquia bajo el número ________ del libro IX
+#TR Matrícula mercantil de la sociedad | N.º ____________
+#TR Fecha de expedición del título | ____ / ____ / 2026
+#P **ADVERTENCIA SOBRE RESTRICCIONES A LA NEGOCIACIÓN.** De conformidad con el inciso final del artículo 13 de la Ley 1258 de 2008, se hace constar que las acciones representadas en este título están sujetas a las siguientes restricciones estatutarias, oponibles a la sociedad y a terceros:
+#N 1. **Derecho de preferencia en la negociación** a favor de la sociedad y, en subsidio, de los demás accionistas (artículo 14 de los estatutos). La enajenación realizada en contravención de esta cláusula es **ineficaz de pleno derecho**, sin necesidad de declaración judicial.
+#N 2. **Autorización previa de la asamblea general de accionistas**, adoptada con el voto favorable del setenta por ciento (70 %) de las acciones suscritas, para toda enajenación a favor de personas que no sean accionistas. Restricción vigente por **diez (10) años** contados desde la inscripción del documento de constitución en el registro mercantil (artículo 15 de los estatutos).
+#P Este título se expide en serie continua y se inscribe en el libro de registro de accionistas de la sociedad. La calidad de accionista frente a la sociedad y frente a terceros se acredita con la inscripción en dicho libro (artículos 195 y 406 del Código de Comercio).
+#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481|Representante legal||____________________|Secretario(a)|Designado(a) para la expedición
+#PB
+#C **NOVA BIENESTAR INTEGRAL S.A.S.**
+#C Sociedad por acciones simplificada — NIT ____________
+#C Domicilio principal: Medellín (Antioquia)
+#HR
+#T Título de acciones n.º 002
+#TW 40,60
+#TH Concepto | Contenido
+#TR Titular | FELIPE ANDRÉS GÓMEZ VÉLEZ
+#TR Documento de identidad | Cédula de ciudadanía n.º 1.152.846.390 expedida en Envigado (Antioquia)
+#TR Domicilio del titular | Envigado (Antioquia)
+#TR Número de acciones representadas | **DOSCIENTAS DIEZ MIL (210.000)**
+#TR Valor nominal de cada acción | MIL PESOS ($1.000) moneda corriente
+#TR Valor total del título | **DOSCIENTOS DIEZ MILLONES DE PESOS ($210.000.000) moneda corriente**
+#TR Clase de acciones | Ordinarias, nominativas y de capital
+#TR Estado de pago | **LIBERADAS** — íntegramente pagadas en dinero
+#TR Participación en el capital suscrito | 35 %
+#TR Acto de constitución | Documento privado del 1.º de octubre de 2026, inscrito en el registro mercantil de la Cámara de Comercio de Medellín para Antioquia bajo el número ________ del libro IX
+#TR Matrícula mercantil de la sociedad | N.º ____________
+#TR Fecha de expedición del título | ____ / ____ / 2026
+#P **ADVERTENCIA SOBRE RESTRICCIONES A LA NEGOCIACIÓN.** De conformidad con el inciso final del artículo 13 de la Ley 1258 de 2008, las acciones representadas en este título están sujetas al **derecho de preferencia en la negociación** del artículo 14 de los estatutos —cuya inobservancia produce la **ineficacia de pleno derecho** de la enajenación— y a la **autorización previa de la asamblea general de accionistas** con el setenta por ciento (70 %) de las acciones suscritas para su transferencia a terceros, por el término de diez (10) años (artículo 15 de los estatutos).
+#SIG2 FELIPE ANDRÉS GÓMEZ VÉLEZ|C.C. 1.152.846.390|Titular — recibe conforme||MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481|Representante legal
+#PB
+#T Comprobantes de ingreso por aportes de capital
+#ST Soporte contable del pago del capital suscrito
+#P Los comprobantes que siguen constituyen el soporte contable del hecho declarado en la certificación de capital: que el capital suscrito fue pagado íntegramente en dinero en el acto de constitución. Deben archivarse con el extracto o comprobante bancario de la consignación correspondiente.
+#2 Comprobante de ingreso n.º 001
+#TW 40,60
+#TH Concepto | Contenido
+#TR Sociedad | NOVA BIENESTAR INTEGRAL S.A.S. (en constitución)
+#TR Fecha | 1.º de octubre de 2026
+#TR Recibido de | Mariana López Castaño — C.C. 1.039.672.481
+#TR Concepto | Pago íntegro de 390.000 acciones ordinarias suscritas, de valor nominal de $1.000 cada una
+#TR Valor | $390.000.000 moneda corriente
+#TR Forma de pago | Consignación en la cuenta bancaria abierta a nombre de la sociedad en formación
+#TR Cuenta bancaria | N.º ____________ del banco ____________
+#TR Comprobante bancario n.º | ____________
+#TR Imputación contable | Débito: Bancos. Crédito: Capital suscrito y pagado
+#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481|Aportante||MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481|Representante legal — recibe
+#2 Comprobante de ingreso n.º 002
+#TW 40,60
+#TH Concepto | Contenido
+#TR Sociedad | NOVA BIENESTAR INTEGRAL S.A.S. (en constitución)
+#TR Fecha | 1.º de octubre de 2026
+#TR Recibido de | Felipe Andrés Gómez Vélez — C.C. 1.152.846.390
+#TR Concepto | Pago íntegro de 210.000 acciones ordinarias suscritas, de valor nominal de $1.000 cada una
+#TR Valor | $210.000.000 moneda corriente
+#TR Forma de pago | Consignación en la cuenta bancaria abierta a nombre de la sociedad en formación
+#TR Cuenta bancaria | N.º ____________ del banco ____________
+#TR Comprobante bancario n.º | ____________
+#TR Imputación contable | Débito: Bancos. Crédito: Capital suscrito y pagado
+#SIG2 FELIPE ANDRÉS GÓMEZ VÉLEZ|C.C. 1.152.846.390|Aportante||MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481|Representante legal — recibe
+#SP
+#TW 50,25,25
+#TH Resumen de la integración del capital | Acciones | Valor
+#TR Comprobante n.º 001 — Mariana López Castaño | 390.000 | $390.000.000
+#TR Comprobante n.º 002 — Felipe Andrés Gómez Vélez | 210.000 | $210.000.000
+#TH TOTAL CAPITAL PAGADO | 600.000 | $600.000.000

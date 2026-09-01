@@ -180,10 +180,28 @@ def build(src_path, out_path):
         table = doc.add_table(rows=0, cols=ncols)
         table.style = "Table Grid"
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
-        usable = Cm(21.59 - 3.0 - 2.5)
         widths = pending_widths or [100.0 / ncols] * ncols
         col_cm = [Cm((21.59 - 5.5) * w / 100.0) for w in widths]
         table.autofit = False
+        # Fijar tblW y tblGrid: LibreOffice y Word respetan la rejilla antes
+        # que el ancho individual de cada celda.
+        tblPr = table._tbl.tblPr
+        tblW = OxmlElement("w:tblW")
+        tblW.set(qn("w:w"), str(int(sum(w.twips for w in col_cm))))
+        tblW.set(qn("w:type"), "dxa")
+        tblPr.append(tblW)
+        layout = OxmlElement("w:tblLayout")
+        layout.set(qn("w:type"), "fixed")
+        tblPr.append(layout)
+        grid = table._tbl.find(qn("w:tblGrid"))
+        if grid is not None:
+            table._tbl.remove(grid)
+        grid = OxmlElement("w:tblGrid")
+        for width in col_cm:
+            gc = OxmlElement("w:gridCol")
+            gc.set(qn("w:w"), str(int(width.twips)))
+            grid.append(gc)
+        tblPr.addnext(grid)
         for kind, cells in rows:
             row = table.add_row()
             for idx in range(ncols):

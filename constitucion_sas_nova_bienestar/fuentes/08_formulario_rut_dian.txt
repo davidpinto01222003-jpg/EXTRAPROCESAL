@@ -1,0 +1,93 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Formulario 001 del RUT
+!FOOTER Formulario 001 del RUT — hoja de transcripción y guía del trámite
+#T Formulario 001 del Registro Único Tributario
+#ST Hoja de transcripción y guía del trámite en línea — NOVA BIENESTAR INTEGRAL S.A.S.
+#1 1. Por qué este formulario no se descarga
+#P A diferencia de los formatos del RUES, el **formulario 001 de la DIAN no se diligencia en papel**. La inscripción en el Registro Único Tributario se realiza exclusivamente en línea, en el portal transaccional de la Dirección de Impuestos y Aduanas Nacionales, y el sistema genera un PDF con marca de agua que dice **"CERTIFICADO DOCUMENTO SIN COSTO"** o, tratándose de una sociedad aún no matriculada, un **RUT provisional** identificado con la leyenda "PARA TRÁMITE EN CÁMARA".
+#P Ese documento es el que se imprime y se anexa al expediente de la Cámara. No existe un formato descargable en blanco que pueda llenarse a mano: intentar presentar uno es causa de rechazo.
+#P Por eso este documento tiene dos partes: la **ruta del trámite en línea**, que indica exactamente qué opciones seleccionar, y la **hoja de transcripción**, que fija el valor de cada campo antes de sentarse frente al computador.
+#1 2. Ruta del trámite en línea
+#TW 8,32,60
+#TH Paso | Acción | Detalle
+#TR 1 | Ingresar al portal de la DIAN | Sección de transacciones, opción de **inscripción en el RUT**, submenú "Cámara de Comercio".
+#TR 2 | Seleccionar el tipo de inscripción | **Persona jurídica sin NIT asignado**. Esta es la opción correcta para una sociedad en constitución; escoger "con NIT" es el error más frecuente y obliga a reiniciar.
+#TR 3 | Diligenciar la hoja principal | Con los valores de la sección 3 de este documento.
+#TR 4 | Diligenciar la hoja 2 (responsabilidades) | Con los valores de la sección 4 de este documento.
+#TR 5 | Diligenciar la hoja 3 (representación) | Datos del representante legal principal y del suplente.
+#TR 6 | Enviar y descargar | El sistema genera el **RUT provisional** con un **número de formulario**. Ese número debe imprimirse y anotarse: se traslada al formulario adicional de registro con otras entidades del RUES.
+#TR 7 | Radicar en la Cámara | Con el RUT provisional impreso, junto con los demás documentos del expediente.
+#TR 8 | Formalización | Una vez la Cámara matricula la sociedad y reporta el hecho a la DIAN, esta **formaliza el RUT** y asigna el NIT definitivo. El representante legal debe descargar el RUT formalizado y verificar que las responsabilidades hayan quedado correctamente registradas.
+#P **Advertencia sobre la firma electrónica.** Para actuaciones posteriores —presentar declaraciones, habilitarse como facturador electrónico— el representante legal deberá tramitar su **instrumento de firma electrónica** ante la DIAN. Conviene solicitarlo en el mismo acto, porque su expedición puede tardar y sin él no se pueden cumplir las obligaciones formales.
+#PB
+#1 3. Hoja de transcripción — datos de identificación y ubicación
+#P Los números de casilla del formulario 001 son modificados periódicamente por la DIAN. Por esa razón cada campo se identifica **por su nombre**, que es estable, y debe ubicarse en la casilla que corresponda en la versión vigente del formulario.
+#TW 42,58
+#TH Campo del formulario 001 | Valor a transcribir
+#TR Tipo de contribuyente | PERSONA JURÍDICA
+#TR Tipo de documento | NIT
+#TR Número de identificación tributaria | El que asigne el sistema
+#TR Dígito de verificación | El que asigne el sistema
+#TR Razón social | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR Nombre comercial | NOVA BIENESTAR
+#TR Sigla | En blanco
+#TR Naturaleza | PRIVADA / NACIONAL
+#TR Tipo de sociedad | SOCIEDAD POR ACCIONES SIMPLIFICADA
+#TR País | COLOMBIA
+#TR Departamento | ANTIOQUIA
+#TR Ciudad o municipio | MEDELLÍN
+#TR Dirección principal | CARRERA 37 N.º 10A-58 OFICINA 804
+#TR Código postal | El correspondiente a la dirección
+#TR Correo electrónico | contacto@novabienestarintegral.com
+#TR Teléfono 1 | 3156849271
+#TR Teléfono 2 | En blanco
+#TR Actividad económica principal (CIIU) | 8692 — Actividades de apoyo terapéutico
+#TR Fecha de inicio de la actividad principal | 01 / 10 / 2026
+#TR Actividad económica secundaria (CIIU) | 9311 — Gestión de instalaciones deportivas
+#TR Fecha de inicio de la actividad secundaria | 01 / 10 / 2026
+#TR Otras actividades (CIIU) | 9609 — Otras actividades de servicios personales n.c.p.
+#TR Ocupación | No aplica (persona jurídica)
+#TR Número de establecimientos | 1
+#TR Entidad de vigilancia y control | SUPERINTENDENCIA DE SOCIEDADES
+#TR Fecha de constitución | 01 / 10 / 2026
+#TR Fecha de registro mercantil | La de inscripción efectiva en la Cámara
+#TR Cámara de comercio | CÁMARA DE COMERCIO DE MEDELLÍN PARA ANTIOQUIA
+#TR Número de matrícula mercantil | El que asigne la Cámara
+#TR Condición de importador, exportador o usuario aduanero | NO APLICA, conforme al levantamiento de información
+#PB
+#1 4. Hoja de transcripción — responsabilidades tributarias
+#P Esta es la sección que exige criterio y no simple transcripción. Marcar una responsabilidad que no corresponde genera obligaciones formales inexistentes —y sanciones por no cumplirlas—; omitir una que sí corresponde genera sanción por extemporaneidad. El listado de códigos de la casilla de responsabilidades es actualizado por la DIAN, de modo que el **código debe verificarse en la tabla vigente**; lo que no cambia es el nombre de la responsabilidad.
+#TW 8,34,58
+#TH Código usual | Responsabilidad | Análisis para este caso
+#TR 05 | Impuesto sobre la renta y complementarios, régimen ordinario | **SÍ.** Toda sociedad comercial es contribuyente del régimen ordinario. No se solicita el régimen especial ni el simple.
+#TR 07 | Retención en la fuente a título de renta | **SÍ.** La sociedad tendrá nueve trabajadores y celebrará contratos con terceros; será agente retenedor.
+#TR 09 | Retención en la fuente en el impuesto sobre las ventas | **SÍ**, en la medida en que contrate con no residentes o con responsables frente a los cuales deba practicar la retención de IVA.
+#TR 14 | Informante de exógena | Se activará cuando la sociedad supere los topes de ingresos y patrimonio que fija anualmente la resolución de información exógena. En la matrícula inicial no se marca.
+#TR 48 | Impuesto sobre las ventas — IVA | **SÍ.** Aunque los servicios de salud habilitados están excluidos, los servicios de gimnasio, acondicionamiento y bienestar corporal son gravados. La sociedad debe inscribirse como responsable.
+#TR 52 | Facturador electrónico | **SÍ.** La facturación electrónica es obligatoria para los responsables de IVA. Debe tramitarse la habilitación en el servicio de facturación de la DIAN.
+#TR — | Régimen simple de tributación | **NO.** No se opta por el SIMPLE en la constitución. La opción puede evaluarse posteriormente, dentro de los plazos de la ley, comparando la tarifa consolidada con la carga del régimen ordinario más el ICA de Medellín.
+#TR — | Autorretenedor de renta | **NO.** Requiere resolución de autorización de la DIAN, que se solicita cuando la sociedad reúne los requisitos de patrimonio y número de clientes.
+#TR — | Gran contribuyente | **NO.** Se adquiere por resolución de la DIAN.
+#P **Nota sobre el IVA en este negocio.** El numeral 3.º del artículo 476 del Estatuto Tributario excluye del impuesto sobre las ventas los servicios de salud humana. Como NOVA BIENESTAR INTEGRAL S.A.S. desarrollará simultáneamente una línea excluida —rehabilitación física habilitada— y una línea gravada —gimnasio, acondicionamiento y bienestar—, deberá:
+#L Llevar contabilidad que permita **identificar separadamente** los ingresos por servicios excluidos y por servicios gravados.
+#L Aplicar la regla de **proporcionalidad** en el descuento de los impuestos descontables comunes a ambas líneas.
+#L Configurar la facturación electrónica con los códigos de exclusión correspondientes para los servicios de salud.
+#P Este es un punto de exposición tributaria real: tratar toda la operación como excluida por el hecho de que la sociedad esté habilitada como prestadora de servicios de salud es un error frecuente y costoso.
+#1 5. Hoja de transcripción — representación legal y revisoría
+#TW 42,58
+#TH Campo del formulario 001 | Valor a transcribir
+#TR Representante legal — calidad | REPRESENTANTE LEGAL PRINCIPAL
+#TR Representante legal — tipo y número de documento | C.C. 1.039.672.481
+#TR Representante legal — nombres y apellidos | MARIANA LÓPEZ CASTAÑO
+#TR Representante legal — fecha de inicio del ejercicio | 01 / 10 / 2026
+#TR Representante legal suplente — calidad | REPRESENTANTE LEGAL SUPLENTE
+#TR Representante legal suplente — documento | C.C. 1.152.846.390
+#TR Representante legal suplente — nombres y apellidos | FELIPE ANDRÉS GÓMEZ VÉLEZ
+#TR Revisor fiscal | NO APLICA — la sociedad no está obligada a tenerlo
+#TR Contador | Los datos del contador público independiente que suscribe la certificación de capital
+#TR Socios o accionistas con participación igual o superior al 5 % | Mariana López Castaño (65 %) y Felipe Andrés Gómez Vélez (35 %)
+#1 6. Documentos que la DIAN puede exigir
+#L Documento privado de constitución con presentación personal o autenticación.
+#L Certificado de existencia y representación legal, una vez matriculada la sociedad, para la formalización.
+#L Fotocopia del documento de identidad del representante legal.
+#L Constancia de titularidad de una cuenta bancaria a nombre de la sociedad, o documento equivalente, cuando la DIAN lo solicite para la formalización.
+#L Documento que acredite la dirección informada, cuando se requiera verificación.
