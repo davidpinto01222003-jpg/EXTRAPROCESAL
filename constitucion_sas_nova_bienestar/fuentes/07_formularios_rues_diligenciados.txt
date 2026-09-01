@@ -143,7 +143,7 @@
 #TR 24 | Representante legal suplente — documento | C.C. 1.152.846.390 de Envigado
 #TR 25 | Período de los representantes legales | INDEFINIDO, con remoción libre por la asamblea
 #TR 26 | Facultades del representante legal | Las del artículo 28 de los estatutos
-#TR 27 | Limitaciones a las facultades | Autorización previa de la asamblea para actos superiores a 500 SMLMV, para gravar o enajenar inmuebles, para garantizar obligaciones de terceros, para adquirir participaciones en otras sociedades y para operar en conflicto de interés
+#TR 27 | Limitaciones a las facultades | Autorización previa de la asamblea para actos superiores a 100 SMLMV, para gravar o enajenar inmuebles, para garantizar obligaciones de terceros, para adquirir participaciones en otras sociedades y para operar en conflicto de interés
 #TR 28 | Revisor fiscal | NO SE DESIGNA — la sociedad no está obligada (artículo 28 de la Ley 1258 de 2008 y parágrafo 2.º del artículo 13 de la Ley 43 de 1990)
 #TR 29 | Restricciones a la negociación de acciones | SÍ — derecho de preferencia (artículo 14 de los estatutos) y autorización previa de la asamblea por diez años (artículo 15)
 #TR 30 | Cláusula compromisoria | SÍ — arbitraje en derecho, árbitro único, Centro de Conciliación y Arbitraje de la Cámara de Comercio de Medellín para Antioquia

@@ -1,0 +1,161 @@
+!HEADER Informe final de auditoría y estado del expediente
+!FOOTER Informe final — NOVA BIENESTAR INTEGRAL S.A.S.
+#T Informe final de auditoría y estado del expediente
+#ST Constitución de NOVA BIENESTAR INTEGRAL S.A.S. — Cámara de Comercio de Medellín para Antioquia
+#1 I. Alcance de la revisión
+#P Se sometió el expediente completo a cuatro verificaciones: **coherencia de cifras** entre los quince documentos; **integridad de las referencias cruzadas** a los artículos de los estatutos; **operatividad aritmética de las cláusulas de mayoría** aplicadas a la composición accionaria real del caso; y **vigencia de las normas invocadas**.
+#P La tercera verificación es la que produjo hallazgos. Una cláusula puede estar impecablemente redactada y ser inaplicable cuando se le introducen los números concretos de la sociedad. Cinco lo estaban.
+#2 Resumen de la verificación
+#TW 46,18,36
+#TH Control aplicado | Resultado | Observación
+#TR Numeración de los artículos de los estatutos | Conforme | 42 artículos y 6 transitorios, continuos y sin saltos
+#TR Referencias cruzadas a artículos de los estatutos | Conforme | 54 referencias en 10 documentos; todas apuntan al artículo correcto
+#TR Coherencia de cifras entre documentos | Conforme | Capital, acciones, porcentajes, cédulas, dirección, teléfono, correo y códigos CIIU coinciden en los 15 documentos
+#TR Aritmética del capital | Conforme | 390.000 + 210.000 = 600.000 acciones = $600.000.000; 65 % / 35 % exactos, sin residuos
+#TR Liquidación de derechos e impuestos | Conforme | $4.200.000 + $72.660 + $48.440 = $4.321.100; el impuesto pesa el 97,2 %
+#TR Umbral de cuantía del artículo 28 | **Corregido** | El límite fijado superaba el capital de la sociedad
+#TR Base de cómputo de las mayorías de los artículos 15 y 39 | **Corregido** | Ambas cláusulas resultaban matemáticamente inaplicables
+#TR Plazo de enervamiento de causales de disolución | **Corregido** | Se aplicaba el plazo especial a causales que tienen el ordinario
+#TR Plazo del derecho de inspección | **Corregido** | Dos artículos fijaban términos distintos
+#TR Fundamento normativo de la reunión universal | **Corregido** | Cita a artículo equivocado del Código de Comercio
+#TR Formato de las líneas de firma y espacios en blanco | **Corregido** | Defecto de generación que acortaba las líneas
+#1 II. Los cinco hallazgos y su corrección
+#2 1. El umbral de cuantía excedía el patrimonio de la sociedad
+#P **Lo que decía.** El parágrafo primero del artículo 28 exigía autorización previa de la asamblea para actos cuya cuantía individual excediera de **500 salarios mínimos legales mensuales vigentes**.
+#P **El problema.** Con un salario mínimo del orden de $1.400.000, quinientos salarios equivalen a **$700.000.000**, suma **superior al capital pagado de $600.000.000**. La limitación jamás se habría activado: ningún acto que la sociedad pueda celebrar con su propio patrimonio alcanza ese umbral. Era una cláusula de apariencia protectora y efecto nulo, y con ella se caía toda la protección que el minoritario del 35 % obtenía frente a una representante legal que además es la accionista mayoritaria.
+#P **La corrección.** El umbral se fijó en **100 salarios mínimos legales mensuales vigentes**, aproximadamente $140.000.000, equivalentes al **23 % del capital pagado**. La operación corriente —la nómina de nueve trabajadores, el canon de una oficina, los insumos— queda holgadamente por debajo; la compra de equipos y los contratos patrimonialmente significativos quedan por encima y pasan por la asamblea.
+#P **Documentos ajustados:** 01, 02, 04, 05, 07, 12 y 14.
+#2 2. Dos cláusulas de mayoría eran matemáticamente inaplicables
+#P **Lo que decían.** Los artículos 15 (autorización para transferir acciones a terceros) y 39 (exclusión de accionistas) exigían el voto favorable del **70 % de las acciones suscritas**, excluyendo el voto del accionista afectado.
+#P **El problema.** Setenta por ciento de 600.000 acciones son 420.000. Excluido el afectado, en una sociedad de dos accionistas solo quedan las acciones del otro: 390.000 si el afectado es Felipe, 210.000 si es Mariana. **Ninguna de las dos cifras alcanza 420.000.** El resultado: la autorización para vender a un tercero era imposible de obtener para cualquiera de los dos —una prohibición absoluta encubierta bajo una cláusula que aparentaba regular la transferencia— y la exclusión de accionistas era letra muerta.
+#P **La corrección.** El 70 % se computa ahora sobre las **acciones suscritas restantes**, excluidas del cómputo tanto el voto como las acciones del afectado. La verificación aritmética:
+#TW 40,30,30
+#TH Supuesto | Umbral requerido | Acciones disponibles
+#TR Mariana vende a un tercero | 147.000 (70 % de 210.000) | 210.000 de Felipe — alcanzable
+#TR Felipe vende a un tercero | 273.000 (70 % de 390.000) | 390.000 de Mariana — alcanzable
+#TR Exclusión de Felipe | 273.000 (70 % de 390.000) | 390.000 de Mariana — alcanzable
+#TR Exclusión de Mariana | 147.000 (70 % de 210.000) | 210.000 de Felipe — alcanzable
+#P Las cláusulas operan ahora como lo que deben ser: un **consentimiento recíproco** para el ingreso de terceros al grupo cerrado. Se ajustó igualmente el artículo 16, sobre exclusión por cambio de control, para que remita a la misma base de cómputo.
+#P **Nota de sustentación.** Podría objetarse que, así construida, la cláusula permite que el minoritario del 35 % excluya al mayoritario del 65 %. Es exacto, y es inevitable en una sociedad de dos: cualquier fórmula que haga operativa la exclusión pone a cada uno en manos del otro. Tres contrapesos lo hacen tolerable —causales taxativas y objetivas, la sanción de ineficacia por abuso de minoría del artículo 43 de la Ley 1258, y el reembolso del valor de la participación conforme al artículo 39 de la misma ley—. La explicación completa está en el numeral V.18 del documento 05.
+#P **Documentos ajustados:** 01 y 05.
+#2 3. Plazo equivocado para enervar las causales de disolución
+#P **Lo que decía.** El artículo 37 concedía **dieciocho meses** para enervar las causales de los numerales 1.º, 2.º, 4.º y 6.º del artículo 36.
+#P **El problema.** El artículo 35 de la Ley 1258 de 2008 fija **seis meses** como regla general y reserva los dieciocho al supuesto del derogado numeral 7.º del artículo 34 —la disolución por pérdidas—, hoy entendido como referido a la causal de **no cumplimiento de la hipótesis de negocio en marcha**, por mandato del parágrafo primero del artículo 4.º de la Ley 2069 de 2020. Extender los dieciocho meses a todas las causales concedía a la sociedad un plazo del que legalmente no dispone.
+#P **La corrección.** El artículo 37 distingue ahora ambos plazos y explicita la cadena normativa que lleva del artículo 35 de la Ley 1258 al artículo 4.º de la Ley 2069.
+#P **Documentos ajustados:** 01 y 05.
+#2 4. Dos artículos fijaban plazos distintos para el derecho de inspección
+#P **Lo que decía.** El artículo 9 concedía **cinco días hábiles** de inspección antes de la reunión en que se examinan los estados financieros de fin de ejercicio; el parágrafo primero del artículo 20 preveía una convocatoria de **quince días hábiles** para esa misma reunión, con inspección durante ese término.
+#P **El problema.** Una contradicción interna sobre un derecho de minoría. Frente a un accionista del 35 % cuyo principal instrumento de control es precisamente la inspección, la ambigüedad no es inocua.
+#P **La corrección.** El artículo 9 remite ahora al artículo 31, y este distingue: **quince días hábiles** antes de las reuniones en que se examinen estados financieros de fin de ejercicio o se considere transformación, fusión o escisión —coincidiendo con el plazo de convocatoria del artículo 20—; **cinco días hábiles** antes de las demás.
+#P **Documento ajustado:** 01.
+#2 5. Cita equivocada sobre la reunión universal
+#P **Lo que decía.** El acta n.º 1 fundaba la reunión universal en el **artículo 182 del Código de Comercio**.
+#P **El problema.** El artículo 182 regula el contenido de la convocatoria a reuniones extraordinarias y el orden del día. La reunión universal —la que puede celebrarse en cualquier sitio y sin citación previa cuando esté representada la totalidad de las acciones suscritas— está en el **artículo 426**.
+#P **La corrección.** Se sustituyó la cita en los documentos 12 y 14, y se añadió la referencia al artículo 426 en el parágrafo tercero del artículo 20 de los estatutos, que antes no citaba norma alguna.
+#1 III. Inventario del expediente
+#TW 6,40,12,42
+#TH N.º | Documento | Págs. | Naturaleza
+#TR 01 | Documento privado de constitución (estatutos) | 22 | Acto constitutivo — se radica
+#TR 02 | Cartas de aceptación de cargos | 4 | Anexo obligatorio — se radica
+#TR 03 | Certificación de capital y declaración Ley 1780 | 4 | Soporte — se radica
+#TR 04 | Guía de formularios RUES y liquidación de derechos | 9 | Instrumento de trabajo
+#TR 05 | Memorando jurídico justificativo | 23 | Sustentación académica
+#TR 06 | Solicitud de inscripción de libros y libro de accionistas | 4 | Se radica y se conserva
+#TR 07 | Formularios del RUES — hojas de transcripción | 11 | Instrumento de trabajo
+#TR 08 | Formulario 001 del RUT — hoja de transcripción | 5 | Instrumento de trabajo
+#TR 09 | Títulos de acciones y comprobantes de aporte | 6 | Se expide tras la matrícula
+#TR 10 | Presentación personal, reconocimiento notarial y poder | 5 | Se radica / se otorga
+#TR 11 | Impuesto de registro y planilla de radicación | 5 | Instrumento de trabajo
+#TR 12 | Acta n.º 1 de la asamblea general de accionistas | 6 | Se asienta en el libro
+#TR 13 | Solicitudes ante otras entidades | 10 | Se radica ante cada entidad
+#TR 14 | Memorando complementario | 7 | Sustentación académica
+#TR 15 | Este informe final | 10 | Auditoría y estado
+#P **Lo que efectivamente se radica en la Cámara de Comercio** son los documentos 01, 02, 03, 06 y 10, acompañados de los formularios oficiales y del comprobante del impuesto de registro. Los documentos 04, 07, 08 y 11 son instrumentos de trabajo que no se entregan: sirven para diligenciar sin errores. Los documentos 05, 14 y 15 son la sustentación del ejercicio académico.
+#1 IV. Qué falta y dónde conseguirlo
+#2 A. Formatos oficiales que no pueden elaborarse
+#P Estos cinco instrumentos solo existen en la versión que expide la entidad. Ninguna reproducción, por fiel que sea, se admite en ventanilla. Las hojas de transcripción de los documentos 07 y 08 fijan el valor de cada campo, pero no los sustituyen.
+#TW 30,42,28
+#TH Formato | Dónde se obtiene | Costo
+#TR Carátula única empresarial (2 páginas) | camaramedellin.com.co → «Crear empresa» → «Formatos y formularios». Alternativa: rues.org.co → «Formatos CAE», que publica el archivo correspondiente a Medellín | Sin costo
+#TR Anexo de matrícula de persona jurídica | Mismo origen | Sin costo
+#TR Anexo de matrícula de establecimiento de comercio | Mismo origen | Sin costo
+#TR Formulario adicional de registro con otras entidades | Taquilla de la Cámara o su sede virtual | Sin costo
+#TR Instructivo de diligenciamiento del formulario RUES | Mismo sitio de la Cámara, junto a los formularios | Sin costo
+#TR Formulario 001 — Registro Único Tributario | Portal transaccional de la DIAN, opción «inscripción en el RUT por Cámara de Comercio». **No existe versión descargable en blanco**: solo se diligencia en línea y el sistema genera el RUT provisional | Sin costo
+#TR Liquidación del impuesto de registro | Portal tributario de la Gobernación de Antioquia, o liquidación practicada por la Cámara cuando opera el convenio de recaudo | $4.200.000
+#P **Alternativa que evita el papel.** La **sede virtual de la Cámara de Comercio de Medellín para Antioquia** permite adelantar el trámite completo en línea, con firma electrónica de los dos accionistas. En esa modalidad los formularios se diligencian en pantalla y no hay que descargar nada; las hojas de transcripción siguen sirviendo, porque los campos son los mismos.
+#2 B. Consultas previas, gratuitas, que deben hacerse antes de radicar
+#TW 30,45,25
+#TH Consulta | Dónde | Para qué
+#TR Homonimia de la denominación | rues.org.co, consulta de nombre | El artículo 35 del Código de Comercio obliga a la Cámara a abstenerse de matricular un nombre ya inscrito. La verificación es nacional, no local
+#TR Clasificación CIIU | Estructura CIIU Rev. 4 A.C. del DANE | Confirmar que 8692, 9311 y 9609 describen la operación real
+#TR Uso del suelo | Curaduría Urbana o Planeación de Medellín | Verificar que la dirección admita uso deportivo, no solo de oficina
+#TR Tarifa de matrícula del establecimiento | Liquidador de la sede virtual de la Cámara | Conocer el valor exacto antes de radicar
+#2 C. Datos que solo el cliente puede aportar
+#P Los documentos quedaron con espacios en blanco donde la información depende de hechos que aún no ocurren o de terceros. No son omisiones: son campos que se llenan en el momento del trámite.
+#TW 34,30,36
+#TH Dato faltante | Documentos afectados | De dónde sale
+#TR Nombre, cédula y tarjeta profesional del contador público | 03, 09, 12, 13 | Del contador que se contrate. La tarjeta se verifica en la Junta Central de Contadores
+#TR Número de cuenta bancaria y comprobantes de consignación | 03, 09 | Del banco, al abrir la cuenta de la sociedad en formación
+#TR Barrio, código postal, matrícula inmobiliaria, identificación catastral y área del inmueble | 07, 13 | Del certificado de tradición y del contrato de arrendamiento
+#TR Contrato de arrendamiento de la oficina | 12, 13 | Del arrendador
+#TR Remuneración del representante legal | 12 | Decisión de los accionistas
+#TR NIT y dígito de verificación | 07, 08, 09, 11, 13 | Los asigna la DIAN en el RUT provisional
+#TR Número de matrícula mercantil y de inscripción en el libro IX | 09, 13 | Los asigna la Cámara al inscribir
+#TR Notaría y notario del reconocimiento | 10 | La que elija cada accionista en su municipio
+#TR Nombre del apoderado, si lo hay | 10 | Solo si radica un tercero
+#TR Copias ampliadas de las cédulas | Anexo del expediente | De los accionistas, ampliadas al 150 %
+#TR Fecha de nacimiento de la accionista para la Ley 1780 | 07 | De la cédula de Mariana López Castaño
+#2 D. Puntos que deben confirmarse con la autoridad
+#P Siete extremos quedaron marcados en los documentos porque dependen de normas locales, tablas anuales o competencias territoriales que no pueden darse por supuestas.
+#TW 34,66
+#TH Punto | Qué hay que confirmar y dónde
+#TR Tarifa del impuesto de registro | El artículo 230 de la Ley 223 de 1995 fija un rango de **0,3 % a 0,7 %** y corresponde a la asamblea departamental fijarla por ordenanza. La liquidación asume el tope de 0,7 %, que es el aplicado en Antioquia. Confirmar en el portal tributario de la Gobernación o en la liquidación de la Cámara: una tarifa menor reduce el valor a pagar
+#TR Tarifa de matrícula del establecimiento | Los activos de $55.000.000 equivalen a **4.541,7 UVB**, dentro del rango 1 (de 0 a 6.500 UVB) de la tabla del Decreto 1074 de 2015, modificado por el Decreto 045 de 2024. El valor exacto se obtiene del liquidador de la Cámara
+#TR Alcance de la exención de la Ley 1780 | El artículo 3.º habla genéricamente de «matrícula mercantil» y la práctica de las cámaras no es uniforme sobre si cubre también la del establecimiento. El expediente asume la lectura restrictiva —prever el pago— y solicitar pronunciamiento escrito. Si la Cámara aplica la lectura extensiva, el resultado es un menor valor, no un vicio
+#TR Competencia para la habilitación en salud | La solicitud del documento 13 está dirigida a la Secretaría de Salud de Medellín, con mención alternativa de la Secretaría Seccional de Salud de Antioquia. Medellín es distrito, lo que pudo alterar la competencia territorial. Confirmar antes de radicar
+#TR Salario mínimo vigente para 2026 | Determina el valor real del umbral de 100 SMLMV del artículo 28 y los topes de revisoría fiscal (5.000 y 3.000 SMLMV) y de la Ley 1780 (5.000 SMLMV). Los cálculos del expediente usan una referencia del orden de $1.400.000
+#TR Códigos de la casilla de responsabilidades del RUT | La tabla es actualizada por la DIAN. El documento 08 identifica cada responsabilidad **por su nombre**, que es estable, e indica el código usual. Verificar los códigos en la versión vigente del formulario
+#TR Denominación exacta de los servicios de salud | El documento 13 propone fisioterapia, terapia ocupacional y terapia respiratoria. Deben ajustarse a la denominación del Manual de Inscripción de Prestadores vigente y a los servicios que realmente se prestarán: habilitar servicios que no se prestarán obliga a mantener estándares imposibles de acreditar en la visita
+#2 E. Documentos que NO se necesitan, y por qué
+#P Tan importante como saber qué falta es saber qué no hace falta. Estas son las exigencias que suelen suponerse y que en este caso no aplican.
+#TW 32,68
+#TH No se requiere | Razón
+#TR Escritura pública | El artículo 5.º de la Ley 1258 de 2008 permite constituir la S.A.S. por documento privado. Solo sería obligatoria si se aportaran bienes cuya transferencia exija escritura —un inmueble—, según el parágrafo 2.º de esa norma. Los aportes son en dinero
+#TR Revisor fiscal | Los activos de $600.000.000 están muy por debajo de los 5.000 SMLMV, y al constituirse no hay ejercicio anterior con ingresos que medir (artículo 28 de la Ley 1258 y parágrafo 2.º del artículo 13 de la Ley 43 de 1990)
+#TR Junta directiva | El artículo 25 de la Ley 1258 no la exige. En una sociedad de dos accionistas que son los dos administradores, sería un órgano redundante
+#TR Acta de constitución separada | Los nombramientos constan en el artículo transitorio 1.º del documento privado, y es ese documento —no un acta— el que la Cámara inscribe. El acta n.º 1 del documento 12 cumple una función distinta: abrir el libro de actas y adoptar las decisiones de puesta en marcha
+#TR Inscripción del acta n.º 1 en el registro mercantil | Ninguna de sus decisiones es acto sujeto a registro
+#TR Avalúo de aportes | El artículo 398 del Código de Comercio lo exige para aportes en especie. No hay
+#TR Registro Nacional de Bases de Datos ante la SIC | La obligación depende de superar los topes de activos fijados por la reglamentación; con $600.000.000 la sociedad queda por debajo. Debe revisarse cada año
+#TR Certificado de antecedentes o de no inhabilidad | No se exige para la matrícula. La declaración va en las cartas de aceptación de cargo
+#TR Publicación o aviso de prensa | El régimen de la S.A.S. no lo prevé para la constitución
+#TR Permiso genérico de funcionamiento | No existe como tal. Lo que existe son los cinco requisitos del artículo 2.º de la Ley 232 de 1995 y, aquí, la habilitación sanitaria
+#1 V. Ruta de ejecución
+#TW 8,30,30,32
+#TH Orden | Actuación | Dónde | Producto
+#TR 1 | Consulta de homonimia | rues.org.co | Nombre disponible
+#TR 2 | Consulta de uso del suelo | Curaduría / Planeación de Medellín | Concepto de viabilidad
+#TR 3 | Firma del documento de constitución | Entre los accionistas | Acto constitutivo
+#TR 4 | Reconocimiento de firma | Notaría de Medellín y notaría de Envigado | Documento auténtico
+#TR 5 | Apertura de cuenta y consignación de aportes | Entidad bancaria | Comprobantes del capital
+#TR 6 | Firma de la certificación de capital | Contador público | Soporte de los activos
+#TR 7 | Inscripción en el RUT | Portal DIAN | RUT provisional con número de formulario
+#TR 8 | Diligenciamiento de los formularios | Sede virtual o taquilla de la Cámara | Carátula, anexos y formulario de otras entidades
+#TR 9 | Pago del impuesto de registro | Gobernación de Antioquia o Cámara | Comprobante por $4.200.000
+#TR 10 | Radicación del expediente | Cámara de Comercio de Medellín | Matrícula de la sociedad y del establecimiento
+#TR 11 | Inscripción de libros | Cámara de Comercio | Libros de accionistas y de actas
+#TR 12 | Formalización del RUT | DIAN | NIT definitivo
+#TR 13 | Expedición de títulos de acciones | La sociedad | Títulos 001 y 002
+#TR 14 | Asamblea de puesta en marcha | Domicilio social | Acta n.º 1 en el libro
+#TR 15 | Inscripción en el RIT | Secretaría de Hacienda de Medellín | Registro para el ICA
+#TR 16 | Habilitación de servicios de salud | Autoridad sanitaria | Inscripción en el REPS
+#TR 17 | Conceptos sanitario y de bomberos | Municipio de Medellín | Requisitos de la Ley 232 de 1995
+#TR 18 | Afiliaciones a seguridad social | EPS, pensiones, ARL, caja | Nueve trabajadores cubiertos
+#TR 19 | Renovación de la matrícula | Cámara de Comercio | Antes del 31 de marzo de 2027, exenta
+#2 El plazo que corre
+#P El artículo 31 del Código de Comercio exige solicitar la matrícula **dentro del mes siguiente** a la creación de la persona jurídica. Con documento fechado el 1.º de octubre de 2026, el plazo vence el **1.º de noviembre de 2026**. La extemporaneidad no impide la matrícula, pero acarrea la sanción del artículo 37 del mismo código.
+#P Más relevante que la sanción es el artículo 7.º de la Ley 1258 de 2008: mientras no se inscriba el documento privado, quienes actúen por cuenta de la sociedad responden **solidaria e ilimitadamente** frente a terceros. Ese es el verdadero costo de la demora, y la razón para no facturar ni contratar antes de tener el certificado de existencia y representación legal en la mano.
+#1 VI. Estado final
+#P El expediente está completo en lo que depende del abogado. De los diecinueve pasos de la ruta, los documentos cubren todos aquellos en que la actuación consiste en redactar; los restantes dependen de un formato oficial, del pago de un tributo, de una consulta a la autoridad o de un hecho que aún no ocurre, y en cada caso se indica dónde obtenerlo.
+#P Las cinco correcciones de la sección II eran defectos sustanciales, no de redacción: dos cláusulas inaplicables, un umbral inoperante, un plazo excedido y una cita equivocada. Ninguna se habría detectado leyendo los estatutos; aparecieron al confrontarlos con los números concretos de esta sociedad. Es, quizá, la conclusión más útil del ejercicio: **un estatuto se verifica aplicándolo, no leyéndolo**.

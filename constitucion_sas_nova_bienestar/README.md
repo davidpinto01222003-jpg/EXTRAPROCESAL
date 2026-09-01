@@ -29,6 +29,7 @@ sociedad por acciones simplificada*.
 | 12 | Acta n.º 1 de la asamblea general de accionistas | Reunión universal de puesta en marcha y folio de apertura del libro de actas. |
 | 13 | Solicitudes ante otras entidades | Uso del suelo, REPS y habilitación en salud, RIT de Medellín, y cuadro de trámites restantes. |
 | 14 | Memorando complementario | Explica y defiende cada documento de la segunda parte, con la ruta cronológica consolidada. |
+| 15 | Informe final de auditoría y estado del expediente | Resultado de la verificación, inventario, lo que falta y dónde conseguirlo. |
 
 ## Formatos oficiales que hay que descargar
 
@@ -60,3 +61,14 @@ python3 fuentes/build_docx.py fuentes/01_documento_privado_constitucion.txt \
 ```
 
 Para producir los PDF: `soffice --headless --convert-to pdf --outdir pdf docx/*.docx`
+
+## Estado
+
+Expediente auditado. La verificación cruzada de cifras, referencias y
+operatividad aritmética de las cláusulas está documentada en el documento 15,
+junto con el inventario, lo que falta y dónde conseguirlo.
+
+**Lo que se radica en la Cámara:** documentos 01, 02, 03, 06 y 10, más los
+formularios oficiales y el comprobante del impuesto de registro.
+**Instrumentos de trabajo** (no se entregan): 04, 07, 08 y 11.
+**Sustentación académica:** 05, 14 y 15.

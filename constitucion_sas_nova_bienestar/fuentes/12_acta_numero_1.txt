@@ -16,7 +16,7 @@
 #TR Fecha | Primero (1) de octubre de dos mil veintiséis (2026)
 #TR Hora de inicio | 10:00 a. m.
 #TR Lugar | Carrera 37 n.º 10A-58, oficina 804, Medellín (Antioquia) — domicilio principal
-#TR Fundamento de la reunión universal | Parágrafo tercero del artículo 20 de los estatutos y artículo 182 del Código de Comercio: hallándose presente la totalidad de las acciones suscritas, la asamblea puede reunirse sin convocatoria previa y en cualquier lugar.
+#TR Fundamento de la reunión universal | Parágrafo tercero del artículo 20 de los estatutos y artículo 426 del Código de Comercio: hallándose presente la totalidad de las acciones suscritas, la asamblea puede reunirse sin convocatoria previa y en cualquier lugar.
 #2 2. Verificación del quórum
 #TW 34,20,16,15,15
 #TH Accionista | Documento | Acciones | Participación | Asistencia
@@ -52,7 +52,7 @@
 #P Se autoriza a la representante legal para abrir, manejar y cancelar cuentas corrientes, de ahorro y demás productos financieros a nombre de la sociedad en las entidades vigiladas por la Superintendencia Financiera de Colombia que estime convenientes, y para suscribir los documentos de vinculación, los formatos de conocimiento del cliente y las autorizaciones de consulta y reporte a centrales de riesgo.
 #P **Aprobado por unanimidad**, con 600.000 votos a favor.
 #3 Punto séptimo — Autorización de actos de puesta en marcha
-#P El artículo 28 de los estatutos exige autorización previa de la asamblea para celebrar actos cuya cuantía individual exceda de **quinientos (500) salarios mínimos legales mensuales vigentes**. Para no entorpecer el inicio de operaciones, la asamblea autoriza expresamente a la representante legal para celebrar, dentro de los doce (12) meses siguientes a esta fecha, los siguientes actos:
+#P El artículo 28 de los estatutos exige autorización previa de la asamblea para celebrar actos cuya cuantía individual exceda de **cien (100) salarios mínimos legales mensuales vigentes**. Para no entorpecer el inicio de operaciones, la asamblea autoriza expresamente a la representante legal para celebrar, dentro de los doce (12) meses siguientes a esta fecha, los siguientes actos:
 #L El **contrato de arrendamiento** del inmueble ubicado en la carrera 37 n.º 10A-58, oficina 804, de Medellín, y sus prórrogas.
 #L La **adquisición de equipos y dotación** para la prestación de los servicios de rehabilitación física y acondicionamiento, hasta por un valor acumulado de **doscientos millones de pesos ($200.000.000)**.
 #L La **contratación del personal** necesario para operar con nueve (9) trabajadores, y las afiliaciones al sistema de seguridad social integral y a la caja de compensación familiar.

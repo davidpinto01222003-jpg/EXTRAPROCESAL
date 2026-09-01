@@ -100,7 +100,7 @@
 #TR Representante legal suplente | Felipe Andrés Gómez Vélez — C.C. 1.152.846.390 de Envigado
 #TR Órgano de administración | Asamblea general de accionistas y representante legal (sin junta directiva)
 #TR Revisor fiscal | No se designa (no obligatorio)
-#TR Facultades y limitaciones del representante legal | Autorización previa de la asamblea para actos superiores a 500 SMLMV y para gravar o enajenar inmuebles
+#TR Facultades y limitaciones del representante legal | Autorización previa de la asamblea para actos superiores a 100 SMLMV y para gravar o enajenar inmuebles
 #P **Advertencia específica de la Cámara de Comercio de Medellín.** En materia de capital, la guía registral de esta Cámara exige indicar **simultáneamente** tres datos por cada uno de los tres capitales: (i) la cuantía en pesos, (ii) el número de acciones y (iii) el valor nominal de cada acción; y, tratándose del capital suscrito, además la **clase de acciones**. La omisión de cualquiera de estos elementos da lugar a devolución del documento.
 #2 3.3. Anexo de matrícula de establecimiento de comercio
 #P Se diligencia un anexo por cada establecimiento. En este caso, uno solo.

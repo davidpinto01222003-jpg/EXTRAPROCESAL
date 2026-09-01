@@ -72,7 +72,9 @@ def _bottom_border(paragraph, sz=6, color="000000"):
     pPr.append(pbdr)
 
 
-INLINE = re.compile(r"(\*\*.+?\*\*|__.+?__|\*[^*]+?\*)", re.S)
+# Solo negrita (**) y cursiva (*). No se procesa "__" como subrayado: las
+# secuencias de guiones bajos son espacios en blanco para diligenciar.
+INLINE = re.compile(r"(\*\*.+?\*\*|\*[^*]+?\*)", re.S)
 
 
 def add_runs(paragraph, text, size=None, base_bold=False, base_italic=False):
@@ -83,8 +85,6 @@ def add_runs(paragraph, text, size=None, base_bold=False, base_italic=False):
         body = chunk
         if chunk.startswith("**") and chunk.endswith("**"):
             bold, body = True, chunk[2:-2]
-        elif chunk.startswith("__") and chunk.endswith("__"):
-            underline, body = True, chunk[2:-2]
         elif chunk.startswith("*") and chunk.endswith("*") and len(chunk) > 2:
             italic, body = True, chunk[1:-1]
         run = paragraph.add_run(body)
