@@ -1,7 +1,7 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Formularios del RUES, hojas de transcripción
-!FOOTER Formularios del RUES — hojas de transcripción
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Formularios del RUES, hojas de transcripción
+!FOOTER Formularios del RUES. Hojas de transcripción
 #T Formularios del RUES
-#ST Hojas de transcripción diligenciadas — NOVA BIENESTAR INTEGRAL S.A.S.
+#ST Hojas de transcripción diligenciadas. NOVA BIENESTAR INTEGRAL S.A.S.
 #1 Advertencia previa: qué es y qué no es este documento
 #P Este documento **no es el formulario oficial** del Registro Único Empresarial y Social ni lo sustituye. La Cámara de Comercio solo recibe el formato preimpreso que ella misma expide o el que se diligencia en su sede virtual; ningún documento elaborado por el solicitante puede reemplazarlo.
 #P Lo que este documento sí es: la **hoja de transcripción** del trámite. Contiene, sección por sección y en el mismo orden del formulario oficial, el valor exacto que debe escribirse en cada campo, incluidos aquellos que deben quedar en blanco o marcarse como "no aplica". Su función es que, al llegar a la taquilla o al abrir la sede virtual, no quede ninguna decisión pendiente: todo está resuelto de antemano y solo hay que copiar.
@@ -10,7 +10,7 @@
 #TW 40,60
 #TH Formato | Dónde obtenerlo
 #TR Carátula única empresarial (dos páginas) | Sitio de la Cámara de Comercio de Medellín para Antioquia, sección de servicios registrales → registro mercantil → **"Formatos registro mercantil"**. También en www.rues.org.co, sección "Formatos CAE", con archivo específico para Medellín.
-#TR Anexo 1 — establecimientos de comercio, sucursales y agencias | Mismo origen. Es el único anexo que este trámite requiere; el anexo 2 corresponde al Registro Único de Proponentes y no aplica.
+#TR Anexo 1. Establecimientos de comercio, sucursales y agencias | Mismo origen. Es el único anexo que este trámite requiere; el anexo 2 corresponde al Registro Único de Proponentes y no aplica.
 #TR Formulario adicional de registro con otras entidades | Se entrega junto con la carátula en taquilla o se diligencia en la sede virtual de la Cámara.
 #TR Diligenciamiento en línea | Sede virtual de la Cámara de Comercio de Medellín para Antioquia, con firma electrónica de los accionistas.
 #2 Reglas de diligenciamiento del formato físico
@@ -21,7 +21,7 @@
 #L Las cifras se escriben **sin puntos, sin comas y sin símbolo de peso**, salvo instrucción en contrario del formato.
 #L El formulario debe ir **firmado por el representante legal** designado y, cuando el formato lo prevea, con su huella.
 #PB
-#1 Sección 1. Carátula única empresarial — Página 1
+#1 Sección 1. Carátula única empresarial. Página 1
 #2 1.1. Tipo de trámite e identificación
 #TW 8,42,50
 #TH N.º | Campo del formulario | Valor a transcribir
@@ -60,9 +60,9 @@
 #2 1.3. Actividad económica
 #TW 8,42,50
 #TH N.º | Campo del formulario | Valor a transcribir
-#TR 30 | Actividad económica principal (CIIU) | 8692 — Actividades de apoyo terapéutico
-#TR 31 | Actividad económica secundaria (CIIU) | 9311 — Gestión de instalaciones deportivas
-#TR 32 | Otras actividades (CIIU) | 9609 — Otras actividades de servicios personales n.c.p.
+#TR 30 | Actividad económica principal (CIIU) | 8692. Actividades de apoyo terapéutico
+#TR 31 | Actividad económica secundaria (CIIU) | 9311. Gestión de instalaciones deportivas
+#TR 32 | Otras actividades (CIIU) | 9609. Otras actividades de servicios personales n.c.p.
 #TR 33 | Cuarta actividad (CIIU) | En blanco
 #TR 34 | Fecha de inicio de la actividad económica principal | 01 / 10 / 2026
 #TR 35 | Descripción de la actividad | PRESTACIÓN DE SERVICIOS DE BIENESTAR, REHABILITACIÓN FÍSICA Y ACONDICIONAMIENTO INTEGRAL
@@ -71,7 +71,7 @@
 #TR 38 | ¿Es usuario aduanero? | NO
 #TR 39 | ¿Desarrolla actividad de comercio electrónico? | NO (marcar SÍ únicamente si se venderán servicios por canal digital al momento de la matrícula)
 #PB
-#1 Sección 2. Carátula única empresarial — Página 2
+#1 Sección 2. Carátula única empresarial. Página 2
 #2 2.1. Información financiera
 #P La información financiera de la matrícula inicial se toma del acto constitutivo, no de estados financieros de cierre, porque la sociedad no tiene ejercicio anterior. Los datos coinciden con la certificación de capital que integra el documento 03 de este expediente.
 #TW 8,42,50
@@ -105,7 +105,7 @@
 #2 2.3. Beneficios de ley y firma
 #TW 8,42,50
 #TH N.º | Campo del formulario | Valor a transcribir
-#TR 63 | Beneficio Ley 1780 de 2016 (empresa joven) | **SÍ** — marcar la casilla y anexar la declaración juramentada del documento 03
+#TR 63 | Beneficio Ley 1780 de 2016 (empresa joven) | **SÍ**. Marcar la casilla y anexar la declaración juramentada del documento 03
 #TR 64 | Fecha de nacimiento del accionista que da lugar al beneficio | La de Mariana López Castaño (30 años a la fecha de constitución)
 #TR 65 | Otros beneficios o exenciones | Ninguno
 #TR 66 | Nombre de quien firma | MARIANA LÓPEZ CASTAÑO
@@ -115,7 +115,7 @@
 #PB
 #1 Sección 3. Datos societarios que alimentan el certificado de existencia y representación legal
 #P **Advertencia sobre esta sección.** El Registro Único Empresarial y Social **no tiene un anexo independiente para la persona jurídica**: la carátula única empresarial sirve tanto a la persona natural como a la jurídica, y los anexos que se descargan por separado son el de **establecimientos de comercio** (anexo 1) y el del **Registro Único de Proponentes** (anexo 2), este último inaplicable aquí.
-#P Los datos que siguen no se transcriben, entonces, a un formulario propio: unos van en las casillas de la carátula que ya se recorrieron en la sección 1, y los demás —capital, objeto, duración, facultades y limitaciones de los administradores— **los toma la Cámara directamente del documento privado de constitución** para incorporarlos al certificado de existencia y representación legal.
+#P Los datos que siguen no se transcriben, entonces, a un formulario propio: unos van en las casillas de la carátula que ya se recorrieron en la sección 1, y los demás (capital, objeto, duración, facultades y limitaciones de los administradores)**los toma la Cámara directamente del documento privado de constitución** para incorporarlos al certificado de existencia y representación legal.
 #P Esta sección se conserva por su utilidad práctica: es la **lista de cotejo** con la que debe verificarse que lo escrito en el documento de constitución y lo digitado en la carátula digan exactamente lo mismo. La Cámara compara ambos y devuelve el trámite ante cualquier discrepancia. Si al radicar la Cámara solicita un anexo adicional de persona jurídica, esta lista contiene ya todos sus campos.
 #TW 8,42,50
 #TH N.º | Campo del formulario | Valor a transcribir
@@ -124,43 +124,43 @@
 #TR 3 | Clase de documento de constitución | DOCUMENTO PRIVADO
 #TR 4 | Fecha del documento de constitución | 01 / 10 / 2026
 #TR 5 | Entidad ante la cual se otorgó | No aplica (documento privado con presentación personal)
-#TR 6 | Domicilio social | MEDELLÍN — ANTIOQUIA
+#TR 6 | Domicilio social | MEDELLÍN, ANTIOQUIA
 #TR 7 | Término de duración | INDEFINIDO
 #TR 8 | Fecha de vencimiento del término | No aplica
 #TR 9 | Objeto social | PRESTACIÓN DE SERVICIOS DE BIENESTAR, REHABILITACIÓN FÍSICA Y ACONDICIONAMIENTO INTEGRAL. Objeto determinado, conforme al artículo 4.º de los estatutos.
-#TR 10 | Capital autorizado — valor | 1200000000
-#TR 11 | Capital autorizado — número de acciones | 1200000
-#TR 12 | Capital autorizado — valor nominal | 1000
-#TR 13 | Capital suscrito — valor | 600000000
-#TR 14 | Capital suscrito — número de acciones | 600000
-#TR 15 | Capital suscrito — valor nominal | 1000
-#TR 16 | Capital suscrito — clase de acciones | ORDINARIAS, NOMINATIVAS Y DE CAPITAL
-#TR 17 | Capital pagado — valor | 600000000
-#TR 18 | Capital pagado — número de acciones | 600000
-#TR 19 | Capital pagado — valor nominal | 1000
+#TR 10 | Capital autorizado, valor | 1200000000
+#TR 11 | Capital autorizado, número de acciones | 1200000
+#TR 12 | Capital autorizado, valor nominal | 1000
+#TR 13 | Capital suscrito, valor | 600000000
+#TR 14 | Capital suscrito, número de acciones | 600000
+#TR 15 | Capital suscrito, valor nominal | 1000
+#TR 16 | Capital suscrito, clase de acciones | ORDINARIAS, NOMINATIVAS Y DE CAPITAL
+#TR 17 | Capital pagado, valor | 600000000
+#TR 18 | Capital pagado, número de acciones | 600000
+#TR 19 | Capital pagado, valor nominal | 1000
 #TR 20 | Órgano de administración | ASAMBLEA GENERAL DE ACCIONISTAS Y REPRESENTANTE LEGAL. La sociedad no tiene junta directiva.
-#TR 21 | Representante legal principal — nombre | MARIANA LÓPEZ CASTAÑO
-#TR 22 | Representante legal principal — documento | C.C. 1.039.672.481 de Medellín
-#TR 23 | Representante legal suplente — nombre | FELIPE ANDRÉS GÓMEZ VÉLEZ
-#TR 24 | Representante legal suplente — documento | C.C. 1.152.846.390 de Envigado
+#TR 21 | Representante legal principal, nombre | MARIANA LÓPEZ CASTAÑO
+#TR 22 | Representante legal principal, documento | C.C. 1.039.672.481 de Medellín
+#TR 23 | Representante legal suplente, nombre | FELIPE ANDRÉS GÓMEZ VÉLEZ
+#TR 24 | Representante legal suplente, documento | C.C. 1.152.846.390 de Envigado
 #TR 25 | Período de los representantes legales | INDEFINIDO, con remoción libre por la asamblea
 #TR 26 | Facultades del representante legal | Las del artículo 28 de los estatutos
 #TR 27 | Limitaciones a las facultades | Autorización previa de la asamblea para actos superiores a 100 SMLMV, para gravar o enajenar inmuebles, para garantizar obligaciones de terceros, para adquirir participaciones en otras sociedades y para operar en conflicto de interés
-#TR 28 | Revisor fiscal | NO SE DESIGNA — la sociedad no está obligada (artículo 28 de la Ley 1258 de 2008 y parágrafo 2.º del artículo 13 de la Ley 43 de 1990)
-#TR 29 | Restricciones a la negociación de acciones | SÍ — derecho de preferencia (artículo 14 de los estatutos) y autorización previa de la asamblea por diez años (artículo 15)
-#TR 30 | Cláusula compromisoria | SÍ — arbitraje en derecho, árbitro único, Centro de Conciliación y Arbitraje de la Cámara de Comercio de Medellín para Antioquia
+#TR 28 | Revisor fiscal | NO SE DESIGNA, la sociedad no está obligada (artículo 28 de la Ley 1258 de 2008 y parágrafo 2.º del artículo 13 de la Ley 43 de 1990)
+#TR 29 | Restricciones a la negociación de acciones | SÍ. Derecho de preferencia (artículo 14 de los estatutos) y autorización previa de la asamblea por diez años (artículo 15)
+#TR 30 | Cláusula compromisoria | SÍ. Arbitraje en derecho, árbitro único, Centro de Conciliación y Arbitraje de la Cámara de Comercio de Medellín para Antioquia
 #P **Verificación obligatoria antes de firmar.** Para cada uno de los tres capitales deben quedar diligenciados **tres datos**: valor en pesos, número de acciones y valor nominal; y, tratándose del suscrito, además la clase de acciones. Es el error de diligenciamiento que la Cámara de Comercio de Medellín señala con mayor frecuencia como causa de devolución.
 #PB
-#1 Sección 4. Anexo 1 — matrícula de establecimiento de comercio
+#1 Sección 4. Anexo 1. Matrícula de establecimiento de comercio
 #P Se diligencia un anexo por cada establecimiento. NOVA BIENESTAR INTEGRAL S.A.S. abre uno solo. Es el único anexo que se descarga por separado en este trámite. Recuérdese que la matrícula del establecimiento es un trámite distinto del de la sociedad: aquella recae sobre un conjunto de bienes (artículo 515 del Código de Comercio), esta sobre un sujeto de derecho.
 #TW 8,42,50
 #TH N.º | Campo del formulario | Valor a transcribir
 #TR 1 | Tipo de solicitud | MATRÍCULA
 #TR 2 | Nombre del establecimiento | NOVA BIENESTAR
 #TR 3 | Sigla del establecimiento | En blanco
-#TR 4 | Propietario — razón social | NOVA BIENESTAR INTEGRAL S.A.S.
-#TR 5 | Propietario — NIT | El asignado en el RUT provisional
-#TR 6 | Propietario — matrícula mercantil | El número que asigne la Cámara a la persona jurídica
+#TR 4 | Propietario, razón social | NOVA BIENESTAR INTEGRAL S.A.S.
+#TR 5 | Propietario, NIT | El asignado en el RUT provisional
+#TR 6 | Propietario, matrícula mercantil | El número que asigne la Cámara a la persona jurídica
 #TR 7 | Porcentaje de propiedad | 100 %
 #TR 8 | Departamento | ANTIOQUIA
 #TR 9 | Municipio | MEDELLÍN
@@ -173,7 +173,7 @@
 #TR 16 | Actividades secundarias (CIIU) | 9311 y 9609
 #TR 17 | Total de activos vinculados al establecimiento | 55000000
 #TR 18 | Número de personas ocupadas en el establecimiento | 9
-#TR 19 | ¿Es sucursal o agencia? | NO — es establecimiento de comercio
+#TR 19 | ¿Es sucursal o agencia? | NO. Es establecimiento de comercio
 #TR 20 | ¿El inmueble es propio o arrendado? | Arrendado (se trata de una oficina; conservar el contrato de arrendamiento como soporte)
 #TR 21 | ¿Difunde obras musicales o audiovisuales? | Declararlo según la realidad del negocio; de ser afirmativo, se causan los derechos de autor administrados por la organización recaudadora
 #TR 22 | Firma | Del representante legal
@@ -194,8 +194,8 @@
 #TR 10 | Número de empleados | 9
 #TR 11 | Nombre del contador o revisor fiscal | El del contador público independiente que suscribe la certificación de capital
 #TR 12 | Documento y tarjeta profesional del contador | Los del contador público independiente
-#TR 13 | ¿Requiere afiliación a caja de compensación familiar? | SÍ — por tener trabajadores
-#TR 14 | ¿Requiere registro ante entidad sanitaria? | SÍ — por prestar servicios de salud sujetos a habilitación
+#TR 13 | ¿Requiere afiliación a caja de compensación familiar? | SÍ. Por tener trabajadores
+#TR 14 | ¿Requiere registro ante entidad sanitaria? | SÍ. Por prestar servicios de salud sujetos a habilitación
 #TR 15 | Firma | Del representante legal
 #1 Sección 6. Verificación cruzada final
 #P Antes de firmar los tres formularios, verifíquese que estos cinco datos sean **idénticos carácter por carácter** en todos ellos. Es la causa número uno de devolución de trámites.

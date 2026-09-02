@@ -1,7 +1,7 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Solicitudes ante otras entidades
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Solicitudes ante otras entidades
 !FOOTER Solicitudes ante otras entidades
 #T Solicitudes ante otras entidades
-#ST Trámites que completan la puesta en funcionamiento — NOVA BIENESTAR INTEGRAL S.A.S.
+#ST Trámites que completan la puesta en funcionamiento. NOVA BIENESTAR INTEGRAL S.A.S.
 #1 Nota preliminar
 #P La matrícula mercantil hace nacer la sociedad, pero no la habilita para operar. El **artículo 2.º de la Ley 232 de 1995** condiciona el funcionamiento de todo establecimiento de comercio al cumplimiento de cinco requisitos: uso del suelo conforme a la reglamentación urbanística, condiciones sanitarias y de seguridad, pago de los derechos de autor cuando se difundan obras, matrícula mercantil vigente y comunicación de apertura a la autoridad de policía.
 #P A ello se suma, en este caso, un requisito específico y determinante: la **habilitación de los servicios de salud**. La sociedad puede existir, tener NIT y estar matriculada, y aun así no poder atender a un solo paciente de rehabilitación física mientras no esté habilitada.
@@ -10,7 +10,7 @@
 #T Solicitud de concepto de uso del suelo
 #R Medellín (Antioquia), ______ de ______________ de 2026
 #P **Señores**
-#P **CURADURÍA URBANA — DEPARTAMENTO ADMINISTRATIVO DE PLANEACIÓN**
+#P **CURADURÍA URBANA. DEPARTAMENTO ADMINISTRATIVO DE PLANEACIÓN**
 #P **MUNICIPIO DE MEDELLÍN**
 #P Medellín (Antioquia)
 #SP
@@ -32,7 +32,7 @@
 #TR Horario previsto de funcionamiento | ____________
 #P Se solicita que el concepto se pronuncie expresamente sobre la compatibilidad de las tres actividades enunciadas con la reglamentación del Plan de Ordenamiento Territorial, teniendo en cuenta que la actividad principal corresponde a un **servicio de salud de baja complejidad y carácter ambulatorio**, y que las actividades secundarias implican **uso deportivo y de servicios personales**, con la generación de ruido y afluencia de público propias de un gimnasio.
 #P Este concepto es requisito para el funcionamiento del establecimiento conforme al numeral 1.º del artículo 2.º de la Ley 232 de 1995, y constituye además soporte del trámite de habilitación de servicios de salud.
-#SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S. — NIT ____________
+#SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S., NIT ____________
 #PB
 #T Solicitud de inscripción en el REPS y habilitación de servicios de salud
 #R Medellín (Antioquia), ______ de ______________ de 2026
@@ -41,7 +41,7 @@
 #P (o SECRETARÍA SECCIONAL DE SALUD Y PROTECCIÓN SOCIAL DE ANTIOQUIA, según la competencia territorial vigente)
 #P Medellín (Antioquia)
 #SP
-#P **Referencia:** Solicitud de inscripción en el Registro Especial de Prestadores de Servicios de Salud y habilitación de servicios — **NOVA BIENESTAR INTEGRAL S.A.S.**
+#P **Referencia:** Solicitud de inscripción en el Registro Especial de Prestadores de Servicios de Salud y habilitación de servicios, **NOVA BIENESTAR INTEGRAL S.A.S.**
 #SP
 #P Respetados señores:
 #P **MARIANA LÓPEZ CASTAÑO**, mayor de edad, identificada con la cédula de ciudadanía número **1.039.672.481** expedida en Medellín, obrando en calidad de representante legal de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, solicito la **inscripción de la sociedad como prestadora de servicios de salud** en el Registro Especial de Prestadores de Servicios de Salud (REPS) y la **habilitación** de los servicios que se relacionan, de conformidad con la **Resolución 3100 de 2019** del Ministerio de Salud y Protección Social y las normas que la modifiquen.
@@ -53,7 +53,7 @@
 #TR Naturaleza jurídica | Privada
 #TR Clase de prestador | Institución Prestadora de Servicios de Salud (IPS)
 #TR Matrícula mercantil | ____________ de la Cámara de Comercio de Medellín para Antioquia
-#TR Representante legal | Mariana López Castaño — C.C. 1.039.672.481
+#TR Representante legal | Mariana López Castaño, C.C. 1.039.672.481
 #TR Dirección de la sede | Carrera 37 n.º 10A-58, oficina 804, Medellín (Antioquia)
 #TR Teléfono | 315 684 9271
 #TR Correo electrónico | contacto@novabienestarintegral.com
@@ -71,7 +71,7 @@
 #L **Capacidad técnico-administrativa:** existencia legal acreditada con el certificado de existencia y representación legal, y sistema contable en funcionamiento.
 #L **Suficiencia patrimonial y financiera:** capital pagado de $600.000.000 y patrimonio del mismo valor, acreditados con la certificación del contador público.
 #L **Capacidad tecnológica y científica:** talento humano con los títulos y la inscripción en el Registro Único Nacional del Talento Humano en Salud (ReTHUS) exigidos para cada servicio; infraestructura, dotación, procesos prioritarios, historia clínica e interdependencia conforme a los estándares del manual.
-#P Manifiesto que la **autoevaluación** de las condiciones de habilitación fue practicada y que sus resultados se declararán en el REPS, entendiendo que el prestador queda inscrito y el servicio habilitado **a partir de la autorización en el REPS**, momento desde el cual —y no antes— la sociedad podrá ofertar y prestar los servicios de salud.
+#P Manifiesto que la **autoevaluación** de las condiciones de habilitación fue practicada y que sus resultados se declararán en el REPS, entendiendo que el prestador queda inscrito y el servicio habilitado **a partir de la autorización en el REPS**, momento desde el cual, y no antes, la sociedad podrá ofertar y prestar los servicios de salud.
 #2 4. Anexos
 #L Certificado de existencia y representación legal.
 #L Registro Único Tributario formalizado.
@@ -88,7 +88,7 @@
 #P Subsecretaría de Ingresos
 #P Medellín (Antioquia)
 #SP
-#P **Referencia:** Inscripción en el Registro de Información Tributaria (RIT) — impuesto de industria y comercio, avisos y tableros — **NOVA BIENESTAR INTEGRAL S.A.S.**
+#P **Referencia:** Inscripción en el Registro de Información Tributaria (RIT), correspondiente al impuesto de industria y comercio y a su complementario de avisos y tableros, de **NOVA BIENESTAR INTEGRAL S.A.S.**
 #SP
 #P Respetados señores:
 #P **MARIANA LÓPEZ CASTAÑO**, obrando en calidad de representante legal de **NOVA BIENESTAR INTEGRAL S.A.S.**, solicito la inscripción de la sociedad en el Registro de Información Tributaria del Municipio de Medellín, como contribuyente del impuesto de industria y comercio y su complementario de avisos y tableros, con la siguiente información:
@@ -106,8 +106,8 @@
 #TR Actividades no sujetas o exentas | Los servicios de salud habilitados, en la medida en que resulte aplicable una exclusión o exención del acuerdo municipal vigente
 #TR Número de establecimientos en el municipio | 1
 #TR Número de empleados | 9
-#TR Representante legal | Mariana López Castaño — C.C. 1.039.672.481
-#TR Contador | [Nombre] — T.P. n.º ____________
+#TR Representante legal | Mariana López Castaño, C.C. 1.039.672.481
+#TR Contador | [Nombre], T.P. n.º ____________
 #P Se solicita, adicionalmente, que se informe la **periodicidad de declaración** y las tarifas aplicables a cada una de las actividades declaradas, teniendo en cuenta que la sociedad desarrollará simultáneamente actividades de servicios de salud y de acondicionamiento físico, sujetas a tarifas distintas.
 #SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S.
 #PB

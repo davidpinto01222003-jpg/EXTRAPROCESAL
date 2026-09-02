@@ -1,7 +1,7 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Manifestación de emprendimiento social
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Manifestación de emprendimiento social
 !FOOTER Manifestación de desarrollo de emprendimientos sociales
 #T Manifestación de desarrollo de emprendimientos sociales
-#ST Ley 2234 de 2022 — NOVA BIENESTAR INTEGRAL S.A.S.
+#ST Ley 2234 de 2022. NOVA BIENESTAR INTEGRAL S.A.S.
 #R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
 #SP
 #P **Señores**
@@ -9,7 +9,7 @@
 #P Departamento de Registros Públicos
 #P Medellín (Antioquia)
 #SP
-#P **Referencia:** Manifestación de autorreconocimiento sobre el desarrollo de emprendimientos sociales, exigida para la matrícula mercantil — **NOVA BIENESTAR INTEGRAL S.A.S.**
+#P **Referencia:** Manifestación de autorreconocimiento sobre el desarrollo de emprendimientos sociales, exigida para la matrícula mercantil, **NOVA BIENESTAR INTEGRAL S.A.S.**
 #SP
 #P Respetados señores:
 #P **MARIANA LÓPEZ CASTAÑO**, mayor de edad, identificada con la cédula de ciudadanía número **1.039.672.481** expedida en Medellín (Antioquia), obrando en calidad de **representante legal** designada de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, en constitución, presento la manifestación que la lista de chequeo del trámite exige como documento anexo, en los siguientes términos:
@@ -24,7 +24,7 @@
 #TR **NO** se autorreconoce como emprendimiento social en los términos de la Ley 2234 de 2022 | **X**
 #TR **SÍ** se autorreconoce como emprendimiento social en los términos de la Ley 2234 de 2022 |
 #1 3. Fundamento de la manifestación
-#P La respuesta negativa no obedece a la naturaleza de la actividad —que sin duda tiene impacto social, pues comprende servicios de rehabilitación física y de promoción de la salud— sino a la estructura con que la sociedad fue concebida. Tres razones la sostienen:
+#P La respuesta negativa no obedece a la naturaleza de la actividad (que sin duda tiene impacto social, pues comprende servicios de rehabilitación física y de promoción de la salud) sino a la estructura con que la sociedad fue concebida. Tres razones la sostienen:
 #P **Primera.** La sociedad se constituye como una **sociedad comercial de capital con ánimo de lucro ordinario**. Sus estatutos, en el artículo 34, prevén la distribución de utilidades entre los accionistas a prorrata de sus acciones, sin reinversión obligatoria del excedente en la finalidad social, que es el rasgo que caracteriza al emprendimiento social.
 #P **Segunda.** El objeto social del artículo 4.º de los estatutos describe la prestación de servicios de bienestar, rehabilitación física y acondicionamiento integral **en condiciones de mercado**, sin que se haya definido una población beneficiaria en situación de vulnerabilidad ni un mecanismo de medición de impacto social, elementos propios de la figura.
 #P **Tercera.** Los estatutos no incorporan cláusulas de **gobernanza participativa** ni de destinación específica de excedentes que permitan sostener el autorreconocimiento frente a una eventual verificación.

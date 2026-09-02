@@ -1,7 +1,7 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Certificaciones anexas
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Certificaciones anexas
 !FOOTER Certificaciones anexas al documento de constitución
 #T Certificación de pago del capital suscrito
-#ST NOVA BIENESTAR INTEGRAL S.A.S. — En constitución
+#ST NOVA BIENESTAR INTEGRAL S.A.S. En constitución
 #R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
 #SP
 #P Los suscritos, **MARIANA LÓPEZ CASTAÑO**, identificada con cédula de ciudadanía n.º 1.039.672.481 expedida en Medellín, en su calidad de **representante legal** designada de la sociedad NOVA BIENESTAR INTEGRAL S.A.S., y **[NOMBRE DEL CONTADOR PÚBLICO]**, identificado(a) con cédula de ciudadanía n.º [__________] y portador(a) de la tarjeta profesional n.º [__________] expedida por la Junta Central de Contadores, en su calidad de **contador(a) público(a) independiente** de la sociedad,
@@ -23,7 +23,7 @@
 #SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal||[NOMBRE DEL CONTADOR PÚBLICO]|C.C. n.º ____________|T.P. n.º ____________ - JCC|Contador(a) público(a)
 #PB
 #T Declaración juramentada de cumplimiento de requisitos
-#ST Ley 1780 de 2016 — Pequeña empresa joven
+#ST Ley 1780 de 2016. Pequeña empresa joven
 #R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
 #SP
 #P **Señores**
@@ -31,15 +31,15 @@
 #P Departamento de Registros Públicos
 #P Medellín (Antioquia)
 #SP
-#P **Referencia:** Solicitud de aplicación del beneficio de exención del pago de los derechos de matrícula mercantil, artículo 3.º de la Ley 1780 de 2016 — **NOVA BIENESTAR INTEGRAL S.A.S.**
+#P **Referencia:** Solicitud de aplicación del beneficio de exención del pago de los derechos de matrícula mercantil, artículo 3.º de la Ley 1780 de 2016, **NOVA BIENESTAR INTEGRAL S.A.S.**
 #SP
 #P Respetados señores:
 #P Los suscritos accionistas constituyentes de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, obrando en nombre propio y en representación de la sociedad en formación, declaramos **bajo la gravedad del juramento**, que se entiende prestado con la firma del presente documento, lo siguiente:
-#P **PRIMERO — Inicio de la actividad económica.** Que la sociedad **inicia su actividad económica principal** con posterioridad a la promulgación de la Ley 1780 de 2016 y, concretamente, a partir de la fecha de inscripción de su documento de constitución en el registro mercantil.
-#P **SEGUNDO — Requisito de participación accionaria juvenil.** Que la accionista **MARIANA LÓPEZ CASTAÑO**, identificada con cédula de ciudadanía n.º 1.039.672.481 de Medellín, tiene **treinta (30) años de edad** —esto es, se encuentra en el rango de dieciocho (18) a treinta y cinco (35) años exigido por la ley— y es titular de **trescientas noventa mil (390.000) acciones**, equivalentes al **sesenta y cinco por ciento (65 %)** del capital suscrito, participación que supera **la mitad más uno** de las acciones en circulación, tal como lo exige el numeral 2.º del artículo 2.º de la Ley 1780 de 2016 para las personas jurídicas.
-#P **TERCERO — Requisito de planta de personal.** Que la sociedad iniciará operaciones con **nueve (9) trabajadores**, cifra que no supera el límite de **cincuenta (50) trabajadores** previsto en la ley.
-#P **CUARTO — Requisito de activos totales.** Que los **activos totales** de la sociedad ascienden a **SEISCIENTOS MILLONES DE PESOS ($600.000.000)**, suma que no supera el equivalente a **cinco mil (5.000) salarios mínimos legales mensuales vigentes**.
-#P **CUARTO BIS — Relación de trabajadores vinculados directamente.** En cumplimiento de lo exigido por el numeral 3.4 de la guía registral de la Cámara de Comercio de Medellín para Antioquia, que impone informar el **nombre e identificación de los trabajadores vinculados directamente con la sociedad**, se relaciona la planta de personal con la cual la sociedad iniciará operaciones:
+#P **PRIMERO. Inicio de la actividad económica.** Que la sociedad **inicia su actividad económica principal** con posterioridad a la promulgación de la Ley 1780 de 2016 y, concretamente, a partir de la fecha de inscripción de su documento de constitución en el registro mercantil.
+#P **SEGUNDO. Requisito de participación accionaria juvenil.** Que la accionista **MARIANA LÓPEZ CASTAÑO**, identificada con cédula de ciudadanía n.º 1.039.672.481 de Medellín, tiene **treinta (30) años de edad** (esto es, se encuentra en el rango de dieciocho (18) a treinta y cinco (35) años exigido por la ley) y es titular de **trescientas noventa mil (390.000) acciones**, equivalentes al **sesenta y cinco por ciento (65 %)** del capital suscrito, participación que supera **la mitad más uno** de las acciones en circulación, tal como lo exige el numeral 2.º del artículo 2.º de la Ley 1780 de 2016 para las personas jurídicas.
+#P **TERCERO. Requisito de planta de personal.** Que la sociedad iniciará operaciones con **nueve (9) trabajadores**, cifra que no supera el límite de **cincuenta (50) trabajadores** previsto en la ley.
+#P **CUARTO. Requisito de activos totales.** Que los **activos totales** de la sociedad ascienden a **SEISCIENTOS MILLONES DE PESOS ($600.000.000)**, suma que no supera el equivalente a **cinco mil (5.000) salarios mínimos legales mensuales vigentes**.
+#P **CUARTO BIS. Relación de trabajadores vinculados directamente.** En cumplimiento de lo exigido por el numeral 3.4 de la guía registral de la Cámara de Comercio de Medellín para Antioquia, que impone informar el **nombre e identificación de los trabajadores vinculados directamente con la sociedad**, se relaciona la planta de personal con la cual la sociedad iniciará operaciones:
 #TW 8,40,26,26
 #TH N.º | Nombre completo del trabajador | Documento de identidad | Cargo
 #TR 1 | | |
@@ -52,11 +52,11 @@
 #TR 8 | | |
 #TR 9 | | |
 #TH TOTAL: NUEVE (9) TRABAJADORES | | |
-#P Los suscritos dejan constancia de que la relación anterior comprende la totalidad de los trabajadores vinculados directamente con la sociedad, que su número —**nueve (9)**— no supera el límite legal de cincuenta (50), y de que de esas nueve personas **cinco (5) son mujeres** y **dos (2) de ellas ocupan cargos directivos**.
-#P **QUINTO — Solicitud.** Que, en virtud de lo anterior, y por reunir la totalidad de los requisitos previstos en los artículos 2.º y 3.º de la Ley 1780 de 2016, reglamentados por el Decreto 639 de 2017 (incorporado al Decreto Único Reglamentario 1074 de 2015), solicitamos respetuosamente la aplicación del beneficio de **exención del pago de los derechos de matrícula mercantil y de su primera renovación**.
-#P **SEXTO — Alcance del beneficio.** Que conocemos y aceptamos que el beneficio solicitado **no comprende** el impuesto de registro de carácter departamental, los derechos de inscripción de actos y documentos, los derechos de inscripción de libros, ni el valor de los certificados y formularios; y que, conforme al parágrafo del artículo 3.º de la Ley 1780 de 2016, la exención **no exceptúa** a la sociedad del cumplimiento de sus obligaciones tributarias, laborales y mercantiles.
-#P **SÉPTIMO — Conservación del beneficio.** Que conocemos que, para conservar la exención en la primera renovación, deberemos renovar la matrícula mercantil **a más tardar el 31 de marzo** del año siguiente y mantener las condiciones que dieron origen al beneficio, so pena de su pérdida.
-#P **OCTAVO — Veracidad.** Que la información aquí consignada es veraz y que autorizamos su verificación por parte de la Cámara de Comercio y de las autoridades competentes, asumiendo las consecuencias legales que se deriven de cualquier inexactitud.
+#P Los suscritos dejan constancia de que la relación anterior comprende la totalidad de los trabajadores vinculados directamente con la sociedad, que su número, **nueve (9)**, no supera el límite legal de cincuenta (50), y de que de esas nueve personas **cinco (5) son mujeres** y **dos (2) de ellas ocupan cargos directivos**.
+#P **QUINTO. Solicitud.** Que, en virtud de lo anterior, y por reunir la totalidad de los requisitos previstos en los artículos 2.º y 3.º de la Ley 1780 de 2016, reglamentados por el Decreto 639 de 2017 (incorporado al Decreto Único Reglamentario 1074 de 2015), solicitamos respetuosamente la aplicación del beneficio de **exención del pago de los derechos de matrícula mercantil y de su primera renovación**.
+#P **SEXTO. Alcance del beneficio.** Que conocemos y aceptamos que el beneficio solicitado **no comprende** el impuesto de registro de carácter departamental, los derechos de inscripción de actos y documentos, los derechos de inscripción de libros, ni el valor de los certificados y formularios; y que, conforme al parágrafo del artículo 3.º de la Ley 1780 de 2016, la exención **no exceptúa** a la sociedad del cumplimiento de sus obligaciones tributarias, laborales y mercantiles.
+#P **SÉPTIMO. Conservación del beneficio.** Que conocemos que, para conservar la exención en la primera renovación, deberemos renovar la matrícula mercantil **a más tardar el 31 de marzo** del año siguiente y mantener las condiciones que dieron origen al beneficio, so pena de su pérdida.
+#P **OCTAVO. Veracidad.** Que la información aquí consignada es veraz y que autorizamos su verificación por parte de la Cámara de Comercio y de las autoridades competentes, asumiendo las consecuencias legales que se deriven de cualquier inexactitud.
 #P Atentamente,
 #SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Accionista (65 %) - Representante legal||FELIPE ANDRÉS GÓMEZ VÉLEZ|C.C. 1.152.846.390 de Envigado|Accionista (35 %) - Representante legal suplente
 #SP

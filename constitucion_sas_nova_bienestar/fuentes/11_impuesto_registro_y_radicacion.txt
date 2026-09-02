@@ -1,4 +1,4 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Impuesto de registro y planilla de radicación
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Impuesto de registro y planilla de radicación
 !FOOTER Impuesto de registro y control de radicación
 #T Impuesto de registro y planilla de radicación
 #ST NOVA BIENESTAR INTEGRAL S.A.S.
@@ -15,14 +15,14 @@
 #1 3. Liquidación
 #TW 45,30,25
 #TH Concepto | Determinación | Valor
-#TR Naturaleza del acto | Acto con cuantía sujeto a registro en cámara de comercio | —
+#TR Naturaleza del acto | Acto con cuantía sujeto a registro en cámara de comercio | No aplica
 #TR Base gravable | Capital suscrito (artículo 6.º del Decreto 650 de 1996) | $600.000.000
 #TR Tarifa aplicable | 0,7 %, dentro del rango de 0,3 % a 0,7 % del artículo 230 de la Ley 223 de 1995, según la ordenanza departamental de Antioquia | 0,7 %
 #TR Prima en colocación de acciones | No existe; acciones emitidas a la par | $0
 #TR Impuesto **sin cuantía** por la inscripción del nombramiento de los representantes legales | Entre 2 y 4 salarios mínimos diarios legales vigentes, según ordenanza | ≈ $93.000 a $187.000
 #TH IMPUESTO DE REGISTRO A PAGAR | Con cuantía más sin cuantía | **≈ $4.293.000 a $4.387.000**
 #P **Verificación aritmética del componente con cuantía:** $600.000.000 × 0,007 = $4.200.000.
-#P **El impuesto sin cuantía.** El numeral 5.2.2 de la guía registral de la Cámara precisa que el trámite causa **dos** impuestos de registro y no uno: el de cuantía por la constitución, y **uno sin cuantía por la inscripción de cada órgano nombrado** —representantes legales, junta directiva y revisores fiscales—. Aquí solo se nombra el órgano de representación legal, con principal y suplente, de modo que se causa un único acto sin cuantía. El artículo 230 de la Ley 223 de 1995 lo tasa entre dos y cuatro salarios mínimos diarios legales vigentes; la ordenanza departamental fija el valor exacto dentro de ese rango.
+#P **El impuesto sin cuantía.** El numeral 5.2.2 de la guía registral de la Cámara precisa que el trámite causa **dos** impuestos de registro y no uno: el de cuantía por la constitución, y **uno sin cuantía por la inscripción de cada órgano nombrado** (representantes legales, junta directiva y revisores fiscales). Aquí solo se nombra el órgano de representación legal, con principal y suplente, de modo que se causa un único acto sin cuantía. El artículo 230 de la Ley 223 de 1995 lo tasa entre dos y cuatro salarios mínimos diarios legales vigentes; la ordenanza departamental fija el valor exacto dentro de ese rango.
 #P **Tarifa a confirmar.** El rango legal es de 0,3 % a 0,7 % y corresponde a la asamblea departamental fijar la tarifa dentro de ese rango mediante ordenanza. La liquidación anterior asume el tope de 0,7 %, que es el aplicado en Antioquia. Antes de pagar, conviene confirmar la tarifa vigente en el portal tributario de la Gobernación de Antioquia o en la liquidación que expida la propia Cámara, porque una tarifa menor reduciría el valor a pagar.
 #1 4. Dónde y cómo se paga
 #TW 30,70
@@ -43,7 +43,7 @@
 #TR Dirección | Carrera 37 n.º 10A-58, oficina 804, Medellín
 #TR Acto sujeto a registro | Constitución de sociedad por acciones simplificada
 #TR Documento | Documento privado del 1.º de octubre de 2026
-#TR Registro en que se inscribe | Registro mercantil — libro IX
+#TR Registro en que se inscribe | Registro mercantil, libro IX
 #TR Clase de acto | Con cuantía
 #TR Base gravable | $600.000.000 (capital suscrito)
 #TR Tarifa | 0,7 %

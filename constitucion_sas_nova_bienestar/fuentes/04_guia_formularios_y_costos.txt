@@ -1,5 +1,5 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Guía de formularios y liquidación de derechos
-!FOOTER Guía de diligenciamiento de formularios — CCMA
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Guía de formularios y liquidación de derechos
+!FOOTER Guía de diligenciamiento de formularios. CCMA
 #T Guía de diligenciamiento de formularios y liquidación de derechos de registro
 #ST Constitución de NOVA BIENESTAR INTEGRAL S.A.S. ante la Cámara de Comercio de Medellín para Antioquia
 #P Este documento reúne, en un solo instrumento de trabajo, **la totalidad de los formularios que deben diligenciarse** para obtener la matrícula mercantil de la sociedad NOVA BIENESTAR INTEGRAL S.A.S. y de su establecimiento de comercio, con el valor concreto que debe consignarse en cada campo a partir del levantamiento de información, así como la **liquidación estimada de los derechos e impuestos** que causa el trámite.
@@ -22,7 +22,7 @@
 #TR 11 | Formalización del RUT y asignación definitiva del NIT | Una vez inscrita la sociedad, la DIAN formaliza el RUT.
 #TR 12 | Inscripción en el Registro de Información Tributaria (RIT) del Municipio de Medellín | Impuesto de industria y comercio.
 #P **Nota sobre la oportunidad del trámite.** El artículo 31 del Código de Comercio dispone que la solicitud de matrícula debe presentarse **dentro del mes siguiente** a la fecha en que la persona jurídica fue creada. Como el documento de constitución tiene fecha del **1.º de octubre de 2026**, la solicitud debe radicarse a más tardar el **1.º de noviembre de 2026**. La radicación extemporánea no impide la matrícula, pero expone a la sociedad a la sanción del artículo 37 del mismo código.
-#1 2. Formulario del Registro Único Tributario (RUT) — Formulario 001 de la DIAN
+#1 2. Formulario del Registro Único Tributario (RUT). Formulario 001 de la DIAN
 #P Se diligencia en línea en el portal de la DIAN, seleccionando la opción de inscripción para persona jurídica **sin NIT asignado**. El documento resultante es el **RUT provisional o "pre-RUT"**, que debe imprimirse y anexarse al expediente de la Cámara. La DIAN formaliza el RUT y asigna el NIT definitivo una vez la Cámara comunica la matrícula.
 #TW 38,62
 #TH Campo del formulario 001 | Valor que debe diligenciarse
@@ -35,19 +35,19 @@
 #TR Dirección principal | Carrera 37 n.º 10A-58, oficina 804
 #TR Correo electrónico | contacto@novabienestarintegral.com
 #TR Teléfono | 315 684 9271
-#TR Actividad económica principal (CIIU) | **8692** — Actividades de apoyo terapéutico
-#TR Actividad económica secundaria (CIIU) | **9311** — Gestión de instalaciones deportivas
-#TR Otra actividad (CIIU) | **9609** — Otras actividades de servicios personales n.c.p.
+#TR Actividad económica principal (CIIU) | **8692**. Actividades de apoyo terapéutico
+#TR Actividad económica secundaria (CIIU) | **9311**. Gestión de instalaciones deportivas
+#TR Otra actividad (CIIU) | **9609**. Otras actividades de servicios personales n.c.p.
 #TR Fecha de inicio de actividad | 1.º de octubre de 2026
-#TR Representante legal | Mariana López Castaño — C.C. 1.039.672.481
+#TR Representante legal | Mariana López Castaño, C.C. 1.039.672.481
 #TR Calidad de representante | Representante legal principal
 #TR Responsabilidades tributarias | Las que correspondan según el régimen: responsable de IVA (o no responsable, según los servicios efectivamente prestados y las exclusiones del artículo 476 del Estatuto Tributario), declarante de renta del régimen ordinario, agente de retención en la fuente e informante de exógena.
 #TR Condición de importador / exportador / usuario aduanero | **No aplica**, conforme al levantamiento de información
 #P **Punto crítico de verificación.** La denominación social registrada en el formulario del RUT debe ser **idéntica**, carácter por carácter, a la registrada en el formulario RUES y en el formulario adicional de registro con otras entidades. Lo mismo aplica al número telefónico. Cualquier discrepancia genera devolución del trámite.
 #P **Sobre el IVA.** Los servicios de salud humana prestados por instituciones prestadoras habilitadas se encuentran **excluidos** del impuesto sobre las ventas conforme al numeral 3.º del artículo 476 del Estatuto Tributario; en cambio, los servicios de gimnasio, acondicionamiento físico y bienestar corporal son **gravados**. Como NOVA BIENESTAR INTEGRAL S.A.S. desarrollará ambas líneas de negocio, deberá inscribirse como responsable de IVA y llevar contabilidad que permita diferenciar los ingresos excluidos de los gravados.
 #1 3. Carátula única empresarial y anexos (formularios del RUES)
-#P Los formularios del **Registro Único Empresarial y Social** están integrados por una **carátula única empresarial** —común a todos los registros— y por los **anexos** que correspondan según el sujeto que se matricula. Para este caso deben diligenciarse **dos** anexos: el de persona jurídica y el de establecimiento de comercio.
-#2 3.1. Carátula única empresarial — datos generales de la sociedad
+#P Los formularios del **Registro Único Empresarial y Social** están integrados por una **carátula única empresarial**, común a todos los registros, y por los **anexos** que correspondan según el sujeto que se matricula. Para este caso deben diligenciarse **dos** anexos: el de persona jurídica y el de establecimiento de comercio.
+#2 3.1. Carátula única empresarial. Datos generales de la sociedad
 #TW 38,62
 #TH Campo | Valor que debe diligenciarse
 #TR Tipo de trámite | Matrícula (no renovación ni actualización)
@@ -80,8 +80,8 @@
 #TR Porcentaje de empleados temporales | 0 %
 #TR ¿Implementa procesos de innovación? | No
 #TR ¿Es importador, exportador o usuario aduanero? | No aplica
-#TR Beneficio Ley 1780 de 2016 | **Sí** — marcar la casilla y anexar la declaración juramentada correspondiente
-#TR Representante legal | Mariana López Castaño — C.C. 1.039.672.481 de Medellín
+#TR Beneficio Ley 1780 de 2016 | **Sí**. Marcar la casilla y anexar la declaración juramentada correspondiente
+#TR Representante legal | Mariana López Castaño, C.C. 1.039.672.481 de Medellín
 #TR Firma | Del representante legal designado
 #2 3.2. Anexo de matrícula de persona jurídica
 #P Este anexo recoge la información societaria que se traslada al certificado de existencia y representación legal. Debe coincidir literalmente con el documento privado de constitución.
@@ -93,12 +93,12 @@
 #TR Domicilio | Medellín (Antioquia)
 #TR Término de duración | Indefinido
 #TR Objeto social | Prestación de servicios de bienestar, rehabilitación física y acondicionamiento integral (objeto determinado)
-#TR Capital autorizado | $1.200.000.000 — 1.200.000 acciones — valor nominal $1.000
-#TR Capital suscrito | $600.000.000 — 600.000 acciones — valor nominal $1.000
-#TR Capital pagado | $600.000.000 — 600.000 acciones — valor nominal $1.000
+#TR Capital autorizado | $1.200.000.000, 1.200.000 acciones, valor nominal $1.000
+#TR Capital suscrito | $600.000.000, 600.000 acciones, valor nominal $1.000
+#TR Capital pagado | $600.000.000, 600.000 acciones, valor nominal $1.000
 #TR Clase de acciones | Ordinarias, nominativas y de capital
-#TR Representante legal principal | Mariana López Castaño — C.C. 1.039.672.481 de Medellín
-#TR Representante legal suplente | Felipe Andrés Gómez Vélez — C.C. 1.152.846.390 de Envigado
+#TR Representante legal principal | Mariana López Castaño, C.C. 1.039.672.481 de Medellín
+#TR Representante legal suplente | Felipe Andrés Gómez Vélez, C.C. 1.152.846.390 de Envigado
 #TR Órgano de administración | Asamblea general de accionistas y representante legal (sin junta directiva)
 #TR Revisor fiscal | No se designa (no obligatorio)
 #TR Facultades y limitaciones del representante legal | Autorización previa de la asamblea para actos superiores a 100 SMLMV y para gravar o enajenar inmuebles
@@ -109,7 +109,7 @@
 #TH Campo | Valor que debe diligenciarse
 #TR Tipo de trámite | Matrícula
 #TR Nombre del establecimiento | NOVA BIENESTAR
-#TR Propietario | NOVA BIENESTAR INTEGRAL S.A.S. — NIT asignado
+#TR Propietario | NOVA BIENESTAR INTEGRAL S.A.S., NIT asignado
 #TR Dirección del establecimiento | Carrera 37 n.º 10A-58, oficina 804
 #TR Municipio / departamento | Medellín / Antioquia
 #TR Teléfono | 315 684 9271
@@ -155,17 +155,17 @@
 #TR Impuesto de registro (constitución de sociedad por acciones) | 0,7 % sobre el capital suscrito de $600.000.000 | **$4.200.000** | Artículos 226 a 230 de la Ley 223 de 1995; artículo 6.º del Decreto 650 de 1996; ordenanza departamental de Antioquia
 #TR Impuesto de registro **sin cuantía** por la inscripción del nombramiento de los representantes legales | Entre 2 y 4 salarios mínimos diarios legales vigentes | **≈ $93.000 a $187.000** | Artículo 230 de la Ley 223 de 1995; numeral 5.2.2 de la guía registral de la Cámara
 #TR Derechos de inscripción del documento de constitución | 6 UVB | **$72.660** | Artículos 2.2.2.46.1.1 y ss. del Decreto 1074 de 2015, modificado por el Decreto 045 de 2024
-#TR Matrícula mercantil de la persona jurídica (activos $600.000.000 = 49.545,8 UVB) | Rango superior de la tabla | **$0 — EXENTA** | Artículo 3.º de la Ley 1780 de 2016
+#TR Matrícula mercantil de la persona jurídica (activos $600.000.000 = 49.545,8 UVB) | Rango superior de la tabla | **$0, EXENTA** | Artículo 3.º de la Ley 1780 de 2016
 #TR Matrícula mercantil del establecimiento "NOVA BIENESTAR" (activos $55.000.000 = 4.541,7 UVB) | Rango 1 (de 0 a 6.500 UVB), con reducción del 50 % | Según tabla vigente | Decreto 1074 de 2015, modificado por el Decreto 045 de 2024
 #TR Inscripción del libro de registro de accionistas | 2 UVB | **$24.220** | Artículo 175 del Decreto Ley 019 de 2012
 #TR Inscripción del libro de actas de asamblea | 2 UVB | **$24.220** | Artículo 175 del Decreto Ley 019 de 2012
 #TR Certificado de existencia y representación legal (por ejemplar) | 1 UVB | **$12.110** | Tabla de tarifas 2026
 #TR Formularios del RUES | Sin costo cuando se diligencian en la sede virtual | $0 | Práctica registral vigente
 #P **Total aproximado, sin incluir la matrícula del establecimiento ni certificados adicionales: entre $4.414.000 y $4.508.000.** El componente determinante del costo no es el derecho registral sino el **impuesto de registro con cuantía**, que por sí solo representa cerca del noventa y cinco por ciento (95 %) del valor total del trámite.
-#P **Sobre el impuesto sin cuantía.** El numeral 5.2.2 de la guía registral advierte que, además del impuesto con cuantía que grava la constitución, se causa **un impuesto de registro sin cuantía por la inscripción de cada órgano nombrado** —representantes legales, junta directiva y revisores fiscales—. En este caso solo se nombra el órgano de representación legal, con principal y suplente, de modo que se causa un único acto sin cuantía. El artículo 230 de la Ley 223 de 1995 fija para estos actos una tarifa de entre dos y cuatro salarios mínimos diarios legales vigentes, cuyo valor exacto determina la ordenanza departamental. Es un rubro que la primera versión de esta liquidación omitía.
+#P **Sobre el impuesto sin cuantía.** El numeral 5.2.2 de la guía registral advierte que, además del impuesto con cuantía que grava la constitución, se causa **un impuesto de registro sin cuantía por la inscripción de cada órgano nombrado** (representantes legales, junta directiva y revisores fiscales). En este caso solo se nombra el órgano de representación legal, con principal y suplente, de modo que se causa un único acto sin cuantía. El artículo 230 de la Ley 223 de 1995 fija para estos actos una tarifa de entre dos y cuatro salarios mínimos diarios legales vigentes, cuyo valor exacto determina la ordenanza departamental. Es un rubro que la primera versión de esta liquidación omitía.
 #2 5.1. Dos advertencias sobre la liquidación
-#P **Primera — el impuesto de registro no está exento.** El beneficio de la Ley 1780 de 2016 recae exclusivamente sobre los **derechos de matrícula mercantil** que percibe la Cámara de Comercio. El impuesto de registro es una **renta de propiedad de los departamentos** (Ley 223 de 1995) y la Cámara solo actúa como recaudadora por convenio; ninguna norma de la Ley 1780 lo exonera. Afirmar lo contrario en el trámite generaría una liquidación oficial de corrección y, eventualmente, sanción por inexactitud.
-#P **Segunda — el alcance de la exención sobre el establecimiento de comercio.** El artículo 3.º de la Ley 1780 de 2016 se refiere genéricamente a "la matrícula mercantil". Existen dos lecturas posibles: una **restrictiva**, según la cual el beneficio cubre únicamente la matrícula del sujeto —la persona jurídica—, por ser esta la que ostenta la calidad de pequeña empresa joven; y una **extensiva**, que lo hace cobijar también la matrícula de los establecimientos de comercio de propiedad de esa empresa, por tratarse de matrículas causadas por el mismo sujeto beneficiario. La práctica de las cámaras de comercio no es uniforme. Para el caso de NOVA BIENESTAR INTEGRAL S.A.S. se recomienda **liquidar el trámite bajo la lectura restrictiva** —esto es, previendo el pago de la matrícula del establecimiento— y solicitar por escrito el pronunciamiento de la Cámara; si esta aplica la lectura extensiva, el resultado será un menor valor a pagar y no un vicio del trámite.
+#P **Primera, el impuesto de registro no está exento.** El beneficio de la Ley 1780 de 2016 recae exclusivamente sobre los **derechos de matrícula mercantil** que percibe la Cámara de Comercio. El impuesto de registro es una **renta de propiedad de los departamentos** (Ley 223 de 1995) y la Cámara solo actúa como recaudadora por convenio; ninguna norma de la Ley 1780 lo exonera. Afirmar lo contrario en el trámite generaría una liquidación oficial de corrección y, eventualmente, sanción por inexactitud.
+#P **Segunda, el alcance de la exención sobre el establecimiento de comercio.** El artículo 3.º de la Ley 1780 de 2016 se refiere genéricamente a "la matrícula mercantil". Existen dos lecturas posibles: una **restrictiva**, según la cual el beneficio cubre únicamente la matrícula del sujeto, la persona jurídica, por ser esta la que ostenta la calidad de pequeña empresa joven; y una **extensiva**, que lo hace cobijar también la matrícula de los establecimientos de comercio de propiedad de esa empresa, por tratarse de matrículas causadas por el mismo sujeto beneficiario. La práctica de las cámaras de comercio no es uniforme. Para el caso de NOVA BIENESTAR INTEGRAL S.A.S. se recomienda **liquidar el trámite bajo la lectura restrictiva** (esto es, previendo el pago de la matrícula del establecimiento) y solicitar por escrito el pronunciamiento de la Cámara; si esta aplica la lectura extensiva, el resultado será un menor valor a pagar y no un vicio del trámite.
 #1 6. Lista de verificación previa a la radicación
 #L La denominación consultada en el RUES no presenta homonimia.
 #L El documento privado contiene las siete menciones del artículo 5.º de la Ley 1258 de 2008.

@@ -1,4 +1,4 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Aceptaciones de cargo
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Aceptaciones de cargo
 !FOOTER Aceptaciones de cargo
 #T Carta de aceptación de cargo
 #ST Representante legal principal
@@ -13,13 +13,13 @@
 #SP
 #P Respetados señores:
 #P Yo, **MARIANA LÓPEZ CASTAÑO**, mujer, mayor de edad, identificada con la cédula de ciudadanía número **1.039.672.481** expedida en Medellín (Antioquia) el día ____ del mes de ______________ de ________, domiciliada y residente en el municipio de Medellín, obrando en nombre propio, por medio del presente escrito manifiesto de manera expresa, libre, voluntaria e inequívoca que **ACEPTO** la designación que se me hizo como **REPRESENTANTE LEGAL PRINCIPAL** de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, según consta en el artículo transitorio 1.º del documento privado de constitución de la referencia.
-#P En cumplimiento de lo dispuesto en el **artículo 42 del Decreto Ley 2150 de 1995**, según el cual "para la inscripción de nombramientos de administradores y revisores fiscales se requerirá la aceptación previa de las personas designadas", y de lo exigido por el numeral 3.1 de la guía registral de la Cámara de Comercio de Medellín para Antioquia —que impone informar el **número de identificación y la fecha de expedición** del documento—, dejo constancia de la siguiente información:
+#P En cumplimiento de lo dispuesto en el **artículo 42 del Decreto Ley 2150 de 1995**, según el cual "para la inscripción de nombramientos de administradores y revisores fiscales se requerirá la aceptación previa de las personas designadas", y de lo exigido por el numeral 3.1 de la guía registral de la Cámara de Comercio de Medellín para Antioquia, que impone informar el **número de identificación y la fecha de expedición** del documento, dejo constancia de la siguiente información:
 #TW 40,60
 #TH Concepto | Información
 #TR Nombre completo | Mariana López Castaño
 #TR Tipo y número de documento | Cédula de ciudadanía n.º 1.039.672.481
 #TR Lugar de expedición | Medellín (Antioquia)
-#TR **Fecha de expedición del documento** | ____ / ____ / ________  *(dato exigido por el numeral 3.1 de la guía registral)*
+#TR **Fecha de expedición del documento** | ____ / ____ / ________ *(dato exigido por el numeral 3.1 de la guía registral)*
 #TR Cargo aceptado | Representante legal principal
 #TR Sociedad | NOVA BIENESTAR INTEGRAL S.A.S.
 #TR Domicilio de la sociedad | Medellín (Antioquia)
@@ -48,13 +48,13 @@
 #SP
 #P Respetados señores:
 #P Yo, **FELIPE ANDRÉS GÓMEZ VÉLEZ**, hombre, mayor de edad, identificado con la cédula de ciudadanía número **1.152.846.390** expedida en Envigado (Antioquia) el día ____ del mes de ______________ de ________, domiciliado y residente en el municipio de Envigado, obrando en nombre propio, por medio del presente escrito manifiesto de manera expresa, libre, voluntaria e inequívoca que **ACEPTO** la designación que se me hizo como **REPRESENTANTE LEGAL SUPLENTE** de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, según consta en el artículo transitorio 1.º del documento privado de constitución de la referencia.
-#P En cumplimiento de lo dispuesto en el **artículo 42 del Decreto Ley 2150 de 1995** y en el numeral 3.1 de la guía registral de la Cámara de Comercio de Medellín para Antioquia —que impone informar el **número de identificación y la fecha de expedición** del documento—, dejo constancia de la siguiente información:
+#P En cumplimiento de lo dispuesto en el **artículo 42 del Decreto Ley 2150 de 1995** y en el numeral 3.1 de la guía registral de la Cámara de Comercio de Medellín para Antioquia, que impone informar el **número de identificación y la fecha de expedición** del documento, dejo constancia de la siguiente información:
 #TW 40,60
 #TH Concepto | Información
 #TR Nombre completo | Felipe Andrés Gómez Vélez
 #TR Tipo y número de documento | Cédula de ciudadanía n.º 1.152.846.390
 #TR Lugar de expedición | Envigado (Antioquia)
-#TR **Fecha de expedición del documento** | ____ / ____ / ________  *(dato exigido por el numeral 3.1 de la guía registral)*
+#TR **Fecha de expedición del documento** | ____ / ____ / ________ *(dato exigido por el numeral 3.1 de la guía registral)*
 #TR Cargo aceptado | Representante legal suplente
 #TR Sociedad | NOVA BIENESTAR INTEGRAL S.A.S.
 #TR Domicilio de la sociedad | Medellín (Antioquia)

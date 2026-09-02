@@ -1,4 +1,4 @@
-!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Autenticación del documento y poder
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. Autenticación del documento y poder
 !FOOTER Autenticación del documento privado y poder para el trámite
 #T Autenticación del documento privado y poder para el trámite
 #ST NOVA BIENESTAR INTEGRAL S.A.S.
@@ -8,7 +8,7 @@
 #TW 25,37,38
 #TH Vía | En qué consiste | Cuándo conviene
 #TR Presentación personal ante la Cámara | Los dos accionistas concurren a la taquilla con su cédula original y firman ante el secretario, que deja constancia en el documento. | Cuando ambos pueden desplazarse el mismo día a la sede de la Cámara. Es gratuita o de costo mínimo y evita el paso por notaría.
-#TR Reconocimiento de contenido y firma ante notario | Cada accionista comparece ante notario, quien da fe de que reconoce como suyos el contenido y la firma. Puede hacerse en notarías distintas y en días distintos. | Cuando los accionistas están en municipios diferentes —caso de este expediente: Medellín y Envigado— o no coinciden en agenda. Tiene costo notarial por cada firma.
+#TR Reconocimiento de contenido y firma ante notario | Cada accionista comparece ante notario, quien da fe de que reconoce como suyos el contenido y la firma. Puede hacerse en notarías distintas y en días distintos. | Cuando los accionistas están en municipios diferentes, que es el caso de este expediente, Medellín y Envigado, o cuando no coinciden en agenda. Tiene costo notarial por cada firma.
 #P **Consecuencia de omitir el requisito.** La Cámara devuelve el documento sin inscribirlo. Mientras no haya inscripción, la sociedad no existe como persona jurídica (artículo 2.º de la Ley 1258 de 2008) y quienes actúen por cuenta de ella responden **solidaria e ilimitadamente** frente a terceros (artículo 7.º de la misma ley).
 #P **Recomendación para este caso.** Como Mariana López Castaño está domiciliada en Medellín y Felipe Andrés Gómez Vélez en Envigado, la vía notarial es la más práctica: cada uno reconoce su firma en la notaría de su municipio y luego uno solo de ellos radica el expediente completo.
 #PB
@@ -19,15 +19,15 @@
 #P Ante el suscrito secretario de la **Cámara de Comercio de Medellín para Antioquia** comparecieron las personas que a continuación se identifican, quienes presentaron personalmente el documento de la referencia y manifestaron que la firma que en él aparece es la suya y que el contenido del documento corresponde a su voluntad:
 #TW 30,26,22,22
 #TH Compareciente | Documento de identidad | Firma | Huella
-#TR Mariana López Castaño | C.C. 1.039.672.481 de Medellín |  |
-#TR Felipe Andrés Gómez Vélez | C.C. 1.152.846.390 de Envigado |  |
+#TR Mariana López Castaño | C.C. 1.039.672.481 de Medellín | |
+#TR Felipe Andrés Gómez Vélez | C.C. 1.152.846.390 de Envigado | |
 #P Se deja constancia de que los comparecientes exhibieron el original de su documento de identidad y de que la diligencia se surtió en la ciudad de Medellín, el día ______ del mes de ______________ de dos mil veintiséis (2026).
 #SIG SECRETARIO(A)|Cámara de Comercio de Medellín para Antioquia|Sello
 #SP
 #HR
 #2 Diligencia adicional sobre el anexo de responsabilidades tributarias
 #P El numeral 3.2 de la guía registral impone una segunda diligencia que suele pasarse por alto: si el trámite se radica **presencialmente** en una sede o centro regional, el **anexo de responsabilidades tributarias persona jurídica** debe llevar, además, **presentación personal ante la Cámara de Comercio**, hecha por el representante legal o por su apoderado, quien no requiere ser abogado.
-#P En consecuencia, la representante legal deberá presentar personalmente **dos** documentos distintos: el documento privado de constitución —junto con el otro accionista— y el anexo de responsabilidades tributarias. Si el trámite se adelanta por la sede virtual con firma electrónica, esta segunda diligencia no se requiere.
+#P En consecuencia, la representante legal deberá presentar personalmente **dos** documentos distintos: el documento privado de constitución, junto con el otro accionista, y el anexo de responsabilidades tributarias. Si el trámite se adelanta por la sede virtual con firma electrónica, esta segunda diligencia no se requiere.
 #P **Constancia:** ante el suscrito secretario de la Cámara de Comercio de Medellín para Antioquia compareció **MARIANA LÓPEZ CASTAÑO**, identificada con cédula de ciudadanía n.º 1.039.672.481 de Medellín, quien presentó personalmente el **anexo de responsabilidades tributarias persona jurídica** de NOVA BIENESTAR INTEGRAL S.A.S. y reconoció como suyos su contenido y su firma.
 #SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal||SECRETARIO(A)|Cámara de Comercio de Medellín para Antioquia|Sello
 #PB
@@ -46,7 +46,7 @@
 #PB
 #T Poder especial para adelantar el trámite de registro
 #ST Documento opcional
-#P **Cuándo se necesita.** Solo si el expediente lo va a radicar una persona distinta del representante legal —un dependiente, un abogado o un tramitador—. Si lo radica Mariana López Castaño en su condición de representante legal, este poder es innecesario: su facultad ya consta en el artículo transitorio 3.º de los estatutos.
+#P **Cuándo se necesita.** Solo si el expediente lo va a radicar una persona distinta del representante legal (un dependiente, un abogado o un tramitador). Si lo radica Mariana López Castaño en su condición de representante legal, este poder es innecesario: su facultad ya consta en el artículo transitorio 3.º de los estatutos.
 #SP
 #R Medellín (Antioquia), ______ de ______________ de 2026
 #P **Señores**
@@ -69,6 +69,6 @@
 #N 5. Atender los requerimientos, subsanar las devoluciones y aportar los documentos adicionales que las entidades soliciten.
 #N 6. Adelantar ante la Dirección de Impuestos y Aduanas Nacionales las gestiones necesarias para la **formalización del Registro Único Tributario** y la asignación del NIT.
 #P **Limitación expresa.** Este poder se confiere **exclusivamente** para las actuaciones enumeradas. No comprende la facultad de modificar los estatutos, de disponer de bienes sociales, de obligar a la sociedad frente a terceros ni de recibir dineros a nombre de ella.
-#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal — otorga||[NOMBRE DEL APODERADO]|C.C. ____________|Acepta el poder
+#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal, otorga||[NOMBRE DEL APODERADO]|C.C. ____________|Acepta el poder
 #SP
 #I Este poder debe presentarse personalmente por la otorgante ante notario o ante el secretario de la Cámara de Comercio, en aplicación de la misma regla del artículo 40 del Código de Comercio.
