@@ -1,0 +1,37 @@
+!HEADER NOVA BIENESTAR INTEGRAL S.A.S. — Manifestación de emprendimiento social
+!FOOTER Manifestación de desarrollo de emprendimientos sociales
+#T Manifestación de desarrollo de emprendimientos sociales
+#ST Ley 2234 de 2022 — NOVA BIENESTAR INTEGRAL S.A.S.
+#R Medellín (Antioquia), primero (1) de octubre de dos mil veintiséis (2026)
+#SP
+#P **Señores**
+#P **CÁMARA DE COMERCIO DE MEDELLÍN PARA ANTIOQUIA**
+#P Departamento de Registros Públicos
+#P Medellín (Antioquia)
+#SP
+#P **Referencia:** Manifestación de autorreconocimiento sobre el desarrollo de emprendimientos sociales, exigida para la matrícula mercantil — **NOVA BIENESTAR INTEGRAL S.A.S.**
+#SP
+#P Respetados señores:
+#P **MARIANA LÓPEZ CASTAÑO**, mayor de edad, identificada con la cédula de ciudadanía número **1.039.672.481** expedida en Medellín (Antioquia), obrando en calidad de **representante legal** designada de la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**, en constitución, presento la manifestación que la lista de chequeo del trámite exige como documento anexo, en los siguientes términos:
+#1 1. Por qué se presenta este documento
+#P La **Ley 2234 de 2022** estableció la política pública de emprendimiento social y dispuso que sus previsiones se aplican a los emprendimientos sociales **que se autorreconozcan** como tales. Para recoger esa información, la Superintendencia de Sociedades solicitó que, a través del formulario del Registro Único Empresarial y Social, quienes se matriculen o renueven informen si desarrollan o no emprendimientos sociales, dato que se remite al Ministerio de Comercio, Industria y Turismo.
+#P Mientras el formulario del RUES se ajusta para incorporar la casilla, las cámaras de comercio recogen esa manifestación en documento separado. Por eso la guía registral de la Cámara de Comercio de Medellín para Antioquia la enumera, en su lista de chequeo, entre los documentos que deben anexarse al trámite de constitución.
+#P Conviene subrayar la naturaleza de la declaración: es de **autorreconocimiento**. No la califica la Cámara ni la otorga autoridad alguna; la hace el propio empresario, y por eso puede modificarse más adelante si la operación de la sociedad cambia.
+#1 2. Manifestación
+#P Declaro que la sociedad **NOVA BIENESTAR INTEGRAL S.A.S.**:
+#TW 76,24
+#TH Manifestación | Marque
+#TR **NO** se autorreconoce como emprendimiento social en los términos de la Ley 2234 de 2022 | **X**
+#TR **SÍ** se autorreconoce como emprendimiento social en los términos de la Ley 2234 de 2022 |
+#1 3. Fundamento de la manifestación
+#P La respuesta negativa no obedece a la naturaleza de la actividad —que sin duda tiene impacto social, pues comprende servicios de rehabilitación física y de promoción de la salud— sino a la estructura con que la sociedad fue concebida. Tres razones la sostienen:
+#P **Primera.** La sociedad se constituye como una **sociedad comercial de capital con ánimo de lucro ordinario**. Sus estatutos, en el artículo 34, prevén la distribución de utilidades entre los accionistas a prorrata de sus acciones, sin reinversión obligatoria del excedente en la finalidad social, que es el rasgo que caracteriza al emprendimiento social.
+#P **Segunda.** El objeto social del artículo 4.º de los estatutos describe la prestación de servicios de bienestar, rehabilitación física y acondicionamiento integral **en condiciones de mercado**, sin que se haya definido una población beneficiaria en situación de vulnerabilidad ni un mecanismo de medición de impacto social, elementos propios de la figura.
+#P **Tercera.** Los estatutos no incorporan cláusulas de **gobernanza participativa** ni de destinación específica de excedentes que permitan sostener el autorreconocimiento frente a una eventual verificación.
+#P Declarar lo contrario sería cómodo y, al mismo tiempo, imprudente: el autorreconocimiento sin respaldo estatutario expone a la sociedad a que se le exijan condiciones que hoy no puede acreditar.
+#1 4. Posibilidad de modificar la manifestación
+#P La sociedad podrá **modificar esta manifestación en cualquier renovación posterior** de la matrícula mercantil si decide adoptar la estructura propia de un emprendimiento social. Para hacerlo con fundamento, tendría que reformar sus estatutos e incorporar, cuando menos: la definición de la población beneficiaria, un mecanismo de reinversión de excedentes en la finalidad social, y un sistema de medición y reporte del impacto generado.
+#P Esa decisión no es meramente declarativa: la Ley 2234 de 2022 y sus desarrollos prevén beneficios e incentivos para los emprendimientos sociales, de modo que el autorreconocimiento tiene consecuencias tanto favorables como de cumplimiento.
+#1 5. Constancia
+#P Declaro que la información contenida en esta manifestación es veraz y que la presento con destino al Registro Único Empresarial y Social y, por su intermedio, al Ministerio de Comercio, Industria y Turismo.
+#SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S.

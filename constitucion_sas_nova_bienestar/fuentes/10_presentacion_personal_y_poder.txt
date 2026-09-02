@@ -23,6 +23,13 @@
 #TR Felipe Andrés Gómez Vélez | C.C. 1.152.846.390 de Envigado |  |
 #P Se deja constancia de que los comparecientes exhibieron el original de su documento de identidad y de que la diligencia se surtió en la ciudad de Medellín, el día ______ del mes de ______________ de dos mil veintiséis (2026).
 #SIG SECRETARIO(A)|Cámara de Comercio de Medellín para Antioquia|Sello
+#SP
+#HR
+#2 Diligencia adicional sobre el anexo de responsabilidades tributarias
+#P El numeral 3.2 de la guía registral impone una segunda diligencia que suele pasarse por alto: si el trámite se radica **presencialmente** en una sede o centro regional, el **anexo de responsabilidades tributarias persona jurídica** debe llevar, además, **presentación personal ante la Cámara de Comercio**, hecha por el representante legal o por su apoderado, quien no requiere ser abogado.
+#P En consecuencia, la representante legal deberá presentar personalmente **dos** documentos distintos: el documento privado de constitución —junto con el otro accionista— y el anexo de responsabilidades tributarias. Si el trámite se adelanta por la sede virtual con firma electrónica, esta segunda diligencia no se requiere.
+#P **Constancia:** ante el suscrito secretario de la Cámara de Comercio de Medellín para Antioquia compareció **MARIANA LÓPEZ CASTAÑO**, identificada con cédula de ciudadanía n.º 1.039.672.481 de Medellín, quien presentó personalmente el **anexo de responsabilidades tributarias persona jurídica** de NOVA BIENESTAR INTEGRAL S.A.S. y reconoció como suyos su contenido y su firma.
+#SIG2 MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal||SECRETARIO(A)|Cámara de Comercio de Medellín para Antioquia|Sello
 #PB
 #T Minuta de reconocimiento de contenido y firma
 #ST Formato para la vía notarial

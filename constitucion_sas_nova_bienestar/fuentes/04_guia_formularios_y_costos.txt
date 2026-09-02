@@ -11,6 +11,7 @@
 #TR 1 | Consulta de homonimia del nombre en el RUES | Verificar que la denominación "NOVA BIENESTAR INTEGRAL S.A.S." no esté registrada por otro comerciante en el país (artículo 35 del Código de Comercio). Se realiza gratuitamente en www.rues.org.co.
 #TR 2 | Consulta de la clasificación por actividad económica (CIIU) | Determinar los códigos CIIU Rev. 4 A.C. principal y secundarios.
 #TR 3 | Consulta de uso del suelo | Verificar ante la Curaduría o la Secretaría de Gestión y Control Territorial de Medellín que la dirección permita la actividad.
+#TR 3 bis | Consulta de responsabilidades tributarias | La guía registral remite a **www.vue.gov.co**, opción "Consulta de responsabilidades tributarias", para seleccionarlas antes de diligenciar el anexo de la DIAN.
 #TR 4 | Suscripción y autenticación del documento privado de constitución | Presentación personal ante el secretario de la Cámara o reconocimiento ante notario (artículo 40 del Código de Comercio).
 #TR 5 | Solicitud del RUT provisional (pre-RUT) ante la DIAN | Formulario 001. Genera el número de formulario que se traslada al formulario adicional de registro con otras entidades.
 #TR 6 | Diligenciamiento de la carátula única empresarial y sus anexos | Persona jurídica y establecimiento de comercio.
@@ -142,12 +143,17 @@
 #TR 6 | Declaración juramentada de cumplimiento de la Ley 1780 de 2016 | Artículos 2.º y 3.º de la Ley 1780 de 2016 y Decreto 639 de 2017
 #TR 7 | RUT provisional (pre-RUT) | Decreto 1074 de 2015 y Resolución de la DIAN sobre el RUT
 #TR 8 | Recibo de pago del impuesto de registro | Ley 223 de 1995 y Decreto 650 de 1996
-#TR 9 | Solicitud de inscripción de libros de comercio | Artículo 175 del Decreto Ley 019 de 2012
+#TR 9 | Solicitud de inscripción de libros de comercio (formato 7 de la Cámara) | Artículo 175 del Decreto Ley 019 de 2012; guía 28 de la Cámara
+#TR 10 | Manifestación de desarrollo de emprendimientos sociales | Ley 2234 de 2022; lista de chequeo de la guía registral
+#TR 11 | Formato de la Cámara que acredita las condiciones de pequeña empresa joven | Numeral 3.4 de la guía registral
+#TR 12 | Anexo de reporte de información con enfoque diferencial étnico | Circular 100-000011 de 2025 de la Superintendencia de Sociedades
+#TR 13 | Copia de la cédula del representante legal y de la accionista de 18 a 35 años | Lista de chequeo de la guía registral
 #1 5. Liquidación estimada de derechos e impuestos
 #P La liquidación se practica sobre dos bases distintas que no deben confundirse: el **impuesto de registro** es un tributo departamental que se liquida sobre el **capital suscrito**; los **derechos de registro** son la contraprestación por el servicio registral y se liquidan en **UVB** o sobre los **activos**, según el concepto.
 #TW 42,20,20,18
 #TH Concepto | Base o tarifa | Valor estimado 2026 | Fundamento
 #TR Impuesto de registro (constitución de sociedad por acciones) | 0,7 % sobre el capital suscrito de $600.000.000 | **$4.200.000** | Artículos 226 a 230 de la Ley 223 de 1995; artículo 6.º del Decreto 650 de 1996; ordenanza departamental de Antioquia
+#TR Impuesto de registro **sin cuantía** por la inscripción del nombramiento de los representantes legales | Entre 2 y 4 salarios mínimos diarios legales vigentes | **≈ $93.000 a $187.000** | Artículo 230 de la Ley 223 de 1995; numeral 5.2.2 de la guía registral de la Cámara
 #TR Derechos de inscripción del documento de constitución | 6 UVB | **$72.660** | Artículos 2.2.2.46.1.1 y ss. del Decreto 1074 de 2015, modificado por el Decreto 045 de 2024
 #TR Matrícula mercantil de la persona jurídica (activos $600.000.000 = 49.545,8 UVB) | Rango superior de la tabla | **$0 — EXENTA** | Artículo 3.º de la Ley 1780 de 2016
 #TR Matrícula mercantil del establecimiento "NOVA BIENESTAR" (activos $55.000.000 = 4.541,7 UVB) | Rango 1 (de 0 a 6.500 UVB), con reducción del 50 % | Según tabla vigente | Decreto 1074 de 2015, modificado por el Decreto 045 de 2024
@@ -155,7 +161,8 @@
 #TR Inscripción del libro de actas de asamblea | 2 UVB | **$24.220** | Artículo 175 del Decreto Ley 019 de 2012
 #TR Certificado de existencia y representación legal (por ejemplar) | 1 UVB | **$12.110** | Tabla de tarifas 2026
 #TR Formularios del RUES | Sin costo cuando se diligencian en la sede virtual | $0 | Práctica registral vigente
-#P **Total aproximado, sin incluir la matrícula del establecimiento ni certificados adicionales: $4.321.100.** El componente determinante del costo no es el derecho registral sino el **impuesto de registro**, que representa más del noventa y siete por ciento (97 %) del valor total del trámite.
+#P **Total aproximado, sin incluir la matrícula del establecimiento ni certificados adicionales: entre $4.414.000 y $4.508.000.** El componente determinante del costo no es el derecho registral sino el **impuesto de registro con cuantía**, que por sí solo representa cerca del noventa y cinco por ciento (95 %) del valor total del trámite.
+#P **Sobre el impuesto sin cuantía.** El numeral 5.2.2 de la guía registral advierte que, además del impuesto con cuantía que grava la constitución, se causa **un impuesto de registro sin cuantía por la inscripción de cada órgano nombrado** —representantes legales, junta directiva y revisores fiscales—. En este caso solo se nombra el órgano de representación legal, con principal y suplente, de modo que se causa un único acto sin cuantía. El artículo 230 de la Ley 223 de 1995 fija para estos actos una tarifa de entre dos y cuatro salarios mínimos diarios legales vigentes, cuyo valor exacto determina la ordenanza departamental. Es un rubro que la primera versión de esta liquidación omitía.
 #2 5.1. Dos advertencias sobre la liquidación
 #P **Primera — el impuesto de registro no está exento.** El beneficio de la Ley 1780 de 2016 recae exclusivamente sobre los **derechos de matrícula mercantil** que percibe la Cámara de Comercio. El impuesto de registro es una **renta de propiedad de los departamentos** (Ley 223 de 1995) y la Cámara solo actúa como recaudadora por convenio; ninguna norma de la Ley 1780 lo exonera. Afirmar lo contrario en el trámite generaría una liquidación oficial de corrección y, eventualmente, sanción por inexactitud.
 #P **Segunda — el alcance de la exención sobre el establecimiento de comercio.** El artículo 3.º de la Ley 1780 de 2016 se refiere genéricamente a "la matrícula mercantil". Existen dos lecturas posibles: una **restrictiva**, según la cual el beneficio cubre únicamente la matrícula del sujeto —la persona jurídica—, por ser esta la que ostenta la calidad de pequeña empresa joven; y una **extensiva**, que lo hace cobijar también la matrícula de los establecimientos de comercio de propiedad de esa empresa, por tratarse de matrículas causadas por el mismo sujeto beneficiario. La práctica de las cámaras de comercio no es uniforme. Para el caso de NOVA BIENESTAR INTEGRAL S.A.S. se recomienda **liquidar el trámite bajo la lectura restrictiva** —esto es, previendo el pago de la matrícula del establecimiento— y solicitar por escrito el pronunciamiento de la Cámara; si esta aplica la lectura extensiva, el resultado será un menor valor a pagar y no un vicio del trámite.
@@ -183,4 +190,6 @@
 #TR Sistema de Gestión de Seguridad y Salud en el Trabajo | Decreto 1072 de 2015 y estándares mínimos de la Resolución 0312 de 2019.
 #TR Obligaciones del establecimiento abierto al público | Uso del suelo, concepto sanitario, seguridad humana y sistemas contra incendio, y pago de derechos de autor (Sayco y Acinpro) si se difunde música.
 #TR Política de tratamiento de datos personales | Ley 1581 de 2012; especialmente relevante por el manejo de **datos sensibles de salud** de los usuarios.
-#TR Renovación de la matrícula mercantil | Antes del **31 de marzo de 2027**, para conservar el beneficio de exención de la primera renovación previsto en la Ley 1780 de 2016.
+#TR Renovación de la matrícula mercantil | Entre el **1.º de enero y el 31 de marzo de 2027**, para conservar el beneficio de exención de la primera renovación. La guía exige además, en esa renovación: responder afirmativamente la encuesta sobre pago de aportes a seguridad social y cumplimiento tributario; relacionar nombre e identificación de los trabajadores; certificar la conservación de los requisitos de pequeña empresa joven; y adjuntar los estados financieros al 31 de diciembre según el grupo NIIF, con la tarjeta profesional del contador que los prepara.
+#TR Consulta del estado del trámite | En tramites.camaramedellin.com.co, sección "Consultas virtuales", por número de radicado o de solicitud.
+#TR Si devuelven el trámite | Subsanar **dentro del mes siguiente** a la carta de devolución. Vencido ese plazo se entiende **desistida** la petición y se archiva el trámite, conforme al artículo 17 del CPACA.

@@ -19,8 +19,10 @@
 #TR Base gravable | Capital suscrito (artículo 6.º del Decreto 650 de 1996) | $600.000.000
 #TR Tarifa aplicable | 0,7 %, dentro del rango de 0,3 % a 0,7 % del artículo 230 de la Ley 223 de 1995, según la ordenanza departamental de Antioquia | 0,7 %
 #TR Prima en colocación de acciones | No existe; acciones emitidas a la par | $0
-#TH IMPUESTO DE REGISTRO A PAGAR | $600.000.000 × 0,7 % | **$4.200.000**
-#P **Verificación aritmética:** $600.000.000 × 0,007 = $4.200.000.
+#TR Impuesto **sin cuantía** por la inscripción del nombramiento de los representantes legales | Entre 2 y 4 salarios mínimos diarios legales vigentes, según ordenanza | ≈ $93.000 a $187.000
+#TH IMPUESTO DE REGISTRO A PAGAR | Con cuantía más sin cuantía | **≈ $4.293.000 a $4.387.000**
+#P **Verificación aritmética del componente con cuantía:** $600.000.000 × 0,007 = $4.200.000.
+#P **El impuesto sin cuantía.** El numeral 5.2.2 de la guía registral de la Cámara precisa que el trámite causa **dos** impuestos de registro y no uno: el de cuantía por la constitución, y **uno sin cuantía por la inscripción de cada órgano nombrado** —representantes legales, junta directiva y revisores fiscales—. Aquí solo se nombra el órgano de representación legal, con principal y suplente, de modo que se causa un único acto sin cuantía. El artículo 230 de la Ley 223 de 1995 lo tasa entre dos y cuatro salarios mínimos diarios legales vigentes; la ordenanza departamental fija el valor exacto dentro de ese rango.
 #P **Tarifa a confirmar.** El rango legal es de 0,3 % a 0,7 % y corresponde a la asamblea departamental fijar la tarifa dentro de ese rango mediante ordenanza. La liquidación anterior asume el tope de 0,7 %, que es el aplicado en Antioquia. Antes de pagar, conviene confirmar la tarifa vigente en el portal tributario de la Gobernación de Antioquia o en la liquidación que expida la propia Cámara, porque una tarifa menor reduciría el valor a pagar.
 #1 4. Dónde y cómo se paga
 #TW 30,70
@@ -46,7 +48,8 @@
 #TR Base gravable | $600.000.000 (capital suscrito)
 #TR Tarifa | 0,7 %
 #TR Valor del impuesto | $4.200.000
-#TR Exenciones aplicables | Ninguna. La exención de la Ley 1780 de 2016 no cubre el impuesto de registro.
+#TR Impuesto sin cuantía por nombramientos | Un (1) acto: órgano de representación legal
+#TR Exenciones aplicables | Ninguna. La exención de la Ley 1780 de 2016 no cubre el impuesto de registro, ni el de cuantía ni el sin cuantía.
 #TR Fecha de pago | ____ / ____ / 2026
 #TR Número de recibo | ____________
 #SIG MARIANA LÓPEZ CASTAÑO|C.C. 1.039.672.481 de Medellín|Representante legal|NOVA BIENESTAR INTEGRAL S.A.S.
@@ -70,8 +73,11 @@
 #TR 11 | Anexo de matrícula de establecimiento de comercio, firmado | | |
 #TR 12 | Formulario adicional de registro con otras entidades, firmado | | |
 #TR 13 | Comprobante de pago del impuesto de registro | | |
-#TR 14 | Solicitud de inscripción de libros | | |
-#TR 15 | Poder especial, si radica un tercero | | |
+#TR 14 | Solicitud de inscripción de libros (formato 7 de la Cámara) | | |
+#TR 15 | Manifestación de desarrollo de emprendimientos sociales, Ley 2234 de 2022 | | |
+#TR 16 | Formato de la Cámara que acredita las condiciones de pequeña empresa joven | | |
+#TR 17 | Anexo de reporte de información con enfoque diferencial étnico | | |
+#TR 18 | Poder especial, si radica un tercero | | |
 #2 B. Verificaciones antes de entregar
 #TW 60,10,30
 #TH Verificación | ✓ | Responsable
@@ -85,6 +91,9 @@
 #TR Los formularios están firmados y, si el formato lo exige, con huella | | Representante legal
 #TR No hay tachones ni enmendaduras en ningún formulario | | Representante legal
 #TR La consulta de homonimia se realizó y no arrojó coincidencias | | Representante legal
+#TR El anexo de responsabilidades tributarias tiene presentación personal ante la Cámara | | Representante legal
+#TR El documento de constitución indica de manera expresa el término para el pago del capital suscrito | | Representante legal
+#TR Se anexó la relación de nombre e identificación de los nueve trabajadores | | Representante legal
 #2 C. Resultado de la radicación
 #TW 45,55
 #TH Concepto | Contenido

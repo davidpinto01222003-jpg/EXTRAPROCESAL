@@ -52,25 +52,59 @@
 #P **Lo que decía.** El acta n.º 1 fundaba la reunión universal en el **artículo 182 del Código de Comercio**.
 #P **El problema.** El artículo 182 regula el contenido de la convocatoria a reuniones extraordinarias y el orden del día. La reunión universal —la que puede celebrarse en cualquier sitio y sin citación previa cuando esté representada la totalidad de las acciones suscritas— está en el **artículo 426**.
 #P **La corrección.** Se sustituyó la cita en los documentos 12 y 14, y se añadió la referencia al artículo 426 en el parágrafo tercero del artículo 20 de los estatutos, que antes no citaba norma alguna.
+#1 II bis. Contraste con la guía registral de la Cámara
+#P Recibida la **Guía 20 de la Cámara de Comercio de Medellín para Antioquia** —«Registro de la constitución de una sociedad por acciones simplificada», versión V1-2025—, el expediente se confrontó punto por punto con sus numerales 2, 3 y 5 y con la lista de chequeo del numeral 6. El contraste arrojó **seis incumplimientos**, todos corregidos.
+#TW 30,14,56
+#TH Exigencia de la guía | Estado | Observación
+#TR 2.1 a 2.5 — accionistas, razón social, domicilio, duración y actividades | Cumplía | Los cinco datos constaban en los artículos 1.º a 5.º de los estatutos
+#TR 2.6 — los tres capitales con cuantía, número de acciones, valor nominal y clase | Cumplía | Artículos 6.º a 9.º; valor nominal idéntico en los tres y expresado en letras y números
+#TR 2.6 — **término expreso para pagar el capital suscrito, sin exceder dos años** | **Corregido** | Los estatutos declaraban el capital pagado pero no enunciaban el término como tal
+#TR 2.7 — distribución del capital suscrito por accionista | Cumplía | Tabla del artículo 7.º con nombre, acciones y valor de cada uno
+#TR 2.8 — facultades y limitaciones del representante legal, y suplencia | Cumplía | Artículos 27 y 28
+#TR 2.9 y 2.10 — nombramientos con documento de identidad y firma de todos | Cumplía | Artículo transitorio 1.º y firmas finales
+#TR 2.11 — autenticación o presentación personal | Cumplía | Documento 10 del expediente
+#TR 3.1 — aceptaciones con número de identificación **y fecha de expedición** | **Corregido** | Las cartas informaban el número y el lugar, no la fecha de expedición
+#TR 3.2 — anexo de responsabilidades tributarias | Cumplía | Diligenciado sobre el formato oficial
+#TR 3.2 — **presentación personal del anexo si la radicación es presencial** | **Corregido** | No se había previsto esa segunda diligencia
+#TR 3.3 — formulario RUES hojas 1 y 2 y anexo 1 | Cumplía | Diligenciados sobre los formatos oficiales
+#TR 3.4 — anexo para otras entidades | Pendiente | Formato de la Cámara; su contenido está resuelto campo por campo en el documento 07
+#TR 3.4 — **manifiesto de emprendimientos sociales** | **Corregido** | No estaba identificado; se elaboró como documento 16
+#TR 3.4 — formato de pequeña empresa joven con **relación de trabajadores** | **Corregido** | La declaración de la Ley 1780 no incluía el nombre e identificación de los nueve trabajadores
+#TR 5.1 — derechos de inscripción | Cumplía | Liquidados en los documentos 04 y 11
+#TR 5.2.1 — impuesto de registro con cuantía sobre el capital suscrito | Cumplía | $4.200.000
+#TR 5.2.2 — **impuesto de registro sin cuantía por cada órgano nombrado** | **Corregido** | La liquidación omitía este rubro
+#TR 6 — copia de la cédula del representante legal y de la accionista de 18 a 35 | Cumplía | Relacionadas como anexos
+#TR 4 — formatos 1 o 2 de situación de control | No aplica | Solo para S.A.S. de accionista único persona natural; aquí hay dos accionistas
+#2 Los seis incumplimientos y su corrección
+#P **1. Faltaba el término para el pago del capital suscrito.** El numeral 2.6 exige que el documento constitutivo indique «de manera clara el término para pagar el capital suscrito, sin exceder dos años». Los estatutos afirmaban que el capital estaba íntegramente pagado y remitían el plazo de dos años a las emisiones futuras, pero no enunciaban el término como tal. Es la clase de omisión formal que produce una devolución aunque el fondo sea correcto. El artículo 8.º incorpora ahora una declaración expresa: el término de pago es el mismo acto de constitución y, en todo caso, no excede de dos años.
+#P **2. Las aceptaciones no informaban la fecha de expedición del documento de identidad.** El numeral 3.1 y la lista de chequeo la exigen dos veces, con esas palabras. Las cartas del documento 02 traían nombre, número y lugar de expedición, pero no la fecha. Se añadió el dato, tanto en el cuerpo de cada carta como en su cuadro de identificación, con espacio para completarlo: es información que solo puede tomarse del documento físico de cada persona.
+#P **3. No se había previsto la presentación personal del anexo de responsabilidades tributarias.** El numeral 3.2 la impone cuando el trámite se radica presencialmente, y es una diligencia **distinta** de la del documento de constitución: la primera la hacen los dos accionistas sobre los estatutos; la segunda, la representante legal sobre el anexo. El documento 10 incorpora ahora la constancia correspondiente y explica cuándo se requiere.
+#P **4. Faltaba la relación de trabajadores para el beneficio de la Ley 1780.** El numeral 3.4 exige que el formato de pequeña empresa joven contenga «nombre e identificación de los trabajadores vinculados directamente con la sociedad». La declaración juramentada acreditaba los tres requisitos de fondo —edad y participación de la accionista, número de trabajadores y activos— pero no relacionaba a las nueve personas. Se añadió el cuadro nominal, con la constancia de que cinco son mujeres y dos ocupan cargos directivos.
+#P **5. Faltaba el manifiesto de emprendimientos sociales.** La lista de chequeo lo enumera entre los documentos que deben anexarse, y no había sido identificado en ninguna de las revisiones anteriores. Es una declaración de **autorreconocimiento** derivada de la Ley 2234 de 2022, que la Superintendencia de Sociedades recoge por el RUES mientras se ajusta el formulario. Se elaboró como documento 16, con manifestación negativa y su fundamento: la sociedad se constituye con ánimo de lucro ordinario, distribuye utilidades a prorrata y no incorpora reinversión de excedentes ni medición de impacto, de modo que el autorreconocimiento no tendría respaldo estatutario. La manifestación puede cambiarse en cualquier renovación posterior.
+#P **6. La liquidación omitía el impuesto de registro sin cuantía.** El numeral 5.2.2 advierte que el trámite causa **dos** impuestos de registro: el de cuantía sobre el capital suscrito, y uno **sin cuantía por la inscripción de cada órgano nombrado**. Aquí se nombra un solo órgano —la representación legal, con principal y suplente—, de modo que se causa un acto sin cuantía adicional, tasado entre dos y cuatro salarios mínimos diarios legales vigentes. El total del trámite pasa de $4.321.100 a un rango aproximado de **$4.414.000 a $4.508.000**, sin contar la matrícula del establecimiento.
+#2 Dos exigencias que el expediente ya cumplía y conviene destacar
+#P La guía cierra el numeral 4 recordando «realizar todas las gestiones que legalmente acreditan y reconocen la calidad de accionista, como la elaboración, entrega del título y la anotación del mismo en el libro de accionistas». El expediente ya lo resolvía: los títulos 001 y 002 del documento 09 y el folio del libro de registro de accionistas del documento 06.
+#P Y el numeral 4 exige los formatos 1 o 2 de situación de control **solo** para la S.A.S. constituida por accionista único persona natural, so pena de que no proceda la inscripción. NOVA BIENESTAR INTEGRAL S.A.S. se constituye con dos accionistas, de modo que no aplica. Conviene tenerlo presente para la sustentación: es un requisito cuya omisión impide el registro, y saber por qué no aplica vale tanto como saber cumplirlo.
 #1 III. Inventario del expediente
 #TW 6,40,12,42
 #TH N.º | Documento | Págs. | Naturaleza
 #TR 01 | Documento privado de constitución (estatutos) | 22 | Acto constitutivo — se radica
 #TR 02 | Cartas de aceptación de cargos | 4 | Anexo obligatorio — se radica
-#TR 03 | Certificación de capital y declaración Ley 1780 | 4 | Soporte — se radica
-#TR 04 | Guía de formularios RUES y liquidación de derechos | 9 | Instrumento de trabajo
+#TR 03 | Certificación de capital y declaración Ley 1780 | 5 | Soporte — se radica
+#TR 04 | Guía de formularios RUES y liquidación de derechos | 10 | Instrumento de trabajo
 #TR 05 | Memorando jurídico justificativo | 23 | Sustentación académica
 #TR 06 | Solicitud de inscripción de libros y libro de accionistas | 4 | Se radica y se conserva
 #TR 07 | Formularios del RUES — hojas de transcripción | 11 | Instrumento de trabajo
-#TR 08 | Formulario 001 del RUT — hoja de transcripción | 5 | Instrumento de trabajo
+#TR 08 | Formulario 001 del RUT — hoja de transcripción | 6 | Instrumento de trabajo
 #TR 09 | Títulos de acciones y comprobantes de aporte | 6 | Se expide tras la matrícula
-#TR 10 | Presentación personal, reconocimiento notarial y poder | 5 | Se radica / se otorga
-#TR 11 | Impuesto de registro y planilla de radicación | 5 | Instrumento de trabajo
+#TR 10 | Presentación personal, reconocimiento notarial y poder | 6 | Se radica / se otorga
+#TR 11 | Impuesto de registro y planilla de radicación | 6 | Instrumento de trabajo
 #TR 12 | Acta n.º 1 de la asamblea general de accionistas | 6 | Se asienta en el libro
 #TR 13 | Solicitudes ante otras entidades | 10 | Se radica ante cada entidad
 #TR 14 | Memorando complementario | 7 | Sustentación académica
-#TR 15 | Este informe final | 10 | Auditoría y estado
-#P **Lo que efectivamente se radica en la Cámara de Comercio** son los documentos 01, 02, 03, 06 y 10, acompañados de los formularios oficiales y del comprobante del impuesto de registro. Los documentos 04, 07, 08 y 11 son instrumentos de trabajo que no se entregan: sirven para diligenciar sin errores. Los documentos 05, 14 y 15 son la sustentación del ejercicio académico.
+#TR 15 | Este informe final | 12 | Auditoría y estado
+#TR 16 | Manifestación de desarrollo de emprendimientos sociales | 3 | Se radica — exigido por la lista de chequeo
+#P **Lo que efectivamente se radica en la Cámara de Comercio** son los documentos 01, 02, 03, 06, 10 y 16, acompañados de los formularios oficiales y del comprobante del impuesto de registro. Los documentos 04, 07, 08 y 11 son instrumentos de trabajo que no se entregan: sirven para diligenciar sin errores. Los documentos 05, 14 y 15 son la sustentación del ejercicio académico.
 #1 IV. Qué falta y dónde conseguirlo
 #2 A. Formatos oficiales que no pueden elaborarse
 #P Estos instrumentos solo existen en la versión que expide la entidad. Ninguna reproducción, por fiel que sea, se admite en ventanilla. Las hojas de transcripción de los documentos 07 y 08 fijan el valor de cada campo, pero no los sustituyen.
@@ -79,7 +113,8 @@
 #TR Carátula única empresarial (2 páginas) | camaramedellin.com.co → servicios registrales → registro mercantil → «Formatos registro mercantil». Alternativa: rues.org.co → «Formatos CAE», archivo de Medellín | Sin costo
 #TR Anexo 1 — establecimientos de comercio, sucursales y agencias | Mismo origen. Es el único anexo aplicable: el anexo 2 corresponde al Registro Único de Proponentes | Sin costo
 #TR (No existe anexo separado de persona jurídica) | Los datos societarios van en la carátula y los toma la Cámara del documento privado de constitución | —
-#TR Formulario adicional de registro con otras entidades | Taquilla de la Cámara o su sede virtual | Sin costo
+#TR Formulario adicional de registro con otras entidades | Taquilla de la Cámara o su sede virtual. Obligatorio porque el domicilio es Medellín | Sin costo
+#TR Formato de pequeña empresa joven (Ley 1780) | Se entrega con el formulario RUES en taquilla, o se descarga del sitio web | Sin costo
 #TR Instructivo de diligenciamiento del formulario RUES | Mismo sitio de la Cámara, junto a los formularios | Sin costo
 #TR Formulario 001 — Registro Único Tributario | Portal transaccional de la DIAN, opción «inscripción en el RUT por Cámara de Comercio». **No existe versión descargable en blanco**: solo se diligencia en línea y el sistema genera el RUT provisional | Sin costo
 #TR Liquidación del impuesto de registro | Portal tributario de la Gobernación de Antioquia, o liquidación practicada por la Cámara cuando opera el convenio de recaudo | $4.200.000
