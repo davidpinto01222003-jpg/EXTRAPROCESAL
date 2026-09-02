@@ -1516,6 +1516,78 @@ peticiones), ponlo en la variable de entorno `DATOS_GOV_APP_TOKEN`.
 > el contacto antes de una comunicación formal** — el correo que reporta un
 > prestador al REPS no siempre es el que atiende asuntos jurídicos.
 
+### Paso 2: buscar a dónde enviarles la propuesta
+
+`ips_enriquecer_contactos.py` toma la base que acabas de generar y, para cada
+sociedad, sale a buscar **por dónde se le radica de verdad una propuesta de
+servicios jurídicos**. Agrega una casilla nueva, resaltada en el Excel:
+
+> **CANAL PARA ENVIAR PROPUESTA**
+
+Doble clic en `ips_enriquecer_contactos.bat`, o:
+
+```
+python ips_enriquecer_contactos.py
+```
+
+Requiere haber corrido antes `ips_area_metropolitana.py`.
+
+#### De dónde saca esa información
+
+1. **La página web del propio prestador.** El dominio sale del correo que la IPS
+   reportó al REPS (`gerencia@clinicasm.com` → `clinicasm.com`). De ahí lee las
+   páginas de contacto, contratación, proveedores, convocatorias, transparencia
+   y notificaciones judiciales, y extrae los correos publicados.
+2. **SECOP** (Colombia Compra Eficiente), vía Datos Abiertos. Busca por el NIT
+   de cada IPS si tiene procesos o contratos cuyo objeto mencione servicios
+   jurídicos, abogados, asesoría legal o representación judicial. Eso responde
+   directo a lo de *"convocatoria para abogados"*: si una IPS ya contrató
+   abogados por SECOP, ahí está el precedente, el valor y el enlace del proceso.
+
+**Cada dato queda con la URL de dónde salió**, en la columna *Evidencia*. Lo que
+no se encuentra queda vacío. Nunca se rellena con suposiciones.
+
+#### Columnas que agrega
+
+| Columna | Qué trae |
+|---|---|
+| **CANAL PARA ENVIAR PROPUESTA** | La respuesta en una línea: el mejor correo encontrado, o el formulario, o "llamar al tal número y pedir el correo de contratación". |
+| Tipo de canal | Si es de contratación, jurídica, gerencia, general… y si el dato salió de la web o solo del REPS (sin confirmar). |
+| Correos de contratación / proveedores | Todos los que encontró de esa área. |
+| Correos jurídica / notificaciones judiciales | El correo de notificaciones judiciales suele ser la puerta directa al área legal. |
+| Convocatorias jurídicas (SECOP) | Cuántos procesos jurídicos tiene esa IPS y el más reciente. |
+| Página de contratación | La URL exacta donde publica sus convocatorias. |
+| Evidencia | De dónde salió cada correo. Para poder auditarlo. |
+| Nota de la búsqueda | Por qué no encontró nada, cuando no encontró. |
+
+Salidas en `datos_ips\`: `IPS_Area_Metropolitana_CON_CANAL.xlsx`,
+`objetivos_ips_con_canal.csv`, y dentro de la base SQLite la tabla
+`enriquecimiento` y la vista `v_objetivos_contacto`.
+
+#### Se comporta bien en la red
+
+Esto visita cientos de sitios de terceros, así que: respeta `robots.txt`, se
+identifica con un User-Agent propio, hace pausa entre peticiones al mismo sitio,
+lee máximo 8 páginas por dominio, y **solo lee páginas públicas** — nunca envía
+formularios ni entra a zonas privadas. Si quieres que el User-Agent lleve tu
+correo de contacto (buena práctica, y algunos administradores lo agradecen),
+define la variable de entorno `CORREO_CONTACTO`.
+
+#### Opciones
+
+```
+python ips_enriquecer_contactos.py --limite 25          (prueba corta)
+python ips_enriquecer_contactos.py --solo-segmento A    (solo los prioritarios)
+python ips_enriquecer_contactos.py --sin-secop          (solo webs)
+python ips_enriquecer_contactos.py --sin-web            (solo SECOP)
+python ips_enriquecer_contactos.py --pausa 2            (más lento, más cortés)
+```
+
+> El correo de contratación es el canal formal, pero no siempre el efectivo. En
+> IPS privadas medianas quien decide contratar asesoría suele ser el gerente o
+> el revisor fiscal; el correo de *notificaciones judiciales*, cuando aparece,
+> es la vía más corta al área que ya está lidiando con pleitos.
+
 ## Si algo falla
 
 - El sitio del SGDE puede cambiar de diseño con el tiempo, lo que puede
