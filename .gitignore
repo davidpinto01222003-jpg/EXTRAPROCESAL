@@ -7,3 +7,6 @@ clasificar_procesos_ejecutivos_revisados.txt
 revisar_correo_pro_progreso.json
 revisar_correo_pro_progreso.json.tmp
 _tmp_descargas_sgde/
+
+# El paquete .zip se reconstruye con el comando del README; no se versiona.
+constitucion_sas_nova_bienestar/*.zip
