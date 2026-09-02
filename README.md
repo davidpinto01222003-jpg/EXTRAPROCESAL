@@ -1429,6 +1429,93 @@ largas, metadatos raros, o simplemente se traba) usa
   Excel, un PDF, el antivirus escaneándola) -- ciérralo e inténtalo de
   nuevo.
 
+## Base de datos de IPS del Área Metropolitana de Bucaramanga (portafolio jurídico)
+
+`ips_area_metropolitana.py` arma un listado depurado de las **sociedades
+habilitadas como IPS** (Instituciones Prestadoras de Servicios de Salud) en
+**Bucaramanga, Floridablanca, Girón y Piedecuesta**, con sus datos de contacto,
+para poder ofrecerles el portafolio de servicios jurídicos.
+
+Doble clic en `ips_area_metropolitana.bat`, o:
+
+```
+python ips_area_metropolitana.py
+```
+
+### De dónde sale la información
+
+De la fuente oficial: el **REPS** (Registro Especial de Prestadores de Servicios
+de Salud) del Ministerio de Salud y Protección Social. El programa la lee de dos
+formas:
+
+1. **Por internet** (por defecto), del portal de Datos Abiertos:
+   [dataset `c36g-9fc2`](https://www.datos.gov.co/Salud-y-Protecci-n-Social/Registro-Especial-de-Prestadores-y-Sedes-de-Servic/c36g-9fc2).
+2. **De un archivo que descargues tú** (`--archivo`), útil si la red de la
+   oficina bloquea `datos.gov.co` o si prefieres el corte oficial del REPS:
+   entra a la [consulta "Registro Actual"](https://prestadores.minsalud.gov.co/habilitacion/consultas/habilitados_reps.aspx),
+   filtra Santander, exporta a Excel y corre:
+
+   ```
+   python ips_area_metropolitana.py --archivo "C:\ruta\Prestadores.xlsx"
+   ```
+
+   Acepta `.xlsx`, `.csv` y `.json`.
+
+**No se inventa ni se completa a mano ningún dato.** Si el REPS no trae correo o
+teléfono de un prestador, la celda queda vacía y esa sociedad queda marcada como
+`Contactable = No`, para que decidas cómo abordarla (por ejemplo, buscando el
+representante legal en el RUES).
+
+### Qué filtra
+
+- **Municipio**: los cuatro del Área Metropolitana, reconocidos por código DANE
+  (68001, 68276, 68307, 68547) o por nombre.
+- **Clase de prestador**: solo IPS. Se descartan profesional independiente,
+  transporte especial de pacientes y objeto social diferente.
+- **Persona jurídica** (las *sociedades*): por la columna de clase de persona
+  cuando existe; si no, por el tipo de documento (NIT vs. cédula), por el
+  formato del NIT, o por la forma societaria en la razón social. El criterio que
+  se usó en cada caso queda escrito en la columna *"Por qué se clasificó así"*,
+  para que puedas auditarlo. Con `--incluir-naturales` también entran las
+  personas naturales habilitadas como IPS.
+
+Las **sedes se agrupan por sociedad** (por NIT): una clínica con cinco sedes
+aparece una sola vez en la hoja de objetivos, con el conteo de sedes y los
+municipios donde opera, y el detalle sede por sede en su propia hoja.
+
+### Qué produce (carpeta `datos_ips\`)
+
+| Archivo | Para qué |
+|---|---|
+| `IPS_Area_Metropolitana.xlsx` | Hojas **Objetivos** (una fila por sociedad), **Sedes**, **Resumen** (conteos por municipio, segmento y naturaleza) y **Fuente** (de dónde salió, cuándo y con qué filtros). |
+| `ips_area_metropolitana.db` | Base SQLite con las tablas `prestadores` y `sedes`, más la vista `v_objetivos`. Sirve para cruzarla con otros informes. |
+| `objetivos_ips.csv` | El mismo listado plano, separado por `;`, para importarlo a un CRM o para una combinación de correspondencia. |
+
+### El orden de contacto
+
+Cada sociedad trae un **puntaje** y un **segmento** (A: contactar primero,
+B: después, C: falta completar datos). Es solo una guía de orden de trabajo, no
+una verdad absoluta: suma por número de sedes, naturaleza privada, nivel de
+complejidad y por tener datos de contacto. Los criterios exactos quedan
+escritos en la columna *"Motivos del puntaje"* de cada fila, así que puedes
+revisarlos, discutirlos o reordenar por lo que te sirva.
+
+### Otras opciones
+
+```
+python ips_area_metropolitana.py --municipios "BUCARAMANGA,LEBRIJA"
+python ips_area_metropolitana.py --incluir-naturales
+python ips_area_metropolitana.py --salida "D:\Comercial\IPS"
+```
+
+Si tienes un *app token* de datos.gov.co (opcional, sube el límite de
+peticiones), ponlo en la variable de entorno `DATOS_GOV_APP_TOKEN`.
+
+> El REPS cambia todo el tiempo: hay altas, bajas y novedades de habilitación
+> cada semana. Vuelve a correr el programa antes de cada campaña, y **verifica
+> el contacto antes de una comunicación formal** — el correo que reporta un
+> prestador al REPS no siempre es el que atiende asuntos jurídicos.
+
 ## Si algo falla
 
 - El sitio del SGDE puede cambiar de diseño con el tiempo, lo que puede
