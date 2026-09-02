@@ -55,18 +55,21 @@
 #TR Condición de importador, exportador o usuario aduanero | NO APLICA, conforme al levantamiento de información
 #PB
 #1 4. Hoja de transcripción — responsabilidades tributarias
-#P Esta es la sección que exige criterio y no simple transcripción. Marcar una responsabilidad que no corresponde genera obligaciones formales inexistentes —y sanciones por no cumplirlas—; omitir una que sí corresponde genera sanción por extemporaneidad. El listado de códigos de la casilla de responsabilidades es actualizado por la DIAN, de modo que el **código debe verificarse en la tabla vigente**; lo que no cambia es el nombre de la responsabilidad.
-#TW 8,34,58
-#TH Código usual | Responsabilidad | Análisis para este caso
-#TR 05 | Impuesto sobre la renta y complementarios, régimen ordinario | **SÍ.** Toda sociedad comercial es contribuyente del régimen ordinario. No se solicita el régimen especial ni el simple.
+#P Esta es la sección que exige criterio y no simple transcripción. Marcar una responsabilidad que no corresponde genera obligaciones formales inexistentes —y sanciones por no cumplirlas—; omitir una que sí corresponde genera sanción por extemporaneidad.
+#P El propio anexo de la Cámara de Comercio de Medellín zanja la cuestión: bajo el título **"Responsabilidades comunes de una S.A.S."** enumera **5 o 47, 7, 14, 42, 48 y 55**. Esa es la combinación que se adopta, con las precisiones que siguen.
+#TW 10,32,58
+#TH Código | Responsabilidad | Análisis para este caso
+#TR 05 | Impuesto sobre la renta y complementarios, régimen ordinario | **SÍ.** Toda sociedad comercial es contribuyente del régimen ordinario. El anexo advierte que quien declara la 05 **no puede diligenciar la 47**, y a la inversa: son excluyentes.
 #TR 07 | Retención en la fuente a título de renta | **SÍ.** La sociedad tendrá nueve trabajadores y celebrará contratos con terceros; será agente retenedor.
-#TR 09 | Retención en la fuente en el impuesto sobre las ventas | **SÍ**, en la medida en que contrate con no residentes o con responsables frente a los cuales deba practicar la retención de IVA.
-#TR 14 | Informante de exógena | Se activará cuando la sociedad supere los topes de ingresos y patrimonio que fija anualmente la resolución de información exógena. En la matrícula inicial no se marca.
-#TR 48 | Impuesto sobre las ventas — IVA | **SÍ.** Aunque los servicios de salud habilitados están excluidos, los servicios de gimnasio, acondicionamiento y bienestar corporal son gravados. La sociedad debe inscribirse como responsable.
-#TR 52 | Facturador electrónico | **SÍ.** La facturación electrónica es obligatoria para los responsables de IVA. Debe tramitarse la habilitación en el servicio de facturación de la DIAN.
-#TR — | Régimen simple de tributación | **NO.** No se opta por el SIMPLE en la constitución. La opción puede evaluarse posteriormente, dentro de los plazos de la ley, comparando la tarifa consolidada con la carga del régimen ordinario más el ICA de Medellín.
-#TR — | Autorretenedor de renta | **NO.** Requiere resolución de autorización de la DIAN, que se solicita cuando la sociedad reúne los requisitos de patrimonio y número de clientes.
-#TR — | Gran contribuyente | **NO.** Se adquiere por resolución de la DIAN.
+#TR 14 | Informante de exógena | **SÍ.** Figura entre las responsabilidades comunes de una S.A.S. según el anexo, de modo que se declara desde la matrícula.
+#TR 42 | Obligado a llevar contabilidad | **SÍ.** Obligación de todo comerciante (artículo 19 del Código de Comercio).
+#TR 48 | Impuesto sobre las ventas | **SÍ.** Aunque los servicios de salud habilitados están excluidos, los de gimnasio, acondicionamiento y bienestar corporal son gravados.
+#TR 55 | Informante de beneficiarios finales | **SÍ.** Obligación del Registro Único de Beneficiarios Finales, incluida entre las responsabilidades comunes de una S.A.S.
+#TR 47 | Régimen simple de tributación | **NO.** No se opta por el SIMPLE en la constitución. Es excluyente con la 05 y puede evaluarse después, comparando la tarifa consolidada con la carga del régimen ordinario más el ICA de Medellín.
+#TR 52 | Facturador electrónico | **NO SE INCLUYE.** El anexo lo prohíbe expresamente: *"tampoco se puede incluir la responsabilidad 52 —facturador electrónico— al requerir de habilitación previa"*. La sociedad deberá habilitarse en el servicio de facturación electrónica de la DIAN **después** de obtener el NIT, y la responsabilidad se agrega entonces mediante actualización del RUT.
+#TR 09 | Retención en la fuente en el impuesto sobre las ventas | **NO SE INCLUYE.** No figura entre las responsabilidades comunes y solo aplica cuando la sociedad deba practicar retención de IVA, por ejemplo al contratar con no residentes. Se agregará por actualización si llega a configurarse.
+#TR 16 | Obligación de facturar por ingresos de bienes y/o servicios excluidos | **NO SE INCLUYE.** Sería redundante: al declararse responsable de IVA (48), la sociedad queda obligada a facturar la totalidad de sus operaciones, gravadas y excluidas.
+#P **Dos reglas del anexo que conviene retener.** La primera es la **exclusión recíproca entre la 05 y la 47**: declarar ambas invalida el anexo. La segunda es que **las responsabilidades que requieren resolución previa de la DIAN no pueden incluirse** en este trámite; ese es el caso de la autorretención de renta (59) y de la condición de gran contribuyente, que se adquieren por acto administrativo posterior.
 #P **Nota sobre el IVA en este negocio.** El numeral 3.º del artículo 476 del Estatuto Tributario excluye del impuesto sobre las ventas los servicios de salud humana. Como NOVA BIENESTAR INTEGRAL S.A.S. desarrollará simultáneamente una línea excluida —rehabilitación física habilitada— y una línea gravada —gimnasio, acondicionamiento y bienestar—, deberá:
 #L Llevar contabilidad que permita **identificar separadamente** los ingresos por servicios excluidos y por servicios gravados.
 #L Aplicar la regla de **proporcionalidad** en el descuento de los impuestos descontables comunes a ambas líneas.
