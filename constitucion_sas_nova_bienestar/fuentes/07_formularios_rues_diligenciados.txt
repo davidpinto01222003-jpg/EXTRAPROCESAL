@@ -9,14 +9,14 @@
 #2 Dónde se descarga el formato oficial
 #TW 40,60
 #TH Formato | Dónde obtenerlo
-#TR Carátula única empresarial y anexos | Sitio de la Cámara de Comercio de Medellín para Antioquia, sección "Crear empresa" → "Formatos y formularios". También en www.rues.org.co, sección "Formatos CAE", donde hay un archivo específico para Medellín.
-#TR Anexo de establecimiento de comercio | Mismo origen; corresponde al anexo de matrícula o renovación de establecimientos.
+#TR Carátula única empresarial (dos páginas) | Sitio de la Cámara de Comercio de Medellín para Antioquia, sección de servicios registrales → registro mercantil → **"Formatos registro mercantil"**. También en www.rues.org.co, sección "Formatos CAE", con archivo específico para Medellín.
+#TR Anexo 1 — establecimientos de comercio, sucursales y agencias | Mismo origen. Es el único anexo que este trámite requiere; el anexo 2 corresponde al Registro Único de Proponentes y no aplica.
 #TR Formulario adicional de registro con otras entidades | Se entrega junto con la carátula en taquilla o se diligencia en la sede virtual de la Cámara.
 #TR Diligenciamiento en línea | Sede virtual de la Cámara de Comercio de Medellín para Antioquia, con firma electrónica de los accionistas.
 #2 Reglas de diligenciamiento del formato físico
 #L Se diligencia a máquina o a mano, en **letra imprenta legible** y con **bolígrafo de tinta negra**.
 #L **No se admiten tachones, enmendaduras ni correcciones**; un error obliga a diligenciar un formulario nuevo.
-#L La carátula única empresarial consta de **dos páginas** y debe acompañarse de los anexos que correspondan al tipo de solicitud.
+#L La carátula única empresarial consta de **dos páginas**, sirve por igual a la persona natural y a la jurídica, y se acompaña de los anexos que correspondan al tipo de solicitud. Para este trámite, solo el anexo 1 de establecimientos de comercio.
 #L Los campos que no apliquen se marcan expresamente como "N/A" o se dejan en blanco, según lo indique el instructivo; nunca se rellenan con datos aproximados.
 #L Las cifras se escriben **sin puntos, sin comas y sin símbolo de peso**, salvo instrucción en contrario del formato.
 #L El formulario debe ir **firmado por el representante legal** designado y, cuando el formato lo prevea, con su huella.
@@ -113,8 +113,10 @@
 #TR 68 | Calidad en que firma | REPRESENTANTE LEGAL
 #TR 69 | Firma y huella | Del representante legal
 #PB
-#1 Sección 3. Anexo de matrícula de persona jurídica
-#P Este anexo alimenta el certificado de existencia y representación legal. Cada dato debe coincidir **literalmente** con el documento privado de constitución; la Cámara coteja ambos y devuelve el trámite ante cualquier discrepancia.
+#1 Sección 3. Datos societarios que alimentan el certificado de existencia y representación legal
+#P **Advertencia sobre esta sección.** El Registro Único Empresarial y Social **no tiene un anexo independiente para la persona jurídica**: la carátula única empresarial sirve tanto a la persona natural como a la jurídica, y los anexos que se descargan por separado son el de **establecimientos de comercio** (anexo 1) y el del **Registro Único de Proponentes** (anexo 2), este último inaplicable aquí.
+#P Los datos que siguen no se transcriben, entonces, a un formulario propio: unos van en las casillas de la carátula que ya se recorrieron en la sección 1, y los demás —capital, objeto, duración, facultades y limitaciones de los administradores— **los toma la Cámara directamente del documento privado de constitución** para incorporarlos al certificado de existencia y representación legal.
+#P Esta sección se conserva por su utilidad práctica: es la **lista de cotejo** con la que debe verificarse que lo escrito en el documento de constitución y lo digitado en la carátula digan exactamente lo mismo. La Cámara compara ambos y devuelve el trámite ante cualquier discrepancia. Si al radicar la Cámara solicita un anexo adicional de persona jurídica, esta lista contiene ya todos sus campos.
 #TW 8,42,50
 #TH N.º | Campo del formulario | Valor a transcribir
 #TR 1 | Razón social | NOVA BIENESTAR INTEGRAL S.A.S.
@@ -149,8 +151,8 @@
 #TR 30 | Cláusula compromisoria | SÍ — arbitraje en derecho, árbitro único, Centro de Conciliación y Arbitraje de la Cámara de Comercio de Medellín para Antioquia
 #P **Verificación obligatoria antes de firmar.** Para cada uno de los tres capitales deben quedar diligenciados **tres datos**: valor en pesos, número de acciones y valor nominal; y, tratándose del suscrito, además la clase de acciones. Es el error de diligenciamiento que la Cámara de Comercio de Medellín señala con mayor frecuencia como causa de devolución.
 #PB
-#1 Sección 4. Anexo de matrícula de establecimiento de comercio
-#P Se diligencia un anexo por cada establecimiento. NOVA BIENESTAR INTEGRAL S.A.S. abre uno solo. Recuérdese que la matrícula del establecimiento es un trámite distinto del de la sociedad: aquella recae sobre un conjunto de bienes (artículo 515 del Código de Comercio), esta sobre un sujeto de derecho.
+#1 Sección 4. Anexo 1 — matrícula de establecimiento de comercio
+#P Se diligencia un anexo por cada establecimiento. NOVA BIENESTAR INTEGRAL S.A.S. abre uno solo. Es el único anexo que se descarga por separado en este trámite. Recuérdese que la matrícula del establecimiento es un trámite distinto del de la sociedad: aquella recae sobre un conjunto de bienes (artículo 515 del Código de Comercio), esta sobre un sujeto de derecho.
 #TW 8,42,50
 #TH N.º | Campo del formulario | Valor a transcribir
 #TR 1 | Tipo de solicitud | MATRÍCULA

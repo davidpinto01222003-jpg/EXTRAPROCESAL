@@ -73,12 +73,12 @@
 #P **Lo que efectivamente se radica en la Cámara de Comercio** son los documentos 01, 02, 03, 06 y 10, acompañados de los formularios oficiales y del comprobante del impuesto de registro. Los documentos 04, 07, 08 y 11 son instrumentos de trabajo que no se entregan: sirven para diligenciar sin errores. Los documentos 05, 14 y 15 son la sustentación del ejercicio académico.
 #1 IV. Qué falta y dónde conseguirlo
 #2 A. Formatos oficiales que no pueden elaborarse
-#P Estos cinco instrumentos solo existen en la versión que expide la entidad. Ninguna reproducción, por fiel que sea, se admite en ventanilla. Las hojas de transcripción de los documentos 07 y 08 fijan el valor de cada campo, pero no los sustituyen.
+#P Estos instrumentos solo existen en la versión que expide la entidad. Ninguna reproducción, por fiel que sea, se admite en ventanilla. Las hojas de transcripción de los documentos 07 y 08 fijan el valor de cada campo, pero no los sustituyen.
 #TW 30,42,28
 #TH Formato | Dónde se obtiene | Costo
-#TR Carátula única empresarial (2 páginas) | camaramedellin.com.co → «Crear empresa» → «Formatos y formularios». Alternativa: rues.org.co → «Formatos CAE», que publica el archivo correspondiente a Medellín | Sin costo
-#TR Anexo de matrícula de persona jurídica | Mismo origen | Sin costo
-#TR Anexo de matrícula de establecimiento de comercio | Mismo origen | Sin costo
+#TR Carátula única empresarial (2 páginas) | camaramedellin.com.co → servicios registrales → registro mercantil → «Formatos registro mercantil». Alternativa: rues.org.co → «Formatos CAE», archivo de Medellín | Sin costo
+#TR Anexo 1 — establecimientos de comercio, sucursales y agencias | Mismo origen. Es el único anexo aplicable: el anexo 2 corresponde al Registro Único de Proponentes | Sin costo
+#TR (No existe anexo separado de persona jurídica) | Los datos societarios van en la carátula y los toma la Cámara del documento privado de constitución | —
 #TR Formulario adicional de registro con otras entidades | Taquilla de la Cámara o su sede virtual | Sin costo
 #TR Instructivo de diligenciamiento del formulario RUES | Mismo sitio de la Cámara, junto a los formularios | Sin costo
 #TR Formulario 001 — Registro Único Tributario | Portal transaccional de la DIAN, opción «inscripción en el RUT por Cámara de Comercio». **No existe versión descargable en blanco**: solo se diligencia en línea y el sistema genera el RUT provisional | Sin costo

@@ -40,11 +40,16 @@ formato oficial.
 
 | Formato | Dónde se obtiene |
 |---------|------------------|
-| Carátula única empresarial y anexos | camaramedellin.com.co → «Crear empresa» → «Formatos y formularios»; también en rues.org.co → «Formatos CAE» (archivo de Medellín) |
-| Instructivo del formulario RUES | Mismo sitio de la Cámara, junto a los formularios |
+| Carátula única empresarial (2 páginas) | camaramedellin.com.co → servicios registrales → registro mercantil → «Formatos registro mercantil»; también rues.org.co → «Formatos CAE» (archivo de Medellín) |
+| Anexo 1 — establecimientos de comercio | Mismo origen. Único anexo aplicable; el anexo 2 es del Registro Único de Proponentes |
 | Formulario adicional de registro con otras entidades | Taquilla de la Cámara o su sede virtual |
+| Instructivo del formulario RUES | Mismo sitio de la Cámara, junto a los formularios |
 | Formulario 001 — RUT | Portal transaccional de la DIAN, opción «inscripción en el RUT por Cámara de Comercio». No existe versión descargable en blanco |
 | Liquidación del impuesto de registro | Portal tributario de la Gobernación de Antioquia, o liquidación de la Cámara si opera el convenio de recaudo |
+
+No existe un anexo separado de persona jurídica: la carátula única sirve a
+persona natural y jurídica, y los datos societarios (capital, objeto, duración,
+administradores) los toma la Cámara del documento privado de constitución.
 
 La ruta cronológica completa de los 19 pasos está en la sección III del
 documento 14.
