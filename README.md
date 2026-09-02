@@ -1516,11 +1516,10 @@ peticiones), ponlo en la variable de entorno `DATOS_GOV_APP_TOKEN`.
 > el contacto antes de una comunicación formal** — el correo que reporta un
 > prestador al REPS no siempre es el que atiende asuntos jurídicos.
 
-### Paso 2: buscar a dónde enviarles la propuesta
+### Paso 2: página oficial, canal de contratación y convocatorias
 
-`ips_enriquecer_contactos.py` toma la base que acabas de generar y, para cada
-sociedad, sale a buscar **por dónde se le radica de verdad una propuesta de
-servicios jurídicos**. Agrega una casilla nueva, resaltada en el Excel:
+`ips_enriquecer_contactos.py` toma la base del paso 1 y, para cada sociedad,
+averigua tres cosas. La casilla principal, resaltada en el Excel, es:
 
 > **CANAL PARA ENVIAR PROPUESTA**
 
@@ -1530,63 +1529,95 @@ Doble clic en `ips_enriquecer_contactos.bat`, o:
 python ips_enriquecer_contactos.py
 ```
 
-Requiere haber corrido antes `ips_area_metropolitana.py`.
+#### 1. Cuál es su página oficial
 
-#### De dónde saca esa información
+Primero por el dominio del correo que la IPS reportó al REPS
+(`gerencia@clinicasm.com` → `clinicasm.com`).
 
-1. **La página web del propio prestador.** El dominio sale del correo que la IPS
-   reportó al REPS (`gerencia@clinicasm.com` → `clinicasm.com`). De ahí lee las
-   páginas de contacto, contratación, proveedores, convocatorias, transparencia
-   y notificaciones judiciales, y extrae los correos publicados.
-2. **SECOP** (Colombia Compra Eficiente), vía Datos Abiertos. Busca por el NIT
-   de cada IPS si tiene procesos o contratos cuyo objeto mencione servicios
-   jurídicos, abogados, asesoría legal o representación judicial. Eso responde
-   directo a lo de *"convocatoria para abogados"*: si una IPS ya contrató
-   abogados por SECOP, ahí está el precedente, el valor y el enlace del proceso.
+Si ese correo es de Gmail, o no hay correo, **deduce dominios candidatos a
+partir de la razón social** — `clinicasantamaria.com`, `.com.co`, `.co`, la
+sigla, etc. — y solo acepta uno si **la propia página confirma que es de esa
+entidad**: porque publica el NIT, o porque nombra a la entidad. Un dominio que
+existe y responde pero no se identifica (una página parqueada, un homónimo de
+otra ciudad) se descarta y queda anotado *"se probaron N dominios parecidos y
+ninguno confirmó ser de la entidad"*.
 
-**Cada dato queda con la URL de dónde salió**, en la columna *Evidencia*. Lo que
-no se encuentra queda vacío. Nunca se rellena con suposiciones.
+La columna *Cómo se halló la página* dice cuál de los dos caminos funcionó, para
+que sepas cuánto confiar en el enlace.
+
+#### 2. Por dónde se le radica una propuesta
+
+Lee las páginas públicas de contacto, contratación, proveedores, convocatorias,
+transparencia y notificaciones judiciales, y extrae los correos publicados,
+clasificados por área. El canal se elige por prioridad: contratación → jurídica
+→ gerencia → notificaciones judiciales → general. Si no hay ningún correo, cae
+al formulario web, y si tampoco, al teléfono del REPS con la instrucción de qué
+pedir.
+
+#### 3. Qué convocatorias tiene o ha tenido
+
+Por dos vías, y ambas van a una hoja aparte del Excel, **Convocatorias**:
+
+- **SECOP**, buscando **por NIT y también por nombre de la entidad**. Lo segundo
+  importa: muchas IPS quedan registradas con el NIT sin dígito de verificación,
+  con el NIT del grupo empresarial, o simplemente mal digitado, y una búsqueda
+  solo por NIT las pierde. Cada hallazgo dice cómo se encontró — `NIT exacto` o
+  `por nombre (NIT en SECOP: X -- confirmar)` — porque un nombre parecido puede
+  ser otra entidad. Los marcados "por nombre" hay que confirmarlos antes de
+  usarlos.
+- **La propia página de la entidad**: enlaces a invitaciones a cotizar, términos
+  de referencia, pliegos y licitaciones publicados en su sección de contratación.
+
+También queda la columna *Contrata por SECOP*, que te dice si esa IPS compra por
+el sistema público de contratación — dato útil aunque no tenga procesos
+jurídicos todavía.
 
 #### Columnas que agrega
 
 | Columna | Qué trae |
 |---|---|
-| **CANAL PARA ENVIAR PROPUESTA** | La respuesta en una línea: el mejor correo encontrado, o el formulario, o "llamar al tal número y pedir el correo de contratación". |
-| Tipo de canal | Si es de contratación, jurídica, gerencia, general… y si el dato salió de la web o solo del REPS (sin confirmar). |
-| Correos de contratación / proveedores | Todos los que encontró de esa área. |
-| Correos jurídica / notificaciones judiciales | El correo de notificaciones judiciales suele ser la puerta directa al área legal. |
-| Convocatorias jurídicas (SECOP) | Cuántos procesos jurídicos tiene esa IPS y el más reciente. |
-| Página de contratación | La URL exacta donde publica sus convocatorias. |
-| Evidencia | De dónde salió cada correo. Para poder auditarlo. |
-| Nota de la búsqueda | Por qué no encontró nada, cuando no encontró. |
+| **CANAL PARA ENVIAR PROPUESTA** | La respuesta en una línea. |
+| Tipo de canal | Área del correo, y si se confirmó en la web o solo viene del REPS. |
+| Página oficial / Cómo se halló | La URL y por qué camino se estableció. |
+| Correos de contratación / proveedores | |
+| Correos jurídica / notificaciones judiciales | El de notificaciones judiciales suele ser la vía más corta al área legal. |
+| Convocatorias jurídicas en SECOP | Cuántas, cuántas por NIT y cuántas por nombre, y la más reciente. |
+| Convocatorias en su propia web | |
+| Contrata por SECOP | |
+| Evidencia | La URL de dónde salió cada dato. |
+| Nota de la búsqueda | Por qué no encontró, cuando no encontró. |
 
-Salidas en `datos_ips\`: `IPS_Area_Metropolitana_CON_CANAL.xlsx`,
-`objetivos_ips_con_canal.csv`, y dentro de la base SQLite la tabla
-`enriquecimiento` y la vista `v_objetivos_contacto`.
+Salidas en `datos_ips\`: `IPS_Area_Metropolitana_CON_CANAL.xlsx` (hojas
+*Objetivos con canal*, *Convocatorias* y *Resumen búsqueda*),
+`objetivos_ips_con_canal.csv`, y en la base SQLite las tablas `enriquecimiento`
+y `convocatorias` más la vista `v_objetivos_contacto`.
 
 #### Se comporta bien en la red
 
-Esto visita cientos de sitios de terceros, así que: respeta `robots.txt`, se
-identifica con un User-Agent propio, hace pausa entre peticiones al mismo sitio,
-lee máximo 8 páginas por dominio, y **solo lee páginas públicas** — nunca envía
-formularios ni entra a zonas privadas. Si quieres que el User-Agent lleve tu
-correo de contacto (buena práctica, y algunos administradores lo agradecen),
-define la variable de entorno `CORREO_CONTACTO`.
+Esto visita cientos de sitios de terceros: respeta `robots.txt`, se identifica
+con un User-Agent propio, pausa entre peticiones al mismo sitio, lee máximo 10
+páginas por dominio, prueba máximo 14 dominios candidatos por entidad (y ni
+siquiera pide la página si el dominio no existe en el DNS), y **solo lee páginas
+públicas**. Nunca envía formularios ni entra a zonas privadas. Si quieres que el
+User-Agent lleve tu correo, define la variable de entorno `CORREO_CONTACTO`.
 
 #### Opciones
 
 ```
 python ips_enriquecer_contactos.py --limite 25          (prueba corta)
-python ips_enriquecer_contactos.py --solo-segmento A    (solo los prioritarios)
-python ips_enriquecer_contactos.py --sin-secop          (solo webs)
-python ips_enriquecer_contactos.py --sin-web            (solo SECOP)
-python ips_enriquecer_contactos.py --pausa 2            (más lento, más cortés)
+python ips_enriquecer_contactos.py --solo-segmento A
+python ips_enriquecer_contactos.py --sin-deducir-dominio  (solo dominios del REPS)
+python ips_enriquecer_contactos.py --solo-nit             (SECOP sin buscar por nombre)
+python ips_enriquecer_contactos.py --sin-secop
+python ips_enriquecer_contactos.py --sin-web
+python ips_enriquecer_contactos.py --pausa 2              (más lento, más cortés)
 ```
 
 > El correo de contratación es el canal formal, pero no siempre el efectivo. En
 > IPS privadas medianas quien decide contratar asesoría suele ser el gerente o
-> el revisor fiscal; el correo de *notificaciones judiciales*, cuando aparece,
-> es la vía más corta al área que ya está lidiando con pleitos.
+> el revisor fiscal. Y una IPS que ya contrató abogados por SECOP es el mejor
+> prospecto que vas a tener en la lista: sabes que compra ese servicio, por
+> cuánto, y a quién.
 
 ## Si algo falla
 
