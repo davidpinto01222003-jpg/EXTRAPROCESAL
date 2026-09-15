@@ -337,16 +337,22 @@ def leer_base(ruta):
     return contactos
 
 
-def preparar_contactos(crudos, excluidos=()):
+def preparar_contactos(crudos, excluidos=(), excluir_sin_institucion=False):
     """
     Limpia la base: corrige direcciones, descarta las invalidas, quita
     duplicados y arregla los nombres en mayuscula sostenida.
+
+    Con excluir_sin_institucion en True tambien deja por fuera las
+    filas que no traen razon social. En la base de IPS del area
+    metropolitana ese vacio no es un error: marca a los clientes
+    actuales de la firma, a quienes no hay que invitar en frio.
 
     Devuelve (contactos_buenos, informe).
     """
     buenos, vistos = [], set()
     informe = {"total": len(crudos), "invalidos": [], "duplicados": 0,
-               "excluidos": 0, "sin_institucion": 0, "por_segmento": {}}
+               "excluidos": 0, "sin_institucion": 0, "clientes_actuales": 0,
+               "por_segmento": {}}
     excluidos = {limpiar_correo(c) for c in excluidos}
 
     for registro in crudos:
@@ -361,6 +367,10 @@ def preparar_contactos(crudos, excluidos=()):
             continue
         if correo in excluidos:
             informe["excluidos"] += 1
+            vistos.add(correo)
+            continue
+        if excluir_sin_institucion and not str(registro.get("institucion", "")).strip():
+            informe["clientes_actuales"] += 1
             vistos.add(correo)
             continue
         vistos.add(correo)
@@ -752,7 +762,11 @@ def cargar_configuracion():
 
 def resumen_base(configuracion, silencioso=False):
     crudos = leer_base(configuracion["base"]["archivo"])
-    contactos, informe = preparar_contactos(crudos, cargar_excluidos())
+    sin_nombre_fuera = (configuracion["base"]
+                        .get("excluir_sin_institucion", "no")
+                        .strip().lower() in ("si", "sí", "s", "true", "1"))
+    contactos, informe = preparar_contactos(crudos, cargar_excluidos(),
+                                            sin_nombre_fuera)
     if not silencioso:
         print("  Base de contactos: %s" % configuracion["base"]["archivo"])
         print("    filas leidas          %d" % informe["total"])
@@ -767,6 +781,9 @@ def resumen_base(configuracion, silencioso=False):
                 print("        ... y %d mas" % (len(informe["invalidos"]) - 5))
         if informe["excluidos"]:
             print("    excluidas (retiro/rebote) %d" % informe["excluidos"])
+        if informe.get("clientes_actuales"):
+            print("    clientes actuales     %d  (sin razon social: quedan "
+                  "fuera de la campana)" % informe["clientes_actuales"])
         if informe.get("sin_institucion"):
             print("    sin razon social      %d  (saludo generico: "
                   "'Senores / Ciudad')" % informe["sin_institucion"])

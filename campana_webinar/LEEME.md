@@ -64,6 +64,19 @@ También entiende celdas con texto alrededor, como
 **Orden de envío.** Si hay una columna de *segmento* o *prioridad*, se
 respeta: los "A - contactar primero" salen antes que los "B".
 
+**Clientes actuales.** En la base del área metropolitana las filas sin
+razón social no son un error: se les quitó el nombre a propósito porque
+ya son clientes de la firma, y no hay que invitarlos en frío. El
+programa las deja por fuera. Esto se controla en `config.ini`:
+
+```
+[base]
+excluir_sin_institucion = si
+```
+
+Con `no` entran a la campaña y reciben el saludo genérico
+"Señores / Ciudad". Si su base no usa ese criterio, póngalo en `no`.
+
 **Municipios.** Si la celda trae varios (`BUCARAMANGA, FLORIDABLANCA,
 GIRON`) se usa el primero, que es lo que va en el encabezado de una
 carta.
@@ -178,15 +191,16 @@ contando los correos normales de la oficina. Además el volumen debe
 subir de a poco: una cuenta que nunca ha enviado masivamente y de un
 día para otro manda mil correos se gana el filtro de SPAM.
 
-La base actual tiene **447 contactos**, así que cabe entera en cuatro
+La base actual queda en **419 contactos** (454 filas, menos 7
+duplicadas y menos 28 clientes actuales), así que cabe entera en cuatro
 días sin forzar nada:
 
 | Día | Cantidad | A quién |
 |---|---|---|
-| Martes 15 | 50 | Los del segmento A que ya conocen a OSCAL |
-| Miércoles 16 | 100 | Resto del segmento A |
-| Jueves 17 | 150 | Segmento B |
-| Viernes 18 | 150 | Segmento B |
+| Martes 15 | 50 | Segmento A |
+| Miércoles 16 | 92 | Resto del segmento A |
+| Jueves 17 | 140 | Segmento B |
+| Viernes 18 | 140 | Segmento B |
 | Lunes 21 | — | Margen por si algo falla |
 | Martes 22 | recordatorio | A los que no se inscribieron |
 
