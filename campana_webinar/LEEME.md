@@ -50,6 +50,24 @@ Los nombres de las columnas pueden variar: sirve *correo*, *email* o
 *ciudad* o *municipio*. No importan las tildes ni las mayúsculas del
 encabezado.
 
+**Bases con varias columnas de correo.** Si la base trae más de una
+columna de correo (como la del área metropolitana, que tiene la de
+jurídica, la de contratación, el canal de contacto y la del REPS), el
+programa escoge en este orden: *jurídica y notificaciones judiciales*,
+después *contratación y proveedores*, después *canal para enviar
+propuesta*, y de último *correo REPS*. Así el mensaje le llega a quien
+de verdad maneja el tema de cartera.
+
+También entiende celdas con texto alrededor, como
+`sergioruiz@fcv.org (General)`, y se queda solo con la dirección.
+
+**Orden de envío.** Si hay una columna de *segmento* o *prioridad*, se
+respeta: los "A - contactar primero" salen antes que los "B".
+
+**Municipios.** Si la celda trae varios (`BUCARAMANGA, FLORIDABLANCA,
+GIRON`) se usa el primero, que es lo que va en el encabezado de una
+carta.
+
 ---
 
 ## Cómo se usa
@@ -110,7 +128,24 @@ python enviar_campana.py enviar --simulacro
 python enviar_campana.py estado
 ```
 
-### 5. Revisar rebotes y retiros
+### 5. Descartar dominios que ya no existen
+
+```
+python enviar_campana.py verificar
+```
+
+Consulta el DNS de cada dominio de la base y muestra cuáles ya no
+reciben correo (empresas que cerraron, dominios vencidos). Pregunta
+antes de excluirlos. Es gratis y evita rebotes, que son lo que más daña
+la reputación del dominio.
+
+Ante una falla de red **no descarta a nadie**: prefiere enviar de más
+que perder un cliente bueno. Por eso conviene correrlo dos veces y
+quedarse con lo que aparezca en ambas.
+
+**Córralo antes del primer envío.**
+
+### 6. Revisar rebotes y retiros
 
 ```
 python enviar_campana.py revisar-buzon
@@ -143,19 +178,24 @@ contando los correos normales de la oficina. Además el volumen debe
 subir de a poco: una cuenta que nunca ha enviado masivamente y de un
 día para otro manda mil correos se gana el filtro de SPAM.
 
-Calendario sugerido hasta el webinar:
+La base actual tiene **447 contactos**, así que cabe entera en cuatro
+días sin forzar nada:
 
 | Día | Cantidad | A quién |
 |---|---|---|
-| Martes 15 | 150 | Clientes actuales y contactos con correo previo |
-| Miércoles 16 | 300 | Los más cercanos del resto |
-| Jueves 17 | 600 | |
-| Viernes 18 | 1.000 | |
-| Lunes 21 | 1.500 | |
+| Martes 15 | 50 | Los del segmento A que ya conocen a OSCAL |
+| Miércoles 16 | 100 | Resto del segmento A |
+| Jueves 17 | 150 | Segmento B |
+| Viernes 18 | 150 | Segmento B |
+| Lunes 21 | — | Margen por si algo falla |
 | Martes 22 | recordatorio | A los que no se inscribieron |
 
-Son unos 3.550 contactos. El fin de semana no conviene enviar. Acuérdese
-de subir `maximo_por_dia` en `config.ini` cada día.
+El programa ya envía en ese orden: primero los "A - contactar primero",
+después los "B". Solo hay que ir subiendo `maximo_por_dia` en
+`config.ini`, o pasar `--maximo 50` en cada corrida.
+
+El fin de semana no conviene enviar: baja la apertura y sube el riesgo
+de que lo marquen como SPAM.
 
 ---
 
@@ -209,7 +249,7 @@ iba.
 | `contactos_ejemplo.csv` | Modelo de la base |
 | `recursos/` | Brochure en PDF y la imagen |
 | `estado/enviados.csv` | Qué se envió y cuándo |
-| `estado/excluidos.csv` | Rebotes y quienes pidieron el retiro |
+| `estado/excluidos.csv` | Rebotes, retiros y dominios muertos |
 
 La base real y el registro de envíos **no se suben al repositorio**:
 son datos personales de terceros.

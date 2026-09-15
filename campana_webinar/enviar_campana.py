@@ -68,16 +68,33 @@ DOMINIO = "oscal.net"
 # Nombres que puede tener cada columna en la base del cliente. Se
 # comparan sin tildes y en minuscula, asi que "INSTITUCIÓN" tambien
 # entra por "institucion".
+# Columnas de correo, EN ORDEN DE PREFERENCIA: si una fila trae correo
+# de juridica se usa ese; si no, el de contratacion; si no, el canal de
+# contacto; y de ultimo el que figura en el REPS. Asi el mensaje llega
+# a quien de verdad maneja el tema de cartera.
+PRIORIDAD_CORREO = (
+    "correos juridica / notificaciones judiciales",
+    "correos juridica / notificaciones judi",
+    "correos de contratacion / proveedores",
+    "canal para enviar propuesta",
+    "correo", "email", "e-mail", "mail", "correo electronico",
+    "correo_electronico", "direccion de correo",
+    "correo reps",
+    "otros correos publicados",
+)
+
 ALIAS_COLUMNAS = {
-    "correo": ("correo", "email", "e-mail", "mail", "correo electronico",
-               "correo_electronico", "direccion de correo"),
-    "institucion": ("institucion", "entidad", "empresa", "razon social",
-                    "nombre entidad", "nombre", "ips", "cliente",
-                    "organizacion"),
-    "ciudad": ("ciudad", "municipio", "ubicacion"),
+    "institucion": ("razon social", "razon social o nombre", "institucion",
+                    "entidad", "empresa", "nombre entidad", "nombre", "ips",
+                    "cliente", "organizacion", "prestador"),
+    "ciudad": ("municipios", "municipio", "ciudad", "ubicacion"),
+    "segmento": ("segmento", "prioridad", "grupo", "orden"),
 }
 
 PATRON_CORREO = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
+# Para pescar la direccion dentro de una celda que trae texto alrededor,
+# como "sergioruiz@fcv.org (General)".
+PATRON_DENTRO = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 
 # Dominios que se escriben mal con mucha frecuencia.
 CORRECCIONES_DOMINIO = {
@@ -132,10 +149,22 @@ def arreglar_mayusculas(texto):
 
 
 def limpiar_correo(valor):
-    """Normaliza una direccion y corrige los dominios mal escritos."""
+    """
+    Normaliza una direccion y corrige los dominios mal escritos.
+
+    Si la celda trae texto alrededor -- "sergioruiz@fcv.org (General)",
+    o dos correos separados por coma -- se queda con la primera
+    direccion que encuentre.
+    """
     if not valor:
         return ""
-    correo = str(valor).strip().strip("<>").replace(" ", "").lower()
+    texto = str(valor).strip()
+    if "@" in texto and (" " in texto or "(" in texto or "," in texto
+                         or ";" in texto or "/" in texto):
+        encontradas = PATRON_DENTRO.findall(texto)
+        if encontradas:
+            texto = encontradas[0]
+    correo = texto.strip().strip("<>").replace(" ", "").lower()
     if correo.startswith("mailto:"):
         correo = correo[7:]
     if "@" in correo:
@@ -243,43 +272,67 @@ def leer_base(ruta):
     if not filas:
         raise ValueError("La base de contactos esta vacia.")
 
-    # Localizar la fila de encabezados: la primera que mencione el correo.
+    # Localizar la fila de encabezados: la primera que mencione algo
+    # que parezca una columna de correo.
     indice_encabezado = None
     for i, fila in enumerate(filas[:10]):
         etiquetas = [sin_tildes(c) for c in fila]
-        if any(e in ALIAS_COLUMNAS["correo"] for e in etiquetas):
+        if any(e in PRIORIDAD_CORREO for e in etiquetas):
             indice_encabezado = i
             break
 
     if indice_encabezado is None:
-        # Sin encabezados: se asume que la primera columna es el correo.
-        contactos = []
-        for fila in filas:
-            contactos.append({
-                "correo": fila[0] if len(fila) > 0 else "",
-                "institucion": fila[1] if len(fila) > 1 else "",
-                "ciudad": fila[2] if len(fila) > 2 else "",
-            })
-        return contactos
+        # No hay encabezados reconocibles: se busca, columna por
+        # columna, cual contiene mas direcciones de correo.
+        mejor, puntaje = None, 0
+        for columna in range(max(len(f) for f in filas)):
+            cuenta = sum(1 for f in filas
+                         if columna < len(f) and PATRON_DENTRO.search(str(f[columna])))
+            if cuenta > puntaje:
+                mejor, puntaje = columna, cuenta
+        if mejor is None:
+            raise ValueError("La base no tiene ninguna columna con correos.")
+        return [{"correo": f[mejor] if mejor < len(f) else "",
+                 "institucion": "", "ciudad": "", "segmento": ""}
+                for f in filas]
 
     encabezado = [sin_tildes(c) for c in filas[indice_encabezado]]
+
+    # Todas las columnas de correo que existan, ordenadas por la
+    # preferencia de PRIORIDAD_CORREO.
+    columnas_correo = []
+    for etiqueta_buscada in PRIORIDAD_CORREO:
+        for i, etiqueta in enumerate(encabezado):
+            if etiqueta == etiqueta_buscada and i not in columnas_correo:
+                columnas_correo.append(i)
+    if not columnas_correo:
+        raise ValueError("La base no tiene ninguna columna de correo.")
+
     posicion = {}
     for campo, alias in ALIAS_COLUMNAS.items():
-        for i, etiqueta in enumerate(encabezado):
-            if etiqueta in alias:
-                posicion[campo] = i
+        for etiqueta_buscada in alias:
+            encontrada = next((i for i, e in enumerate(encabezado)
+                               if e == etiqueta_buscada), None)
+            if encontrada is not None:
+                posicion[campo] = encontrada
                 break
-
-    if "correo" not in posicion:
-        raise ValueError("La base no tiene ninguna columna de correo.")
 
     contactos = []
     for fila in filas[indice_encabezado + 1:]:
-        registro = {}
-        for campo, i in posicion.items():
-            registro[campo] = fila[i] if i < len(fila) else ""
-        registro.setdefault("institucion", "")
-        registro.setdefault("ciudad", "")
+        correo = ""
+        for i in columnas_correo:
+            candidato = limpiar_correo(fila[i] if i < len(fila) else "")
+            if correo_valido(candidato):
+                correo = candidato
+                break
+        registro = {"correo": correo}
+        for campo in ("institucion", "ciudad", "segmento"):
+            i = posicion.get(campo)
+            registro[campo] = (fila[i] if i is not None and i < len(fila) else "")
+        # "BUCARAMANGA, FLORIDABLANCA, GIRON" -> "Bucaramanga": en el
+        # encabezado de una carta va una sola ciudad.
+        if registro["ciudad"]:
+            registro["ciudad"] = registro["ciudad"].split(",")[0].strip()
         contactos.append(registro)
     return contactos
 
@@ -293,7 +346,7 @@ def preparar_contactos(crudos, excluidos=()):
     """
     buenos, vistos = [], set()
     informe = {"total": len(crudos), "invalidos": [], "duplicados": 0,
-               "excluidos": 0}
+               "excluidos": 0, "sin_institucion": 0, "por_segmento": {}}
     excluidos = {limpiar_correo(c) for c in excluidos}
 
     for registro in crudos:
@@ -315,7 +368,20 @@ def preparar_contactos(crudos, excluidos=()):
             "correo": correo,
             "institucion": arreglar_mayusculas(registro.get("institucion", "")),
             "ciudad": arreglar_mayusculas(registro.get("ciudad", "")),
+            "segmento": (registro.get("segmento") or "").strip(),
         })
+        if not buenos[-1]["institucion"]:
+            informe["sin_institucion"] += 1
+
+    # Si la base trae una columna de segmento o prioridad ("A - contactar
+    # primero", "B - ..."), se respeta ese orden: los A salen antes.
+    if any(c["segmento"] for c in buenos):
+        buenos.sort(key=lambda c: (c["segmento"] or "zzz").upper())
+        informe["por_segmento"] = {}
+        for contacto in buenos:
+            etiqueta = contacto["segmento"] or "(sin segmento)"
+            informe["por_segmento"][etiqueta] = \
+                informe["por_segmento"].get(etiqueta, 0) + 1
     return buenos, informe
 
 
@@ -552,6 +618,126 @@ def es_tope_de_google(error):
 
 
 # ---------------------------------------------------------------------
+#  Verificacion de dominios (evita rebotes antes de enviar)
+# ---------------------------------------------------------------------
+
+# Proveedores masivos: no hace falta consultarlos, siempre existen.
+PROVEEDORES_CONOCIDOS = {
+    "gmail.com", "hotmail.com", "hotmail.es", "hotmail.com.co",
+    "outlook.com", "outlook.es", "live.com", "yahoo.com", "yahoo.es",
+    "yahoo.com.co", "icloud.com", "aol.com", "protonmail.com",
+    "gmail.com.co", "msn.com",
+}
+
+RESOLVEDORES = ("8.8.8.8", "1.1.1.1", "9.9.9.9")
+
+
+def _consulta_dns(dominio, tipo):
+    """
+    Pregunta al DNS por un dominio sin depender de ninguna libreria
+    externa. tipo 15 = MX, tipo 1 = A. Devuelve True si hay respuesta.
+    """
+    import socket as _socket
+    import struct as _struct
+    cabecera = _struct.pack(">HHHHHH", random.randint(0, 65535), 0x0100,
+                            1, 0, 0, 0)
+    pregunta = b"".join(bytes([len(p)]) + p.encode()
+                        for p in dominio.split(".")) + b"\x00"
+    paquete = cabecera + pregunta + _struct.pack(">HH", tipo, 1)
+    for resolvedor in RESOLVEDORES:
+        try:
+            conexion = _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
+            conexion.settimeout(4)
+            conexion.sendto(paquete, (resolvedor, 53))
+            respuesta, _ = conexion.recvfrom(2048)
+            conexion.close()
+            respuestas = _struct.unpack(">H", respuesta[6:8])[0]
+            return respuestas > 0
+        except Exception:  # noqa: BLE001
+            continue
+    raise OSError("sin acceso al DNS")
+
+
+def dominio_recibe_correo(dominio):
+    """
+    True si el dominio existe y puede recibir correo. Ante la duda
+    devuelve True: mas vale enviar de mas que descartar a un cliente
+    bueno por una falla de red.
+    """
+    if dominio in PROVEEDORES_CONOCIDOS:
+        return True
+    try:
+        if _consulta_dns(dominio, 15):   # MX
+            return True
+        return _consulta_dns(dominio, 1)  # A, por si recibe sin MX
+    except OSError:
+        # Sin DNS por UDP (red corporativa, firewall): se intenta por
+        # la via normal del sistema operativo.
+        import socket as _socket
+        try:
+            _socket.getaddrinfo(dominio, None)
+            return True
+        except Exception:  # noqa: BLE001
+            return True  # no se pudo comprobar: no se descarta a nadie
+
+
+def orden_verificar(args, configuracion):
+    contactos, _ = resumen_base(configuracion)
+    dominios = {}
+    for contacto in contactos:
+        dominios.setdefault(contacto["correo"].split("@")[1], []).append(contacto)
+
+    por_revisar = sorted(d for d in dominios if d not in PROVEEDORES_CONOCIDOS)
+    conocidos = len(dominios) - len(por_revisar)
+
+    print()
+    print("  Dominios distintos en la base   %d" % len(dominios))
+    print("  De proveedores conocidos        %d  (no hace falta revisarlos)"
+          % conocidos)
+    print("  Por consultar en el DNS         %d" % len(por_revisar))
+    print()
+
+    muertos = []
+    en_consola = sys.stdout.isatty()
+    for i, dominio in enumerate(por_revisar, 1):
+        if en_consola:
+            print("\r  consultando %d de %d..." % (i, len(por_revisar)),
+                  end="", flush=True)
+        elif i % 50 == 0 or i == len(por_revisar):
+            print("  consultados %d de %d" % (i, len(por_revisar)))
+        if not dominio_recibe_correo(dominio):
+            muertos.append(dominio)
+    if en_consola:
+        print("\r" + " " * 40 + "\r", end="")
+
+    if not muertos:
+        print("  Todos los dominios responden. No hay nada que descartar.")
+        return
+
+    total_afectados = sum(len(dominios[d]) for d in muertos)
+    print("  Dominios que ya no existen o no reciben correo: %d"
+          % len(muertos))
+    print("  Direcciones afectadas: %d" % total_afectados)
+    print()
+    for dominio in muertos:
+        for contacto in dominios[dominio]:
+            print("    %-45s %s" % (contacto["correo"],
+                                    contacto["institucion"][:28]))
+
+    print()
+    respuesta = input("  Excluir esas direcciones del envio? (si/no): ").strip().lower()
+    if respuesta in ("si", "s", "sí"):
+        anotados = 0
+        for dominio in muertos:
+            for contacto in dominios[dominio]:
+                if anotar_excluido(contacto["correo"], "el dominio no existe"):
+                    anotados += 1
+        print("  Excluidas %d direcciones. El envio ya no les escribe." % anotados)
+    else:
+        print("  No se excluyo ninguna. Se les enviara igual.")
+
+
+# ---------------------------------------------------------------------
 #  Ordenes
 # ---------------------------------------------------------------------
 
@@ -581,6 +767,14 @@ def resumen_base(configuracion, silencioso=False):
                 print("        ... y %d mas" % (len(informe["invalidos"]) - 5))
         if informe["excluidos"]:
             print("    excluidas (retiro/rebote) %d" % informe["excluidos"])
+        if informe.get("sin_institucion"):
+            print("    sin razon social      %d  (saludo generico: "
+                  "'Senores / Ciudad')" % informe["sin_institucion"])
+        if informe.get("por_segmento"):
+            print("    orden de envio por segmento:")
+            for etiqueta in sorted(informe["por_segmento"]):
+                print("        %-30.30s %d"
+                      % (etiqueta, informe["por_segmento"][etiqueta]))
     return contactos, informe
 
 
@@ -1023,6 +1217,11 @@ def main():
     p = ordenes.add_parser("estado", help="muestra el avance de la campana")
     p.add_argument("--base", help="usar otra base en vez de la del config.ini")
     p.set_defaults(funcion=orden_estado)
+
+    p = ordenes.add_parser("verificar",
+                           help="descarta dominios que ya no existen")
+    p.add_argument("--base", help="usar otra base en vez de la del config.ini")
+    p.set_defaults(funcion=orden_verificar)
 
     p = ordenes.add_parser("revisar-buzon",
                            help="busca rebotes y solicitudes de retiro")
