@@ -464,6 +464,78 @@ def ruta_recurso(configuracion, clave):
     return None
 
 
+def datos_imagen(ruta):
+    """
+    Devuelve (ancho, alto, kilobytes) leyendo la cabecera del archivo,
+    sin necesidad de Pillow ni de ninguna otra libreria.
+    """
+    datos = ruta.read_bytes()
+    kb = len(datos) / 1024
+    ancho = alto = 0
+    try:
+        if datos[:8] == b"\x89PNG\r\n\x1a\n":
+            ancho = int.from_bytes(datos[16:20], "big")
+            alto = int.from_bytes(datos[20:24], "big")
+        elif datos[:2] == b"\xff\xd8":  # JPEG
+            i = 2
+            while i < len(datos) - 9:
+                if datos[i] != 0xFF:
+                    i += 1
+                    continue
+                marca = datos[i + 1]
+                # SOF0..SOF15, saltando los que no llevan medidas
+                if 0xC0 <= marca <= 0xCF and marca not in (0xC4, 0xC8, 0xCC):
+                    alto = int.from_bytes(datos[i + 5:i + 7], "big")
+                    ancho = int.from_bytes(datos[i + 7:i + 9], "big")
+                    break
+                if marca in (0xD8, 0x01) or 0xD0 <= marca <= 0xD7:
+                    i += 2
+                else:
+                    i += 2 + int.from_bytes(datos[i + 2:i + 4], "big")
+        elif datos[:6] in (b"GIF87a", b"GIF89a"):
+            ancho = int.from_bytes(datos[6:8], "little")
+            alto = int.from_bytes(datos[8:10], "little")
+    except Exception:  # noqa: BLE001
+        pass
+    return ancho, alto, kb
+
+
+def revisar_imagen(ruta):
+    """
+    Avisa de los tres problemas que de verdad arruinan el correo: que
+    pese demasiado, que se vea borrosa, o que se haya puesto por error
+    la version cuadrada en vez del banner horizontal.
+    """
+    ancho, alto, kb = datos_imagen(ruta)
+    if not ancho:
+        return ["%s (%.0f KB) -- no se pudieron leer las medidas" % (ruta.name, kb)]
+
+    lineas = ["%s -- %d x %d pixeles, %.0f KB" % (ruta.name, ancho, alto, kb)]
+    proporcion = ancho / alto if alto else 0
+
+    if proporcion < 1.2:
+        lineas.append(
+            "    OJO: es casi cuadrada. Parece la version para redes. "
+            "En el correo")
+        lineas.append(
+            "    ocupa toda la pantalla y empuja el texto hacia abajo. "
+            "Use el banner ancho.")
+    if kb > 300:
+        lineas.append(
+            "    PESA MUCHO (%.0f KB). Guardela como JPG de 1200 px de "
+            "ancho:" % kb)
+        lineas.append(
+            "    queda en unos 150 KB y no se nota la diferencia.")
+    if ancho < 600:
+        lineas.append(
+            "    Muy pequena (%d px). En el correo se muestra a 600 px, "
+            "asi que" % ancho)
+        lineas.append("    se vera borrosa. Conviene una de 1200 px.")
+    if proporcion >= 1.2 and kb <= 300 and ancho >= 600:
+        lineas.append("    Medidas y peso correctos.")
+    return lineas
+
+
 def construir_mensaje(contacto, configuracion, plantillas, para=None):
     """Arma el EmailMessage completo para un contacto."""
     html_base, texto_base = plantillas
@@ -806,8 +878,14 @@ def orden_vista_previa(args, configuracion):
     imagen = ruta_recurso(configuracion, "imagen")
     adjunto = ruta_recurso(configuracion, "adjunto")
     print()
-    print("  Imagen incrustada: %s" % (imagen.name if imagen else
-                                       "NO (falta el archivo, el correo sale sin imagen)"))
+    if imagen:
+        print("  Imagen incrustada:")
+        for linea in revisar_imagen(imagen):
+            print("    %s" % linea)
+    else:
+        print("  Imagen incrustada: NO")
+        print("    Falta el archivo. El correo se envia igual, sin imagen.")
+        print("    Ponga el banner en la carpeta: %s" % (BASE / "recursos"))
     print("  Brochure adjunto:  %s" % (
         "%s (%.0f KB)" % (adjunto.name, adjunto.stat().st_size / 1024)
         if adjunto else "NO"))
@@ -931,7 +1009,13 @@ def orden_enviar(args, configuracion):
     if adjunto:
         print("    brochure adjunto      %s (%.0f KB)" % (
             adjunto.name, adjunto.stat().st_size / 1024))
-    if not ruta_recurso(configuracion, "imagen"):
+    imagen_envio = ruta_recurso(configuracion, "imagen")
+    if imagen_envio:
+        avisos = revisar_imagen(imagen_envio)
+        print("    imagen                %s" % avisos[0])
+        for linea in avisos[1:]:
+            print("    %s" % linea)
+    else:
         print("    AVISO: falta la imagen; los correos saldran sin ella.")
 
     if args.simulacro:

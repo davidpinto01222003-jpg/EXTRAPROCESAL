@@ -27,10 +27,25 @@ antes de ejecutar:
 set OSCAL_SMTP_PASSWORD=lasdieciseisletras
 ```
 
-**2. La imagen del webinar.** Guarde el banner horizontal (el de
-formato ancho, no el cuadrado) dentro de la carpeta `recursos/` con el
-nombre `imagen_webinar.jpg`. Sirve igual en `.png`. Ancho recomendado:
-1200 píxeles, menos de 200 KB.
+**2. La imagen del webinar.** Arrastre el banner **horizontal** (el
+ancho, no el cuadrado de redes) a la carpeta `recursos/`. El nombre da
+igual: el programa busca cualquier `.jpg`, `.jpeg`, `.png` o `.gif` que
+haya ahí. La única regla es que haya **una sola imagen** en esa carpeta.
+
+Después corra `vista-previa` y el programa le dice las medidas, el peso
+y si algo anda mal:
+
+```
+Imagen incrustada:
+  imagen_webinar.jpg -- 1200 x 606 pixeles, 148 KB
+      Medidas y peso correctos.
+```
+
+Avisa de tres cosas: si puso por error la versión cuadrada, si la
+imagen pesa más de 300 KB, o si es tan pequeña que se verá borrosa.
+
+Lo ideal: JPG de 1200 píxeles de ancho, por debajo de 200 KB. Importa
+porque el correo ya lleva el brochure de 948 KB.
 
 Si no pone ninguna imagen el correo se envía igual, solo que sin ella y
 sin dejar un recuadro roto.
