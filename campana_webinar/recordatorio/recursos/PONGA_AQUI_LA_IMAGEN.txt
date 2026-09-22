@@ -1,0 +1,12 @@
+Copie aqui el banner horizontal del webinar, el mismo archivo JPG que
+usó en la campaña (el de 1200 px de ancho, no el PNG pesado de 4,9 MB).
+
+Está en la otra carpeta, en:
+    campana_webinar\recursos\
+
+El nombre no importa: el programa toma cualquier .jpg, .jpeg, .png o
+.gif que encuentre en esta carpeta. La única regla es que haya UNA SOLA
+imagen aquí.
+
+Después corra "py enviar_campana.py vista-previa" y confirme que dice
+"Medidas y peso correctos".
