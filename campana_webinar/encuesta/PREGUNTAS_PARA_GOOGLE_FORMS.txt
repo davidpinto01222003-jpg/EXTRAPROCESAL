@@ -73,24 +73,23 @@ SECCION 3: SU CARTERA
 
 
 =====================================================================
-  DESPUES DE CREARLO
+  EL CORREO YA ESTA LISTO
 =====================================================================
 
-1. Boton "Enviar" (arriba a la derecha) -> icono de eslabon (cadena)
-   -> marque "Acortar URL" -> Copiar.
-   Le queda un enlace tipo  https://forms.gle/xxxxxxxx
+El enlace del formulario ya quedo puesto en config.ini:
+    https://forms.gle/CjvkgFxecpCLeHMQA
 
-2. Abra config.ini de esta carpeta con el Bloc de notas.
-   Busque la linea:
-       enlace_inscripcion = PEGUE_AQUI_EL_ENLACE_DEL_FORMULARIO
-   Reemplace esa parte por su enlace. Guarde.
+El correo lleva dos imagenes incrustadas, las dos en recursos/:
+    imagen_webinar.png   el banner, arriba
+    foto_equipo.jpg      la foto del equipo, antes de la firma
 
-3. Pruebe primero:
-       py enviar_campana.py prueba --para 22jorgecaicedo@gmail.com
-   Abra el correo y haga clic en el boton amarillo. Debe abrir el
-   formulario.
+Solo falta probar y enviar:
 
-4. Envie:
-       py enviar_campana.py enviar
+    py enviar_campana.py prueba --para 22jorgecaicedo@gmail.com
 
-El programa no lo deja enviar si se le olvida el paso 2.
+Abra ese correo, revise que se vean las dos imagenes y haga clic en el
+boton amarillo: debe abrir el formulario.
+
+    py enviar_campana.py enviar
+
+Salen los 46. Con las pausas configuradas tarda unos 9 minutos.

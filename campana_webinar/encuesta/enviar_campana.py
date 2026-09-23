@@ -451,15 +451,21 @@ def ruta_recurso(configuracion, clave):
         ruta = BASE / ruta
     if ruta.exists():
         return ruta
-    if clave == "imagen":
+    if clave in ("imagen", "foto"):
         for extension in (".jpg", ".jpeg", ".png", ".gif"):
             alterna = ruta.with_suffix(extension)
             if alterna.exists():
                 return alterna
-        # Ultimo intento: cualquier imagen dentro de la carpeta.
+        # Ultimo intento: cualquier imagen de la carpeta que no sea la
+        # del otro recurso, para no confundir el banner con la foto.
+        otra = configuracion["mensaje"].get(
+            "foto" if clave == "imagen" else "imagen", "").strip()
+        otra = Path(otra).name.lower() if otra else ""
         carpeta = ruta.parent
         if carpeta.is_dir():
             for encontrada in sorted(carpeta.iterdir()):
+                if encontrada.name.lower() == otra:
+                    continue
                 if encontrada.suffix.lower() in (".jpg", ".jpeg", ".png", ".gif"):
                     return encontrada
     return None
@@ -560,30 +566,41 @@ def construir_mensaje(contacto, configuracion, plantillas, para=None):
     # marca el correo como envio masivo y Gmail lo saca de Principal,
     # que es justo donde tiene que llegar un enlace para mañana.
 
-    # La imagen va incrustada; si el archivo no existe, se quita el
-    # bloque completo para que no quede un recuadro roto.
-    imagen = ruta_recurso(configuracion, "imagen")
-    if imagen:
+    # Las imagenes van incrustadas. Si un archivo no esta, se borra su
+    # bloque entero para que no quede el recuadro roto del navegador.
+    incrustadas = []
+    for clave, marcador, alterno, relleno in (
+            ("imagen", "[[BLOQUE_IMAGEN]]",
+             "Webinar: recuperacion de cartera con EPS intervenidas",
+             "padding:0;line-height:0;"),
+            ("foto", "[[BLOQUE_FOTO]]",
+             "El equipo de OSCAL Consultores Juridicos",
+             "padding:4px 32px 26px 32px;line-height:0;")):
+        if marcador not in cuerpo:
+            continue
+        archivo = ruta_recurso(configuracion, clave)
+        if not archivo:
+            cuerpo = cuerpo.replace(marcador, "")
+            continue
         identificador = make_msgid(domain=DOMINIO)
-        cuerpo = cuerpo.replace("[[BLOQUE_IMAGEN]]", (
-            '<tr><td style="padding:0;line-height:0;">'
-            '<img src="cid:%s" width="600" alt="Webinar: recuperacion de '
-            'cartera con EPS intervenidas. Miercoles 23 de septiembre, '
-            '8:00 a. m." style="display:block;width:100%%;max-width:600px;'
-            'height:auto;border:0;"></td></tr>' % identificador[1:-1]))
-    else:
-        cuerpo = cuerpo.replace("[[BLOQUE_IMAGEN]]", "")
-        identificador = None
+        cuerpo = cuerpo.replace(marcador, (
+            '<tr><td style="%s">'
+            '<img src="cid:%s" width="600" alt="%s" '
+            'style="display:block;width:100%%;max-width:600px;'
+            'height:auto;border:0;"></td></tr>'
+            % (relleno, identificador[1:-1], alterno)))
+        incrustadas.append((archivo, identificador))
 
     mensaje.set_content(texto)
     mensaje.add_alternative(cuerpo, subtype="html")
 
-    if imagen:
+    if incrustadas:
         parte_html = mensaje.get_payload()[-1]
-        datos = imagen.read_bytes()
-        subtipo = {".png": "png", ".gif": "gif"}.get(imagen.suffix.lower(), "jpeg")
-        parte_html.add_related(datos, maintype="image", subtype=subtipo,
-                               cid=identificador)
+        for archivo, identificador in incrustadas:
+            subtipo = {".png": "png", ".gif": "gif"}.get(
+                archivo.suffix.lower(), "jpeg")
+            parte_html.add_related(archivo.read_bytes(), maintype="image",
+                                   subtype=subtipo, cid=identificador)
 
     adjunto = ruta_recurso(configuracion, "adjunto")
     if adjunto:
@@ -889,6 +906,15 @@ def orden_vista_previa(args, configuracion):
         print("  Imagen incrustada: NO")
         print("    Falta el archivo. El correo se envia igual, sin imagen.")
         print("    Ponga el banner en la carpeta: %s" % (BASE / "recursos"))
+
+    foto = ruta_recurso(configuracion, "foto")
+    if foto:
+        print("  Foto del equipo:")
+        for linea in revisar_imagen(foto):
+            print("    %s" % linea)
+    else:
+        print("  Foto del equipo:   NO")
+        print("    El correo se envia igual, sin la foto.")
     print("  Brochure adjunto:  %s" % (
         "%s (%.0f KB)" % (adjunto.name, adjunto.stat().st_size / 1024)
         if adjunto else "NO"))
