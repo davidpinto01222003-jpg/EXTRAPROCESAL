@@ -28,13 +28,10 @@ SECCION 1: LA SESION DE HOY
    Etiqueta del 1: Poco util
    Etiqueta del 5: Muy util
 
-3. Que se lleva de la sesion que pueda aplicar en su institucion?
+3. Que le falto, o que hubiera querido que profundizaramos?
    Tipo: Parrafo                  opcional
 
-4. Que le falto, o que hubiera querido que profundizaramos?
-   Tipo: Parrafo                  opcional
-
-5. La duracion de 45 minutos le parecio:
+4. La duracion de 45 minutos le parecio:
    Tipo: Opcion multiple          OBLIGATORIA
    - Muy corta, hubiera querido mas
    - Adecuada
@@ -45,25 +42,13 @@ SECCION 1: LA SESION DE HOY
 SECCION 2: PROXIMAS SESIONES
 ---------------------------------------------------------------------
 
-6. Sobre cual de estos temas le interesaria una proxima sesion?
-   Tipo: Casillas de verificacion (puede marcar varias)   OBLIGATORIA
-   - Cobro de cartera a EPS ya en liquidacion: ante quien y con que
-     terminos
-   - Glosas y devoluciones: como sostener la objecion y no perder el
-     valor
-   - Conciliacion prejudicial y cobro ejecutivo contra una EPS
-   - Giro directo y recursos de la ADRES: como asegurar que lleguen
-   - Contratacion por capitacion bajo el Decreto 858 de 2025
-   - Acuerdos de pago y saneamiento de cartera con EPS intervenidas
-   - Responsabilidad del gerente y control fiscal por cartera no
-     gestionada
-   - Tutela y medidas urgentes para destrabar flujo de recursos
-   - Otra (active la casilla "Otros" abajo de la lista)
+5. Sobre que tema le gustaria que hicieramos la proxima sesion?
+   Tipo: Parrafo                  OBLIGATORIA
+   Texto de ayuda (el renglon gris debajo de la pregunta):
+     Entre mas concreto, mejor. Si hay una situacion puntual que lo
+     tiene atascado, cuentenosla.
 
-7. Hay algun otro tema que le serviria y no esta en la lista?
-   Tipo: Respuesta corta          opcional
-
-8. A que hora le queda mejor conectarse?
+6. A que hora le queda mejor conectarse?
    Tipo: Opcion multiple          OBLIGATORIA
    - Temprano en la manana (7:00 a 9:00)
    - Media manana (9:00 a 11:00)
@@ -75,16 +60,16 @@ SECCION 2: PROXIMAS SESIONES
 SECCION 3: SU CARTERA
 ---------------------------------------------------------------------
 
-9. Quiere que revisemos la cartera de su institucion en una reunion
+7. Quiere que revisemos la cartera de su institucion en una reunion
    sin costo?
    Tipo: Opcion multiple          OBLIGATORIA
    - Si, me interesa
    - Tal vez mas adelante
    - No por ahora
 
-10. Si respondio que si, dejenos un celular o WhatsApp y lo
-    contactamos
-    Tipo: Respuesta corta         opcional
+8. Si respondio que si, dejenos un celular o WhatsApp y lo
+   contactamos
+   Tipo: Respuesta corta          opcional
 
 
 =====================================================================
