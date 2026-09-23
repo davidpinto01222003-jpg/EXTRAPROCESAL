@@ -1,0 +1,4 @@
+Copie aqui el banner (imagen_webinar.jpg), el mismo que esta en:
+   campana_webinar\recordatorio\recursos\imagen_webinar.jpg
+
+Si no alcanza, el correo sale igual, sin banner. Lo importante es el enlace.
