@@ -1,4 +1,0 @@
-Opcional. Si quiere que el correo lleve el banner, copie aqui el
-archivo imagen_webinar.jpg (el mismo de la campana).
-
-Si no lo pone, el correo sale igual, sin imagen.
