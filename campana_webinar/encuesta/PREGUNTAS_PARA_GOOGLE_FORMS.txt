@@ -79,16 +79,18 @@ SECCION 3: SU CARTERA
 El enlace del formulario ya quedo puesto en config.ini:
     https://forms.gle/CjvkgFxecpCLeHMQA
 
-El correo lleva dos imagenes incrustadas, las dos en recursos/:
-    imagen_webinar.png   el banner, arriba
-    foto_equipo.jpg      la foto del equipo, antes de la firma
+El correo lleva el banner incrustado arriba:
+    recursos/banner_encuesta.jpg
+
+Para la cabecera del formulario use banner_forms.jpg, que es el mismo
+en 1600x400.
 
 Solo falta probar y enviar:
 
     py enviar_campana.py prueba --para 22jorgecaicedo@gmail.com
 
-Abra ese correo, revise que se vean las dos imagenes y haga clic en el
-boton amarillo: debe abrir el formulario.
+Abra ese correo, revise que se vea el banner y haga clic en el boton
+amarillo: debe abrir el formulario.
 
     py enviar_campana.py enviar
 
