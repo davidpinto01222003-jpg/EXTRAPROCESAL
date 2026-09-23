@@ -1,0 +1,111 @@
+=====================================================================
+  ENCUESTA DE SATISFACCION - WEBINAR 23 DE SEPTIEMBRE
+  Para copiar en forms.google.com
+=====================================================================
+
+TITULO DEL FORMULARIO
+  Webinar: cartera con EPS intervenidas - su opinion
+
+DESCRIPCION
+  Son dos minutos. Lo que responda aqui define los temas de las
+  proximas sesiones.
+
+CONFIGURACION (rueda dentada, arriba a la derecha)
+  - Recopilar correos: SI, "verificado" o "de entrada"
+  - Limitar a una respuesta: NO (traba a quien no tenga cuenta Google)
+  - Barra de progreso: SI
+
+
+---------------------------------------------------------------------
+SECCION 1: LA SESION DE HOY
+---------------------------------------------------------------------
+
+1. Institucion o IPS
+   Tipo: Respuesta corta          OBLIGATORIA
+
+2. En general, que tan util le resulto la sesion?
+   Tipo: Escala lineal, de 1 a 5  OBLIGATORIA
+   Etiqueta del 1: Poco util
+   Etiqueta del 5: Muy util
+
+3. Que se lleva de la sesion que pueda aplicar en su institucion?
+   Tipo: Parrafo                  opcional
+
+4. Que le falto, o que hubiera querido que profundizaramos?
+   Tipo: Parrafo                  opcional
+
+5. La duracion de 45 minutos le parecio:
+   Tipo: Opcion multiple          OBLIGATORIA
+   - Muy corta, hubiera querido mas
+   - Adecuada
+   - Muy larga
+
+
+---------------------------------------------------------------------
+SECCION 2: PROXIMAS SESIONES
+---------------------------------------------------------------------
+
+6. Sobre cual de estos temas le interesaria una proxima sesion?
+   Tipo: Casillas de verificacion (puede marcar varias)   OBLIGATORIA
+   - Cobro de cartera a EPS ya en liquidacion: ante quien y con que
+     terminos
+   - Glosas y devoluciones: como sostener la objecion y no perder el
+     valor
+   - Conciliacion prejudicial y cobro ejecutivo contra una EPS
+   - Giro directo y recursos de la ADRES: como asegurar que lleguen
+   - Contratacion por capitacion bajo el Decreto 858 de 2025
+   - Acuerdos de pago y saneamiento de cartera con EPS intervenidas
+   - Responsabilidad del gerente y control fiscal por cartera no
+     gestionada
+   - Tutela y medidas urgentes para destrabar flujo de recursos
+   - Otra (active la casilla "Otros" abajo de la lista)
+
+7. Hay algun otro tema que le serviria y no esta en la lista?
+   Tipo: Respuesta corta          opcional
+
+8. A que hora le queda mejor conectarse?
+   Tipo: Opcion multiple          OBLIGATORIA
+   - Temprano en la manana (7:00 a 9:00)
+   - Media manana (9:00 a 11:00)
+   - Al final de la tarde (4:00 a 6:00)
+   - Me da igual
+
+
+---------------------------------------------------------------------
+SECCION 3: SU CARTERA
+---------------------------------------------------------------------
+
+9. Quiere que revisemos la cartera de su institucion en una reunion
+   sin costo?
+   Tipo: Opcion multiple          OBLIGATORIA
+   - Si, me interesa
+   - Tal vez mas adelante
+   - No por ahora
+
+10. Si respondio que si, dejenos un celular o WhatsApp y lo
+    contactamos
+    Tipo: Respuesta corta         opcional
+
+
+=====================================================================
+  DESPUES DE CREARLO
+=====================================================================
+
+1. Boton "Enviar" (arriba a la derecha) -> icono de eslabon (cadena)
+   -> marque "Acortar URL" -> Copiar.
+   Le queda un enlace tipo  https://forms.gle/xxxxxxxx
+
+2. Abra config.ini de esta carpeta con el Bloc de notas.
+   Busque la linea:
+       enlace_inscripcion = PEGUE_AQUI_EL_ENLACE_DEL_FORMULARIO
+   Reemplace esa parte por su enlace. Guarde.
+
+3. Pruebe primero:
+       py enviar_campana.py prueba --para 22jorgecaicedo@gmail.com
+   Abra el correo y haga clic en el boton amarillo. Debe abrir el
+   formulario.
+
+4. Envie:
+       py enviar_campana.py enviar
+
+El programa no lo deja enviar si se le olvida el paso 2.
