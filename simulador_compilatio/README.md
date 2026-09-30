@@ -1,6 +1,6 @@
 # Simulador aproximado de Compilatio
 
-No existe un clon open source de Compilatio. Su motor de IA y su base de fuentes son privados. Por eso este simulador **aprende de los informes reales** de Compilatio qué frases del trabajo marcó, y con eso estima el porcentaje de versiones nuevas del mismo trabajo. Hoy está entrenado con cuatro informes:
+No existe un clon open source de Compilatio. Su motor de IA y su base de fuentes son privados. Por eso este simulador **aprende de los informes reales** de Compilatio qué frases del trabajo marcó, y con eso estima el porcentaje de versiones nuevas del mismo trabajo. Hoy está entrenado con cinco informes:
 
 | Versión | Informe | IA | Similitud | Idiomas | Total |
 |---|---|---|---|---|---|
@@ -8,13 +8,15 @@ No existe un clon open source de Compilatio. Su motor de IA y su base de fuentes
 | v4 | `datos/reporte_compilatio_v4.pdf` (Compilatio Studium) | 22 % | 4 % | 0 % | 26 % |
 | Solo los 18 párrafos reescritos en la v5 (3.481 palabras) | `datos/reporte_compilatio_parrafos_v5.pdf` (Compilatio Studium) | 38 % | <1 % | 0 % | 39 % |
 | Solo los 22 párrafos que cambiaron en la v6 (3.283 palabras) | `datos/reporte_compilatio_parrafos_v6.pdf` (Compilatio Studium) | 31 % | <1 % | 0 % | 32 % |
+| v6 completa | `datos/reporte_compilatio_v6.pdf` (Compilatio Studium) | 15 % | 5 % | 0 % | 19 % |
 
 ## Uso
 ```
 pip install python-docx pdfplumber scikit-learn numpy
 python simulador.py entrenar datos/original.docx datos/reporte_compilatio.pdf datos/v4.docx datos/reporte_compilatio_v4.pdf \
                              datos/parrafos_reescritos_v5.docx datos/reporte_compilatio_parrafos_v5.pdf \
-                             datos/parrafos_reescritos_v6.docx datos/reporte_compilatio_parrafos_v6.pdf
+                             datos/parrafos_reescritos_v6.docx datos/reporte_compilatio_parrafos_v6.pdf \
+                             datos/v6.docx datos/reporte_compilatio_v6.pdf
 python simulador.py evaluar "../documentos_academicos/Trabajo de grado Suarez y Rivera CORREGIDO v5.docx" --html reporte.html
 ```
 `entrenar` recibe pares (trabajo .docx, informe .pdf) en orden cronológico. Cuando llegue un informe nuevo, basta con agregar el par al final. Los porcentajes del resumen se leen solos del PDF. También sirven informes de fragmentos sueltos: entran al entrenamiento y a la memoria, pero los porcentajes de referencia siempre salen del último informe del trabajo completo.
@@ -52,3 +54,9 @@ Con memoria y modelo juntos, el simulador da 26,1 % para la v4 (22,1 % IA + 4,0 
 - Es un **indicador**, no el resultado oficial.
 - El primer informe salió de Compilatio Magister+ y el segundo de Compilatio Studium. Si el motor de IA difiere entre versiones, parte de la diferencia entre informes puede venir de ahí.
 - Solo vale para este trabajo. Para otro documento hay que entrenarlo con sus propios informes.
+
+## Resultado de la v6 y precisión actual
+- La v6 completa sacó **19 %** (IA 15 %, similitud 5 %). El simulador, sin ese informe, estimaba 15,9 % (IA 11,9 %): se quedó corto en unos 3 puntos de IA.
+- Con los cinco informes: AUC 0,77 en validación cruzada y **0,75 prediciendo el último informe**. Es el mejor resultado hasta ahora.
+- Consistencia de Compilatio: entre la v4 y la v6, el 92 % de las frases idénticas conservaron su marca. Frente a las pruebas de fragmentos sueltos, entre el 82 % y el 86 %. Algunos párrafos que pasaron sueltos salieron marcados dentro del trabajo completo (marco normativo, Hillsborough).
+- `heredar_marcas.py` da una estimación alternativa para retoques livianos: la frase editada hereda la marca de la frase de la que viene. Hay pocos casos para validarla (14), así que se usa como cota optimista.

@@ -232,3 +232,22 @@ A pedido de los autores:
   - Se cambiaron dos expresiones coloquiales: "la violencia cuesta plata" y "den la cara".
 
 No cambió ningún dato, cita ni radicado. Estimación del simulador: ~13,7 % de IA y ~17,7 % en total. Sube un poco frente a la v6 porque 85 oraciones cambiaron y el modelo las evalúa con cautela.
+
+## Resultado real de la v6 y estimación de la v7
+
+Compilatio (Studium) analizó la v6 completa el 30-09-2026: **19 %** en total, con **15 %** de IA y **5 %** de similitudes. Quedó por debajo del 24 %. El simulador había estimado 15,9 %.
+
+El informe se agregó al simulador, que ahora predice el último informe con AUC 0,75.
+
+La v7 no se pudo validar por falta de créditos. Su estimación:
+
+| Método | IA | Total | Supuesto |
+|---|---|---|---|
+| Herencia de marcas (optimista) | ~14,9 % | ~19,9 % | Las frases retocadas conservan la marca que tenían en la v6 |
+| Modelo (pesimista) | ~17,5 % | ~22,5 % | Las frases retocadas se juzgan como nuevas |
+
+Lo más probable es que la v7 suba entre 1 y 3 puntos frente a la v6 (entre 20 % y 22 % en total), y siga bajo el 24 %, aunque con menos margen. Las frases retocadas que más riesgo tienen, según el modelo:
+- la conclusión 04 unida en una sola oración,
+- la conclusión 06 unida,
+- la frase de la causa extraña ("Para que el hecho de un tercero…" y "En un partido de fútbol eso no se puede decidir en abstracto…"),
+- la conclusión 02 ("Colombia cuenta con numerosas normas…").
