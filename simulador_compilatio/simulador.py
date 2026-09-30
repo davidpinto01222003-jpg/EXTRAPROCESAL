@@ -20,12 +20,19 @@ import docx
 import numpy as np
 import pdfplumber
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import GroupKFold, cross_val_predict
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 
 AQUI = Path(__file__).parent
 MODELO = AQUI / "modelo.pkl"
+sys.path.insert(0, str(AQUI))
+
+# Detectores de Hugging Face usados como rasgos (ver detectores_hf.py) y
+# regularización; elegidos por AUC en validación cruzada agrupada por párrafo.
+HF_USADOS = ["xlmr_es", "autext", "binoculars", "ppl"]
+C_REG = 0.1
 
 AZUL_IA = "(0.0, 0.749, 1.0)"
 ROSA_IDIOMA = "(1.0, 0.3569, 0.7059)"
@@ -161,15 +168,34 @@ def rasgos(s, p):
     ]
 
 
+def rasgos_hf(parrafos, nombres):
+    """Puntajes de los detectores de Hugging Face del párrafo de cada oración.
+
+    Se usa el párrafo completo y no la oración: con textos de una sola oración
+    los detectores casi no aportan (AUC 0,57 frente a 0,71 con el párrafo, validación agrupada).
+    """
+    import detectores_hf as H
+    unicos = sorted(set(parrafos))
+    por_p = dict(zip(unicos, H.puntajes(unicos)))
+    return np.array([[por_p[p][n] for n in nombres] for p in parrafos])
+
+
 # ---------------------------------------------------------------- comandos
 
-def entrenar(docx_path, pdf_path):
+def entrenar(docx_path, pdf_path, hf=True):
     pars = leer_docx(docx_path)
     pc = cuerpo(pars)
     ia, sim, idioma = marcas_pdf(pdf_path)
     X, y, meta = etiquetar(pc, ia)
-    modelo = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000, class_weight="balanced"))
-    prob_cv = cross_val_predict(modelo, X, y, cv=5, method="predict_proba")[:, 1]
+    nombres_hf = HF_USADOS if hf else []
+    if nombres_hf:
+        texto_par = dict(pc)
+        X = np.hstack([X, rasgos_hf([texto_par[i] for i, _ in meta], nombres_hf)])
+    modelo = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000, class_weight="balanced", C=C_REG))
+    # validación cruzada por párrafos: las oraciones de un mismo párrafo
+    # comparten rasgos, y mezclarlas entre entrenamiento y prueba infla el AUC
+    cv = GroupKFold(5).split(X, y, [i for i, _ in meta])
+    prob_cv = cross_val_predict(modelo, X, y, cv=cv, method="predict_proba")[:, 1]
     modelo.fit(X, y)
     palabras = np.array([len(m[1].split()) for m in meta])
     total_doc = sum(len(p.split()) for p in pars)
@@ -179,23 +205,26 @@ def entrenar(docx_path, pdf_path):
                 key=lambda u: abs((palabras * (prob_cv >= u)).sum() / total_doc * 100 - real_pct))
     pred = prob_cv >= mejor
     acierto = (pred == y).mean()
-    pickle.dump({"modelo": modelo, "umbral": float(mejor), "sim": sim,
+    auc = roc_auc_score(y, prob_cv)
+    pickle.dump({"modelo": modelo, "umbral": float(mejor), "sim": sim, "hf": nombres_hf, "auc_cv": float(auc),
                  "ref_ia_pct": 27.0, "ref_sim_pct": 6.0, "ref_idioma_pct": 3.0,
                  "ref_ia_modelo": float(real_pct)}, open(MODELO, "wb"))
     print(f"Oraciones de entrenamiento: {len(y)} (marcadas IA: {y.sum()})")
     print(f"% IA según etiquetas del informe: {real_pct:.1f} %  (Compilatio: 27 %)")
-    print(f"Umbral calibrado: {mejor:.2f} | acierto por oración (val. cruzada): {acierto:.0%}")
+    print(f"Detectores HF: {', '.join(nombres_hf) or 'ninguno'}")
+    print(f"Umbral calibrado: {mejor:.2f} | acierto por oración (val. cruzada): {acierto:.0%} | AUC: {auc:.3f}")
 
 
 def evaluar(docx_path, html_out=None):
     M = pickle.load(open(MODELO, "rb"))
     pars = leer_docx(docx_path)
     total_doc = sum(len(p.split()) for p in pars)
-    filas = []
-    for i, p in cuerpo(pars):
-        for s in oraciones(p):
-            prob = M["modelo"].predict_proba(np.array([rasgos(s, p)]))[0, 1]
-            filas.append((i, s, prob, prob >= M["umbral"]))
+    pares = [(i, s, p) for i, p in cuerpo(pars) for s in oraciones(p)]
+    X = np.array([rasgos(s, p) for _, s, p in pares])
+    if M.get("hf"):
+        X = np.hstack([X, rasgos_hf([p for _, _, p in pares], M["hf"])])
+    probs = M["modelo"].predict_proba(X)[:, 1]
+    filas = [(i, s, prob, prob >= M["umbral"]) for (i, s, _), prob in zip(pares, probs)]
     ia_words = sum(len(s.split()) for _, s, _, f in filas if f)
     ia_pct = ia_words / total_doc * 100 * (M["ref_ia_pct"] / M["ref_ia_modelo"])
 
@@ -262,9 +291,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     e = sub.add_parser("entrenar"); e.add_argument("docx"); e.add_argument("pdf")
+    e.add_argument("--sin-hf", action="store_true", help="solo rasgos de estilo, sin detectores de Hugging Face")
     v = sub.add_parser("evaluar"); v.add_argument("docx"); v.add_argument("--html")
     a = ap.parse_args()
     if a.cmd == "entrenar":
-        entrenar(a.docx, a.pdf)
+        entrenar(a.docx, a.pdf, hf=not a.sin_hf)
     else:
         evaluar(a.docx, a.html)

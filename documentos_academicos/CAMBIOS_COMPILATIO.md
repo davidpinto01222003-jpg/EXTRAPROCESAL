@@ -81,3 +81,22 @@ Técnica: oraciones más cortas y en lenguaje más llano, menos dos puntos y pun
 | Versión | IA | Similitud | Idiomas | Total |
 |---|---|---|---|---|
 | v4 (simulador) | **16,9 %** | 4,2 % | 3,0 % | **24,1 %** |
+
+## Nueva medición con detectores de Hugging Face
+
+El simulador ahora usa, además de los rasgos de estilo, tres detectores de IA publicados en Hugging Face: un XLM-RoBERTa afinado en español (`CradeyMH/detector-ia-espanol`), el modelo de AuTexTification 2023 (`pandrei7/autextification-upb-mtl`) y Binoculars con Qwen2.5-0.5B. Se aplican al párrafo completo, porque con una sola oración casi no aportan. Detalles en `simulador_compilatio/README.md`.
+
+Se midió de nuevo el AUC agrupando por párrafo, para que las oraciones de un mismo párrafo no queden a la vez en entrenamiento y en prueba. Con esa medición, el modelo anterior (solo estilo) tenía un AUC de **0,63**, no de 0,67. El nuevo llega a **0,71**.
+
+| Versión | IA (simulador anterior) | IA (simulador con detectores HF) | Similitud | Idiomas | Total (con detectores HF) |
+|---|---|---|---|---|---|
+| Original (Compilatio real: 27 %) | 28,9 % | 26,9 % | 4,4 % | 3,0 % | 34,3 % |
+| v2 | 26,3 % | 27,2 % | 4,2 % | 3,0 % | 34,3 % |
+| v3 | 23,2 % | 27,2 % | 4,2 % | 3,0 % | 34,4 % |
+| v4 | 16,9 % | **24,4 %** | 4,2 % | 3,0 % | **31,5 %** |
+
+**Qué significa:** el 16,9 % que daba el simulador anterior para la v4 era demasiado optimista. Las reescrituras de la v2 a la v4 atacaron justo los rasgos que ese modelo medía (oraciones largas, comas, conectores de manual), así que el número bajaba por construcción. El modelo con detectores, que distingue mejor lo que marcó Compilatio, estima que la v4 sigue alrededor del **24 %** de IA.
+
+Otro hallazgo: en este trabajo, los detectores públicos puntúan al revés que Compilatio. Los párrafos que Compilatio marcó son los que esos detectores consideran más humanos. Por eso, pasar un párrafo por un detector gratuito y ver "humano" no garantiza nada frente a Compilatio.
+
+Párrafos de la v4 que el simulador sigue marcando casi completos: conclusiones 03, 04 y 06; efectos económicos ("El segundo efecto cuesta más medirlo…"); experiencias internacionales ("Lo que muestran los otros países…"); identificación de asistentes; estrategia de casos; hipótesis y tres planos de la introducción. El detalle frase por frase está en `simulador_compilatio/reporte_simulado_v4.html`.
