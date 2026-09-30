@@ -35,3 +35,31 @@ Técnica aplicada:
 1. Revisen que la redacción en primera persona del plural ("nosotros") sea aceptada por su asesor; si no, es fácil cambiarla a "los autores".
 2. Si la plataforma lo permite, excluyan del análisis la portada, la página de la biblioteca y la bibliografía. Eso baja la similitud sin tocar el texto.
 3. Suban el .docx directamente en vez de una conversión a .txt, para que Compilatio reconozca mejor las comillas y las tablas.
+
+## Segunda pasada (v3)
+
+Se reescribieron 11 párrafos más, que Compilatio había marcado en parte o que el simulador seguía puntuando alto:
+- Limitaciones de la información estadística.
+- Lectura jurídica del caso 3.
+- Vías penal, contravencional y administrativa (incluye las SP3573-2022 y SP289-2023).
+- Cifras y encuadre jurídico.
+- Deberes de clubes y organizadores.
+- Tercero sin vínculo contractual.
+- Conducta de terceros y causa extraña.
+- Estado, Policía y comisiones (Consejo de Estado y C-065 de 2021).
+- Pérdidas económicas (Resolución 095 de 2024).
+- Síntesis de la jurisprudencia.
+- Introducción a las conclusiones.
+
+No cambió ningún dato, cita, radicado ni referencia.
+
+### Estimación con el simulador (`simulador_compilatio/`)
+
+| Versión | IA | Similitud | Idiomas | Total |
+|---|---|---|---|---|
+| Original (Compilatio real) | 27 % | 6 % | 3 % | 35 % |
+| Original (simulador) | 28,9 % | 4,4 % | 3,0 % | 36,3 % |
+| v2 (simulador) | 26,3 % | 4,2 % | 3,0 % | 33,5 % |
+| v3 (simulador) | 23,2 % | 4,2 % | 3,0 % | 30,4 % |
+
+El simulador es aproximado (AUC ≈ 0,67). El número real solo lo da Compilatio.
