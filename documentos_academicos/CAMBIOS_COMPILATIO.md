@@ -63,3 +63,21 @@ No cambió ningún dato, cita, radicado ni referencia.
 | v3 (simulador) | 23,2 % | 4,2 % | 3,0 % | 30,4 % |
 
 El simulador es aproximado (AUC ≈ 0,67). El número real solo lo da Compilatio.
+
+## Tercera pasada (v4)
+
+Se reescribieron 17 párrafos más, los que el simulador seguía marcando en la v3:
+- Introducción sobre muertes y registros.
+- Estrategia de casos, respuesta institucional y ejes de resultados.
+- Lecturas jurídicas de los casos 2 y 3.
+- Vías de responsabilidad del hincha.
+- Contrato de espectáculo y terceros sin contrato.
+- Sentencia de 2011: se dejó intacta la cita textual.
+- Causa extraña y experiencias internacionales.
+- Introducción a las conclusiones y conclusiones 02 a 06.
+
+Técnica: oraciones más cortas y en lenguaje más llano, menos dos puntos y punto y coma, preguntas retóricas puntuales y primera persona del plural. No cambió ningún dato, cita, radicado ni referencia.
+
+| Versión | IA | Similitud | Idiomas | Total |
+|---|---|---|---|---|
+| v4 (simulador) | **16,9 %** | 4,2 % | 3,0 % | **24,1 %** |
