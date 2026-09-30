@@ -100,3 +100,46 @@ Se midió de nuevo el AUC agrupando por párrafo, para que las oraciones de un m
 Otro hallazgo: en este trabajo, los detectores públicos puntúan al revés que Compilatio. Los párrafos que Compilatio marcó son los que esos detectores consideran más humanos. Por eso, pasar un párrafo por un detector gratuito y ver "humano" no garantiza nada frente a Compilatio.
 
 Párrafos de la v4 que el simulador sigue marcando casi completos: conclusiones 03, 04 y 06; efectos económicos ("El segundo efecto cuesta más medirlo…"); experiencias internacionales ("Lo que muestran los otros países…"); identificación de asistentes; estrategia de casos; hipótesis y tres planos de la introducción. El detalle frase por frase está en `simulador_compilatio/reporte_simulado_v4.html`.
+
+## Resultado real de la v4 y cuarta pasada (v5)
+
+Compilatio (Studium) analizó la v4 el 29-09-2026: **26 %** en total, con **22 %** de IA, **4 %** de similitudes y **0 %** de idiomas no reconocidos. El simulador anterior había dicho 16,9 % de IA, y el de detectores de Hugging Face, 24,4 %.
+
+### Qué aprendimos del informe de la v4
+- Con el nuevo informe se reentrenó el simulador (`simulador_compilatio/`) usando los **dos** informes. Ahora usa gradient boosting con 29 rasgos y memoria de las marcas reales. Sus aciertos: AUC 0,76 en validación cruzada y 0,74 al predecir las marcas de la v4 entrenando solo con el original. Con la v4 da 26,1 %, frente al 26 % real.
+- Los detectores de Hugging Face no sirvieron para predecir la v4 (AUC 0,57) y quedaron como opción.
+- **La técnica de la v2 a la v4 fue contraproducente.** Las oraciones reescritas salieron más marcadas (37 %) que las originales (32 %). Lo que más pesa en las marcas es que el párrafo tenga muchas oraciones y mucha variación de largo: frases cortísimas ("Son tres.", "Resultado: tribunas a medio llenar.") intercaladas con otras largas y preguntas retóricas.
+
+### Qué se cambió en la v5
+Se reescribieron, en prosa académica corriente, los párrafos con más texto marcado en el informe de la v4. Las oraciones son de largo parejo, no hay frases sueltas de dos o tres palabras ni preguntas retóricas, y los párrafos muy largos se dividieron en dos.
+- Resumen y Abstract (las oraciones marcadas).
+- Hipótesis, segunda estrategia (Castaño Pérez et al.) y tercera estrategia (los tres casos, dividida en dos párrafos).
+- Lectura jurídica del caso 1 (dividida en dos párrafos).
+- Marco normativo ("En el papel…"), jurisprudencia ("La jurisprudencia apunta…") e Inglaterra/Hillsborough.
+- Situaciones de causa extraña ("Con esos criterios en la mano…", dividida en dos párrafos).
+- Efectos económicos ("El segundo efecto…", dividida en dos párrafos).
+- Introducción a las conclusiones y conclusiones 01 a 06. Cada conclusión quedó en tres párrafos: *Lo demostrado*, *Interpretación de los autores* y *Propuesta*. En la 04 y la 06 solo cambió esa división; el texto es el mismo.
+
+Se comprobó automáticamente que la v5 conserva todos los números, años, citas, artículos, radicados y sentencias de la v4.
+
+### Ortografía
+Se revisó todo el documento con LanguageTool (español e inglés), ejecutado en local. El texto estaba limpio; se corrigió:
+- Coma antes de "sino" en "no estamos ante violencia entre hinchas, sino ante crimen organizado" y en la conclusión 02.
+- "resolución por resolución, por fallas de seguridad…" (faltaba la coma; se leía como una repetición).
+
+Se dejaron como están, porque son correctos o porque no son texto de los autores:
+- Nombres propios y siglas: Dimayor, Pécaut, Monsalvo, Uribe Aramburo, AUF, FCF.
+- Términos regionales o técnicos: barrismo, cortopunzantes, contravencional, sacol, dick.
+- "sólo" dentro de la cita textual de la Corte Suprema.
+- "C.Co." (Código de Comercio) en la Tabla 2.
+- "APA 7ma ed." en la ficha de la biblioteca de la portada. Si quieren corregirla, la forma normativa es "7.ª ed.".
+
+### Estimación con el simulador reentrenado
+
+| Versión | IA | Similitud | Idiomas | Total |
+|---|---|---|---|---|
+| v4 (Compilatio real) | 22 % | 4 % | 0 % | 26 % |
+| v4 (simulador) | 22,1 % | 4,0 % | 0,0 % | 26,1 % |
+| v5 (simulador) | **9,7-12,8 %** | 4,0 % | 0,0 % | **13,7-16,8 %** |
+
+El rango de IA va de la estimación con umbral a la estimación con valor esperado (más pesimista). Hay un escenario aún más pesimista: que Compilatio marcara las oraciones nuevas de la v5 en la misma proporción que las reescritas de la v4 (37 %). Aun así, el total quedaría cerca del **18 %**, por debajo del 24 % buscado. El detalle por frase está en `simulador_compilatio/reporte_simulado_v5.html`. El número real solo lo da Compilatio.

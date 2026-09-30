@@ -4,12 +4,12 @@ No es Compilatio: aprende qué frases marcó Compilatio en un informe real y
 estima cómo marcaría una versión nueva del mismo documento.
 
 Uso:
-    python simulador.py entrenar datos/original.docx datos/reporte_compilatio.pdf
+    python simulador.py entrenar datos/original.docx datos/reporte_compilatio.pdf \
+                                 datos/v4.docx datos/reporte_compilatio_v4.pdf
     python simulador.py evaluar "ruta/al/trabajo.docx" --html reporte.html
 """
 import argparse
 import html
-import json
 import pickle
 import re
 import statistics
@@ -19,20 +19,16 @@ from pathlib import Path
 import docx
 import numpy as np
 import pdfplumber
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import GroupKFold, cross_val_predict
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
 
 AQUI = Path(__file__).parent
 MODELO = AQUI / "modelo.pkl"
 sys.path.insert(0, str(AQUI))
 
-# Detectores de Hugging Face usados como rasgos (ver detectores_hf.py) y
-# regularización; elegidos por AUC en validación cruzada agrupada por párrafo.
+# Detectores de Hugging Face que se añaden con `entrenar --hf` (ver detectores_hf.py)
 HF_USADOS = ["xlmr_es", "autext", "binoculars", "ppl"]
-C_REG = 0.1
 
 AZUL_IA = "(0.0, 0.749, 1.0)"
 ROSA_IDIOMA = "(1.0, 0.3569, 0.7059)"
@@ -123,31 +119,52 @@ def marcas_pdf(pdf):
     return [x for x in ia if x], [x for x in sim if len(x.split()) >= 4], [x for x in idioma if x]
 
 
-def etiquetar(pars_cuerpo, lineas_ia):
+def porcentajes_pdf(pdf):
+    """Lee del resumen del informe los porcentajes de IA, similitud e idiomas."""
+    with pdfplumber.open(pdf) as doc:
+        txt = doc.pages[0].extract_text() or ""
+    def pct(rotulo):
+        m = re.search(rotulo + r"\s+<?(\d+)\s*%", txt)
+        return float(m.group(1)) if m else 0.0
+    return {"ia": pct("Detección de IA"), "sim": pct("Similitudes"), "idioma": pct("Idiomas no reconocidos")}
+
+
+def etiquetar(pc, lineas_ia):
+    """Marca cada oración del cuerpo con 1 si Compilatio subrayó en azul al menos la mitad."""
     sh_ia = set()
     for l in lineas_ia:
         sh_ia |= shingles(l)
-    X, y, meta = [], [], []
-    for i, p in pars_cuerpo:
+    pares, y = [], []
+    for i, p in pc:
         for s in oraciones(p):
             sh = shingles(s)
             if not sh:
                 continue
-            frac = len(sh & sh_ia) / len(sh)
-            X.append(rasgos(s, p))
-            y.append(1 if frac >= 0.5 else 0)
-            meta.append((i, s))
-    return np.array(X), np.array(y), meta
+            pares.append((i, s, p))
+            y.append(1 if len(sh & sh_ia) / len(sh) >= 0.5 else 0)
+    return pares, np.array(y)
 
 
 # ---------------------------------------------------------------- rasgos
 
-def rasgos(s, p):
+NOMBRES_RASGOS = [
+    "palabras", "log palabras", "comas/palabra", "; y :", "citas (año)", "conectores", "genéricas",
+    "marcas humanas", "variedad léxica", "largo medio de palabra", "palabras >=10 letras", "se + verbo",
+    "y/o", "variación largo oraciones del párrafo", "palabras del párrafo", "tiene dígitos",
+    "posición en el párrafo", "oraciones del párrafo", "largo relativo", "posición en el documento",
+    "empieza con conector", "dos puntos", "paréntesis", "comillas", "primera persona plural",
+    "-ción/-miento/-idad", "es/son/fue/era", "rango de largos del párrafo", "termina en dos puntos",
+]
+
+
+def rasgos(s, p, pos_doc=0.5):
     ts = tokens(s)
     n = max(1, len(ts))
     low = s.lower()
-    largos_p = [len(tokens(o)) for o in oraciones(p)] or [n]
+    os_ = oraciones(p)
+    largos_p = [len(tokens(o)) for o in os_] or [n]
     cv = statistics.pstdev(largos_p) / (statistics.mean(largos_p) or 1)
+    k = os_.index(s) if s in os_ else 0
     return [
         n,
         np.log1p(n),
@@ -165,14 +182,35 @@ def rasgos(s, p):
         cv,
         len(p.split()),
         1 if re.search(r"\d", s) else 0,
+        k / (len(os_) - 1) if len(os_) > 1 else 0,
+        len(os_),
+        n / statistics.mean(largos_p),
+        pos_doc,
+        1 if re.match(r"^(así|además|por|en|de|con|sin embargo|ahora|pero|y)\b", low) else 0,
+        s.count(":"),
+        s.count("("),
+        1 if "“" in s or '"' in s else 0,
+        len(re.findall(r"\b(nosotros|nuestr\w*|\w+amos)\b", low)),
+        len(re.findall(r"\b\w+(ción|miento|idad)\b", low)) / n * 10,
+        len(re.findall(r"\b(es|son|fue|era)\b", low)) / n * 10,
+        max(largos_p) - min(largos_p),
+        1 if s.endswith(":") else 0,
     ]
 
 
-def rasgos_hf(parrafos, nombres):
-    """Puntajes de los detectores de Hugging Face del párrafo de cada oración.
+def matriz(pares, pc, hf=()):
+    orden = {i: k / max(1, len(pc) - 1) for k, (i, _) in enumerate(pc)}
+    X = np.array([rasgos(s, p, orden[i]) for i, s, p in pares])
+    if hf:
+        X = np.hstack([X, rasgos_hf([p for _, _, p in pares], hf)])
+    return X
 
-    Se usa el párrafo completo y no la oración: con textos de una sola oración
-    los detectores casi no aportan (AUC 0,57 frente a 0,71 con el párrafo, validación agrupada).
+
+def rasgos_hf(parrafos, nombres):
+    """Puntajes de los detectores de Hugging Face del párrafo de cada oración (opcional).
+
+    Probados contra las marcas reales de la v4 no generalizan (AUC 0,57 entrenando
+    con el original), por eso el modelo por defecto no los usa.
     """
     import detectores_hf as H
     unicos = sorted(set(parrafos))
@@ -180,95 +218,124 @@ def rasgos_hf(parrafos, nombres):
     return np.array([[por_p[p][n] for n in nombres] for p in parrafos])
 
 
+def nuevo_modelo(semilla=0):
+    return HistGradientBoostingClassifier(max_depth=3, learning_rate=0.05, max_iter=200,
+                                          class_weight="balanced", random_state=semilla)
+
+
 # ---------------------------------------------------------------- comandos
 
-def entrenar(docx_path, pdf_path, hf=True):
-    pars = leer_docx(docx_path)
-    pc = cuerpo(pars)
-    ia, sim, idioma = marcas_pdf(pdf_path)
-    X, y, meta = etiquetar(pc, ia)
+def entrenar(pares_docx_pdf, hf=False):
+    """Entrena con uno o más (trabajo .docx, informe .pdf de Compilatio), en orden cronológico."""
     nombres_hf = HF_USADOS if hf else []
-    if nombres_hf:
-        texto_par = dict(pc)
-        X = np.hstack([X, rasgos_hf([texto_par[i] for i, _ in meta], nombres_hf)])
-    modelo = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000, class_weight="balanced", C=C_REG))
+    Xs, ys, grupos, memoria, informes = [], [], [], {}, []
+    for k, (docx_path, pdf_path) in enumerate(pares_docx_pdf):
+        pars = leer_docx(docx_path)
+        pc = cuerpo(pars)
+        ia, sim, _ = marcas_pdf(pdf_path)
+        pares, y = etiquetar(pc, ia)
+        Xs.append(matriz(pares, pc, nombres_hf))
+        ys.append(y)
+        grupos += [(k, i) for i, _, _ in pares]
+        # memoria: la marca real de cada oración; el informe más reciente manda
+        memoria.update({s: int(v) for (_, s, _), v in zip(pares, y)})
+        palabras = np.array([len(s.split()) for _, s, _ in pares])
+        total_doc = sum(len(p.split()) for p in pars)
+        informes.append({"docx": Path(docx_path).name, "real": porcentajes_pdf(pdf_path),
+                         "sim": fragmentos_presentes(sim, pars),
+                         "ia_etiquetas": float((palabras * y).sum() / total_doc * 100),
+                         "palabras": palabras, "total_doc": total_doc})
+    X, y = np.vstack(Xs), np.concatenate(ys)
     # validación cruzada por párrafos: las oraciones de un mismo párrafo
     # comparten rasgos, y mezclarlas entre entrenamiento y prueba infla el AUC
-    cv = GroupKFold(5).split(X, y, [i for i, _ in meta])
-    prob_cv = cross_val_predict(modelo, X, y, cv=cv, method="predict_proba")[:, 1]
-    modelo.fit(X, y)
-    palabras = np.array([len(m[1].split()) for m in meta])
-    total_doc = sum(len(p.split()) for p in pars)
-    real_pct = (palabras * y).sum() / total_doc * 100
-    # umbral que reproduce el % real en validación cruzada
-    mejor = min(np.linspace(0.3, 0.8, 51),
-                key=lambda u: abs((palabras * (prob_cv >= u)).sum() / total_doc * 100 - real_pct))
-    pred = prob_cv >= mejor
-    acierto = (pred == y).mean()
+    cv = GroupKFold(5).split(X, y, [hash(g) for g in grupos])
+    prob_cv = cross_val_predict(nuevo_modelo(), X, y, cv=cv, method="predict_proba")[:, 1]
     auc = roc_auc_score(y, prob_cv)
-    pickle.dump({"modelo": modelo, "umbral": float(mejor), "sim": sim, "hf": nombres_hf, "auc_cv": float(auc),
-                 "ref_ia_pct": 27.0, "ref_sim_pct": 6.0, "ref_idioma_pct": 3.0,
-                 "ref_ia_modelo": float(real_pct)}, open(MODELO, "wb"))
-    print(f"Oraciones de entrenamiento: {len(y)} (marcadas IA: {y.sum()})")
-    print(f"% IA según etiquetas del informe: {real_pct:.1f} %  (Compilatio: 27 %)")
-    print(f"Detectores HF: {', '.join(nombres_hf) or 'ninguno'}")
-    print(f"Umbral calibrado: {mejor:.2f} | acierto por oración (val. cruzada): {acierto:.0%} | AUC: {auc:.3f}")
+    palabras = np.concatenate([r["palabras"] for r in informes])
+    total = sum(r["total_doc"] for r in informes)
+    real = (palabras * y).sum()
+    # umbral con el que el modelo reproduce, en validación cruzada, el % de las etiquetas
+    umbral = min(np.linspace(0.2, 0.9, 71), key=lambda u: abs((palabras * (prob_cv >= u)).sum() - real))
+    fuera = None
+    if len(informes) > 1:  # prueba honesta: entrenar con los informes anteriores y predecir el último
+        n_ult = len(ys[-1])
+        m = nuevo_modelo().fit(X[:-n_ult], y[:-n_ult])
+        fuera = roc_auc_score(ys[-1], m.predict_proba(X[-n_ult:])[:, 1])
+    modelo = nuevo_modelo().fit(X, y)
+    ult = informes[-1]
+    pickle.dump({"modelo": modelo, "umbral": float(umbral), "hf": nombres_hf, "memoria": memoria,
+                 "sim": ult["sim"], "ref": ult["real"], "ref_ia_etiquetas": ult["ia_etiquetas"],
+                 "auc_cv": float(auc), "auc_ultimo": fuera,
+                 "informes": [{k: v for k, v in r.items() if k in ("docx", "real", "ia_etiquetas")} for r in informes]},
+                open(MODELO, "wb"))
+    for r in informes:
+        print(f"{r['docx']}: Compilatio IA {r['real']['ia']:.0f} % | según etiquetas extraídas {r['ia_etiquetas']:.1f} %")
+    print(f"Oraciones de entrenamiento: {len(y)} (marcadas IA: {y.sum()}) | memoria: {len(memoria)} oraciones")
+    print(f"Detectores HF: {', '.join(nombres_hf) or 'no'} | umbral {umbral:.2f}")
+    print(f"AUC validación cruzada agrupada: {auc:.3f}" + (f" | AUC prediciendo el último informe: {fuera:.3f}" if fuera else ""))
 
 
-def evaluar(docx_path, html_out=None):
+def fragmentos_presentes(fragmentos, pars):
+    """Fragmentos de similitud que siguen en el texto fuera de comillas."""
+    sin_comillas = re.sub(r"“[^”]*”|\"[^\"]*\"", " ", " ".join(pars))
+    sh_doc = shingles(sin_comillas, 5)
+    return [f for f in fragmentos if shingles(f, 5) and len(shingles(f, 5) & sh_doc) / len(shingles(f, 5)) >= 0.6]
+
+
+def evaluar(docx_path, html_out=None, silencioso=False):
     M = pickle.load(open(MODELO, "rb"))
     pars = leer_docx(docx_path)
     total_doc = sum(len(p.split()) for p in pars)
-    pares = [(i, s, p) for i, p in cuerpo(pars) for s in oraciones(p)]
-    X = np.array([rasgos(s, p) for _, s, p in pares])
-    if M.get("hf"):
-        X = np.hstack([X, rasgos_hf([p for _, _, p in pares], M["hf"])])
-    probs = M["modelo"].predict_proba(X)[:, 1]
-    filas = [(i, s, prob, prob >= M["umbral"]) for (i, s, _), prob in zip(pares, probs)]
-    ia_words = sum(len(s.split()) for _, s, _, f in filas if f)
-    ia_pct = ia_words / total_doc * 100 * (M["ref_ia_pct"] / M["ref_ia_modelo"])
+    pc = cuerpo(pars)
+    pares = [(i, s, p) for i, p in pc for s in oraciones(p)]
+    probs = M["modelo"].predict_proba(matriz(pares, pc, M["hf"]))[:, 1]
+    filas = []
+    for (i, s, _), prob in zip(pares, probs):
+        if s in M["memoria"]:  # oración sin cambios: se usa la marca real del último informe
+            filas.append((i, s, float(M["memoria"][s]), bool(M["memoria"][s]), True))
+        else:
+            filas.append((i, s, prob, prob >= M["umbral"], False))
+    ia_words = sum(len(s.split()) for _, s, _, f, _ in filas if f)
+    ia_pct = ia_words / total_doc * 100 * (M["ref"]["ia"] / M["ref_ia_etiquetas"])
 
-    # similitud: fragmentos que Compilatio encontró y siguen fuera de comillas
-    texto = " ".join(pars)
-    sin_comillas = re.sub(r"“[^”]*”|\"[^\"]*\"", " ", texto)
-    sh_doc = shingles(sin_comillas, 5)
-    quedan = [f for f in M["sim"] if shingles(f, 5) and len(shingles(f, 5) & sh_doc) / len(shingles(f, 5)) >= 0.6]
-    base = [f for f in M["sim"] if shingles(f, 5)]
-    sim_pct = M["ref_sim_pct"] * (sum(len(f.split()) for f in quedan) / max(1, sum(len(f.split()) for f in base)))
-    idioma_pct = M["ref_idioma_pct"]
+    # similitud: de los fragmentos que Compilatio encontró, cuántos siguen fuera de comillas
+    quedan = fragmentos_presentes(M["sim"], pars)
+    base = M["sim"]
+    sim_pct = M["ref"]["sim"] * (sum(len(f.split()) for f in quedan) / max(1, sum(len(f.split()) for f in base)))
+    idioma_pct = M["ref"]["idioma"]
     total = ia_pct + sim_pct + idioma_pct
 
-    # por párrafo
     por_par = {}
-    for i, s, prob, f in filas:
+    for i, s, prob, f, mem in filas:
         a = por_par.setdefault(i, [0, 0, []])
         a[0] += len(s.split()) * f
         a[1] += len(s.split())
-        a[2].append((s, prob, f))
-    peores = sorted(por_par.items(), key=lambda kv: -kv[1][0])[:15]
-
-    print(f"Palabras: {total_doc}")
-    print(f"IA estimada ........... {ia_pct:5.1f} %")
-    print(f"Similitud estimada .... {sim_pct:5.1f} %")
-    print(f"Idiomas no reconocidos  {idioma_pct:5.1f} %  (se asume igual al informe)")
-    print(f"TOTAL estimado ........ {total:5.1f} %")
-    print("\nPárrafos con más texto marcado como IA:")
-    for i, (w, n, _) in peores:
-        if w:
-            print(f"  [{i}] {w}/{n} palabras — {pars[i][:80]}…")
+        a[2].append((s, prob, f, mem))
+    nuevas = [f for f in filas if not f[4]]
+    if not silencioso:
+        print(f"Palabras: {total_doc} | oraciones con marca conocida: {len(filas) - len(nuevas)}, nuevas: {len(nuevas)}")
+        print(f"IA estimada ........... {ia_pct:5.1f} %")
+        print(f"Similitud estimada .... {sim_pct:5.1f} %")
+        print(f"Idiomas no reconocidos  {idioma_pct:5.1f} %  (se asume igual al último informe)")
+        print(f"TOTAL estimado ........ {total:5.1f} %")
+        print("\nPárrafos con más texto marcado como IA:")
+        for i, (w, n, _) in sorted(por_par.items(), key=lambda kv: -kv[1][0])[:15]:
+            if w:
+                print(f"  [{i}] {w}/{n} palabras — {pars[i][:80]}…")
 
     if html_out:
         partes = []
         for i, (w, n, ss) in sorted(por_par.items()):
             frag = " ".join(
-                f'<span class="{"ia" if f else ""}" title="prob. IA {prob:.0%}">{html.escape(s)}</span>'
-                for s, prob, f in ss)
+                f'<span class="{"ia" if f else ""}" title="{"marca real del informe" if mem else f"prob. IA {prob:.0%}"}">'
+                f'{html.escape(s)}</span>' for s, prob, f, mem in ss)
             partes.append(f'<p><small>[{i}]</small> {frag}</p>')
         Path(html_out).write_text(PLANTILLA.format(
             nombre=html.escape(Path(docx_path).name), total=total, ia=ia_pct, sim=sim_pct,
             idioma=idioma_pct, palabras=total_doc, cuerpo="\n".join(partes)), encoding="utf8")
-        print(f"\nReporte HTML: {html_out}")
-    return {"ia": ia_pct, "sim": sim_pct, "idioma": idioma_pct, "total": total}
+        if not silencioso:
+            print(f"\nReporte HTML: {html_out}")
+    return {"ia": ia_pct, "sim": sim_pct, "idioma": idioma_pct, "total": total, "por_par": por_par, "pars": pars}
 
 
 PLANTILLA = """<!doctype html><html lang="es"><head><meta charset="utf-8">
@@ -283,18 +350,21 @@ body{{background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,sans-serif;ma
 <p><small>{nombre} · {palabras} palabras · estimación aproximada calibrada con el informe real de Compilatio; no reemplaza el análisis oficial.</small></p>
 <div class="kpis"><div class="k">Total estimado<b>{total:.1f} %</b></div><div class="k">IA<b>{ia:.1f} %</b></div>
 <div class="k">Similitud<b>{sim:.1f} %</b></div><div class="k">Idiomas no reconocidos<b>{idioma:.1f} %</b></div></div>
-<p><span class="ia">Texto resaltado</span> = frase que el simulador marcaría como IA (pasa el cursor para ver la probabilidad).</p>
+<p><span class="ia">Texto resaltado</span> = frase marcada como IA: si no cambió desde el último informe, es la marca real de Compilatio; si es nueva, es la predicción del simulador (pasa el cursor para ver cuál).</p>
 {cuerpo}</body></html>"""
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
-    e = sub.add_parser("entrenar"); e.add_argument("docx"); e.add_argument("pdf")
-    e.add_argument("--sin-hf", action="store_true", help="solo rasgos de estilo, sin detectores de Hugging Face")
+    e = sub.add_parser("entrenar", help="pares DOCX PDF en orden cronológico")
+    e.add_argument("archivos", nargs="+")
+    e.add_argument("--hf", action="store_true", help="añade los detectores de Hugging Face como rasgos")
     v = sub.add_parser("evaluar"); v.add_argument("docx"); v.add_argument("--html")
     a = ap.parse_args()
     if a.cmd == "entrenar":
-        entrenar(a.docx, a.pdf, hf=not a.sin_hf)
+        if len(a.archivos) % 2:
+            ap.error("entrenar necesita pares: trabajo.docx informe.pdf [trabajo2.docx informe2.pdf ...]")
+        entrenar(list(zip(a.archivos[::2], a.archivos[1::2])), hf=a.hf)
     else:
         evaluar(a.docx, a.html)
