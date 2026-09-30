@@ -216,3 +216,19 @@ En esas tres conclusiones Compilatio marcó el bloque casi entero, incluso frase
 | v6 completa (simulador con las marcas reales de las dos pruebas) | ~11,9 % | 4 % | **~15,9 %** |
 
 Casi todas las oraciones de la estimación tienen ya una marca real de Compilatio; solo 28 dependen del modelo. El riesgo que queda es que Compilatio puntúe distinto un párrafo dentro del trabajo completo que suelto.
+
+## v7: voz en primera persona y sin ritmo cortado
+
+A pedido de los autores:
+- **Sin tercera persona.** Todas las menciones a sí mismos como "los autores" pasaron a primera persona del plural: "A nuestro juicio…" y "Planteamos, como hipótesis…". El rótulo de las conclusiones pasó de *Interpretación de los autores* a *Nuestra interpretación*.
+- **Sin oraciones cortas sueltas.** Se unieron con la idea que completan unas 30 oraciones breves que cortaban el sentido. Por ejemplo:
+  - "La hipótesis es nuestra. Parte de…" pasó a "Nuestra hipótesis parte de…".
+  - "Lo difícil no es saber qué delito es. Lo difícil es probar quién lo cometió." pasó a "…en los que lo difícil no es saber qué delito se cometió, sino probar quién lo cometió".
+  - "La tesis encontró resistencia. Cuatro magistrados…" pasó a "La tesis encontró resistencia, pues cuatro magistrados…".
+  - "Llegamos a seis conclusiones. En cada una separamos tres cosas. Primero…" pasó a una sola oración.
+- **Coherencia:**
+  - Se quitó de la hipótesis la mención a Andrés Carvajal, que aparecía antes de presentar el caso; ahora remite a "uno de los casos que examinamos más adelante".
+  - Se quitó el paréntesis del Junior en los efectos económicos, que repetía el párrafo anterior.
+  - Se cambiaron dos expresiones coloquiales: "la violencia cuesta plata" y "den la cara".
+
+No cambió ningún dato, cita ni radicado. Estimación del simulador: ~13,7 % de IA y ~17,7 % en total. Sube un poco frente a la v6 porque 85 oraciones cambiaron y el modelo las evalúa con cautela.
