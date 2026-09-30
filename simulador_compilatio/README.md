@@ -1,18 +1,20 @@
 # Simulador aproximado de Compilatio
 
-No existe un clon open source de Compilatio. Su motor de IA y su base de fuentes son privados. Por eso este simulador **aprende de los informes reales** de Compilatio qué frases del trabajo marcó, y con eso estima el porcentaje de versiones nuevas del mismo trabajo. Hoy está entrenado con tres informes:
+No existe un clon open source de Compilatio. Su motor de IA y su base de fuentes son privados. Por eso este simulador **aprende de los informes reales** de Compilatio qué frases del trabajo marcó, y con eso estima el porcentaje de versiones nuevas del mismo trabajo. Hoy está entrenado con cuatro informes:
 
 | Versión | Informe | IA | Similitud | Idiomas | Total |
 |---|---|---|---|---|---|
 | Original | `datos/reporte_compilatio.pdf` (Compilatio Magister+) | 27 % | 6 % | 3 % | 35 % |
 | v4 | `datos/reporte_compilatio_v4.pdf` (Compilatio Studium) | 22 % | 4 % | 0 % | 26 % |
 | Solo los 18 párrafos reescritos en la v5 (3.481 palabras) | `datos/reporte_compilatio_parrafos_v5.pdf` (Compilatio Studium) | 38 % | <1 % | 0 % | 39 % |
+| Solo los 22 párrafos que cambiaron en la v6 (3.283 palabras) | `datos/reporte_compilatio_parrafos_v6.pdf` (Compilatio Studium) | 31 % | <1 % | 0 % | 32 % |
 
 ## Uso
 ```
 pip install python-docx pdfplumber scikit-learn numpy
 python simulador.py entrenar datos/original.docx datos/reporte_compilatio.pdf datos/v4.docx datos/reporte_compilatio_v4.pdf \
-                             datos/parrafos_reescritos_v5.docx datos/reporte_compilatio_parrafos_v5.pdf
+                             datos/parrafos_reescritos_v5.docx datos/reporte_compilatio_parrafos_v5.pdf \
+                             datos/parrafos_reescritos_v6.docx datos/reporte_compilatio_parrafos_v6.pdf
 python simulador.py evaluar "../documentos_academicos/Trabajo de grado Suarez y Rivera CORREGIDO v5.docx" --html reporte.html
 ```
 `entrenar` recibe pares (trabajo .docx, informe .pdf) en orden cronológico. Cuando llegue un informe nuevo, basta con agregar el par al final. Los porcentajes del resumen se leen solos del PDF. También sirven informes de fragmentos sueltos: entran al entrenamiento y a la memoria, pero los porcentajes de referencia siempre salen del último informe del trabajo completo.

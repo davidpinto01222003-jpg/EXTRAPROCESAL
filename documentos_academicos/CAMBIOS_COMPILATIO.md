@@ -183,3 +183,36 @@ No se agregó ningún dato nuevo: todo lo mencionado ya estaba en otra parte del
 | v6 (simulador, con el informe de los párrafos incluido) | ~12,7 % | 4 % | **~16,7 %** |
 
 Esta vez el simulador ya es pesimista con las frases nuevas: supone que alrededor del 60 % saldrán marcadas. `Parrafos reescritos en v6.docx` (22 párrafos, 3.283 palabras) sirve para probar la ronda por separado, igual que con la v5.
+
+### Prueba de los párrafos de la v6
+
+Los 22 párrafos que cambiaron en la v6 se pasaron solos por Compilatio: **31 % de IA**, frente al 38 % de la ronda anterior.
+
+**Pasaron limpios:**
+- el Resumen,
+- la hipótesis,
+- la tercera estrategia,
+- el caso 1 en lo civil,
+- la causa extraña y los casos mixtos,
+- la economía urbana,
+- la introducción a las conclusiones,
+- "Vistos juntos…",
+- el asistente con boleta,
+- casi todo el caso 2,
+- la propuesta de la conclusión 05.
+
+**Siguen marcados:**
+- "Tres casos no son una muestra…",
+- el final del desenlace de la SC2111-2021,
+- los deberes de la Dimayor y la FCF,
+- patrocinio y televisión,
+- la jurisprudencia,
+- las conclusiones 01, 03 y 05.
+
+En esas tres conclusiones Compilatio marcó el bloque casi entero, incluso frases que en la ronda anterior habían pasado. Parece reaccionar a la estructura repetida (*Lo demostrado* / *Interpretación de los autores*) más que a cada frase.
+
+| Versión | IA | Similitud | Total |
+|---|---|---|---|
+| v6 completa (simulador con las marcas reales de las dos pruebas) | ~11,9 % | 4 % | **~15,9 %** |
+
+Casi todas las oraciones de la estimación tienen ya una marca real de Compilatio; solo 28 dependen del modelo. El riesgo que queda es que Compilatio puntúe distinto un párrafo dentro del trabajo completo que suelto.
