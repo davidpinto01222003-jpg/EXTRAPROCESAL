@@ -143,3 +143,43 @@ Se dejaron como están, porque son correctos o porque no son texto de los autore
 | v5 (simulador) | **9,7-12,8 %** | 4,0 % | 0,0 % | **13,7-16,8 %** |
 
 El rango de IA va de la estimación con umbral a la estimación con valor esperado (más pesimista). Hay un escenario aún más pesimista: que Compilatio marcara las oraciones nuevas de la v5 en la misma proporción que las reescritas de la v4 (37 %). Aun así, el total quedaría cerca del **18 %**, por debajo del 24 % buscado. El detalle por frase está en `simulador_compilatio/reporte_simulado_v5.html`. El número real solo lo da Compilatio.
+
+## Prueba de los párrafos reescritos y quinta pasada (v6)
+
+Los 18 párrafos reescritos en la v5 se pasaron solos por Compilatio (Studium, 3.481 palabras): **38 % de IA**. El simulador esperaba cerca de un 10 %. El resultado fue el escenario pesimista que se había anticipado (37 %). Con esas marcas reales, la v5 completa quedaría en unos 16,8 % de IA y 20,8 % en total.
+
+**Qué pasó y qué no.** Pasaron limpios los párrafos anclados en datos concretos:
+- el Abstract,
+- la segunda estrategia,
+- el marco normativo,
+- Inglaterra/Hillsborough,
+- la primera parte del caso 1,
+- las conclusiones 02, 04 y 06 y varias propuestas.
+
+Siguieron marcados los de argumentación general:
+- la hipótesis,
+- la tercera estrategia,
+- la parte civil del caso 1,
+- la zona gris y la causa extraña,
+- los efectos económicos,
+- la jurisprudencia,
+- las conclusiones 01, 03 y 05.
+
+**Qué se cambió en la v6.** Se reescribieron solo las frases que siguieron marcadas, anclándolas en datos que ya estaban en el trabajo:
+- Andrés Carvajal (Cali, febrero de 2020).
+- El Barón Rojo Sur y la veintena de homicidios.
+- Laferrere y los quince detenidos en 2018.
+- La Resolución 095 de 2024 y la multa de trece millones de pesos al Junior.
+- El Decreto 1007 de 2012.
+- Las sentencias C-065 de 2021, SC2905-2021 y SC2111-2021.
+
+Además se reescribieron las frases marcadas en la v4 de cinco párrafos que no se habían tocado: lectura jurídica del caso 2, "Vistos juntos, los tres casos…", el asistente con boleta, el desenlace de la SC2111-2021 y los deberes de la Dimayor y la FCF.
+
+No se agregó ningún dato nuevo: todo lo mencionado ya estaba en otra parte del trabajo. Se comprobó que siguen todas las cifras, citas y radicados. La ortografía de lo nuevo se revisó con LanguageTool y se corrigió una coma ("el tercero agrede, pero el organizador…").
+
+| Versión | IA | Similitud | Total |
+|---|---|---|---|
+| v5 completa (con las marcas reales de los párrafos) | ~16,8 % | 4 % | ~20,8 % |
+| v6 (simulador, con el informe de los párrafos incluido) | ~12,7 % | 4 % | **~16,7 %** |
+
+Esta vez el simulador ya es pesimista con las frases nuevas: supone que alrededor del 60 % saldrán marcadas. `Parrafos reescritos en v6.docx` (22 párrafos, 3.283 palabras) sirve para probar la ronda por separado, igual que con la v5.

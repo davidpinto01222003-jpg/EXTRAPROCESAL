@@ -102,7 +102,12 @@ def cuerpo(pars):
 def marcas_pdf(pdf):
     ia, sim, idioma = [], [], []
     with pdfplumber.open(pdf) as doc:
-        for pg in doc.pages[5:]:
+        # el texto del trabajo empieza en "Puntos de interés"; en trabajos largos
+        # esa página es la portada, que se salta como antes
+        inicio = next((k for k, pg in enumerate(doc.pages) if "Puntos de interés" in (pg.extract_text() or "")), 5)
+        if inicio >= 4:
+            inicio += 1
+        for pg in doc.pages[inicio:]:
             words = pg.extract_words()
             for r in pg.rects:
                 col = str(r.get("non_stroking_color"))
@@ -262,12 +267,16 @@ def entrenar(pares_docx_pdf, hf=False):
         m = nuevo_modelo().fit(X[:-n_ult], y[:-n_ult])
         fuera = roc_auc_score(ys[-1], m.predict_proba(X[-n_ult:])[:, 1])
     modelo = nuevo_modelo().fit(X, y)
-    ult = informes[-1]
+    # los porcentajes de referencia salen del último informe del trabajo completo,
+    # no de informes de fragmentos sueltos (que también sirven para entrenar)
+    mayor = max(r["total_doc"] for r in informes)
+    ult = [r for r in informes if r["total_doc"] >= 0.5 * mayor][-1]
     pickle.dump({"modelo": modelo, "umbral": float(umbral), "hf": nombres_hf, "memoria": memoria,
                  "sim": ult["sim"], "ref": ult["real"], "ref_ia_etiquetas": ult["ia_etiquetas"],
                  "auc_cv": float(auc), "auc_ultimo": fuera,
                  "informes": [{k: v for k, v in r.items() if k in ("docx", "real", "ia_etiquetas")} for r in informes]},
                 open(MODELO, "wb"))
+    print(f"Referencia para escalar: {ult['docx']}")
     for r in informes:
         print(f"{r['docx']}: Compilatio IA {r['real']['ia']:.0f} % | según etiquetas extraídas {r['ia_etiquetas']:.1f} %")
     print(f"Oraciones de entrenamiento: {len(y)} (marcadas IA: {y.sum()}) | memoria: {len(memoria)} oraciones")
