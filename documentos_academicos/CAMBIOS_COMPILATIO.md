@@ -251,3 +251,30 @@ Lo más probable es que la v7 suba entre 1 y 3 puntos frente a la v6 (entre 20 %
 - la conclusión 06 unida,
 - la frase de la causa extraña ("Para que el hecho de un tercero…" y "En un partido de fútbol eso no se puede decidir en abstracto…"),
 - la conclusión 02 ("Colombia cuenta con numerosas normas…").
+
+## v8: respuesta a los comentarios del jurado
+
+Comentarios de fondo del jurado y cómo se atendieron:
+
+1. **"No supe cuál es el foco de violencia; mencionan tráfico, pero parecía en el extranjero."**
+   - Nuevo párrafo en la introducción, después de la hipótesis. El foco es la violencia física entre hinchas: homicidios y lesiones personales, sobre todo fuera de los estadios (los 149 homicidios del registro de El País de Cali entre 2008 y 2020).
+   - El narcotráfico se presenta como un factor que agrava esa violencia, no como un foco aparte, y se aclara que el caso del Barón Rojo Sur ocurrió en Cali. Solo el caso de Laferrere salió del país.
+   - Las multas, los cierres de tribunas y las pérdidas económicas se presentan como consecuencias.
+   - La conclusión 01 retoma el foco.
+2. **"No entendí si las barras cumplen funciones positivas o negativas."**
+   - Nuevo párrafo en Resultados, después del cuarto hallazgo. Funciones positivas: identidad y pertenencia (Clavijo, 2004), barrismo social (Plan Decenal) y participación con voz en las comisiones de seguridad (C-065 de 2021).
+   - Su injerencia en la violencia: jerarquías y códigos de "honor", disputas territoriales, consumo de sustancias y captura por economías ilegales.
+   - Posición explícita: la barra como colectivo no es la causa de la violencia, sino el espacio donde actúan sus sectores violentos.
+   - La conclusión 01 recoge esa posición.
+3. **"Citan normas penales, 'derecho disciplinario' (término mal usado) y sancionatorio, pero el desarrollo fue corto."**
+   - Dos párrafos nuevos al comienzo de "Responsabilidad jurídica de los actores" ordenan los tres regímenes:
+     - el penal: Código Penal, personas naturales, Fiscalía y jueces;
+     - el administrativo sancionador: artículos 14 y 15 de la Ley 1445 de 2011 y medidas correctivas de la Ley 1801 de 2016;
+     - el disciplinario deportivo: Código Disciplinario Único de la FCF, que alcanza a los afiliados y no a los hinchas.
+   - Se corrige el término. Hablamos de "régimen disciplinario deportivo", porque el derecho disciplinario en sentido estricto es el de los servidores públicos (Ley 1952 de 2019, que se agregó a las referencias).
+   - Ejemplo con la multa al Junior de la Resolución 095 de 2024.
+   - La conclusión 02 explica por qué las normas existen pero no funcionan: la pena y la prohibición de ingreso dependen de identificar a quien entra, y la multa disciplinaria cae sobre el club.
+
+**Forma.** Los párrafos del cuerpo quedaron justificados: 97 estaban forzados a la izquierda, aunque el estilo del documento era justificado. La puntuación se revisó con LanguageTool y con reglas de espacios y comillas, sin errores nuevos. Las marcas puntuales de puntuación que el jurado haya hecho en su archivo no se pudieron ver.
+
+**Compilatio.** Para dar margen, se reescribieron en forma narrativa, con ejemplos concretos y en primera persona, ocho párrafos que Compilatio marcó en la v6: el caso 2, "Tres casos…", el marco normativo, las sanciones de la Dimayor, el desenlace de la SC2111-2021, la jurisprudencia, Hillsborough y la Resolución 429 de 2026. Estimación: IA entre 14,2 % y 16,0 %, total entre **19 % y 21 %**. La v6 real dio 19 %, y el simulador se quedó corto en unos 3 puntos en esa versión.
