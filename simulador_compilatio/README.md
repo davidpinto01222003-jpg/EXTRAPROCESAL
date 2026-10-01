@@ -60,3 +60,16 @@ Con memoria y modelo juntos, el simulador da 26,1 % para la v4 (22,1 % IA + 4,0 
 - Con los cinco informes: AUC 0,77 en validación cruzada y **0,75 prediciendo el último informe**. Es el mejor resultado hasta ahora.
 - Consistencia de Compilatio: entre la v4 y la v6, el 92 % de las frases idénticas conservaron su marca. Frente a las pruebas de fragmentos sueltos, entre el 82 % y el 86 %. Algunos párrafos que pasaron sueltos salieron marcados dentro del trabajo completo (marco normativo, Hillsborough).
 - `heredar_marcas.py` da una estimación alternativa para retoques livianos: la frase editada hereda la marca de la frase de la que viene. Hay pocos casos para validarla (14), así que se usa como cota optimista.
+
+## Textos en inglés (`detector_ingles.py`)
+El simulador de Compilatio no sirve para textos en inglés: sus rasgos se aprendieron de un trabajo en español. Para inglés, `detector_ingles.py` puntúa cada párrafo con tres detectores públicos (Desklib, Fakespot y HC3-ChatGPT) y genera un informe HTML.
+
+```
+python detector_ingles.py ensayo.docx --html informe.html
+```
+
+**Advertencia.** En una prueba con controles conocidos (01-10-2026):
+- Desklib y Fakespot no detectaron una respuesta de Claude Opus 5 declarada como tal (0,26 y 0,15).
+- Los tres marcaron como IA un prompt escrito por una persona (0,93 a 1,0).
+
+Un puntaje bajo de estos detectores no garantiza que Turnitin o Compilatio den lo mismo.
