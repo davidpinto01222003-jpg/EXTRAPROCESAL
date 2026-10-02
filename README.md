@@ -1497,9 +1497,21 @@ Configuración (al inicio de `depurar_fng_leasing.py`):
 - `RUTA_EXCEL_PROCESOS`: ruta del Excel con el listado. También puedes
   arrastrar el Excel sobre `depurar_fng_leasing.bat`, o dejarlo vacío y
   el script te lo pregunta.
-- `COLUMNA_CONCURSADO` / `COLUMNA_NIT`: normalmente se detectan solas
-  (encabezados como "Razón social", "Concursado", "Sociedad", "NIT").
-  Si no, escribe el encabezado exacto.
+- `COLUMNA_CONCURSADO` / `COLUMNA_NIT` / `COLUMNA_EXPEDIENTE`:
+  normalmente se detectan solas (encabezados como "Razón social",
+  "Concursado", "Demandante", "NIT", "Expediente", "Radicado"). Si no,
+  escribe el encabezado exacto. Si el nombre de la carpeta en Drive trae
+  el número de expediente de Supersociedades, también se encuentra por ahí.
+- `TIPOS_PROCESO_A_INCLUIR`: **solo se revisan los procesos cuyo tipo
+  (columna "PROCESO") sea de insolvencia**: reorganización (incluida la
+  abreviada), insolvencia (incluida IPNNC), NAR, NEAR, recuperación
+  empresarial, liquidación, validación, acuerdo de reestructuración y
+  concordato. Las demás filas (laborales, RC médica, reparación directa,
+  ejecutivos…) se ignoran. Para quitar un tipo, bórralo de la lista
+  (ej. `"LIQUIDACION"`). Para revisar todo, deja la lista vacía `[]`.
+  Con `LISTADO_DE_PROCESOS_PAULA_ORDINARIOS.xlsx` (hoja "PROCESOS
+  ACTIVOS", concursado en la columna "DEMANDANTE") quedan 138 de las 246
+  filas.
 - `CARPETA_RAIZ_DRIVE`: nombre, ID o enlace de la carpeta del Drive donde
   están las carpetas de los procesos. Recomendado: así no se mezcla con
   carpetas de otras cosas. Vacío = busca en todo el Drive.

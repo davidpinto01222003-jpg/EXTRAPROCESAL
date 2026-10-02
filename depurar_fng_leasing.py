@@ -110,6 +110,32 @@ COLUMNA_CONCURSADO = None
 # si su nombre trae el NIT). None = se detecta sola; si no hay, se omite.
 COLUMNA_NIT = None
 
+# Igual, para la columna del numero de EXPEDIENTE de Supersociedades (o
+# el RADICADO). Si la carpeta del proceso trae ese numero en el nombre,
+# tambien se encuentra por ahi. None = se detecta sola.
+COLUMNA_EXPEDIENTE = None
+
+# --- Filtro por TIPO de proceso ---
+# Columna que dice el tipo de proceso (None = se detecta sola: "PROCESO",
+# "TIPO DE PROCESO", "TIPO"...).
+COLUMNA_TIPO_PROCESO = None
+
+# Solo se revisan los procesos cuyo tipo contenga alguna de estas
+# palabras (sin importar tildes ni mayusculas: "REORGANIZACION" tambien
+# toma "Reorganización abreviada"). Lista vacia [] = revisar TODOS.
+TIPOS_PROCESO_A_INCLUIR = [
+    "REORGANIZACION",            # incluye REORGANIZACION ABREVIADA
+    "INSOLVENCIA",               # incluye INSOLVENCIA IPNNC (persona natural no comerciante)
+    "NAR",                       # negociacion de emergencia de acuerdo de reorganizacion
+    "NEAR",
+    "RECUPERACION EMPRESARIAL",
+    "LIQUIDACION",               # liquidacion judicial / simplificada (Ley 1116)
+    "VALIDACION",                # validacion judicial de acuerdo extrajudicial
+    "ACUERDO DE REESTRUCTURACION",
+    "CONCORDATO",
+    "LEY 1116",
+]
+
 # --- De donde leer el Drive ---
 # Si pones aqui una ruta local (carpeta sincronizada con "Google Drive
 # para escritorio"), se lee de ahi y NO se usa la API de Google.
@@ -169,9 +195,11 @@ EXTENSIONES_LEIBLES = {".pdf", ".docx", ".xlsx", ".xlsm", ".txt", ".csv", ".eml"
 
 ENCABEZADOS_CONCURSADO = [
     "concursado", "nombre del concursado", "razon social", "nombre o razon social",
-    "sociedad", "deudor", "empresa", "nombre de la sociedad", "nombre", "cliente",
+    "sociedad", "deudor", "empresa", "nombre de la sociedad", "nombre", "cliente", "demandante",
 ]
 ENCABEZADOS_NIT = ["nit", "nit concursado", "nit del concursado", "identificacion", "documento"]
+ENCABEZADOS_EXPEDIENTE = ["expediente", "no expediente", "numero de expediente", "radicado", "rad"]
+ENCABEZADOS_TIPO = ["tipo de proceso", "tipo proceso", "proceso", "tipo"]
 
 # Palabras que NO sirven para identificar a un concursado (tipo de
 # sociedad, etapa del proceso, conectores) -- se ignoran al comparar el
@@ -372,9 +400,26 @@ def _encabezado_norm(valor) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", normalizar(str(valor or "")).lower())).strip()
 
 
+def numeros_expediente(valor):
+    """Numeros de expediente/radicado de una celda (ej. 69686.0 -> ['69686'];
+    'J2026... // 84862' -> [..., '84862']). Solo numeros de 5+ digitos."""
+    if valor is None or isinstance(valor, (datetime.date, datetime.datetime)):
+        return []
+    if isinstance(valor, float) and valor.is_integer():
+        valor = int(valor)
+    return unicos(re.findall(r"\d{5,}", str(valor)))
+
+
+def tipo_incluido(tipo) -> bool:
+    if not TIPOS_PROCESO_A_INCLUIR:
+        return True
+    texto = " " + re.sub(r"[^A-Z0-9]+", " ", normalizar(str(tipo or ""))) + " "
+    return any(f" {normalizar(t).strip()} " in texto for t in TIPOS_PROCESO_A_INCLUIR)
+
+
 def leer_listado(ruta: str):
-    """Devuelve (encabezados, filas, idx_concursado, idx_nit). Cada fila es
-    la lista de valores originales."""
+    """Lee el listado y aplica el filtro por tipo de proceso. Devuelve un
+    dict con encabezados, filas (valores originales) e indices de columnas."""
     libro = openpyxl.load_workbook(ruta, read_only=True, data_only=True)
     hoja = libro[HOJA_EXCEL_PROCESOS] if HOJA_EXCEL_PROCESOS else libro.worksheets[0]
     filas = [list(f) for f in hoja.iter_rows(values_only=True)]
@@ -396,11 +441,33 @@ def leer_listado(ruta: str):
 
     for i_enc, fila in enumerate(filas[:25]):
         idx_conc = buscar_columna(fila, COLUMNA_CONCURSADO, ENCABEZADOS_CONCURSADO)
-        if idx_conc is not None:
-            idx_nit = buscar_columna(fila, COLUMNA_NIT, ENCABEZADOS_NIT)
-            encabezados = [str(e).strip() if e is not None else f"Columna {j + 1}" for j, e in enumerate(fila)]
-            datos = [f for f in filas[i_enc + 1:] if f and idx_conc < len(f) and str(f[idx_conc] or "").strip()]
-            return encabezados, datos, idx_conc, idx_nit
+        if idx_conc is None:
+            continue
+        info = {
+            "idx_conc": idx_conc,
+            "idx_nit": buscar_columna(fila, COLUMNA_NIT, ENCABEZADOS_NIT),
+            "idx_exp": buscar_columna(fila, COLUMNA_EXPEDIENTE, ENCABEZADOS_EXPEDIENTE),
+            "idx_tipo": buscar_columna(fila, COLUMNA_TIPO_PROCESO, ENCABEZADOS_TIPO),
+        }
+        datos = [f for f in filas[i_enc + 1:] if f and idx_conc < len(f) and str(f[idx_conc] or "").strip()]
+        info["total_filas"] = len(datos)
+        if TIPOS_PROCESO_A_INCLUIR and info["idx_tipo"] is None:
+            logging.warning("OJO: no encontre la columna del tipo de proceso; se revisan TODAS las filas. "
+                            "Pon su encabezado en COLUMNA_TIPO_PROCESO.")
+        elif TIPOS_PROCESO_A_INCLUIR:
+            it = info["idx_tipo"]
+            datos = [f for f in datos if it < len(f) and tipo_incluido(f[it])]
+        # Quita las columnas del final que no tienen encabezado ni datos.
+        ancho = len(fila)
+        while ancho > 1 and fila[ancho - 1] in (None, "") and all(
+            len(f) < ancho or f[ancho - 1] in (None, "") for f in datos
+        ):
+            ancho -= 1
+        info["encabezados"] = [
+            str(e).strip() if e not in (None, "") else f"Columna {j + 1}" for j, e in enumerate(fila[:ancho])
+        ]
+        info["filas"] = datos
+        return info
     raise RuntimeError(
         "No encontre en el Excel la columna con el nombre del concursado. Pon su encabezado exacto en "
         "COLUMNA_CONCURSADO (al inicio de depurar_fng_leasing.py)."
@@ -742,9 +809,11 @@ def _token_igual(a, b):
     return False
 
 
-def puntaje(tokens_proceso, nit, carpeta):
+def puntaje(tokens_proceso, nit, expedientes, carpeta):
     nombre = carpeta["nombre"]
     if nit and nit in solo_digitos(nombre):
+        return 1.0
+    if any(re.search(rf"(?<!\d){e}(?!\d)", nombre) for e in expedientes):
         return 1.0
     if not tokens_proceso:
         return 0.0
@@ -765,10 +834,10 @@ def puntaje(tokens_proceso, nit, carpeta):
     return max(cobertura * 0.8, m.ratio())
 
 
-def buscar_carpetas_del_proceso(nombre, nit, carpetas, padres_de):
+def buscar_carpetas_del_proceso(nombre, nit, expedientes, carpetas, padres_de):
     tokens = tokens_nombre(nombre)
     puntuadas = sorted(
-        ((puntaje(tokens, nit, c), c) for c in carpetas), key=lambda x: x[0], reverse=True
+        ((puntaje(tokens, nit, expedientes, c), c) for c in carpetas), key=lambda x: x[0], reverse=True
     )
     puntuadas = [(p, c) for p, c in puntuadas if p > 0][:15]
     if not puntuadas or puntuadas[0][0] < UMBRAL_SIMILITUD_NOMBRE:
@@ -1054,8 +1123,8 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
     ], {"CONCURSADO": 30, "DOCUMENTO": 35, "RUTA EN LA CARPETA": 35, "FRAGMENTO": 80,
         "FECHA(S) INICIO": 22, "FECHA(S) TERMINACION": 24, "OTRAS FECHAS EN EL TEXTO": 30})
     hn = _hoja(libro, "NO_ENCONTRADOS_EN_DRIVE", [
-        "CONCURSADO", "NIT", "CARPETA MAS PARECIDA", "SIMILITUD", "ENLACE",
-    ], {"CONCURSADO": 40, "CARPETA MAS PARECIDA": 45, "ENLACE": 30})
+        "CONCURSADO", "TIPO DE PROCESO", "NIT", "EXPEDIENTE", "CARPETA MAS PARECIDA", "SIMILITUD", "ENLACE",
+    ], {"CONCURSADO": 40, "TIPO DE PROCESO": 24, "CARPETA MAS PARECIDA": 45, "ENLACE": 30})
     hr = _hoja(libro, "REVISAR_A_MANO", [
         "CONCURSADO", "DOCUMENTO", "RUTA EN LA CARPETA", "ENLACE", "MOTIVO",
     ], {"CONCURSADO": 30, "DOCUMENTO": 40, "RUTA EN LA CARPETA": 40, "MOTIVO": 45})
@@ -1117,9 +1186,10 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
         if not en_drive:
             mejor = res.get("alternativas") or []
             p, c = mejor[0] if mejor else (None, None)
-            hn.append([res["nombre"], res["nit"], c["nombre"] if c else "", round(p, 2) if p else "", None])
+            hn.append([res["nombre"], res.get("tipo", ""), res["nit"], ", ".join(res.get("expedientes", [])),
+                       c["nombre"] if c else "", round(p, 2) if p else "", None])
             if c:
-                _link(hn.cell(row=hn.max_row, column=5), c["enlace"], "Abrir")
+                _link(hn.cell(row=hn.max_row, column=7), c["enlace"], "Abrir")
         for a, motivo in res.get("sin_leer", []):
             hr.append([res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None, motivo])
             _link(hr.cell(row=hr.max_row, column=4), a["enlace"], "Abrir")
@@ -1144,9 +1214,18 @@ def procesar():
     ruta_excel = pedir_ruta_excel()
     if not ruta_excel or not os.path.exists(ruta_excel):
         raise RuntimeError(f"No existe el Excel de procesos: '{ruta_excel}'")
-    encabezados, filas, idx_conc, idx_nit = leer_listado(ruta_excel)
-    logging.info("Excel: %s -> %d procesos (columna concursado: '%s'%s).", ruta_excel, len(filas),
-                 encabezados[idx_conc], f", NIT: '{encabezados[idx_nit]}'" if idx_nit is not None else "")
+    info = leer_listado(ruta_excel)
+    encabezados, filas = info["encabezados"], info["filas"]
+    idx_conc, idx_nit, idx_exp, idx_tipo = info["idx_conc"], info["idx_nit"], info["idx_exp"], info["idx_tipo"]
+    logging.info("Excel: %s", ruta_excel)
+    logging.info("   Columna concursado: '%s'%s%s", encabezados[idx_conc],
+                 f" | NIT: '{encabezados[idx_nit]}'" if idx_nit is not None else "",
+                 f" | expediente: '{encabezados[idx_exp]}'" if idx_exp is not None else "")
+    if idx_tipo is not None and TIPOS_PROCESO_A_INCLUIR:
+        logging.info("   Filtro por '%s': %d de %d filas son de insolvencia/reorganizacion y se van a revisar.",
+                     encabezados[idx_tipo], len(filas), info["total_filas"])
+    else:
+        logging.info("   %d procesos a revisar.", len(filas))
 
     if CARPETA_LOCAL_DRIVE.strip():
         fuente = FuenteLocal(CARPETA_LOCAL_DRIVE.strip())
@@ -1174,8 +1253,11 @@ def procesar():
         for n, fila in enumerate(filas, start=1):
             nombre = str(fila[idx_conc]).strip()
             nit = nit_base(fila[idx_nit]) if idx_nit is not None and idx_nit < len(fila) else ""
-            elegidas, alternativas = buscar_carpetas_del_proceso(nombre, nit, carpetas, padres_de)
-            res = {"fila": fila, "nombre": nombre, "nit": nit, "carpetas": elegidas, "alternativas": alternativas}
+            expedientes = numeros_expediente(fila[idx_exp]) if idx_exp is not None and idx_exp < len(fila) else []
+            tipo = str(fila[idx_tipo] or "").strip() if idx_tipo is not None and idx_tipo < len(fila) else ""
+            elegidas, alternativas = buscar_carpetas_del_proceso(nombre, nit, expedientes, carpetas, padres_de)
+            res = {"fila": fila, "nombre": nombre, "nit": nit, "expedientes": expedientes, "tipo": tipo,
+                   "carpetas": elegidas, "alternativas": alternativas}
             observaciones = []
             if not elegidas:
                 logging.info("[%d/%d] %s -> NO esta en el Drive", n, len(filas), nombre)
@@ -1206,8 +1288,18 @@ def procesar():
     en_drive = [r for r in resultados if r["carpetas"]]
     con_fng = [r for r in en_drive if r.get("resumen", {}).get("fng") == "SI"]
     con_leasing = [r for r in en_drive if r.get("resumen", {}).get("leasing") == "SI"]
-    contadores = [
-        ("Procesos en el listado", len(resultados)),
+    contadores = []
+    if idx_tipo is not None and TIPOS_PROCESO_A_INCLUIR:
+        contadores.append(("Filas del listado original", info["total_filas"]))
+        contadores.append(("Procesos de insolvencia/reorganizacion (filtrados)", len(resultados)))
+        for t, cuantos in sorted(
+            {normalizar(r["tipo"]): sum(1 for x in resultados if normalizar(x["tipo"]) == normalizar(r["tipo"]))
+             for r in resultados}.items()
+        ):
+            contadores.append((f"   {t}", cuantos))
+    else:
+        contadores.append(("Procesos en el listado", len(resultados)))
+    contadores += [
         ("Procesos con carpeta en el Drive", len(en_drive)),
         ("Procesos NO encontrados en el Drive", len(resultados) - len(en_drive)),
         ("Procesos con garantia FNG", len(con_fng)),
