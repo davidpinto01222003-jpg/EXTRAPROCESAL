@@ -278,3 +278,22 @@ Comentarios de fondo del jurado y cómo se atendieron:
 **Forma.** Los párrafos del cuerpo quedaron justificados: 97 estaban forzados a la izquierda, aunque el estilo del documento era justificado. La puntuación se revisó con LanguageTool y con reglas de espacios y comillas, sin errores nuevos. Las marcas puntuales de puntuación que el jurado haya hecho en su archivo no se pudieron ver.
 
 **Compilatio.** Para dar margen, se reescribieron en forma narrativa, con ejemplos concretos y en primera persona, ocho párrafos que Compilatio marcó en la v6: el caso 2, "Tres casos…", el marco normativo, las sanciones de la Dimayor, el desenlace de la SC2111-2021, la jurisprudencia, Hillsborough y la Resolución 429 de 2026. Estimación: IA entre 14,2 % y 16,0 %, total entre **19 % y 21 %**. La v6 real dio 19 %, y el simulador se quedó corto en unos 3 puntos en esa versión.
+
+## v9: revisión con criterio de jurado
+
+Segunda pasada sobre la v8, buscando lo que un jurado riguroso notaría:
+- **Un solo esquema de regímenes en todo el texto.** La v8 agrupaba la vía contravencional y la Ley 1445 en el derecho administrativo sancionador, pero el párrafo siguiente las contaba como vías separadas y repetía las cifras de la Ley 1445. Ahora la presentación anuncia las dos expresiones del derecho administrativo sancionador (la contravencional o de policía y la especial de la Ley 1445), y el párrafo de los hinchas las desarrolla sin repetir.
+- **Tabla 2** alineada con el texto: "Penal y administrativa sancionadora (contravencional y especial de la Ley 1445 de 2011)" y "disciplinaria deportiva".
+- **Restos de la terminología vieja corregidos:** "deberes disciplinarios deportivos", "sanciones disciplinarias deportivas" e "incidentes que solo dieron lugar a sanciones deportivas o de policía".
+- **Caso 3:** se explica por qué está en el estudio aunque no sea una agresión entre hinchas. Muestra que estructuras como la del caso 2 pueden extender su negocio fuera del país, y pone a prueba las herramientas nacionales.
+- **Resumen y Abstract:** nombran el foco (violencia física entre hinchas: homicidios y lesiones) y el término "disciplinario deportivo". "Normas no faltan" pasó a "El ordenamiento cuenta con normas suficientes".
+- **Introducción:** se aclara que no toda barra ni todo barrista participa de la violencia, en coherencia con el párrafo de los resultados.
+- **Registro académico.** Se cambiaron unas 15 expresiones coloquiales. Por ejemplo:
+  - "las cifras toca reconstruirlas" pasó a "deben reconstruirse a partir de";
+  - "se estrella" pasó a "tropieza";
+  - "aterriza el diagnóstico" pasó a "permite concretar el diagnóstico";
+  - "andaban cada uno por su lado" pasó a "actuaban por separado";
+  - "rinde poco y sale contraproducente" pasó a "produce pocos resultados y resulta contraproducente";
+  - "en qué va el proceso" pasó a "en qué estado se encuentra el proceso".
+
+Ningún dato, cita ni radicado cambió. Estimación: IA entre 14,2 % y 15,9 %, total entre **19 % y 21 %**.
