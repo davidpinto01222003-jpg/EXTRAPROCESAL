@@ -673,7 +673,8 @@ class FuenteDriveAPI:
                         continue
                     if not destino.get("targetId"):
                         continue
-                    item = dict(item, id=destino["targetId"], mimeType=destino.get("targetMimeType", ""))
+                    item = dict(item, id=destino["targetId"], mimeType=destino.get("targetMimeType", ""),
+                                webViewLink=f"https://drive.google.com/file/d/{destino['targetId']}/view")
                     mime = item["mimeType"]
                 if mime == MIME_CARPETA:
                     pendientes.append((item["id"], f"{ruta}{item['name']}/"))
@@ -1287,7 +1288,8 @@ def _hoja(libro, titulo, encabezados, anchos=None):
 
 def _link(celda, url, texto=None):
     if url:
-        celda.value = texto or url
+        # Ruta local (CARPETA_LOCAL_DRIVE): se deja la ruta completa visible.
+        celda.value = (texto or url) if url.startswith("http") else url
         if url.startswith("http"):
             celda.hyperlink = url
             celda.font = Font(color="0563C1", underline="single")
@@ -1428,6 +1430,39 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
 # ============================= main =============================
 
 
+def calcular_contadores(resultados, total_filas=None):
+    """Lineas de la hoja RESUMEN. total_filas: filas del listado antes del filtro por tipo."""
+    en_drive = [r for r in resultados if r["carpetas"]]
+    con_fng = [r for r in en_drive if r.get("resumen", {}).get("fng") == "SI"]
+    con_leasing = [r for r in en_drive if r.get("resumen", {}).get("leasing") == "SI"]
+    contadores = []
+    if total_filas is not None:
+        contadores.append(("Filas del listado original", total_filas))
+        contadores.append(("Procesos de insolvencia/reorganizacion (filtrados)", len(resultados)))
+        for t, cuantos in sorted(
+            {normalizar(r["tipo"]): sum(1 for x in resultados if normalizar(x["tipo"]) == normalizar(r["tipo"]))
+             for r in resultados}.items()
+        ):
+            contadores.append((f"   {t}", cuantos))
+    else:
+        contadores.append(("Procesos en el listado", len(resultados)))
+    contadores += [
+        ("Procesos con carpeta en el Drive", len(en_drive)),
+        ("Procesos NO encontrados en el Drive", len(resultados) - len(en_drive)),
+        (f"Procesos con garantia FNG {_ETQ}", len(con_fng)),
+        ("   FNG vigente", sum(1 for r in con_fng if r["resumen"]["fng_estado"] == "VIGENTE")),
+        ("   FNG vencida", sum(1 for r in con_fng if r["resumen"]["fng_estado"] == "VENCIDA")),
+        ("   FNG sin fecha de vencimiento (revisar)", sum(1 for r in con_fng if r["resumen"]["fng_estado"].startswith("SIN"))),
+        (f"Procesos con LEASING {_ETQ}", len(con_leasing)),
+        ("   Leasing vigente", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"] == "VIGENTE")),
+        ("   Leasing terminado", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"] == "TERMINADO")),
+        ("   Leasing sin fecha (revisar)", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"].startswith("SIN"))),
+        (f"Procesos con FNG y LEASING {_ETQ}", sum(1 for r in con_fng if r in con_leasing)),
+        ("Documentos relevantes sin poder leer (REVISAR_A_MANO)", sum(len(r.get("sin_leer", [])) for r in resultados)),
+    ]
+    return contadores
+
+
 def pedir_ruta_excel():
     if len(sys.argv) > 1:
         return sys.argv[1].strip().strip('"')
@@ -1561,34 +1596,9 @@ def procesar():
     finally:
         cache.guardar()
 
-    en_drive = [r for r in resultados if r["carpetas"]]
-    con_fng = [r for r in en_drive if r.get("resumen", {}).get("fng") == "SI"]
-    con_leasing = [r for r in en_drive if r.get("resumen", {}).get("leasing") == "SI"]
-    contadores = []
-    if idx_tipo is not None and TIPOS_PROCESO_A_INCLUIR:
-        contadores.append(("Filas del listado original", info["total_filas"]))
-        contadores.append(("Procesos de insolvencia/reorganizacion (filtrados)", len(resultados)))
-        for t, cuantos in sorted(
-            {normalizar(r["tipo"]): sum(1 for x in resultados if normalizar(x["tipo"]) == normalizar(r["tipo"]))
-             for r in resultados}.items()
-        ):
-            contadores.append((f"   {t}", cuantos))
-    else:
-        contadores.append(("Procesos en el listado", len(resultados)))
-    contadores += [
-        ("Procesos con carpeta en el Drive", len(en_drive)),
-        ("Procesos NO encontrados en el Drive", len(resultados) - len(en_drive)),
-        (f"Procesos con garantia FNG {_ETQ}", len(con_fng)),
-        ("   FNG vigente", sum(1 for r in con_fng if r["resumen"]["fng_estado"] == "VIGENTE")),
-        ("   FNG vencida", sum(1 for r in con_fng if r["resumen"]["fng_estado"] == "VENCIDA")),
-        ("   FNG sin fecha de vencimiento (revisar)", sum(1 for r in con_fng if r["resumen"]["fng_estado"].startswith("SIN"))),
-        (f"Procesos con LEASING {_ETQ}", len(con_leasing)),
-        ("   Leasing vigente", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"] == "VIGENTE")),
-        ("   Leasing terminado", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"] == "TERMINADO")),
-        ("   Leasing sin fecha (revisar)", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"].startswith("SIN"))),
-        (f"Procesos con FNG y LEASING {_ETQ}", sum(1 for r in con_fng if r in con_leasing)),
-        ("Documentos relevantes sin poder leer (REVISAR_A_MANO)", sum(len(r.get("sin_leer", [])) for r in resultados)),
-    ]
+    contadores = calcular_contadores(
+        resultados, info["total_filas"] if idx_tipo is not None and TIPOS_PROCESO_A_INCLUIR else None
+    )
     escribir_excel(ARCHIVO_SALIDA, encabezados, resultados, contadores)
     if not any("ERROR al revisar" in (r.get("observaciones") or "") for r in resultados):
         progreso.borrar()  # corrida completa: la proxima vez se empieza de cero (con el cache de textos)

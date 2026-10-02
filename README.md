@@ -1548,6 +1548,14 @@ nombre con BBVA. Las de otras entidades no se cuentan, pero quedan
 anotadas en OBSERVACIONES ("Menciona FNG en N documento(s) SIN BBVA
 cerca"). Para contar las de cualquier entidad, deja la lista vacía `[]`.
 
+**Ya tienes un resultado con todas las entidades y quieres solo BBVA?**
+Haz doble clic en `FILTRAR_BBVA.bat` (`filtrar_bbva.py`). Toma el
+`depuracion_fng_leasing_*.xlsx` más reciente de la carpeta y vuelve a
+analizar solo los documentos de FNG_DETALLE y LEASING_DETALLE, con el texto
+ya guardado en `depurar_fng_leasing_cache.jsonl`, así que no vuelve a
+leer el Drive y tarda segundos. Genera `..._BBVA.xlsx` con el mismo formato
+y no toca el Excel original.
+
 **Importante:** los números y fechas se sacan automáticamente del texto
 que rodea cada mención de "FNG" / "Fondo Nacional de Garantías" /
 "leasing", así que pueden faltar o sobrar datos (por ejemplo, un proyecto
