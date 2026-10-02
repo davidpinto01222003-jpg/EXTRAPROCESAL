@@ -1469,3 +1469,60 @@ largas, metadatos raros, o simplemente se traba) usa
   "Donde se encontró"): si dice `Descargas/Procesados`, tienes que sacar
   ese zip de ahí a mano (muévelo de vuelta a Descargas) para que se
   vuelva a intentar.
+
+## Depurar procesos de Supersociedades: garantías FNG y LEASING
+
+`depurar_fng_leasing.py` (o doble clic en `depurar_fng_leasing.bat`) toma
+tu Excel con el listado de procesos de la Superintendencia de Sociedades,
+busca en tu Google Drive la carpeta de cada proceso **por el nombre del
+concursado** (y por el NIT, si el Excel lo trae), lee los documentos de
+esa carpeta y sus subcarpetas, y genera un Excel nuevo
+`depuracion_fng_leasing_AAAA-MM-DD.xlsx` con estas hojas:
+
+| Hoja | Qué tiene |
+|---|---|
+| `RESUMEN` | Cuántos procesos están en el Drive, cuántos tienen FNG (vigente / vencida / sin fecha), cuántos tienen leasing (vigente / terminado / sin fecha). |
+| `PROCESOS` | Tu listado original + columnas nuevas: ¿en Drive?, enlace a la carpeta, ¿tiene FNG?, n.° de garantía, obligación/pagaré, entidad, valor/cobertura, **fechas de vencimiento FNG** y estado; ¿tiene leasing?, n.° de contrato, entidad, bien, **fechas de inicio y terminación** del leasing, plazo y estado. |
+| `FNG_DETALLE` | Una fila por documento que menciona el FNG, con el fragmento de texto donde aparece y el enlace al documento. |
+| `LEASING_DETALLE` | Lo mismo, para leasing / arrendamiento financiero. Si el contrato trae fecha de inicio y plazo pero no fecha final, la calcula (columna "estimada"). |
+| `NO_ENCONTRADOS_EN_DRIVE` | Procesos del listado sin carpeta en el Drive, con la carpeta más parecida (por si está con otro nombre). |
+| `REVISAR_A_MANO` | Documentos cuyo nombre sugiere FNG/leasing/garantía/contrato pero no se pudieron leer (PDF escaneados sin texto, Word antiguo `.doc`, archivos muy pesados). |
+
+Lee PDF, Word (`.docx`), Excel (`.xlsx`), `.txt`, correos `.eml` y
+documentos nativos de Google (Docs/Sheets/Slides). Es de **solo lectura**:
+no mueve, borra ni cambia nada en tu Drive.
+
+Configuración (al inicio de `depurar_fng_leasing.py`):
+
+- `RUTA_EXCEL_PROCESOS`: ruta del Excel con el listado. También puedes
+  arrastrar el Excel sobre `depurar_fng_leasing.bat`, o dejarlo vacío y
+  el script te lo pregunta.
+- `COLUMNA_CONCURSADO` / `COLUMNA_NIT`: normalmente se detectan solas
+  (encabezados como "Razón social", "Concursado", "Sociedad", "NIT").
+  Si no, escribe el encabezado exacto.
+- `CARPETA_RAIZ_DRIVE`: nombre, ID o enlace de la carpeta del Drive donde
+  están las carpetas de los procesos. Recomendado: así no se mezcla con
+  carpetas de otras cosas. Vacío = busca en todo el Drive.
+- `CARPETA_LOCAL_DRIVE`: alternativa sin API, si tienes **Google Drive
+  para escritorio**: pon la ruta de la carpeta sincronizada (ej.
+  `G:\Mi unidad\PROCESOS SUPERSOCIEDADES`). Ojo: así no se pueden leer los
+  documentos nativos de Google (`.gdoc`), solo PDF/Word/Excel.
+- `MODO_LECTURA`: `"rapido"` (por defecto) usa el buscador de Google Drive
+  para leer solo los documentos que mencionan FNG/leasing (más los que lo
+  dicen en el nombre); `"completo"` lee todos los documentos de cada
+  carpeta (más lento, por si sospechas que el buscador de Drive se saltó
+  algo).
+
+Para la API usa las mismas credenciales que `buscar_faltantes_en_drive.py`
+(`credenciales_drive.json` / `token_drive.json`; ver "Configurar el acceso
+a Google Drive" más arriba). Lo leído queda en
+`depurar_fng_leasing_cache.json`, así que volver a correrlo es mucho más
+rápido (solo se vuelven a leer los documentos que cambiaron).
+
+**Importante:** los números y fechas se sacan automáticamente del texto
+que rodea cada mención de "FNG" / "Fondo Nacional de Garantías" /
+"leasing", así que pueden faltar o sobrar datos (por ejemplo, un proyecto
+de graduación de créditos que menciona al FNG como acreedor subrogado
+también cuenta como "tiene FNG"). Cada hallazgo trae el fragmento y el
+enlace al documento para que lo confirmes con un clic; los procesos con
+estado "SIN FECHA - revisar" quedan resaltados en amarillo.
