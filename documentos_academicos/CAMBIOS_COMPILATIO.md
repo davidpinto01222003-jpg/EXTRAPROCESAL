@@ -297,3 +297,20 @@ Segunda pasada sobre la v8, buscando lo que un jurado riguroso notaría:
   - "en qué va el proceso" pasó a "en qué estado se encuentra el proceso".
 
 Ningún dato, cita ni radicado cambió. Estimación: IA entre 14,2 % y 15,9 %, total entre **19 % y 21 %**.
+
+### Ajuste a la v9: se recupera el registro coloquial
+
+Al revisar el informe real de la v6 se vio que las frases coloquiales que la v9 había formalizado habían pasado limpias por Compilatio: 8 de las 9 con marca conocida. Formalizarlas aumentaba el riesgo, así que se devolvieron a su forma original:
+- "Normas no faltan…"
+- "en qué va el proceso"
+- "ir con cuidado"
+- "error bastante común"
+- "Otra cosa pasa con…"
+- "cuesta más medirlo y probablemente sale más caro"
+- "toca a patrocinadores"
+- "aterriza el diagnóstico"
+- "andaban cada uno por su lado"
+- "rinde poco y sale contraproducente"
+- "todo el tiempo", "de verdad", "así que casi nunca" y "montar"
+
+Solo quedaron formalizadas dos: "les corresponde proteger", porque Compilatio sí marcó la frase original, y "las cifras deben reconstruirse", porque "las cifras toca reconstruirlas" se lee como error gramatical en un texto escrito. Se mantienen todos los cambios de fondo de la v9.
