@@ -1527,9 +1527,18 @@ Configuración (al inicio de `depurar_fng_leasing.py`):
 
 Para la API usa las mismas credenciales que `buscar_faltantes_en_drive.py`
 (`credenciales_drive.json` / `token_drive.json`; ver "Configurar el acceso
-a Google Drive" más arriba). Lo leído queda en
-`depurar_fng_leasing_cache.json`, así que volver a correrlo es mucho más
-rápido (solo se vuelven a leer los documentos que cambiaron).
+a Google Drive" más arriba). La autorización se abre en Chrome, y el
+enlace también queda copiado y guardado en `enlace_autorizacion_google.txt`.
+
+**Si se corta** (se suspende o reinicia el PC, se cierra la ventana): vuelve
+a ejecutarlo y **retoma desde donde quedó**. No vuelve a listar el Drive ni
+a revisar los procesos ya terminados; el avance está en
+`depurar_fng_leasing_progreso.json` y se borra solo cuando la corrida
+termina completa (o si tiene más de `DIAS_VALIDEZ_PROGRESO` días). Mientras
+corre, le pide a Windows que no se suspenda, y si se cae la conexión
+reintenta cada proceso antes de darlo por fallido. El texto de cada
+documento leído queda en `depurar_fng_leasing_cache.jsonl`, así que una
+corrida nueva solo descarga los documentos que cambiaron.
 
 **Importante:** los números y fechas se sacan automáticamente del texto
 que rodea cada mención de "FNG" / "Fondo Nacional de Garantías" /

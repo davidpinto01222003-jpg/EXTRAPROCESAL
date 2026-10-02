@@ -59,6 +59,7 @@ import re
 import subprocess
 import sys
 import threading
+import time
 import unicodedata
 import webbrowser
 from concurrent.futures import ThreadPoolExecutor
@@ -180,7 +181,23 @@ NUM_HILOS = 4
 ARCHIVO_SALIDA = os.path.join(
     DIRECTORIO, f"depuracion_fng_leasing_{datetime.date.today():%Y-%m-%d}.xlsx"
 )
-ARCHIVO_CACHE = os.path.join(DIRECTORIO, "depurar_fng_leasing_cache.json")
+ARCHIVO_CACHE = os.path.join(DIRECTORIO, "depurar_fng_leasing_cache.jsonl")
+ARCHIVO_CACHE_VIEJO = os.path.join(DIRECTORIO, "depurar_fng_leasing_cache.json")  # formato anterior
+
+# Avance de la corrida: si se corta (se apaga/suspende el PC, se cierra la
+# ventana), al volver a ejecutar se RETOMA desde el proceso donde quedo,
+# sin volver a listar el Drive ni revisar los procesos ya terminados. Se
+# borra solo cuando la corrida termina completa. Si el avance tiene mas
+# de estos dias, se descarta y se empieza de nuevo (para no usar datos
+# viejos del Drive).
+ARCHIVO_PROGRESO = os.path.join(DIRECTORIO, "depurar_fng_leasing_progreso.json")
+DIAS_VALIDEZ_PROGRESO = 3
+
+# Si falla la conexion (ej. el PC se suspendio y al volver no hay red),
+# cuantas veces reintentar cada proceso y cuantos segundos esperar entre
+# intentos antes de darlo por fallido.
+REINTENTOS_POR_PROCESO = 4
+ESPERA_REINTENTO_SEG = 30
 ARCHIVO_LOG = os.path.join(DIRECTORIO, "depurar_fng_leasing.log")
 ARCHIVO_ENLACE_AUTORIZACION = os.path.join(DIRECTORIO, "enlace_autorizacion_google.txt")
 
@@ -798,16 +815,33 @@ def texto_de_bytes(contenido: bytes, extension: str) -> str:
 
 
 class Cache:
+    """Texto ya leido de cada documento (para no volver a descargarlo).
+    Se guarda en un archivo de LINEAS (una por documento) que se va
+    agregando al instante: si el programa se corta, no se pierde nada."""
+
     def __init__(self, ruta):
         self.ruta = ruta
         self.datos = {}
-        self.cambios = 0
-        if os.path.exists(ruta):
+        if os.path.exists(ARCHIVO_CACHE_VIEJO):
+            # Migra el cache del formato anterior (un solo JSON).
             try:
-                with open(ruta, encoding="utf-8") as f:
-                    self.datos = json.load(f)
+                with open(ARCHIVO_CACHE_VIEJO, encoding="utf-8") as f:
+                    viejo = json.load(f)
+                with open(ruta, "a", encoding="utf-8") as f:
+                    for clave, e in viejo.items():
+                        f.write(json.dumps(dict(e, id=clave), ensure_ascii=False) + "\n")
+                os.replace(ARCHIVO_CACHE_VIEJO, ARCHIVO_CACHE_VIEJO + ".migrado")
             except (OSError, ValueError):
-                self.datos = {}
+                pass
+        if os.path.exists(ruta):
+            with open(ruta, encoding="utf-8", errors="replace") as f:
+                for linea in f:
+                    try:
+                        e = json.loads(linea)
+                        self.datos[e.pop("id")] = e
+                    except (ValueError, KeyError):
+                        continue  # linea cortada por un apagon: se ignora
+        self._archivo = open(ruta, "a", encoding="utf-8")
 
     def obtener(self, archivo):
         e = self.datos.get(archivo["id"])
@@ -816,17 +850,99 @@ class Cache:
         return None
 
     def guardar_entrada(self, archivo, texto, motivo):
+        e = {"version": archivo["version"], "texto": texto, "motivo": motivo}
         with _cache_lock:
-            self.datos[archivo["id"]] = {"version": archivo["version"], "texto": texto, "motivo": motivo}
-            self.cambios += 1
-            if self.cambios % 50 == 0:
-                self.guardar()
+            self.datos[archivo["id"]] = e
+            self._archivo.write(json.dumps(dict(e, id=archivo["id"]), ensure_ascii=False) + "\n")
+            self._archivo.flush()
+
+    def guardar(self):
+        with _cache_lock:
+            try:
+                self._archivo.flush()
+                os.fsync(self._archivo.fileno())
+            except (OSError, ValueError):
+                pass
+
+
+def _json_a_disco(obj):
+    if isinstance(obj, (datetime.date, datetime.datetime)):
+        return {"__fecha__": obj.isoformat()[:10]}
+    if isinstance(obj, set):
+        return sorted(obj)
+    raise TypeError(type(obj))
+
+
+def _json_de_disco(d):
+    if "__fecha__" in d and len(d) == 1:
+        return datetime.date.fromisoformat(d["__fecha__"])
+    return d
+
+
+class Progreso:
+    """Avance de la corrida actual, para retomar si se corta."""
+
+    def __init__(self, ruta, firma):
+        self.ruta = ruta
+        self.datos = {"firma": firma, "inicio": datetime.datetime.now().isoformat(), "procesos": {}}
+        if not os.path.exists(ruta):
+            return
+        try:
+            with open(ruta, encoding="utf-8") as f:
+                previo = json.load(f, object_hook=_json_de_disco)
+            inicio = datetime.datetime.fromisoformat(previo["inicio"])
+        except (OSError, ValueError, KeyError, TypeError):
+            return
+        if previo.get("firma") != firma:
+            logging.info("(Hay un avance guardado de OTRA configuracion/listado: se empieza de nuevo.)")
+        elif datetime.datetime.now() - inicio > datetime.timedelta(days=DIAS_VALIDEZ_PROGRESO):
+            logging.info("(El avance guardado tiene mas de %d dias: se empieza de nuevo.)", DIAS_VALIDEZ_PROGRESO)
+        else:
+            self.datos = previo
+            logging.info(">>> RETOMANDO la corrida del %s: %d procesos ya estaban revisados.",
+                         inicio.strftime("%d/%m/%Y %H:%M"), len(previo.get("procesos", {})))
+
+    def get(self, clave, defecto=None):
+        return self.datos.get(clave, defecto)
+
+    def poner(self, clave, valor):
+        self.datos[clave] = valor
+        self.guardar()
+
+    def proceso(self, clave):
+        return self.datos["procesos"].get(clave)
+
+    def marcar_proceso(self, clave, valor):
+        self.datos["procesos"][clave] = valor
+        self.guardar()
 
     def guardar(self):
         tmp = self.ruta + ".tmp"
         with open(tmp, "w", encoding="utf-8") as f:
-            json.dump(self.datos, f, ensure_ascii=False)
+            json.dump(self.datos, f, ensure_ascii=False, default=_json_a_disco)
         os.replace(tmp, self.ruta)
+
+    def borrar(self):
+        for ruta in (self.ruta, self.ruta + ".tmp"):
+            try:
+                os.remove(ruta)
+            except OSError:
+                pass
+
+
+def mantener_pc_despierto():
+    """En Windows, le pide al sistema que NO se suspenda mientras el
+    programa este corriendo (la pantalla si se puede apagar, eso no
+    afecta). Se suelta solo al cerrar el programa."""
+    if not sys.platform.startswith("win"):
+        return
+    try:
+        import ctypes
+        ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
+        ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+        logging.info("(El PC no se va a suspender mientras esto corre.)")
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def obtener_texto(fuente, cache: Cache, archivo):
@@ -1293,18 +1409,34 @@ def procesar():
         fuente = FuenteDriveAPI()
         logging.info("Conectado a Google Drive (API).")
 
-    carpetas = fuente.listar_carpetas_candidatas()
+    firma = "|".join([
+        os.path.basename(ruta_excel), str(len(filas)), CARPETA_LOCAL_DRIVE.strip(), CARPETA_RAIZ_DRIVE.strip(),
+        MODO_LECTURA, ",".join(TIPOS_PROCESO_A_INCLUIR), str(PROFUNDIDAD_BUSQUEDA_CARPETAS),
+    ])
+    progreso = Progreso(ARCHIVO_PROGRESO, firma)
+
+    carpetas = progreso.get("carpetas")
+    if carpetas is None:
+        carpetas = fuente.listar_carpetas_candidatas()
+        progreso.poner("carpetas", carpetas)
+    else:
+        logging.info("(Lista de carpetas del Drive tomada del avance guardado.)")
     padres_de = {c["id"]: c["padres"] for c in carpetas}
     logging.info("%d carpetas candidatas en el Drive.", len(carpetas))
 
     ids_indexados = None
     if MODO_LECTURA == "rapido" and isinstance(fuente, FuenteDriveAPI):
-        logging.info("Preguntando al buscador de Drive que documentos mencionan FNG / leasing...")
-        ids_indexados = fuente.ids_con_texto(
-            ["FNG", "Fondo Nacional de Garantías", "leasing", "arrendamiento financiero"]
-        )
+        if "ids_indexados" in progreso.datos:
+            guardados = progreso.get("ids_indexados")
+            ids_indexados = set(guardados) if guardados is not None else None
+        else:
+            logging.info("Preguntando al buscador de Drive que documentos mencionan FNG / leasing...")
+            ids_indexados = fuente.ids_con_texto(
+                ["FNG", "Fondo Nacional de Garantías", "leasing", "arrendamiento financiero"]
+            )
+            progreso.poner("ids_indexados", ids_indexados)
         if ids_indexados is not None:
-            logging.info("   %d documentos del Drive los mencionan.", len(ids_indexados))
+            logging.info("   %d documentos del Drive mencionan FNG / leasing.", len(ids_indexados))
 
     cache = Cache(ARCHIVO_CACHE)
     resultados = []
@@ -1326,19 +1458,35 @@ def procesar():
                 observaciones.append(f"Se revisaron {len(elegidas)} carpetas con nombre parecido")
             if alternativas:
                 observaciones.append("Otras carpetas parecidas: " + "; ".join(c["nombre"] for _, c in alternativas))
-            try:
-                fng, leasing, sin_leer, total = revisar_proceso(fuente, cache, elegidas, ids_indexados)
-            except Exception as e:  # noqa: BLE001
-                logging.exception("   Error revisando %s", nombre)
-                fng, leasing, sin_leer, total = [], [], [], 0
-                observaciones.append(f"ERROR al revisar la carpeta: {e}")
+            clave = "|".join([nombre, tipo, ",".join(expedientes), ",".join(c["id"] for c in elegidas)])
+            hecho = progreso.proceso(clave)
+            if hecho is not None:
+                fng, leasing, sin_leer, total = hecho["fng"], hecho["leasing"], hecho["sin_leer"], hecho["total"]
+                ya_hecho = True
+            else:
+                ya_hecho = False
+                for intento in range(1, REINTENTOS_POR_PROCESO + 1):
+                    try:
+                        fng, leasing, sin_leer, total = revisar_proceso(fuente, cache, elegidas, ids_indexados)
+                        progreso.marcar_proceso(clave, {"fng": fng, "leasing": leasing, "sin_leer": sin_leer,
+                                                        "total": total})
+                        break
+                    except Exception as e:  # noqa: BLE001
+                        if intento < REINTENTOS_POR_PROCESO:
+                            logging.warning("   Fallo revisando %s (%s). Reintento %d/%d en %d s...", nombre,
+                                            str(e)[:150], intento, REINTENTOS_POR_PROCESO - 1, ESPERA_REINTENTO_SEG)
+                            time.sleep(ESPERA_REINTENTO_SEG)
+                            continue
+                        logging.exception("   Error revisando %s", nombre)
+                        fng, leasing, sin_leer, total = [], [], [], 0
+                        observaciones.append(f"ERROR al revisar la carpeta (vuelve a ejecutar para reintentar): {e}")
             if sin_leer:
                 observaciones.append(f"{len(sin_leer)} documento(s) relevante(s) sin poder leer (ver REVISAR_A_MANO)")
             res.update(fng=fng, leasing=leasing, sin_leer=sin_leer, total_archivos=total,
                        resumen=resumir_proceso(fng, leasing), observaciones=". ".join(observaciones))
             s = res["resumen"]
-            logging.info("[%d/%d] %s -> carpeta '%s' (%d archivos) | FNG: %s %s | LEASING: %s %s",
-                         n, len(filas), nombre, elegidas[0]["nombre"], total,
+            logging.info("[%d/%d] %s%s -> carpeta '%s' (%d archivos) | FNG: %s %s | LEASING: %s %s",
+                         n, len(filas), nombre, " (ya revisado)" if ya_hecho else "", elegidas[0]["nombre"], total,
                          s["fng"], s["fng_vencimientos"], s["leasing"], s["leasing_terminaciones"])
             resultados.append(res)
     finally:
@@ -1373,6 +1521,10 @@ def procesar():
         ("Documentos relevantes sin poder leer (REVISAR_A_MANO)", sum(len(r.get("sin_leer", [])) for r in resultados)),
     ]
     escribir_excel(ARCHIVO_SALIDA, encabezados, resultados, contadores)
+    if not any("ERROR al revisar" in (r.get("observaciones") or "") for r in resultados):
+        progreso.borrar()  # corrida completa: la proxima vez se empieza de cero (con el cache de textos)
+    else:
+        logging.info("Hubo procesos con ERROR: si vuelves a ejecutar, solo se reintentan esos.")
     logging.info("")
     for etiqueta, valor in contadores:
         logging.info("%-58s %s", etiqueta, valor)
@@ -1387,6 +1539,7 @@ def procesar():
 
 def main():
     configurar_logging()
+    mantener_pc_despierto()
     try:
         procesar()
     except Exception as e:  # noqa: BLE001
