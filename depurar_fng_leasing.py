@@ -61,6 +61,7 @@ import sys
 import threading
 import time
 import unicodedata
+import warnings
 import webbrowser
 from concurrent.futures import ThreadPoolExecutor
 from email import policy
@@ -306,6 +307,12 @@ def configurar_logging():
         format="%(message)s",
         handlers=[logging.FileHandler(ARCHIVO_LOG, encoding="utf-8"), logging.StreamHandler()],
     )
+    # pypdf avisa por cada PDF con fuentes raras ("fontTools is required...",
+    # "Ignoring wrong pointing object"...): no afecta la lectura, solo
+    # llena la pantalla. Se ocultan esos avisos.
+    for nombre in ("pypdf", "PyPDF2", "googleapiclient.discovery_cache"):
+        logging.getLogger(nombre).setLevel(logging.ERROR)
+    warnings.filterwarnings("ignore", module="pypdf")
 
 
 def normalizar(texto: str) -> str:
