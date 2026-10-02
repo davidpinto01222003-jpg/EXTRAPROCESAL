@@ -56,9 +56,11 @@ import json
 import logging
 import os
 import re
+import subprocess
 import sys
 import threading
 import unicodedata
+import webbrowser
 from concurrent.futures import ThreadPoolExecutor
 from email import policy
 from pathlib import Path
@@ -180,6 +182,7 @@ ARCHIVO_SALIDA = os.path.join(
 )
 ARCHIVO_CACHE = os.path.join(DIRECTORIO, "depurar_fng_leasing_cache.json")
 ARCHIVO_LOG = os.path.join(DIRECTORIO, "depurar_fng_leasing.log")
+ARCHIVO_ENLACE_AUTORIZACION = os.path.join(DIRECTORIO, "enlace_autorizacion_google.txt")
 
 # ===========================================================================
 
@@ -478,6 +481,42 @@ def leer_listado(ruta: str):
 # ============================= Fuentes (Drive API / carpeta local) =============================
 
 
+def _ruta_chrome():
+    for base in (os.environ.get("PROGRAMFILES"), os.environ.get("PROGRAMFILES(X86)"), os.environ.get("LOCALAPPDATA")):
+        if base:
+            ruta = os.path.join(base, "Google", "Chrome", "Application", "chrome.exe")
+            if os.path.exists(ruta):
+                return ruta
+    return None
+
+
+class _NavegadorAutorizacion(webbrowser.BaseBrowser):
+    """Abre el enlace de autorizacion de Google en CHROME (no en el
+    navegador predeterminado, que puede ser Edge sin tu cuenta), y ademas
+    lo copia al portapapeles y lo guarda en un .txt -- copiarlo a mano de
+    la ventana negra lo corta en varias lineas y Google responde 404."""
+
+    def open(self, url, new=0, autoraise=True):
+        try:
+            with open(ARCHIVO_ENLACE_AUTORIZACION, "w", encoding="utf-8") as f:
+                f.write(url + "\n")
+        except OSError:
+            pass
+        if sys.platform.startswith("win"):
+            try:
+                subprocess.run(["clip"], input=url, text=True, check=False)
+            except OSError:
+                pass
+        chrome = _ruta_chrome()
+        if chrome:
+            try:
+                subprocess.Popen([chrome, url])
+                return True
+            except OSError:
+                pass
+        return webbrowser.open(url, new=new, autoraise=autoraise)
+
+
 class FuenteDriveAPI:
     def __init__(self):
         if Credentials is None:
@@ -502,7 +541,18 @@ class FuenteDriveAPI:
                         "Google Drive\"), o usa CARPETA_LOCAL_DRIVE si tienes Google Drive para escritorio."
                     )
                 flow = InstalledAppFlow.from_client_secrets_file(CREDENCIALES_DRIVE, DRIVE_SCOPES)
-                creds = flow.run_local_server(port=0)
+                webbrowser.register("autorizar_drive", None, _NavegadorAutorizacion("autorizar_drive"))
+                creds = flow.run_local_server(
+                    port=0, browser="autorizar_drive",
+                    authorization_prompt_message=(
+                        "\n>>> Autoriza el acceso a tu Google Drive en el navegador (se intento abrir en CHROME).\n"
+                        ">>> Si no se abrio, o se abrio en otro navegador: abre Chrome, haz clic en la barra de\n"
+                        ">>> direcciones y pega con Ctrl+V -- el enlace COMPLETO ya esta copiado. Tambien quedo en:\n"
+                        f">>> {ARCHIVO_ENLACE_AUTORIZACION}\n"
+                        ">>> NO cierres esta ventana mientras autorizas.\n"
+                    ),
+                    success_message="Listo, ya puedes cerrar esta pestana y volver a la ventana negra.",
+                )
             with open(TOKEN_DRIVE, "w", encoding="utf-8") as f:
                 f.write(creds.to_json())
         return creds
