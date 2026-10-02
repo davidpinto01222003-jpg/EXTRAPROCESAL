@@ -314,3 +314,16 @@ Al revisar el informe real de la v6 se vio que las frases coloquiales que la v9 
 - "todo el tiempo", "de verdad", "así que casi nunca" y "montar"
 
 Solo quedaron formalizadas dos: "les corresponde proteger", porque Compilatio sí marcó la frase original, y "las cifras deben reconstruirse", porque "las cifras toca reconstruirlas" se lee como error gramatical en un texto escrito. Se mantienen todos los cambios de fondo de la v9.
+
+## v10: más margen en Compilatio
+
+Se volvió a pasar el simulador sobre la v9 y se reescribieron 8 párrafos. La prioridad fueron las frases que Compilatio **sí marcó** en el informe real de la v6 y que seguían iguales: 424 palabras, unos 2,6 puntos. Se usó el patrón que ha pasado limpio en las pruebas: narración en primera persona, un ejemplo concreto del propio trabajo y un registro algo coloquial.
+- Límites del estudio ("sabemos que muestran un piso del problema", "Con las cifras económicas pasa algo parecido").
+- SC2111-2021 ("Dentro de la propia Sala, sin embargo, el debate no está cerrado").
+- Deberes de la Dimayor y la FCF (se aclara que la SU-386 de 2023 no trataba de violencia).
+- Conclusión 01, Lo demostrado.
+- Conclusión 02, Lo demostrado y Nuestra interpretación.
+- Conclusión 03, Nuestra interpretación (con los criterios de la Tabla 1 como ejemplo).
+- Conclusión 05, Nuestra interpretación.
+
+Ningún dato, cita ni radicado cambió. Estimación: IA entre 13,3 % y 15,3 %, total entre **18 % y 20 %**, frente a 19-21 % en la v9.
