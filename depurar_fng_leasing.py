@@ -95,7 +95,8 @@ DIRECTORIO = os.path.dirname(os.path.abspath(__file__))
 
 # Excel con el listado de procesos de Supersociedades. Tambien se puede
 # pasar como argumento (o arrastrar el archivo sobre depurar_fng_leasing.bat).
-# Si queda vacio y no se pasa argumento, el script lo pregunta al arrancar.
+# Si queda vacio y no se pasa argumento, usa el unico Excel que haya en
+# la carpeta del script; si hay varios, lo pregunta al arrancar.
 RUTA_EXCEL_PROCESOS = r""
 
 # Hoja del Excel a leer (None = la primera hoja).
@@ -1207,6 +1208,14 @@ def pedir_ruta_excel():
         return sys.argv[1].strip().strip('"')
     if RUTA_EXCEL_PROCESOS:
         return RUTA_EXCEL_PROCESOS
+    # Si en la carpeta del script hay UN solo Excel (que no sea un
+    # resultado anterior), se usa ese sin preguntar.
+    candidatos = [
+        p for p in Path(DIRECTORIO).glob("*.xlsx")
+        if not p.name.lower().startswith(("depuracion_fng_leasing", "~$"))
+    ]
+    if len(candidatos) == 1:
+        return str(candidatos[0])
     return input("Arrastra aqui el Excel con el listado de procesos y presiona Enter: ").strip().strip('"')
 
 
@@ -1319,6 +1328,11 @@ def procesar():
         logging.info("%-58s %s", etiqueta, valor)
     logging.info("")
     logging.info("Listo. Resultado en: %s", ARCHIVO_SALIDA)
+    if sys.platform.startswith("win"):
+        try:
+            os.startfile(ARCHIVO_SALIDA)  # abre el Excel de resultado
+        except OSError:
+            pass
 
 
 def main():
