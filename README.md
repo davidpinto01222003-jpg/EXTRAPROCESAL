@@ -1540,6 +1540,14 @@ reintenta cada proceso antes de darlo por fallido. El texto de cada
 documento leído queda en `depurar_fng_leasing_cache.jsonl`, así que una
 corrida nueva solo descarga los documentos que cambiaron.
 
+**Solo BBVA:** con `ENTIDAD_OBJETIVO = ["BBVA", "BANCO BILBAO VIZCAYA", ...]`
+(así viene) una mención de FNG o leasing solo cuenta si "BBVA" / "Banco
+Bilbao Vizcaya" aparece cerca (a menos de `DISTANCIA_ENTIDAD` caracteres)
+en el mismo documento, o si el documento está en una carpeta o tiene un
+nombre con BBVA. Las de otras entidades no se cuentan, pero quedan
+anotadas en OBSERVACIONES ("Menciona FNG en N documento(s) SIN BBVA
+cerca"). Para contar las de cualquier entidad, deja la lista vacía `[]`.
+
 **Importante:** los números y fechas se sacan automáticamente del texto
 que rodea cada mención de "FNG" / "Fondo Nacional de Garantías" /
 "leasing", así que pueden faltar o sobrar datos (por ejemplo, un proyecto

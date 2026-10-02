@@ -168,6 +168,15 @@ DRIVE_SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 # CARPETA_LOCAL_DRIVE siempre se usa "completo".
 MODO_LECTURA = "rapido"
 
+# --- Solo garantias FNG / leasing A FAVOR DE esta entidad ---
+# Una mencion de FNG o leasing solo cuenta si alguno de estos nombres
+# aparece CERCA (a menos de DISTANCIA_ENTIDAD caracteres) en el mismo
+# documento, o si el documento esta en una carpeta / tiene un nombre con
+# la entidad. Lista vacia [] = contar FNG/leasing de CUALQUIER entidad.
+ENTIDAD_OBJETIVO = ["BBVA", "BANCO BILBAO VIZCAYA", "BILBAO VIZCAYA ARGENTARIA"]
+ETIQUETA_ENTIDAD = "BBVA"  # como aparece en los encabezados del Excel
+DISTANCIA_ENTIDAD = 400
+
 # Que tan parecido debe ser el nombre de la carpeta al del concursado
 # (0 a 1) cuando no contiene TODAS sus palabras importantes.
 UMBRAL_SIMILITUD_NOMBRE = 0.82
@@ -1041,11 +1050,33 @@ def buscar_carpetas_del_proceso(nombre, nit, expedientes, carpetas, padres_de):
 # ============================= Analisis FNG / LEASING =============================
 
 
-def _ventanas(texto_norm, regex, antes=500, despues=700):
-    """Tramos [ini, fin) alrededor de cada mencion, fusionando los que se pisan."""
+RE_ENTIDAD_OBJETIVO = (
+    re.compile("|".join(
+        r"(?<![A-Z])" + r"\s+".join(re.escape(p) for p in normalizar(e).split()) + r"(?![A-Z])"
+        for e in ENTIDAD_OBJETIVO
+    ))
+    if ENTIDAD_OBJETIVO else None
+)
+
+
+def _menciones_de_la_entidad(texto_norm, nombre_norm, regex):
+    """(menciones_a_usar, hay_otras). Si ENTIDAD_OBJETIVO esta configurada,
+    solo se usan las menciones con la entidad cerca; si el NOMBRE/ruta del
+    documento ya dice la entidad, cuentan todas."""
+    menciones = list(regex.finditer(texto_norm))
+    if RE_ENTIDAD_OBJETIVO is None or RE_ENTIDAD_OBJETIVO.search(nombre_norm):
+        return menciones, False
+    cerca = [
+        m for m in menciones
+        if RE_ENTIDAD_OBJETIVO.search(texto_norm[max(0, m.start() - DISTANCIA_ENTIDAD):m.end() + DISTANCIA_ENTIDAD])
+    ]
+    return cerca, len(cerca) < len(menciones)
+
+
+def _ventanas_de(menciones, largo_texto, antes=500, despues=700):
     tramos = []
-    for m in regex.finditer(texto_norm):
-        ini, fin = max(0, m.start() - antes), min(len(texto_norm), m.end() + despues)
+    for m in menciones:
+        ini, fin = max(0, m.start() - antes), min(largo_texto, m.end() + despues)
         if tramos and ini <= tramos[-1][1]:
             tramos[-1][1] = max(tramos[-1][1], fin)
         else:
@@ -1053,11 +1084,8 @@ def _ventanas(texto_norm, regex, antes=500, despues=700):
     return tramos
 
 
-def _fragmento(texto, texto_norm, regex, largo=350):
-    m = regex.search(texto_norm)
-    if not m:
-        return ""
-    ini = max(0, m.start() - largo // 3)
+def _fragmento_de(texto, mencion, largo=350):
+    ini = max(0, mencion.start() - largo // 3)
     return re.sub(r"\s+", " ", texto[ini:ini + largo]).strip()
 
 
@@ -1071,9 +1099,15 @@ def analizar_fng(texto, nombre_archivo):
     texto_norm = normalizar(texto)
     nombre_norm = normalizar(nombre_archivo)
     en_nombre = bool(RE_FNG.search(nombre_norm))
-    tramos = _ventanas(texto_norm, RE_FNG)
-    if not tramos and not en_nombre:
+    if not en_nombre and not RE_FNG.search(texto_norm):
         return None
+    menciones, _ = _menciones_de_la_entidad(texto_norm, nombre_norm, RE_FNG)
+    entidad_en_doc = RE_ENTIDAD_OBJETIVO is None or bool(
+        RE_ENTIDAD_OBJETIVO.search(nombre_norm) or RE_ENTIDAD_OBJETIVO.search(texto_norm)
+    )
+    if not menciones and not (en_nombre and entidad_en_doc):
+        return {"objetivo": False}  # FNG de OTRA entidad
+    tramos = _ventanas_de(menciones, len(texto_norm))
     if en_nombre and not tramos and texto_norm.strip():
         # Documento cuyo NOMBRE dice FNG: se analiza completo.
         tramos = [[0, min(len(texto_norm), 6000)]]
@@ -1090,13 +1124,15 @@ def analizar_fng(texto, nombre_archivo):
             tipo = clasificar_fecha(texto_norm, pos, PALABRAS_FECHA_FNG)
             {"VENCIMIENTO": vencimientos, "EXPEDICION": expediciones}.get(tipo, otras).append(f)
     return {
-        "menciones": len(RE_FNG.findall(texto_norm)) + (1 if en_nombre else 0),
+        "menciones": len(menciones) + (1 if en_nombre else 0),
         "numeros": unicos(numeros)[:6], "obligaciones": unicos(obligaciones)[:6],
         "entidades": unicos(e for e in entidades if e != "FNG")[:5],
         "valores": unicos(valores)[:5], "coberturas": unicos(coberturas)[:3],
         "vencimientos": sorted(set(vencimientos)), "expediciones": sorted(set(expediciones)),
         "otras_fechas": sorted(set(otras))[:8],
-        "fragmento": _fragmento(texto, texto_norm, RE_FNG) or f"(mencionado en el nombre: {nombre_archivo})",
+        "objetivo": True,
+        "fragmento": (_fragmento_de(texto, menciones[0]) if menciones else "")
+                     or f"(mencionado en el nombre: {nombre_archivo})",
         "sin_texto": not texto_norm.strip(),
     }
 
@@ -1105,9 +1141,15 @@ def analizar_leasing(texto, nombre_archivo):
     texto_norm = normalizar(texto)
     nombre_norm = normalizar(nombre_archivo)
     en_nombre = bool(RE_LEASING.search(nombre_norm))
-    tramos = _ventanas(texto_norm, RE_LEASING, antes=500, despues=900)
-    if not tramos and not en_nombre:
+    if not en_nombre and not RE_LEASING.search(texto_norm):
         return None
+    menciones, _ = _menciones_de_la_entidad(texto_norm, nombre_norm, RE_LEASING)
+    entidad_en_doc = RE_ENTIDAD_OBJETIVO is None or bool(
+        RE_ENTIDAD_OBJETIVO.search(nombre_norm) or RE_ENTIDAD_OBJETIVO.search(texto_norm)
+    )
+    if not menciones and not (en_nombre and entidad_en_doc):
+        return {"objetivo": False}  # leasing de OTRA entidad
+    tramos = _ventanas_de(menciones, len(texto_norm), antes=500, despues=900)
     if en_nombre and texto_norm.strip():
         # Un contrato de leasing: las fechas pueden estar en cualquier
         # clausula, se analiza el documento entero (hasta un limite).
@@ -1126,12 +1168,14 @@ def analizar_leasing(texto, nombre_archivo):
     if inicios and plazos and not terminaciones:
         estimadas = [sumar_meses(min(inicios), plazos[0])]
     return {
-        "menciones": len(RE_LEASING.findall(texto_norm)) + (1 if en_nombre else 0),
+        "menciones": len(menciones) + (1 if en_nombre else 0),
         "contratos": unicos(contratos)[:6], "entidades": unicos(entidades)[:5],
         "bienes": unicos(bienes)[:6], "plazos": unicos(plazos)[:3],
         "inicios": sorted(set(inicios)), "terminaciones": sorted(set(terminaciones)),
         "terminaciones_estimadas": estimadas, "otras_fechas": sorted(set(otras))[:8],
-        "fragmento": _fragmento(texto, texto_norm, RE_LEASING) or f"(mencionado en el nombre: {nombre_archivo})",
+        "objetivo": True,
+        "fragmento": (_fragmento_de(texto, menciones[0]) if menciones else "")
+                     or f"(mencionado en el nombre: {nombre_archivo})",
         "sin_texto": not texto_norm.strip(),
     }
 
@@ -1159,17 +1203,22 @@ def revisar_proceso(fuente, cache, carpetas, ids_indexados):
         textos = list(ex.map(lambda a: obtener_texto(fuente, cache, a), a_leer))
 
     fng, leasing, sin_leer = [], [], []
+    otros = {"fng": 0, "leasing": 0}
     for a, (texto, motivo) in zip(a_leer, textos):
         nombre_y_ruta = f"{a['carpeta']}/{a['ruta']}"
         rf = analizar_fng(texto, nombre_y_ruta)
         rl = analizar_leasing(texto, nombre_y_ruta)
-        if rf:
+        if rf and rf.get("objetivo"):
             fng.append((a, rf))
-        if rl:
+        elif rf:
+            otros["fng"] += 1
+        if rl and rl.get("objetivo"):
             leasing.append((a, rl))
+        elif rl:
+            otros["leasing"] += 1
         if motivo and RE_NOMBRE_RELEVANTE.search(normalizar(nombre_y_ruta)):
             sin_leer.append((a, motivo))
-    return fng, leasing, sin_leer, len(archivos)
+    return fng, leasing, sin_leer, len(archivos), otros
 
 
 def resumir_proceso(fng, leasing):
@@ -1216,6 +1265,8 @@ def resumir_proceso(fng, leasing):
 
 # ============================= Excel de salida =============================
 
+_ETQ = f"({ETIQUETA_ENTIDAD})" if ENTIDAD_OBJETIVO else ""
+
 ENCABEZADO_FILL = PatternFill("solid", fgColor="1F4E78")
 ENCABEZADO_FONT = Font(bold=True, color="FFFFFF")
 FILL_SI = PatternFill("solid", fgColor="E2EFDA")
@@ -1259,7 +1310,8 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
     # --- RESUMEN ---
     r = libro.create_sheet("RESUMEN")
     r.column_dimensions["A"].width, r.column_dimensions["B"].width = 55, 14
-    r.append(["Depuracion de procesos Supersociedades: garantias FNG y LEASING"])
+    r.append(["Depuracion de procesos Supersociedades: garantias FNG y LEASING"
+              + (f" a favor de {ETIQUETA_ENTIDAD}" if ENTIDAD_OBJETIVO else "")])
     r["A1"].font = Font(bold=True, size=14)
     r.append([f"Generado el {datetime.datetime.now():%d/%m/%Y %H:%M}"])
     r.append([])
@@ -1273,9 +1325,9 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
     # --- PROCESOS ---
     nuevas = [
         "¿EN DRIVE?", "CARPETA(S) EN DRIVE", "ENLACE CARPETA", "ARCHIVOS EN CARPETA",
-        "¿TIENE FNG?", "DOCS CON FNG", "N° GARANTIA FNG", "OBLIGACION / PAGARE", "ENTIDAD (FNG)",
+        f"¿TIENE FNG {_ETQ}?", "DOCS CON FNG", "N° GARANTIA FNG", "OBLIGACION / PAGARE", "ENTIDAD (FNG)",
         "VALOR / COBERTURA", "FECHA(S) VENCIMIENTO FNG", "PROXIMO VENCIMIENTO FNG", "ESTADO FNG",
-        "¿TIENE LEASING?", "DOCS CON LEASING", "N° CONTRATO LEASING", "ENTIDAD (LEASING)", "BIEN",
+        f"¿TIENE LEASING {_ETQ}?", "DOCS CON LEASING", "N° CONTRATO LEASING", "ENTIDAD (LEASING)", "BIEN",
         "FECHA(S) INICIO LEASING", "FECHA(S) TERMINACION LEASING", "PLAZO (MESES)", "ESTADO LEASING",
         "OBSERVACIONES",
     ]
@@ -1305,8 +1357,8 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
 
     columna_estado_fng = len(encabezados_originales) + nuevas.index("ESTADO FNG") + 1
     columna_estado_leasing = len(encabezados_originales) + nuevas.index("ESTADO LEASING") + 1
-    columna_tiene_fng = len(encabezados_originales) + nuevas.index("¿TIENE FNG?") + 1
-    columna_tiene_leasing = len(encabezados_originales) + nuevas.index("¿TIENE LEASING?") + 1
+    columna_tiene_fng = len(encabezados_originales) + nuevas.index(f"¿TIENE FNG {_ETQ}?") + 1
+    columna_tiene_leasing = len(encabezados_originales) + nuevas.index(f"¿TIENE LEASING {_ETQ}?") + 1
     columna_enlace = len(encabezados_originales) + nuevas.index("ENLACE CARPETA") + 1
 
     for res in resultados:
@@ -1419,6 +1471,7 @@ def procesar():
     firma = "|".join([
         os.path.basename(ruta_excel), str(len(filas)), CARPETA_LOCAL_DRIVE.strip(), CARPETA_RAIZ_DRIVE.strip(),
         MODO_LECTURA, ",".join(TIPOS_PROCESO_A_INCLUIR), str(PROFUNDIDAD_BUSQUEDA_CARPETAS),
+        "entidad:" + ",".join(ENTIDAD_OBJETIVO), str(DISTANCIA_ENTIDAD),
     ])
     progreso = Progreso(ARCHIVO_PROGRESO, firma)
 
@@ -1469,14 +1522,15 @@ def procesar():
             hecho = progreso.proceso(clave)
             if hecho is not None:
                 fng, leasing, sin_leer, total = hecho["fng"], hecho["leasing"], hecho["sin_leer"], hecho["total"]
+                otros = hecho.get("otros", {"fng": 0, "leasing": 0})
                 ya_hecho = True
             else:
                 ya_hecho = False
                 for intento in range(1, REINTENTOS_POR_PROCESO + 1):
                     try:
-                        fng, leasing, sin_leer, total = revisar_proceso(fuente, cache, elegidas, ids_indexados)
+                        fng, leasing, sin_leer, total, otros = revisar_proceso(fuente, cache, elegidas, ids_indexados)
                         progreso.marcar_proceso(clave, {"fng": fng, "leasing": leasing, "sin_leer": sin_leer,
-                                                        "total": total})
+                                                        "total": total, "otros": otros})
                         break
                     except Exception as e:  # noqa: BLE001
                         if intento < REINTENTOS_POR_PROCESO:
@@ -1486,9 +1540,17 @@ def procesar():
                             continue
                         logging.exception("   Error revisando %s", nombre)
                         fng, leasing, sin_leer, total = [], [], [], 0
+                        otros = {"fng": 0, "leasing": 0}
                         observaciones.append(f"ERROR al revisar la carpeta (vuelve a ejecutar para reintentar): {e}")
             if sin_leer:
                 observaciones.append(f"{len(sin_leer)} documento(s) relevante(s) sin poder leer (ver REVISAR_A_MANO)")
+            if RE_ENTIDAD_OBJETIVO is not None and (otros["fng"] or otros["leasing"]):
+                partes = []
+                if otros["fng"]:
+                    partes.append(f"FNG en {otros['fng']} documento(s)")
+                if otros["leasing"]:
+                    partes.append(f"leasing en {otros['leasing']} documento(s)")
+                observaciones.append(f"Menciona {' y '.join(partes)} SIN {ETIQUETA_ENTIDAD} cerca (otra entidad; no se cuentan)")
             res.update(fng=fng, leasing=leasing, sin_leer=sin_leer, total_archivos=total,
                        resumen=resumir_proceso(fng, leasing), observaciones=". ".join(observaciones))
             s = res["resumen"]
@@ -1516,15 +1578,15 @@ def procesar():
     contadores += [
         ("Procesos con carpeta en el Drive", len(en_drive)),
         ("Procesos NO encontrados en el Drive", len(resultados) - len(en_drive)),
-        ("Procesos con garantia FNG", len(con_fng)),
+        (f"Procesos con garantia FNG {_ETQ}", len(con_fng)),
         ("   FNG vigente", sum(1 for r in con_fng if r["resumen"]["fng_estado"] == "VIGENTE")),
         ("   FNG vencida", sum(1 for r in con_fng if r["resumen"]["fng_estado"] == "VENCIDA")),
         ("   FNG sin fecha de vencimiento (revisar)", sum(1 for r in con_fng if r["resumen"]["fng_estado"].startswith("SIN"))),
-        ("Procesos con LEASING", len(con_leasing)),
+        (f"Procesos con LEASING {_ETQ}", len(con_leasing)),
         ("   Leasing vigente", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"] == "VIGENTE")),
         ("   Leasing terminado", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"] == "TERMINADO")),
         ("   Leasing sin fecha (revisar)", sum(1 for r in con_leasing if r["resumen"]["leasing_estado"].startswith("SIN"))),
-        ("Procesos con FNG y LEASING", sum(1 for r in con_fng if r in con_leasing)),
+        (f"Procesos con FNG y LEASING {_ETQ}", sum(1 for r in con_fng if r in con_leasing)),
         ("Documentos relevantes sin poder leer (REVISAR_A_MANO)", sum(len(r.get("sin_leer", [])) for r in resultados)),
     ]
     escribir_excel(ARCHIVO_SALIDA, encabezados, resultados, contadores)
