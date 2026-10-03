@@ -168,14 +168,20 @@ DRIVE_SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 # CARPETA_LOCAL_DRIVE siempre se usa "completo".
 MODO_LECTURA = "rapido"
 
-# --- Solo garantias FNG / leasing A FAVOR DE esta entidad ---
-# Una mencion de FNG o leasing solo cuenta si alguno de estos nombres
-# aparece CERCA (a menos de DISTANCIA_ENTIDAD caracteres) en el mismo
-# documento, o si el documento esta en una carpeta / tiene un nombre con
-# la entidad. Lista vacia [] = contar FNG/leasing de CUALQUIER entidad.
+# --- Solo garantias FNG / leasing DE esta entidad ---
+# Se cuentan SOLO las menciones de FNG / leasing que estan en los ESCRITOS
+# PROPIOS de la entidad: su PRESENTACION (reconocimiento) DE CREDITO y sus
+# OBJECIONES / observaciones al proyecto de calificacion y graduacion --
+# ahi la entidad siempre dice si su credito tiene garantia FNG o leasing.
+# Un documento es "escrito de la entidad" si al INICIO (los primeros
+# ZONA_ENCABEZADO caracteres) o en su nombre dice que es una presentacion
+# de credito / objecion, Y que lo presenta la entidad (su apoderado o
+# representante). Proyectos de graduacion, autos, actas, etc. NO cuentan
+# aunque mencionen a la entidad. Lista vacia [] = contar el FNG / leasing
+# de cualquier documento y de cualquier entidad.
 ENTIDAD_OBJETIVO = ["BBVA", "BANCO BILBAO VIZCAYA", "BILBAO VIZCAYA ARGENTARIA"]
 ETIQUETA_ENTIDAD = "BBVA"  # como aparece en los encabezados del Excel
-DISTANCIA_ENTIDAD = 400
+ZONA_ENCABEZADO = 6000
 
 # Que tan parecido debe ser el nombre de la carpeta al del concursado
 # (0 a 1) cuando no contiene TODAS sus palabras importantes.
@@ -197,11 +203,13 @@ ARCHIVO_CACHE_VIEJO = os.path.join(DIRECTORIO, "depurar_fng_leasing_cache.json")
 # Avance de la corrida: si se corta (se apaga/suspende el PC, se cierra la
 # ventana), al volver a ejecutar se RETOMA desde el proceso donde quedo,
 # sin volver a listar el Drive ni revisar los procesos ya terminados. Se
-# borra solo cuando la corrida termina completa. Si el avance tiene mas
-# de estos dias, se descarta y se empieza de nuevo (para no usar datos
-# viejos del Drive).
+# CONSERVA al terminar: si se vuelve a ejecutar (ej. tras cambiar el
+# criterio de BBVA), no se lee el Drive otra vez -- solo se vuelven a
+# analizar, con el texto guardado, los documentos que mencionan FNG o
+# leasing. Para volver a leer el Drive (documentos nuevos), borra este
+# archivo. Si tiene mas de DIAS_VALIDEZ_PROGRESO dias, se descarta solo.
 ARCHIVO_PROGRESO = os.path.join(DIRECTORIO, "depurar_fng_leasing_progreso.json")
-DIAS_VALIDEZ_PROGRESO = 3
+DIAS_VALIDEZ_PROGRESO = 15
 
 # Si falla la conexion (ej. el PC se suspendio y al volver no hay red),
 # cuantas veces reintentar cada proceso y cuantos segundos esperar entre
@@ -246,7 +254,7 @@ PALABRAS_IGNORADAS = {
 # Para reconocer la entidad acreedora/arrendadora cerca de la mencion.
 ENTIDADES = [
     "BANCOLOMBIA", "LEASING BANCOLOMBIA", "BANCO DE BOGOTA", "BANCO DE OCCIDENTE", "BANCO POPULAR",
-    "BANCO AV VILLAS", "AV VILLAS", "DAVIVIENDA", "BBVA", "ITAU", "SCOTIABANK", "COLPATRIA",
+    "BANCO AV VILLAS", "AV VILLAS", "DAVIVIENDA", "BBVA", "BANCO BILBAO VIZCAYA", "ITAU", "SCOTIABANK", "COLPATRIA",
     "BANCO CAJA SOCIAL", "BANCO AGRARIO", "BANCOOMEVA", "BANCO GNB", "SUDAMERIS", "BANCO PICHINCHA",
     "BANCO FINANDINA", "FINANDINA", "BANCO W", "BANCAMIA", "MIBANCO", "BANCO FALABELLA",
     "BANCO SERFINANZA", "SERFINANZA", "COLTEFINANCIERA", "CREDIFINANCIERA", "BANCO SANTANDER",
@@ -270,7 +278,9 @@ RE_LEASING = re.compile(
 )
 # Palabras en el NOMBRE de un archivo que hacen que valga la pena leerlo
 # aunque el buscador de Drive no lo haya marcado.
-RE_NOMBRE_RELEVANTE = re.compile(r"FNG|FONDO NACIONAL|GARANT|LEASING|ARRENDAMIENTO|CONTRATO|CERTIFICADO")
+RE_NOMBRE_RELEVANTE = re.compile(
+    r"FNG|FONDO NACIONAL|GARANT|LEASING|ARRENDAMIENTO|CONTRATO|CERTIFICADO|PRESENTACION|ACREENCIA|OBJECION|RECONOCIMIENTO"
+)
 
 _NUM = r"(?:N\s?[O°\.]{1,2}|NO\.?|NRO\.?|NUM\.?|NUMERO|#)"
 RE_NUM_GARANTIA = re.compile(
@@ -324,14 +334,30 @@ def configurar_logging():
     warnings.filterwarnings("ignore", module="pypdf")
 
 
+class _TablaNormalizar(dict):
+    """Tabla para str.translate: cada caracter no-ASCII -> su letra base
+    (sin tilde), siempre de 1 caracter. Se va llenando sola."""
+
+    def __missing__(self, codigo):
+        c = chr(codigo)
+        base = "".join(x for x in unicodedata.normalize("NFKD", c) if not unicodedata.combining(x))
+        base = base[:1] if base else " "
+        if len(base.upper()) != 1:  # ej. "ß" -> "SS" cambiaria la longitud
+            base = " "
+        self[codigo] = base
+        return base
+
+
+_TABLA_NORMALIZAR = _TablaNormalizar()
+
+
 def normalizar(texto: str) -> str:
     """Mayusculas y sin tildes, conservando la MISMA longitud (para poder
     recortar el fragmento original en las mismas posiciones)."""
-    salida = []
-    for c in texto or "":
-        base = "".join(x for x in unicodedata.normalize("NFKD", c) if not unicodedata.combining(x))
-        salida.append(base[:1] if base else " ")
-    return "".join(salida).upper()
+    texto = texto or ""
+    if not texto.isascii():
+        texto = texto.translate(_TABLA_NORMALIZAR)
+    return texto.upper()
 
 
 def tokens_nombre(texto: str):
@@ -1051,27 +1077,86 @@ def buscar_carpetas_del_proceso(nombre, nit, expedientes, carpetas, padres_de):
 # ============================= Analisis FNG / LEASING =============================
 
 
-RE_ENTIDAD_OBJETIVO = (
-    re.compile("|".join(
-        r"(?<![A-Z])" + r"\s+".join(re.escape(p) for p in normalizar(e).split()) + r"(?![A-Z])"
-        for e in ENTIDAD_OBJETIVO
-    ))
-    if ENTIDAD_OBJETIVO else None
+_ENTIDAD_PATRON = "|".join(
+    r"(?<![A-Z])" + r"\s+".join(re.escape(p) for p in normalizar(e).split()) + r"(?![A-Z])"
+    for e in ENTIDAD_OBJETIVO
+)
+RE_ENTIDAD_OBJETIVO = re.compile(_ENTIDAD_PATRON) if ENTIDAD_OBJETIVO else None
+
+_DE = r"(?:DE(?:L|\s+LOS?|\s+LAS?|\s+SUS?)?\s+)?"
+RE_ESCRITO_PRESENTACION = re.compile(
+    rf"PRESENTACION\s+{_DE}(?:CREDITO|ACREENCIA|OBLIGACION)|RECONOCIMIENTO\s+{_DE}(?:CREDITO|ACREENCIA)"
+    rf"|SOLICITUD\s+DE\s+RECONOCIMIENTO|RADICACION\s+{_DE}(?:CREDITO|ACREENCIA)|COBRO\s+{_DE}(?:CREDITO|ACREENCIA)"
+    r"|(?<![A-Z])(?:SE\s+)?HACE(?:RSE|MOS)?\s+PARTE|ME\s+HAGO\s+PARTE|RELACION\s+DE\s+(?:CREDITO|ACREENCIA)"
+)
+RE_ESCRITO_OBJECION = re.compile(
+    r"OBJECION|(?<![A-Z])OBJETA|OBSERVACIONES?\s+(?:AL|FRENTE\s+AL|SOBRE\s+EL)\s+PROYECTO|CONTROVERSIA"
+)
+# Encabezados de documentos que NO son escritos del acreedor, aunque lo
+# mencionen (proyecto de graduacion del promotor, autos, actas...).
+RE_NO_ESCRITO = re.compile(
+    r"PROYECTO\s+DE\s+(?:CALIFICACION|GRADUACION|DETERMINACION|RECONOCIMIENTO)|ACTA\s+(?:DE\s+(?:LA\s+)?)?AUDIENCIA"
+    r"|(?<![A-Z])AUTO(?![A-Z])|INVENTARIO\s+(?:VALORADO\s+)?DE\s+(?:BIENES|ACTIVOS)|RESUELVE|ACUERDO\s+DE\s+REORGANIZACION"
+)
+# Quien presenta el escrito: "apoderado / representante ... de BBVA" o "BBVA ... actuando / por medio de apoderado".
+RE_AUTORIA = re.compile(
+    rf"(?:APODERAD[OA]|REPRESENTANTE|REPRESENTACION|ENDOSATARI[OA]|EN\s+NOMBRE|MANDATARI[OA])[^.;]{{0,160}}?(?:{_ENTIDAD_PATRON})"
+    rf"|(?:{_ENTIDAD_PATRON})[^.;]{{0,160}}?(?:APODERAD|REPRESENTAD|ACTUANDO|OBRANDO|POR\s+MEDIO\s+DE)"
+) if ENTIDAD_OBJETIVO else None
+RE_NEGACION = re.compile(
+    r"(?:(?<![A-Z])NO\s+(?:CUENTA|TIENE|ESTA|ESTAN|POSEE|EXISTE|HAY|SE\s+ENCUENTRA|GOZA|FUE|HA\s+SIDO)"
+    r"|(?<![A-Z])SIN|(?<![A-Z])NINGUN[AO]?)[A-Z\s,]{0,45}$"
 )
 
 
-def _menciones_de_la_entidad(texto_norm, nombre_norm, regex):
-    """(menciones_a_usar, hay_otras). Si ENTIDAD_OBJETIVO esta configurada,
-    solo se usan las menciones con la entidad cerca; si el NOMBRE/ruta del
-    documento ya dice la entidad, cuentan todas."""
+def clasificar_escrito(texto_norm, nombre_norm):
+    """Devuelve "PRESENTACION DE CREDITO" / "OBJECION" si el documento es un
+    escrito PROPIO de la entidad (ENTIDAD_OBJETIVO), o None."""
+    if RE_ENTIDAD_OBJETIVO is None:
+        return None
+    cab = texto_norm[:ZONA_ENCABEZADO]
+    nombre_archivo = nombre_norm.rsplit("/", 1)[-1]
+
+    def tipo_en(t):
+        mp, mo = RE_ESCRITO_PRESENTACION.search(t), RE_ESCRITO_OBJECION.search(t)
+        if mp and (not mo or mp.start() <= mo.start()):
+            return "PRESENTACION DE CREDITO", mp.start()
+        if mo:
+            return "OBJECION", mo.start()
+        return None, None
+
+    tipo, _ = tipo_en(nombre_archivo)
+    if tipo and (RE_ENTIDAD_OBJETIVO.search(nombre_norm) or RE_AUTORIA.search(cab)
+                 or RE_ENTIDAD_OBJETIVO.search(cab[:1500])):
+        return tipo
+    tipo, pos = tipo_en(cab)
+    if not tipo:
+        return None
+    excluido = RE_NO_ESCRITO.search(cab[:400])
+    if excluido and excluido.start() < pos:
+        return None  # ej. "PROYECTO DE CALIFICACION Y GRADUACION ... objeciones"
+    if RE_AUTORIA.search(cab) or RE_ENTIDAD_OBJETIVO.search(nombre_norm):
+        return tipo
+    # Titulo/asunto corto tipo "PRESENTACION DE CREDITOS BBVA COLOMBIA" (correos).
+    if pos < 800 and RE_ENTIDAD_OBJETIVO.search(cab[max(0, pos - 300):pos + 400]):
+        return tipo
+    return None
+
+
+def _menciones_validas(texto_norm, nombre_norm, regex):
+    """(menciones, escrito, motivo_descarte). Con ENTIDAD_OBJETIVO, solo
+    cuentan las menciones dentro de un escrito propio de la entidad, y no
+    las negadas ("no cuenta con garantia FNG")."""
     menciones = list(regex.finditer(texto_norm))
-    if RE_ENTIDAD_OBJETIVO is None or RE_ENTIDAD_OBJETIVO.search(nombre_norm):
-        return menciones, False
-    cerca = [
-        m for m in menciones
-        if RE_ENTIDAD_OBJETIVO.search(texto_norm[max(0, m.start() - DISTANCIA_ENTIDAD):m.end() + DISTANCIA_ENTIDAD])
-    ]
-    return cerca, len(cerca) < len(menciones)
+    if RE_ENTIDAD_OBJETIVO is None:
+        return menciones, "", None
+    escrito = clasificar_escrito(texto_norm, nombre_norm)
+    if not escrito:
+        return [], None, "otro_documento"
+    validas = [m for m in menciones if not RE_NEGACION.search(texto_norm[max(0, m.start() - 80):m.start()])]
+    if menciones and not validas:
+        return [], escrito, "negado"
+    return validas, escrito, None
 
 
 def _ventanas_de(menciones, largo_texto, antes=500, despues=700):
@@ -1102,14 +1187,11 @@ def analizar_fng(texto, nombre_archivo):
     en_nombre = bool(RE_FNG.search(nombre_norm))
     if not en_nombre and not RE_FNG.search(texto_norm):
         return None
-    menciones, _ = _menciones_de_la_entidad(texto_norm, nombre_norm, RE_FNG)
-    entidad_en_doc = RE_ENTIDAD_OBJETIVO is None or bool(
-        RE_ENTIDAD_OBJETIVO.search(nombre_norm) or RE_ENTIDAD_OBJETIVO.search(texto_norm)
-    )
-    if not menciones and not (en_nombre and entidad_en_doc):
-        return {"objetivo": False}  # FNG de OTRA entidad
+    menciones, escrito, descarte = _menciones_validas(texto_norm, nombre_norm, RE_FNG)
+    if descarte or (escrito and not menciones):
+        return {"objetivo": False, "descarte": descarte or "otro_documento"}
     tramos = _ventanas_de(menciones, len(texto_norm))
-    if en_nombre and not tramos and texto_norm.strip():
+    if escrito is not None and not escrito and en_nombre and not tramos and texto_norm.strip():
         # Documento cuyo NOMBRE dice FNG: se analiza completo.
         tramos = [[0, min(len(texto_norm), 6000)]]
     numeros, obligaciones, entidades, valores, coberturas = [], [], [], [], []
@@ -1131,7 +1213,7 @@ def analizar_fng(texto, nombre_archivo):
         "valores": unicos(valores)[:5], "coberturas": unicos(coberturas)[:3],
         "vencimientos": sorted(set(vencimientos)), "expediciones": sorted(set(expediciones)),
         "otras_fechas": sorted(set(otras))[:8],
-        "objetivo": True,
+        "objetivo": True, "escrito": escrito or "",
         "fragmento": (_fragmento_de(texto, menciones[0]) if menciones else "")
                      or f"(mencionado en el nombre: {nombre_archivo})",
         "sin_texto": not texto_norm.strip(),
@@ -1144,14 +1226,11 @@ def analizar_leasing(texto, nombre_archivo):
     en_nombre = bool(RE_LEASING.search(nombre_norm))
     if not en_nombre and not RE_LEASING.search(texto_norm):
         return None
-    menciones, _ = _menciones_de_la_entidad(texto_norm, nombre_norm, RE_LEASING)
-    entidad_en_doc = RE_ENTIDAD_OBJETIVO is None or bool(
-        RE_ENTIDAD_OBJETIVO.search(nombre_norm) or RE_ENTIDAD_OBJETIVO.search(texto_norm)
-    )
-    if not menciones and not (en_nombre and entidad_en_doc):
-        return {"objetivo": False}  # leasing de OTRA entidad
+    menciones, escrito, descarte = _menciones_validas(texto_norm, nombre_norm, RE_LEASING)
+    if descarte or (escrito and not menciones):
+        return {"objetivo": False, "descarte": descarte or "otro_documento"}
     tramos = _ventanas_de(menciones, len(texto_norm), antes=500, despues=900)
-    if en_nombre and texto_norm.strip():
+    if escrito is not None and not escrito and en_nombre and texto_norm.strip():
         # Un contrato de leasing: las fechas pueden estar en cualquier
         # clausula, se analiza el documento entero (hasta un limite).
         tramos = [[0, min(len(texto_norm), 40000)]]
@@ -1174,7 +1253,7 @@ def analizar_leasing(texto, nombre_archivo):
         "bienes": unicos(bienes)[:6], "plazos": unicos(plazos)[:3],
         "inicios": sorted(set(inicios)), "terminaciones": sorted(set(terminaciones)),
         "terminaciones_estimadas": estimadas, "otras_fechas": sorted(set(otras))[:8],
-        "objetivo": True,
+        "objetivo": True, "escrito": escrito or "",
         "fragmento": (_fragmento_de(texto, menciones[0]) if menciones else "")
                      or f"(mencionado en el nombre: {nombre_archivo})",
         "sin_texto": not texto_norm.strip(),
@@ -1203,23 +1282,45 @@ def revisar_proceso(fuente, cache, carpetas, ids_indexados):
     with ThreadPoolExecutor(max_workers=max(1, hilos)) as ex:
         textos = list(ex.map(lambda a: obtener_texto(fuente, cache, a), a_leer))
 
-    fng, leasing, sin_leer = [], [], []
-    otros = {"fng": 0, "leasing": 0}
+    candidatos, sin_leer = [], []
     for a, (texto, motivo) in zip(a_leer, textos):
         nombre_y_ruta = f"{a['carpeta']}/{a['ruta']}"
-        rf = analizar_fng(texto, nombre_y_ruta)
-        rl = analizar_leasing(texto, nombre_y_ruta)
-        if rf and rf.get("objetivo"):
-            fng.append((a, rf))
-        elif rf:
-            otros["fng"] += 1
-        if rl and rl.get("objetivo"):
-            leasing.append((a, rl))
-        elif rl:
-            otros["leasing"] += 1
+        # Se guardan TODOS los que mencionan FNG/leasing (de cualquier
+        # entidad): asi se pueden volver a analizar con otro criterio
+        # despues, sin leer el Drive (ver analizar_candidatos).
+        tn = normalizar(texto) + " " + normalizar(nombre_y_ruta)
+        if RE_FNG.search(tn) or RE_LEASING.search(tn):
+            candidatos.append(a)
         if motivo and RE_NOMBRE_RELEVANTE.search(normalizar(nombre_y_ruta)):
             sin_leer.append((a, motivo))
-    return fng, leasing, sin_leer, len(archivos), otros
+    resultado = analizar_candidatos(candidatos, cache)
+    resultado.update(candidatos=candidatos, sin_leer=sin_leer, total=len(archivos))
+    return resultado
+
+
+def analizar_candidatos(candidatos, cache):
+    """Analiza (con el texto del cache) los documentos que mencionan FNG o
+    leasing, y aplica el criterio de ENTIDAD_OBJETIVO."""
+    fng, leasing, sin_verificar = [], [], []
+    otros = {"fng": 0, "leasing": 0, "negados": 0, "escritos": set()}
+    for a in candidatos:
+        nombre_y_ruta = f"{a.get('carpeta', '')}/{a.get('ruta', '')}"
+        entrada = cache.datos.get(a.get("id"))
+        if entrada is None:
+            sin_verificar.append((a, "Menciona FNG/leasing pero el texto no esta guardado: revisar a mano"))
+            continue
+        texto = entrada["texto"]
+        for clave, analizar, destino in (("fng", analizar_fng, fng), ("leasing", analizar_leasing, leasing)):
+            h = analizar(texto, nombre_y_ruta)
+            if h and h.get("objetivo"):
+                destino.append((a, h))
+                otros["escritos"].add(a.get("nombre", ""))
+            elif h and h.get("descarte") == "negado":
+                otros["negados"] += 1
+            elif h:
+                otros[clave] += 1
+    otros["escritos"] = sorted(otros["escritos"])
+    return {"fng": fng, "leasing": leasing, "otros": otros, "sin_verificar": sin_verificar}
 
 
 def resumir_proceso(fng, leasing):
@@ -1352,15 +1453,15 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
     hf = _hoja(libro, "FNG_DETALLE", [
         "CONCURSADO", "DOCUMENTO", "RUTA EN LA CARPETA", "ENLACE", "N° GARANTIA", "OBLIGACION / PAGARE",
         "ENTIDAD", "VALOR(ES)", "COBERTURA", "FECHA(S) VENCIMIENTO", "FECHA(S) EXPEDICION / DESEMBOLSO",
-        "OTRAS FECHAS EN EL TEXTO", "MENCIONES", "FRAGMENTO",
+        "OTRAS FECHAS EN EL TEXTO", "MENCIONES", "FRAGMENTO", "TIPO DE ESCRITO",
     ], {"CONCURSADO": 30, "DOCUMENTO": 35, "RUTA EN LA CARPETA": 35, "FRAGMENTO": 80,
-        "FECHA(S) VENCIMIENTO": 24, "OTRAS FECHAS EN EL TEXTO": 30})
+        "FECHA(S) VENCIMIENTO": 24, "OTRAS FECHAS EN EL TEXTO": 30, "TIPO DE ESCRITO": 26})
     hl = _hoja(libro, "LEASING_DETALLE", [
         "CONCURSADO", "DOCUMENTO", "RUTA EN LA CARPETA", "ENLACE", "N° CONTRATO", "ENTIDAD", "BIEN",
         "FECHA(S) INICIO", "FECHA(S) TERMINACION", "TERMINACION ESTIMADA (INICIO + PLAZO)", "PLAZO (MESES)",
-        "OTRAS FECHAS EN EL TEXTO", "MENCIONES", "FRAGMENTO",
+        "OTRAS FECHAS EN EL TEXTO", "MENCIONES", "FRAGMENTO", "TIPO DE ESCRITO",
     ], {"CONCURSADO": 30, "DOCUMENTO": 35, "RUTA EN LA CARPETA": 35, "FRAGMENTO": 80,
-        "FECHA(S) INICIO": 22, "FECHA(S) TERMINACION": 24, "OTRAS FECHAS EN EL TEXTO": 30})
+        "FECHA(S) INICIO": 22, "FECHA(S) TERMINACION": 24, "OTRAS FECHAS EN EL TEXTO": 30, "TIPO DE ESCRITO": 26})
     hn = _hoja(libro, "NO_ENCONTRADOS_EN_DRIVE", [
         "CONCURSADO", "TIPO DE PROCESO", "NIT", "EXPEDIENTE", "CARPETA MAS PARECIDA", "SIMILITUD", "ENLACE",
     ], {"CONCURSADO": 40, "TIPO DE PROCESO": 24, "CARPETA MAS PARECIDA": 45, "ENLACE": 30})
@@ -1412,7 +1513,8 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
                        ", ".join(h["numeros"]), ", ".join(h["obligaciones"]), ", ".join(h["entidades"]),
                        ", ".join(h["valores"]), ", ".join(h["coberturas"]), fmt_fechas(h["vencimientos"]),
                        fmt_fechas(h["expediciones"]), fmt_fechas(h["otras_fechas"]), h["menciones"],
-                       h["fragmento"] + ("  [SIN TEXTO: solo se detecto por el nombre]" if h["sin_texto"] else "")])
+                       h["fragmento"] + ("  [SIN TEXTO: solo se detecto por el nombre]" if h["sin_texto"] else ""),
+                       h.get("escrito", "")])
             _link(hf.cell(row=hf.max_row, column=4), a["enlace"], "Abrir")
         for a, h in res.get("leasing", []):
             _agregar(hl, [res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None,
@@ -1420,7 +1522,8 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
                        fmt_fechas(h["inicios"]), fmt_fechas(h["terminaciones"]),
                        fmt_fechas(h["terminaciones_estimadas"]), ", ".join(map(str, h["plazos"])),
                        fmt_fechas(h["otras_fechas"]), h["menciones"],
-                       h["fragmento"] + ("  [SIN TEXTO: solo se detecto por el nombre]" if h["sin_texto"] else "")])
+                       h["fragmento"] + ("  [SIN TEXTO: solo se detecto por el nombre]" if h["sin_texto"] else ""),
+                       h.get("escrito", "")])
             _link(hl.cell(row=hl.max_row, column=4), a["enlace"], "Abrir")
         if not en_drive:
             mejor = res.get("alternativas") or []
@@ -1447,26 +1550,20 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
 # ============================= main =============================
 
 
-def refiltrar_por_entidad(hecho, cache):
-    """Vuelve a analizar, con el texto guardado en el cache, los hallazgos
-    de un proceso que se reviso con OTRO criterio de entidad (ej. una
-    corrida anterior que contaba FNG/leasing de cualquier banco)."""
-    nuevo = dict(hecho, fng=[], leasing=[], otros={"fng": 0, "leasing": 0}, sin_leer=list(hecho.get("sin_leer", [])))
-    for clave, analizar in (("fng", analizar_fng), ("leasing", analizar_leasing)):
-        for a, _ in hecho.get(clave, []):
-            nombre_y_ruta = f"{a.get('carpeta', '')}/{a.get('ruta', '')}"
-            entrada = cache.datos.get(a.get("id"))
-            if entrada is None and RE_ENTIDAD_OBJETIVO is not None and not RE_ENTIDAD_OBJETIVO.search(
-                normalizar(nombre_y_ruta)
-            ):
-                nuevo["sin_leer"].append((a, f"Menciona {clave.upper()} pero no se pudo verificar si es de "
-                                             f"{ETIQUETA_ENTIDAD} (texto no guardado): revisar a mano"))
-                continue
-            h = analizar(entrada["texto"] if entrada else "", nombre_y_ruta)
-            if h and h.get("objetivo"):
-                nuevo[clave].append((a, h))
-            elif h:
-                nuevo["otros"][clave] += 1
+def reanalizar_proceso(hecho, cache):
+    """Vuelve a analizar un proceso ya revisado (con el texto guardado),
+    p. ej. porque cambio el criterio de ENTIDAD_OBJETIVO."""
+    candidatos = hecho.get("candidatos")
+    if candidatos is None:
+        # Avance de una version anterior: solo se guardaban los hallazgos.
+        vistos, candidatos = set(), []
+        for a, _ in hecho.get("fng", []) + hecho.get("leasing", []):
+            if a.get("id") not in vistos:
+                vistos.add(a.get("id"))
+                candidatos.append(a)
+    nuevo = analizar_candidatos(candidatos, cache)
+    sin_leer = [x for x in hecho.get("sin_leer", []) if not str(x[1]).startswith("Menciona ")]
+    nuevo.update(candidatos=candidatos, sin_leer=sin_leer, total=hecho.get("total", 0))
     return nuevo
 
 
@@ -1548,9 +1645,9 @@ def procesar():
         MODO_LECTURA, ",".join(TIPOS_PROCESO_A_INCLUIR), str(PROFUNDIDAD_BUSQUEDA_CARPETAS),
     ])
     # El criterio de entidad (BBVA) NO va en la firma: si cambia, los
-    # procesos ya revisados se vuelven a filtrar con el texto guardado
-    # (ver refiltrar_por_entidad), sin volver a leer el Drive.
-    criterio_entidad = ",".join(ENTIDAD_OBJETIVO) + "|" + str(DISTANCIA_ENTIDAD)
+    # procesos ya revisados se vuelven a analizar con el texto guardado
+    # (ver reanalizar_proceso), sin volver a leer el Drive.
+    criterio_entidad = "escritos-v1|" + ",".join(ENTIDAD_OBJETIVO) + "|" + str(ZONA_ENCABEZADO)
     progreso = Progreso(ARCHIVO_PROGRESO, firma)
 
     carpetas = progreso.get("carpetas")
@@ -1598,22 +1695,13 @@ def procesar():
                 observaciones.append("Otras carpetas parecidas: " + "; ".join(c["nombre"] for _, c in alternativas))
             clave = "|".join([nombre, tipo, ",".join(expedientes), ",".join(c["id"] for c in elegidas)])
             hecho = progreso.proceso(clave)
-            if hecho is not None:
-                if hecho.get("entidad") != criterio_entidad:
-                    hecho = refiltrar_por_entidad(hecho, cache)
-                    hecho["entidad"] = criterio_entidad
-                    progreso.marcar_proceso(clave, hecho)
-                fng, leasing, sin_leer, total = hecho["fng"], hecho["leasing"], hecho["sin_leer"], hecho["total"]
-                otros = hecho.get("otros", {"fng": 0, "leasing": 0})
-                ya_hecho = True
-            else:
-                ya_hecho = False
+            ya_hecho = hecho is not None
+            if hecho is None:
                 for intento in range(1, REINTENTOS_POR_PROCESO + 1):
                     try:
-                        fng, leasing, sin_leer, total, otros = revisar_proceso(fuente, cache, elegidas, ids_indexados)
-                        progreso.marcar_proceso(clave, {"fng": fng, "leasing": leasing, "sin_leer": sin_leer,
-                                                        "total": total, "otros": otros,
-                                                        "entidad": criterio_entidad})
+                        hecho = revisar_proceso(fuente, cache, elegidas, ids_indexados)
+                        hecho["entidad"] = criterio_entidad
+                        progreso.marcar_proceso(clave, hecho)
                         break
                     except Exception as e:  # noqa: BLE001
                         if intento < REINTENTOS_POR_PROCESO:
@@ -1622,18 +1710,28 @@ def procesar():
                             time.sleep(ESPERA_REINTENTO_SEG)
                             continue
                         logging.exception("   Error revisando %s", nombre)
-                        fng, leasing, sin_leer, total = [], [], [], 0
-                        otros = {"fng": 0, "leasing": 0}
+                        hecho = {"fng": [], "leasing": [], "sin_leer": [], "total": 0, "otros": {},
+                                 "sin_verificar": []}
                         observaciones.append(f"ERROR al revisar la carpeta (vuelve a ejecutar para reintentar): {e}")
+            elif hecho.get("entidad") != criterio_entidad:
+                hecho = reanalizar_proceso(hecho, cache)
+                hecho["entidad"] = criterio_entidad
+                progreso.marcar_proceso(clave, hecho)
+            fng, leasing, total = hecho["fng"], hecho["leasing"], hecho["total"]
+            sin_leer = list(hecho.get("sin_leer", [])) + list(hecho.get("sin_verificar", []))
+            otros = hecho.get("otros") or {}
             if sin_leer:
                 observaciones.append(f"{len(sin_leer)} documento(s) relevante(s) sin poder leer (ver REVISAR_A_MANO)")
-            if RE_ENTIDAD_OBJETIVO is not None and (otros["fng"] or otros["leasing"]):
-                partes = []
-                if otros["fng"]:
-                    partes.append(f"FNG en {otros['fng']} documento(s)")
-                if otros["leasing"]:
-                    partes.append(f"leasing en {otros['leasing']} documento(s)")
-                observaciones.append(f"Menciona {' y '.join(partes)} SIN {ETIQUETA_ENTIDAD} cerca (otra entidad; no se cuentan)")
+            if RE_ENTIDAD_OBJETIVO is not None:
+                if otros.get("escritos"):
+                    observaciones.append(f"Escritos de {ETIQUETA_ENTIDAD} con FNG/leasing: " + "; ".join(otros["escritos"]))
+                if otros.get("negados"):
+                    observaciones.append(f"En {otros['negados']} mencion(es) de un escrito de {ETIQUETA_ENTIDAD} el "
+                                         "FNG/leasing aparece NEGADO (ej. 'no cuenta con garantia FNG')")
+                if otros.get("fng") or otros.get("leasing"):
+                    observaciones.append(
+                        f"FNG en {otros.get('fng', 0)} y leasing en {otros.get('leasing', 0)} documento(s) que NO son "
+                        f"presentacion de credito/objecion de {ETIQUETA_ENTIDAD} (no se cuentan)")
             res.update(fng=fng, leasing=leasing, sin_leer=sin_leer, total_archivos=total,
                        resumen=resumir_proceso(fng, leasing), observaciones=". ".join(observaciones))
             s = res["resumen"]
@@ -1649,7 +1747,9 @@ def procesar():
     )
     salida = escribir_excel(ARCHIVO_SALIDA, encabezados, resultados, contadores)
     if not any("ERROR al revisar" in (r.get("observaciones") or "") for r in resultados):
-        progreso.borrar()  # corrida completa: la proxima vez se empieza de cero (con el cache de textos)
+        progreso.poner("completa", True)  # se conserva: re-ejecutar no vuelve a leer el Drive
+        logging.info("(Para volver a leer el Drive en la proxima corrida, borra %s.)",
+                     os.path.basename(ARCHIVO_PROGRESO))
     else:
         logging.info("Hubo procesos con ERROR: si vuelves a ejecutar, solo se reintentan esos.")
     logging.info("")

@@ -1541,12 +1541,24 @@ documento leído queda en `depurar_fng_leasing_cache.jsonl`, así que una
 corrida nueva solo descarga los documentos que cambiaron.
 
 **Solo BBVA:** con `ENTIDAD_OBJETIVO = ["BBVA", "BANCO BILBAO VIZCAYA", ...]`
-(así viene) una mención de FNG o leasing solo cuenta si "BBVA" / "Banco
-Bilbao Vizcaya" aparece cerca (a menos de `DISTANCIA_ENTIDAD` caracteres)
-en el mismo documento, o si el documento está en una carpeta o tiene un
-nombre con BBVA. Las de otras entidades no se cuentan, pero quedan
-anotadas en OBSERVACIONES ("Menciona FNG en N documento(s) SIN BBVA
-cerca"). Para contar las de cualquier entidad, deja la lista vacía `[]`.
+(así viene), el FNG y el leasing solo se cuentan si aparecen en un
+**escrito propio de BBVA**: su **presentación (reconocimiento) de crédito**
+o sus **objeciones / observaciones** al proyecto de calificación y
+graduación. Un documento es escrito de BBVA si al inicio (o en su nombre)
+dice que es una presentación de crédito / objeción **y** que lo presenta
+BBVA ("apoderado de BBVA...", o un asunto tipo "Presentación de créditos
+BBVA"). Proyectos de graduación del promotor, autos, actas, etc. no
+cuentan aunque mencionen a BBVA. Si el escrito dice "no cuenta con garantía
+FNG", tampoco cuenta. En OBSERVACIONES quedan los escritos de BBVA usados,
+las menciones negadas y cuántos documentos con FNG/leasing no eran escritos
+de BBVA. La hoja de detalle trae la columna TIPO DE ESCRITO. Para contar las
+de cualquier documento y entidad, deja la lista vacía `[]`.
+
+El avance (`depurar_fng_leasing_progreso.json`) **se conserva al
+terminar**: si vuelves a ejecutar (por ejemplo, tras ajustar el criterio),
+no se lee el Drive otra vez; solo se vuelven a analizar, con el texto
+guardado, los documentos que mencionan FNG o leasing. Para leer el Drive de
+nuevo (documentos nuevos), borra ese archivo.
 
 **Ya tienes un resultado con todas las entidades y quieres solo BBVA?**
 Haz doble clic en `FILTRAR_BBVA.bat` (`filtrar_bbva.py`). Toma el
