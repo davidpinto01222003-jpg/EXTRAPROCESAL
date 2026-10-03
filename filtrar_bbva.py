@@ -207,7 +207,7 @@ def main():
             if fila and fila[0] == "Filas del listado original":
                 total_filas = fila[1]
     contadores = d.calcular_contadores(resultados, total_filas)
-    d.escribir_excel(salida, encabezados, resultados, contadores)
+    salida = d.escribir_excel(salida, encabezados, resultados, contadores)
 
     logging.info("")
     logging.info("Documentos re-analizados: %d con FNG, %d con leasing.", revisados["fng"], revisados["leasing"])

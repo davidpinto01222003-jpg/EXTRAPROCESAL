@@ -1275,6 +1275,17 @@ FILL_VENCIDA = PatternFill("solid", fgColor="F8CBAD")
 FILL_REVISAR = PatternFill("solid", fgColor="FFF2CC")
 
 
+_CARACTERES_INVALIDOS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _agregar(hoja, valores):
+    """hoja.append, quitando los caracteres de control que traen algunos PDF
+    (Excel no los acepta y sin esto no se podia guardar el resultado)."""
+    hoja.append([
+        _CARACTERES_INVALIDOS.sub(" ", v)[:32000] if isinstance(v, str) else v for v in valores
+    ])
+
+
 def _hoja(libro, titulo, encabezados, anchos=None):
     hoja = libro.create_sheet(titulo)
     hoja.append(encabezados)
@@ -1368,7 +1379,7 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
         fila_original = fila_original[:len(encabezados_originales)]
         s = res.get("resumen") or {}
         en_drive = bool(res["carpetas"])
-        hp.append(fila_original + [
+        _agregar(hp, fila_original + [
             "SI" if en_drive else "NO",
             " | ".join(c["nombre"] for c in res["carpetas"]),
             None,
@@ -1397,14 +1408,14 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
                 hp.cell(row=fila, column=col).fill = FILL_SI
 
         for a, h in res.get("fng", []):
-            hf.append([res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None,
+            _agregar(hf, [res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None,
                        ", ".join(h["numeros"]), ", ".join(h["obligaciones"]), ", ".join(h["entidades"]),
                        ", ".join(h["valores"]), ", ".join(h["coberturas"]), fmt_fechas(h["vencimientos"]),
                        fmt_fechas(h["expediciones"]), fmt_fechas(h["otras_fechas"]), h["menciones"],
                        h["fragmento"] + ("  [SIN TEXTO: solo se detecto por el nombre]" if h["sin_texto"] else "")])
             _link(hf.cell(row=hf.max_row, column=4), a["enlace"], "Abrir")
         for a, h in res.get("leasing", []):
-            hl.append([res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None,
+            _agregar(hl, [res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None,
                        ", ".join(h["contratos"]), ", ".join(h["entidades"]), ", ".join(h["bienes"]),
                        fmt_fechas(h["inicios"]), fmt_fechas(h["terminaciones"]),
                        fmt_fechas(h["terminaciones_estimadas"]), ", ".join(map(str, h["plazos"])),
@@ -1414,20 +1425,49 @@ def escribir_excel(ruta, encabezados_originales, resultados, contadores):
         if not en_drive:
             mejor = res.get("alternativas") or []
             p, c = mejor[0] if mejor else (None, None)
-            hn.append([res["nombre"], res.get("tipo", ""), res["nit"], ", ".join(res.get("expedientes", [])),
+            _agregar(hn, [res["nombre"], res.get("tipo", ""), res["nit"], ", ".join(res.get("expedientes", [])),
                        c["nombre"] if c else "", round(p, 2) if p else "", None])
             if c:
                 _link(hn.cell(row=hn.max_row, column=7), c["enlace"], "Abrir")
         for a, motivo in res.get("sin_leer", []):
-            hr.append([res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None, motivo])
+            _agregar(hr, [res["nombre"], a["nombre"], f"{a['carpeta']}/{a['ruta']}", None, motivo])
             _link(hr.cell(row=hr.max_row, column=4), a["enlace"], "Abrir")
 
     for hoja in (hp, hf, hl, hn, hr):
         _cerrar_hoja(hoja)
-    libro.save(ruta)
+    try:
+        libro.save(ruta)
+    except PermissionError:
+        # El Excel de hoy esta abierto: se guarda con otro nombre.
+        ruta = ruta.replace(".xlsx", f"_{datetime.datetime.now():%H%M}.xlsx")
+        libro.save(ruta)
+    return ruta
 
 
 # ============================= main =============================
+
+
+def refiltrar_por_entidad(hecho, cache):
+    """Vuelve a analizar, con el texto guardado en el cache, los hallazgos
+    de un proceso que se reviso con OTRO criterio de entidad (ej. una
+    corrida anterior que contaba FNG/leasing de cualquier banco)."""
+    nuevo = dict(hecho, fng=[], leasing=[], otros={"fng": 0, "leasing": 0}, sin_leer=list(hecho.get("sin_leer", [])))
+    for clave, analizar in (("fng", analizar_fng), ("leasing", analizar_leasing)):
+        for a, _ in hecho.get(clave, []):
+            nombre_y_ruta = f"{a.get('carpeta', '')}/{a.get('ruta', '')}"
+            entrada = cache.datos.get(a.get("id"))
+            if entrada is None and RE_ENTIDAD_OBJETIVO is not None and not RE_ENTIDAD_OBJETIVO.search(
+                normalizar(nombre_y_ruta)
+            ):
+                nuevo["sin_leer"].append((a, f"Menciona {clave.upper()} pero no se pudo verificar si es de "
+                                             f"{ETIQUETA_ENTIDAD} (texto no guardado): revisar a mano"))
+                continue
+            h = analizar(entrada["texto"] if entrada else "", nombre_y_ruta)
+            if h and h.get("objetivo"):
+                nuevo[clave].append((a, h))
+            elif h:
+                nuevo["otros"][clave] += 1
+    return nuevo
 
 
 def calcular_contadores(resultados, total_filas=None):
@@ -1506,8 +1546,11 @@ def procesar():
     firma = "|".join([
         os.path.basename(ruta_excel), str(len(filas)), CARPETA_LOCAL_DRIVE.strip(), CARPETA_RAIZ_DRIVE.strip(),
         MODO_LECTURA, ",".join(TIPOS_PROCESO_A_INCLUIR), str(PROFUNDIDAD_BUSQUEDA_CARPETAS),
-        "entidad:" + ",".join(ENTIDAD_OBJETIVO), str(DISTANCIA_ENTIDAD),
     ])
+    # El criterio de entidad (BBVA) NO va en la firma: si cambia, los
+    # procesos ya revisados se vuelven a filtrar con el texto guardado
+    # (ver refiltrar_por_entidad), sin volver a leer el Drive.
+    criterio_entidad = ",".join(ENTIDAD_OBJETIVO) + "|" + str(DISTANCIA_ENTIDAD)
     progreso = Progreso(ARCHIVO_PROGRESO, firma)
 
     carpetas = progreso.get("carpetas")
@@ -1556,6 +1599,10 @@ def procesar():
             clave = "|".join([nombre, tipo, ",".join(expedientes), ",".join(c["id"] for c in elegidas)])
             hecho = progreso.proceso(clave)
             if hecho is not None:
+                if hecho.get("entidad") != criterio_entidad:
+                    hecho = refiltrar_por_entidad(hecho, cache)
+                    hecho["entidad"] = criterio_entidad
+                    progreso.marcar_proceso(clave, hecho)
                 fng, leasing, sin_leer, total = hecho["fng"], hecho["leasing"], hecho["sin_leer"], hecho["total"]
                 otros = hecho.get("otros", {"fng": 0, "leasing": 0})
                 ya_hecho = True
@@ -1565,7 +1612,8 @@ def procesar():
                     try:
                         fng, leasing, sin_leer, total, otros = revisar_proceso(fuente, cache, elegidas, ids_indexados)
                         progreso.marcar_proceso(clave, {"fng": fng, "leasing": leasing, "sin_leer": sin_leer,
-                                                        "total": total, "otros": otros})
+                                                        "total": total, "otros": otros,
+                                                        "entidad": criterio_entidad})
                         break
                     except Exception as e:  # noqa: BLE001
                         if intento < REINTENTOS_POR_PROCESO:
@@ -1599,7 +1647,7 @@ def procesar():
     contadores = calcular_contadores(
         resultados, info["total_filas"] if idx_tipo is not None and TIPOS_PROCESO_A_INCLUIR else None
     )
-    escribir_excel(ARCHIVO_SALIDA, encabezados, resultados, contadores)
+    salida = escribir_excel(ARCHIVO_SALIDA, encabezados, resultados, contadores)
     if not any("ERROR al revisar" in (r.get("observaciones") or "") for r in resultados):
         progreso.borrar()  # corrida completa: la proxima vez se empieza de cero (con el cache de textos)
     else:
@@ -1608,10 +1656,10 @@ def procesar():
     for etiqueta, valor in contadores:
         logging.info("%-58s %s", etiqueta, valor)
     logging.info("")
-    logging.info("Listo. Resultado en: %s", ARCHIVO_SALIDA)
+    logging.info("Listo. Resultado en: %s", salida)
     if sys.platform.startswith("win"):
         try:
-            os.startfile(ARCHIVO_SALIDA)  # abre el Excel de resultado
+            os.startfile(salida)  # abre el Excel de resultado
         except OSError:
             pass
 
