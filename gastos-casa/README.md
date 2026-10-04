@@ -2,6 +2,21 @@
 
 App para llevar los gastos e ingresos del hogar. Se instala en el teléfono como cualquier otra app y **todas las personas de la casa ven y registran lo mismo desde su propio celular**, en tiempo real. Sin internet se sigue usando y se sincroniza al volver la conexión.
 
+## Dos espacios: Hogar y Personal
+
+Arriba del menú hay un selector **Hogar | Personal**.
+
+- **Hogar**: las cuentas de la casa. Es el espacio que se comparte con la familia y se sincroniza en todos los teléfonos.
+- **Personal**: tu propia plata (tu salario, tus gastos, tus cuentas y metas). **Se guarda solo en tu teléfono**, no se sube a la nube y nadie más lo ve. Cada persona tiene el suyo.
+
+Cada espacio tiene su propio color (por defecto verde para Hogar y morado para Personal; se cambia en Ajustes) para saber siempre dónde estás.
+
+Para conectar los dos sin escribir doble:
+- En **Personal**, al registrar un gasto marca *"Es un aporte para la casa"*: también aparece en Hogar como ingreso a tu nombre.
+- En **Hogar**, al registrar un gasto marca *"Lo pagué con mi plata"*: también aparece en tus gastos personales.
+
+Importante: como el espacio personal no está en la nube, haz copias de seguridad desde *Ajustes* estando en Personal.
+
 ## Qué hace
 
 - **Inicio**: balance del mes, ingresos, gastos, tasa de ahorro, proyección de gasto al cierre, gastos por categoría, presupuesto, gasto acumulado día a día, quién aporta y metas.

@@ -76,6 +76,13 @@ svg.lucide{width:18px;height:18px;stroke-width:2;flex:none}
 .side-foot{margin-top:auto;font-size:.78rem;color:var(--muted);padding-inline:8px;display:flex;flex-direction:column;gap:6px}
 .side-foot .pill{white-space:normal}
 .install-btn{margin-top:auto}
+.env-switch{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.env-switch button{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:transparent;padding:8px 6px;border-radius:9px;font-weight:700;color:var(--muted);cursor:pointer}
+.env-switch button.on{background:var(--accent);color:var(--accent-fg);box-shadow:var(--shadow)}
+.check-row{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px dashed var(--line);cursor:pointer;font-weight:500;color:var(--fg);font-size:.9rem}
+.check-row input{margin-top:3px;flex:none;width:18px;height:18px;accent-color:var(--accent)}
+.check-row > span{display:flex;gap:8px;align-items:center}
+.pill svg.lucide{width:13px;height:13px}
 .install-btn + .side-foot{margin-top:0}
 .code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:1.05rem;letter-spacing:.06em;background:var(--surface-2);border:1px dashed var(--line);padding:6px 10px;border-radius:8px;overflow-wrap:anywhere}
 .steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
@@ -336,6 +343,9 @@ details.card summary svg.lucide{color:var(--accent)}
   .nav a.on span{display:inline}
   .side-foot{display:none}
   .install-btn{margin-top:0;padding:7px}
+  .env-switch{flex:none}
+  .env-switch button{padding:7px 9px}
+  .env-switch button span{display:none}
   .install-btn span{display:none}
   .g2,.g3{grid-template-columns:minmax(0,1fr)}
   .span2{grid-column:auto}
@@ -378,7 +388,11 @@ details.card summary svg.lucide{color:var(--accent)}
   <aside class="side">
     <div class="brand">
       <div class="brand-mark"><i data-lucide="house"></i></div>
-      <div><b id="brand-name">Cuentas de la Casa</b><span>Finanzas del hogar</span></div>
+      <div><b id="brand-name">Cuentas de la Casa</b><span id="brand-sub">Finanzas del hogar</span></div>
+    </div>
+    <div class="env-switch" id="env-switch" role="tablist" aria-label="Espacio">
+      <button data-act="env" data-v="hogar" role="tab"><i data-lucide="house"></i><span>Hogar</span></button>
+      <button data-act="env" data-v="personal" role="tab"><i data-lucide="user"></i><span>Personal</span></button>
     </div>
     <nav class="nav" id="nav">
       <a href="#inicio" data-v="inicio"><i data-lucide="layout-dashboard"></i><span>Inicio</span></a>
@@ -460,14 +474,20 @@ const dateLong = s => { const [y, m, d] = s.split('-').map(Number); const w = ne
 const LOCAL_KEY = 'cuentas-casa-local';
 const lsGet = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sin almacenamiento */ } };
-const LOCAL = Object.assign({ yo: '', tema: 'sistema', acento: 'verde', ultCuenta: '' }, lsGet(LOCAL_KEY, {}));
+const LOCAL = Object.assign({ yo: '', tema: 'sistema', acento: 'verde', acentoP: 'morado', ultCuenta: '', ultCuentaP: '', entorno: 'hogar' }, lsGet(LOCAL_KEY, {}));
 const saveLocalPrefs = () => lsSet(LOCAL_KEY, LOCAL);
 
 /* =========================================================
    Estado
    ========================================================= */
-const KEY = 'cuentas-casa-v1';
-let S = load();
+const KEY = 'cuentas-casa-v1', KEY_P = 'cuentas-casa-personal-v1';
+// Dos entornos: «hogar» (compartido con la familia) y «personal» (solo en este teléfono)
+const DATA = { hogar: load(KEY, true), personal: load(KEY_P, false) };
+const envName = () => LOCAL.entorno === 'personal' ? 'personal' : 'hogar';
+const isPersonal = () => envName() === 'personal';
+let S = DATA[envName()];
+function setS(o) { DATA[envName()] = o; S = o; }
+function setHogar(o) { DATA.hogar = o; if (!isPersonal()) S = o; }
 const UI = { mes: ymOf(todayStr()), view: 'inicio', rep: 'mensual', repDia: todayStr(), repMes: ymOf(todayStr()), repAnio: +todayStr().slice(0, 4),
   f: { mes: ymOf(todayStr()), tipo: '', cat: '', per: '', q: '', cta: '' } };
 
@@ -498,6 +518,18 @@ function defaultCategorias() {
     i('c-inversiones', 'Rendimientos e inversiones', 'chart-increasing', '#3b6fd8'),
     i('c-otros-i', 'Otros ingresos', 'coin', '#5a6b7b'),
   ];
+}
+function personalState() {
+  const s = emptyState(); s.hogar = 'Mis finanzas';
+  s.categorias = [{ id: 'c-casa', nombre: 'Aporte a la casa', tipo: 'gasto', icono: 'house-with-garden', color: '#0f6b4f', presupuesto: 0 }, ...s.categorias.filter(c => c.id !== 'c-aportes')];
+  return s;
+}
+function personalSample() {
+  const s = sampleState(); s.hogar = 'Mis finanzas (ejemplo)'; s.personas = [];
+  s.movimientos = s.movimientos.filter(m => !['p3'].includes(m.personaId) && m.personaId !== 'p2').map(m => ({ ...m, personaId: '' }));
+  s.fijos = s.fijos.filter(f => f.personaId !== 'p2').map(f => ({ ...f, personaId: '' }));
+  s.categorias = personalState().categorias.map(c => ({ ...c, presupuesto: s.categorias.find(x => x.id === c.id)?.presupuesto || 0 }));
+  return s;
 }
 function defaultCuentas() { return [{ id: 'a-efectivo', nombre: 'Efectivo', tipo: 'efectivo', icono: 'dollar-banknote', color: '#2f9e44', saldoInicial: 0 }]; }
 
@@ -582,9 +614,9 @@ function sampleState() {
   return s;
 }
 
-function load() {
+function load(key, esHogar) {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(key);
     if (raw) {
       const d = JSON.parse(raw);
       // las preferencias de apariencia ahora son de cada teléfono
@@ -592,20 +624,21 @@ function load() {
       return Object.assign(emptyState(), d);
     }
   } catch (e) { /* almacenamiento no disponible */ }
-  return sampleState();
+  return esHogar ? sampleState() : personalState();
 }
-function saveLocal() {
-  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+function saveLocal(env = envName()) {
+  try { localStorage.setItem(env === 'personal' ? KEY_P : KEY, JSON.stringify(DATA[env])); }
   catch (e) { toast('No se pudo guardar en este teléfono. Exporta una copia de seguridad desde Ajustes.'); }
 }
-function save() { saveLocal(); if (SYNC.on) pushChanges(); }
+function save() { saveLocal(); if (!isPersonal() && SYNC.on) pushChanges(); }
 
 /* =========================================================
    Consultas
    ========================================================= */
 const cat = id => S.categorias.find(c => c.id === id) || { id: '', nombre: 'Sin categoría', icono: 'label', color: '#5a6b7b', tipo: 'gasto', presupuesto: 0 };
 const per = id => S.personas.find(p => p.id === id);
-const perName = id => per(id)?.nombre || 'Fondo común';
+const per2 = id => DATA.hogar.personas.find(p => p.id === id);
+const perName = id => per(id)?.nombre || (isPersonal() ? '' : 'Fondo común');
 const cta = id => S.cuentas.find(c => c.id === id);
 const ctaName = id => cta(id)?.nombre || '';
 const metaOf = id => S.metas.find(g => g.id === id);
@@ -724,7 +757,7 @@ function movAmount(m) {
 function movRow(m, opts = {}) {
   const sub = movSub(m); if (opts.fecha !== false) sub.splice(1, 0, dateLabel(m.fecha));
   return `<div class="row">${movIcon(m)}<div class="grow"><div class="t">${esc(movTitle(m))}</div><div class="s">${sub.map(x => `<span>${x}</span>`).join('')}</div></div>
-    ${avatar(per(m.personaId), true)}${movAmount(m)}
+    ${isPersonal() ? '' : avatar(per(m.personaId), true)}${movAmount(m)}
     ${opts.acts === false ? '' : `<div class="acts no-print"><button class="icon-btn" data-act="edit-mov" data-id="${m.id}" aria-label="Editar">${ic('pencil')}</button><button class="icon-btn" data-act="del-mov" data-id="${m.id}" aria-label="Eliminar">${ic('trash-2')}</button></div>`}
   </div>`;
 }
@@ -813,12 +846,13 @@ VIEWS.inicio = () => {
   const proy = isCur && diaHoy < n ? t.gas / diaHoy * n : null;
   const rep = reparto(list);
   const ultimos = [...list].sort(sortDesc).slice(0, 7);
-  const yo = per(LOCAL.yo);
+  const yo = isPersonal() ? per2(LOCAL.yo) : per(LOCAL.yo);
   const totalCtas = sum(S.cuentas, c => saldo(c));
   return `
+  ${isPersonal() && !S.movimientos.length && !S.ejemplo ? `<div class="banner info no-print">${pic('person', 34)}<div class="grow"><b>Este es tu espacio personal.</b> <span class="muted">Aquí llevas tu propia plata: tu salario, tus gastos, tus cuentas y tus metas. Se guarda solo en este teléfono y nadie más del hogar lo ve.</span></div><button class="btn sm" data-act="new-cta">${ic('wallet')}Agregar mis cuentas</button><button class="btn sm primary" data-act="new-mov">${ic('plus')}Registrar</button></div>` : ''}
   ${S.ejemplo ? `<div class="banner info no-print">${pic('test-tube', 28)}<div class="grow"><b>Estás viendo datos de ejemplo.</b> <span class="muted">Explora la app y, cuando quieras empezar con tus cuentas reales, borra los ejemplos.</span></div><button class="btn sm" data-act="clear-sample">${ic('eraser')}Empezar con mis datos</button></div>` : ''}
   <div class="head">
-    <div><div class="eyebrow inline">${esc(S.hogar)}${SYNC.conf ? `<span class="sync-badge-slot">${syncBadge()}</span>` : ''}</div><h1>${yo ? `Hola, ${esc(yo.nombre)}` : `Resumen de ${MESES[m - 1].toLowerCase()}`}</h1></div>
+    <div><div class="eyebrow inline">${esc(S.hogar)}${isPersonal() ? `<span class="pill save">${ic('lock')}Personal · solo en este teléfono</span>` : SYNC.conf ? `<span class="sync-badge-slot">${syncBadge()}</span>` : ''}</div><h1>${yo ? `Hola, ${esc(yo.nombre)}` : `Resumen de ${MESES[m - 1].toLowerCase()}`}</h1></div>
     <div class="head-actions">${monthNav('mes')}<button class="btn primary" data-act="new-mov">${ic('plus')}Registrar</button></div>
   </div>
   ${pend.length ? `<div class="banner warn no-print">${pic('calendar', 28)}<div class="grow"><b>${pend.length} pago${pend.length > 1 ? 's' : ''} fijo${pend.length > 1 ? 's' : ''} sin registrar en ${ymLabel(ym).toLowerCase()}</b><div class="small muted">${pend.slice(0, 4).map(f => esc(f.descripcion)).join(' · ')}${pend.length > 4 ? '…' : ''}</div></div><button class="btn sm" data-act="apply-fijos" data-ym="${ym}">${ic('check-check')}Registrar todos</button><a class="btn sm ghost" href="#fijos">Revisar</a></div>` : ''}
@@ -858,12 +892,12 @@ VIEWS.inicio = () => {
       ${ultimos.length ? `<div class="list">${ultimos.map(x => movRow(x)).join('')}</div>` : empty('receipt', 'No hay movimientos en este mes.', `<button class="btn sm primary" data-act="new-mov">${ic('plus')}Registrar el primero</button>`)}
     </section>
     <div class="stack" style="gap:16px">
-      <section class="card">
+      ${isPersonal() ? '' : `<section class="card">
         <div class="card-h"><h2>${ic('users')}Quién aporta</h2><a class="btn sm ghost" href="#personas">Ver detalle</a></div>
         ${S.personas.length ? `<div class="list">${rep.rows.map(r => `<div class="row" style="padding-inline:0">${avatar(r.p)}<div class="grow"><div class="t">${esc(r.p.nombre)}</div><div class="s"><span>Pagó ${moneyShort(r.pagado)}</span><span>Aportó ${moneyShort(r.aportado)}</span></div></div><span class="pill ${Math.abs(r.dif) < 1 ? 'neutral' : r.dif > 0 ? 'ok' : 'bad'}">${r.dif >= 0 ? '+' : '−'}${moneyShort(Math.abs(r.dif))}</span></div>`).join('')}</div>
         ${rep.pagos.length ? `<div class="small muted">${rep.pagos.map(x => `${esc(x.de.nombre)} le debe ${money(x.v)} a ${esc(x.a.nombre)}`).join('<br>')}</div>` : ''}`
         : empty('woman', 'Agrega a las personas que viven o aportan en la casa.', '<button class="btn sm" data-act="new-per">Agregar persona</button>')}
-      </section>
+      </section>`}
       <section class="card">
         <div class="card-h"><h2>${ic('piggy-bank')}Metas de ahorro</h2><a class="btn sm ghost" href="#metas">Ver todas</a></div>
         ${S.metas.length ? `<div class="stack">${S.metas.slice(0, 3).map(g => { const a = metaAhorrado(g); const p = pct(a, g.objetivo); return `<div class="inline" style="flex-wrap:nowrap">${tile(g.icono, g.color, 38)}<div class="stack" style="gap:4px;flex:1;min-width:0"><div class="stat-line small"><b>${esc(g.nombre)}</b><span class="muted">${Math.round(p)} %</span></div>${bar(p, g.color)}<span class="small muted num">${money(a)} de ${money(g.objetivo)}</span></div></div>`; }).join('')}</div>` : empty('money-bag', 'Crea una meta: vacaciones, fondo de emergencia, un electrodoméstico…', '<button class="btn sm" data-act="new-meta">Crear meta</button>')}
@@ -902,7 +936,7 @@ VIEWS.movimientos = () => {
       <div class="field"><label for="f-mes">Mes</label><input class="input" type="month" id="f-mes" data-f="mes" value="${f.mes}"></div>
       <div class="field"><label for="f-tipo">Tipo</label><select class="input" id="f-tipo" data-f="tipo"><option value="">Todos</option>${Object.entries(TIPOS_MOV).map(([k, [l]]) => `<option value="${k}" ${f.tipo === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       <div class="field"><label for="f-cat">Categoría o meta</label><select class="input" id="f-cat" data-f="cat"><option value="">Todas</option>${S.categorias.map(c => `<option value="${c.id}" ${f.cat === c.id ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('')}${S.metas.map(g => `<option value="${g.id}" ${f.cat === g.id ? 'selected' : ''}>Meta: ${esc(g.nombre)}</option>`).join('')}</select></div>
-      <div class="field"><label for="f-per">Persona</label><select class="input" id="f-per" data-f="per"><option value="">Todas</option><option value="_comun" ${f.per === '_comun' ? 'selected' : ''}>Fondo común</option>${S.personas.map(p => `<option value="${p.id}" ${f.per === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></div>
+      <div class="field" ${isPersonal() ? 'hidden' : ''}><label for="f-per">Persona</label><select class="input" id="f-per" data-f="per"><option value="">Todas</option><option value="_comun" ${f.per === '_comun' ? 'selected' : ''}>Fondo común</option>${S.personas.map(p => `<option value="${p.id}" ${f.per === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></div>
       <div class="field"><label for="f-cta">Cuenta</label><select class="input" id="f-cta" data-f="cta"><option value="">Todas</option>${S.cuentas.map(c => `<option value="${c.id}" ${f.cta === c.id ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('')}</select></div>
       <div class="field" style="flex:2 1 200px"><label for="f-q">Buscar</label><input class="input" id="f-q" data-f="q" placeholder="Descripción o nota…" value="${esc(f.q)}"></div>
       <button class="btn ghost" data-act="clear-filters">${ic('x')}Limpiar</button>
@@ -1050,7 +1084,7 @@ function repMensual() {
     <section class="card"><div class="card-h"><h2>${ic('credit-card')}Con qué se pagó</h2></div>
       ${porCta.length ? `<div class="list">${porCta.map(x => `<div class="row" style="padding-inline:0">${tile(x.c?.icono || 'coin', x.c?.color || '#5a6b7b', 34)}<div class="grow"><div class="t">${esc(x.n)}</div>${bar(pct(x.v, t.gas), x.c?.color || 'var(--muted)')}</div><b class="num">${moneyShort(x.v)}</b></div>`).join('')}</div>` : empty('credit-card', 'Sin gastos.')}</section>
     <section class="card"><div class="card-h"><h2>${ic('flame')}Gastos más grandes</h2></div>
-      ${top.length ? `<div class="list">${top.map(x => `<div class="row" style="padding-inline:0">${movIcon(x, 34)}<div class="grow"><div class="t">${esc(movTitle(x))}</div><div class="s">${dateLabel(x.fecha)} · ${esc(perName(x.personaId))}</div></div><b class="num out">${moneyShort(x.monto)}</b></div>`).join('')}</div>` : empty('receipt', 'Sin gastos.')}</section>
+      ${top.length ? `<div class="list">${top.map(x => `<div class="row" style="padding-inline:0">${movIcon(x, 34)}<div class="grow"><div class="t">${esc(movTitle(x))}</div><div class="s">${dateLabel(x.fecha)}${perName(x.personaId) ? ' · ' + esc(perName(x.personaId)) : ''}</div></div><b class="num out">${moneyShort(x.monto)}</b></div>`).join('')}</div>` : empty('receipt', 'Sin gastos.')}</section>
     <section class="card"><div class="card-h"><h2>${ic('piggy-bank')}Ahorro del mes</h2><b class="save num">${money(t.aho)}</b></div>
       ${porMeta.length ? `<div class="list">${porMeta.map(([k, v]) => { const g = metaOf(k); return `<div class="row" style="padding-inline:0">${tile(g?.icono || 'money-bag', g?.color || '#d6992a', 34)}<div class="grow"><div class="t">${esc(g?.nombre || 'Ahorro general')}</div>${g ? `<div class="s">Lleva ${Math.round(pct(metaAhorrado(g), g.objetivo))} % de la meta</div>` : ''}</div><b class="num save">${money(v)}</b></div>`; }).join('')}</div>` : empty('money-bag', 'No se registró ahorro este mes.', `<button class="btn sm" data-act="new-ahorro">${ic('plus')}Registrar ahorro</button>`)}</section>
   </div>
@@ -1252,21 +1286,21 @@ VIEWS.metas = () => {
 VIEWS.ajustes = () => `
   <div class="head"><div><div class="eyebrow">Configuración</div><h1>Ajustes y copias de seguridad</h1></div></div>
   <div class="grid g2">
-    <section class="card"><div class="card-h"><h2>${ic('house')}Tu hogar</h2></div>
+    <section class="card"><div class="card-h"><h2>${ic(isPersonal() ? 'user' : 'house')}${isPersonal() ? 'Tu espacio personal' : 'Tu hogar'}</h2></div>
       <div class="form-grid">
-        <div class="field full"><label for="s-hogar">Nombre del hogar</label><input class="input" id="s-hogar" data-s="hogar" value="${esc(S.hogar)}"></div>
+        <div class="field full"><label for="s-hogar">${isPersonal() ? 'Nombre de este espacio' : 'Nombre del hogar'}</label><input class="input" id="s-hogar" data-s="hogar" value="${esc(S.hogar)}"></div>
         <div class="field full"><label for="s-moneda">Moneda</label><select class="input" id="s-moneda" data-s="moneda">${[['COP', 'Peso colombiano'], ['USD', 'Dólar'], ['EUR', 'Euro'], ['MXN', 'Peso mexicano'], ['ARS', 'Peso argentino'], ['CLP', 'Peso chileno'], ['PEN', 'Sol peruano'], ['GTQ', 'Quetzal'], ['DOP', 'Peso dominicano']].map(([k, l]) => `<option value="${k}" ${S.moneda === k ? 'selected' : ''}>${k} · ${l}</option>`).join('')}</select></div>
       </div></section>
-    <section class="card"><div class="card-h"><h2>${ic('palette')}Apariencia</h2><span class="muted small">Solo en este teléfono</span></div>
+    <section class="card"><div class="card-h"><h2>${ic('palette')}Apariencia</h2><span class="muted small">${isPersonal() ? 'Color de tu espacio personal' : 'Color del espacio Hogar'}</span></div>
       <div class="field"><label>Modo</label><div class="seg">${[['sistema', 'monitor-smartphone', 'Automático'], ['light', 'sun', 'Claro'], ['dark', 'moon', 'Oscuro']].map(([k, i, l]) => `<button class="${LOCAL.tema === k ? 'on' : ''}" data-act="set-tema" data-v="${k}">${ic(i)}${l}</button>`).join('')}</div></div>
-      <div class="field"><label>Color de la app</label><div class="accents">${Object.entries(ACCENTS).map(([k, a]) => `<button class="accent-opt ${LOCAL.acento === k ? 'on' : ''}" data-act="set-acento" data-v="${k}" aria-label="${a.n}"><span style="background:${a.l[0]}"></span>${a.n}</button>`).join('')}</div></div>
+      <div class="field"><label>Color de la app</label><div class="accents">${Object.entries(ACCENTS).map(([k, a]) => `<button class="accent-opt ${(isPersonal() ? LOCAL.acentoP : LOCAL.acento) === k ? 'on' : ''}" data-act="set-acento" data-v="${k}" aria-label="${a.n}"><span style="background:${a.l[0]}"></span>${a.n}</button>`).join('')}</div></div>
     </section>
   </div>
   <section class="card"><div class="card-h"><h2>${ic('database-backup')}Copias de seguridad</h2></div>
-    <p class="small muted">${SYNC.on ? 'Tus datos están en la nube del hogar, pero una copia propia nunca sobra.' : 'Los datos viven en este navegador.'} Descarga una copia con frecuencia y guárdala en tu correo o en la nube; con ella puedes pasar tus cuentas a otro computador o celular.</p>
+    <p class="small muted">${isPersonal() ? '<b>Tu espacio personal no se guarda en la nube:</b> si borras la app o cambias de teléfono, solo lo recuperas con una copia.' : SYNC.on ? 'Tus datos están en la nube del hogar, pero una copia propia nunca sobra.' : 'Los datos viven en este navegador.'} Descarga una copia con frecuencia y guárdala en tu correo o en la nube; con ella puedes pasar tus cuentas a otro computador o celular.</p>
     <div class="inline"><button class="btn primary" data-act="export-json">${ic('download')}Descargar copia</button><button class="btn" data-act="import-json">${ic('upload')}Restaurar copia</button><button class="btn" data-act="export-csv-all">${ic('file-spreadsheet')}Exportar todo a Excel</button></div>
     <p class="small muted">${S.movimientos.length} movimientos · ${S.personas.length} personas · ${S.cuentas.length} cuentas · ${S.categorias.length} categorías · ${S.fijos.length} fijos · ${S.metas.length} metas</p></section>
-  ${familiaCard()}
+  ${isPersonal() ? personalCard() : familiaCard()}
   <section class="card"><div class="card-h"><h2>${ic('triangle-alert')}Zona de cuidado</h2></div>
     <div class="inline">${S.ejemplo ? `<button class="btn" data-act="clear-sample">${ic('eraser')}Borrar datos de ejemplo</button>` : (SYNC.on ? '' : `<button class="btn" data-act="load-sample">${ic('flask-conical')}Cargar datos de ejemplo</button>`)}
     <button class="btn danger" data-act="reset-all">${ic('trash-2')}Borrar todo y empezar de cero</button></div></section>`;
@@ -1277,7 +1311,8 @@ VIEWS.ajustes = () => `
 function applyTheme() {
   const r = document.documentElement;
   if (LOCAL.tema === 'light' || LOCAL.tema === 'dark') r.dataset.theme = LOCAL.tema; else delete r.dataset.theme;
-  const a = ACCENTS[LOCAL.acento] || ACCENTS.verde;
+  const a = ACCENTS[isPersonal() ? LOCAL.acentoP : LOCAL.acento] || ACCENTS.verde;
+  r.dataset.env = envName();
   const v = x => `--accent:${x[0]};--accent-soft:${x[1]};--accent-fg:${x[2]};`;
   const mix = (p, base) => `color-mix(in srgb, var(--accent) ${p}%, ${base})`;
   const light = `${v(a.l)}--bg:${mix(5, '#f2f4f3')};--surface-2:${mix(4, '#f6f8f7')};--line:${mix(9, '#dbe1de')};`;
@@ -1289,7 +1324,14 @@ function applyTheme() {
 }
 function render() {
   destroyCharts();
+  if (isPersonal() && UI.view === 'personas') UI.view = 'inicio';
   const v = VIEWS[UI.view] ? UI.view : 'inicio';
+  $$('#env-switch button').forEach(b => { const on = b.dataset.v === envName(); b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  $('#nav a[data-v="personas"]').hidden = isPersonal();
+  $('.brand-mark').innerHTML = ic(isPersonal() ? 'user' : 'house');
+  $('#brand-sub').textContent = isPersonal() ? 'Espacio personal' : 'Finanzas del hogar';
+  if (isPersonal()) $('#sync-status').innerHTML = `<span class="pill save">${ic('lock')}Solo en este teléfono</span><span>Tu espacio personal es privado y no se comparte.</span>`;
+  else if (typeof setEstado === 'function' && window.__syncReady) setEstado(SYNC.estado);
   $('#main').innerHTML = `<div class="view" style="display:flex;flex-direction:column;gap:22px">${VIEWS[v]()}</div>`;
   $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
   $('#brand-name').textContent = S.hogar || 'Cuentas de la Casa';
@@ -1316,6 +1358,8 @@ function openModal(title, body, foot, onMount) {
   $('#dlg-body').innerHTML = `<div class="modal-h"><h2>${title}</h2><button class="icon-btn" data-act="close" aria-label="Cerrar">${ic('x')}</button></div><form class="modal-b" id="mform" novalidate>${body}</form><div class="modal-f">${foot}</div>`;
   icons(); if (!dlg.open) dlg.showModal(); onMount && onMount();
 }
+// pone el cursor en el primer campo, salvo que la persona ya esté escribiendo en otro
+const focusFirst = id => setTimeout(() => { const f = $('#mform'); if (f && !f.contains(document.activeElement)) $('#' + id)?.focus(); }, 30);
 function closeModal() { if (dlg.open) dlg.close(); }
 dlg.addEventListener('click', e => { if (e.target === dlg) closeModal(); });
 function confirmBox(text, okLabel, onOk) {
@@ -1338,7 +1382,8 @@ const picked = (id, attr) => $(`#${id} .on`)?.dataset[attr];
 
 function movForm(m = {}, isFijo) {
   const tipo = m.tipo || 'gasto';
-  const defCta = m.id ? m.cuentaId : (m.cuentaId ?? (cta(LOCAL.ultCuenta) ? LOCAL.ultCuenta : (S.cuentas[0]?.id || '')));
+  const ult = LOCAL[isPersonal() ? 'ultCuentaP' : 'ultCuenta'];
+  const defCta = m.id ? m.cuentaId : (m.cuentaId ?? (cta(ult) ? ult : (S.cuentas[0]?.id || '')));
   openModal(isFijo ? (m.id ? 'Editar fijo' : 'Nuevo pago, ingreso o ahorro fijo') : (m.id ? 'Editar movimiento' : 'Registrar movimiento'), `
     <div class="seg type four" id="mv-tipo">${Object.entries(TIPOS_MOV).map(([k, [l, i]]) => `<button type="button" data-v="${k}" class="${k === tipo ? 'on' : ''}">${ic(i)}${l}</button>`).join('')}</div>
     <div class="seg" id="mv-sent" data-g="ahorro">${[['', 'Guardar', 'plus'], ['retiro', 'Retirar', 'minus']].map(([k, l, i]) => `<button type="button" data-v="${k}" class="${(m.retiro ? 'retiro' : '') === k ? 'on' : ''}">${ic(i)}${l}</button>`).join('')}</div>
@@ -1350,7 +1395,8 @@ function movForm(m = {}, isFijo) {
       <div class="field" data-g="ahorro"><label for="mv-meta">Meta</label><select class="input" id="mv-meta">${metaOptions(m.metaId)}</select></div>
       <div class="field" data-g="gasto ingreso ahorro transferencia"><label for="mv-cta" id="mv-cta-l">Cuenta</label><select class="input" id="mv-cta">${ctaOptions(defCta)}</select></div>
       <div class="field" data-g="ahorro transferencia"><label for="mv-dst" id="mv-dst-l">Hacia la cuenta</label><select class="input" id="mv-dst">${ctaOptions(m.cuentaDestinoId, 'Ninguna, solo apartarlo')}</select></div>
-      <div class="field"><label for="mv-per" id="mv-per-l">Persona</label><select class="input" id="mv-per">${perOptions(m.id ? m.personaId : (m.personaId ?? LOCAL.yo))}</select></div>
+      <div class="field" ${isPersonal() ? 'hidden' : ''}><label for="mv-per" id="mv-per-l">Persona</label><select class="input" id="mv-per">${perOptions(m.id ? m.personaId : (m.personaId ?? LOCAL.yo))}</select></div>
+      ${!isFijo && !m.id ? `<div class="field full" data-g="gasto"><label class="check-row"><input type="checkbox" id="mv-mirror" ${m.espejo ? 'checked' : ''}><span>${isPersonal() ? `${pic('house-with-garden', 22)}<span>Es un aporte para la casa: registrarlo también en <b>Hogar</b> como ingreso${per2(LOCAL.yo) ? ` de ${esc(per2(LOCAL.yo).nombre)}` : ''}</span>` : `${pic('person', 22)}<span>Lo pagué con mi plata: registrarlo también en mis gastos <b>personales</b></span>`}</span></label></div>` : ''}
       ${isFijo ? `<div class="field full"><label class="inline" style="font-weight:600;color:var(--fg)"><input type="checkbox" id="mv-activo" ${m.activo !== false ? 'checked' : ''}> Activo (se propone registrarlo cada mes)</label></div>` : `<div class="field full"><label for="mv-notas">Notas (opcional)</label><textarea class="input" id="mv-notas" rows="2">${esc(m.notas || '')}</textarea></div>`}
     </div>
     <p class="small muted" id="mv-help"></p>
@@ -1373,7 +1419,7 @@ function movForm(m = {}, isFijo) {
       ['mv-tipo', 'mv-sent'].forEach(id => $('#' + id).onclick = e => { const b = e.target.closest('button'); if (!b) return; $$(`#${id} button`).forEach(x => x.classList.toggle('on', x === b)); sync(); });
       sync();
       $('#mform').onsubmit = e => { e.preventDefault(); $(`.modal-f [data-act="${isFijo ? 'save-fijo' : 'save-mov'}"][data-id]`).click(); };
-      setTimeout(() => $('#mv-monto').focus(), 30);
+      focusFirst('mv-monto');
     });
 }
 function readMov() {
@@ -1402,7 +1448,7 @@ function perForm(p = {}) {
     <p class="small muted">El porcentaje sirve para calcular cuánto debería poner cada quien. Ejemplo: si los gastos del mes son ${money(3000000)} y a esta persona le corresponde el 40 %, su parte es ${money(1200000)}.</p>
     <p class="small out" id="pe-err" hidden></p>`,
     `<button class="btn primary" data-act="save-per" data-id="${p.id || ''}">${ic('check')}Guardar</button>`,
-    () => { bindPick('pe-color'); bindPick('pe-icon'); $('#mform').onsubmit = e => { e.preventDefault(); $('[data-act="save-per"]').click(); }; setTimeout(() => $('#pe-nombre').focus(), 30); });
+    () => { bindPick('pe-color'); bindPick('pe-icon'); $('#mform').onsubmit = e => { e.preventDefault(); $('[data-act="save-per"]').click(); }; focusFirst('pe-nombre'); });
 }
 function catForm(c = {}, tipo) {
   const color = c.color || COLORS[S.categorias.length % COLORS.length]; tipo = c.tipo || tipo || 'gasto';
@@ -1446,7 +1492,7 @@ function ctaForm(c = {}) {
     `<button class="btn primary" data-act="save-cta" data-id="${c.id || ''}">${ic('check')}Guardar</button>`,
     () => { bindPick('ct-color'); bindPick('ct-icon');
       $('#ct-tipo').onchange = e => { const n = TIPOS_CUENTA[e.target.value][1]; const b = $(`#ct-icon [data-i="${n}"]`); if (b) b.click(); };
-      $('#mform').onsubmit = e => { e.preventDefault(); $('[data-act="save-cta"]').click(); }; setTimeout(() => $('#ct-nombre').focus(), 30); });
+      $('#mform').onsubmit = e => { e.preventDefault(); $('[data-act="save-cta"]').click(); }; focusFirst('ct-nombre'); });
 }
 
 /* =========================================================
@@ -1471,7 +1517,7 @@ $('#import-file').addEventListener('change', e => {
   const file = e.target.files[0]; if (!file) return; const r = new FileReader();
   r.onload = () => {
     try { const d = JSON.parse(r.result); if (!Array.isArray(d.movimientos) || !Array.isArray(d.categorias)) throw new Error();
-      confirmBox(`La copia tiene <b>${d.movimientos.length}</b> movimientos. Reemplazará todos los datos actuales.`, 'Restaurar copia', () => { delete d.tema; S = Object.assign(emptyState(), d); save(); render(); toast('Copia restaurada'); });
+      confirmBox(`La copia tiene <b>${d.movimientos.length}</b> movimientos. Reemplazará todos los datos actuales.`, 'Restaurar copia', () => { delete d.tema; setS(Object.assign(emptyState(), d)); save(); render(); toast('Copia restaurada'); });
     } catch (err) { toast('Ese archivo no es una copia válida de Cuentas de la Casa'); }
     e.target.value = '';
   };
@@ -1481,6 +1527,21 @@ $('#import-file').addEventListener('change', e => {
 /* =========================================================
    Acciones
    ========================================================= */
+// copia un gasto al otro entorno: personal → ingreso «aporte» en Hogar; hogar → gasto «Aporte a la casa» en Personal
+function espejo(v) {
+  if (isPersonal()) {
+    const H = DATA.hogar;
+    H.movimientos.push({ id: uid(), tipo: 'ingreso', fecha: v.fecha, monto: v.monto, categoriaId: H.categorias.some(c => c.id === 'c-aportes') ? 'c-aportes' : '', personaId: per2(LOCAL.yo) ? LOCAL.yo : '', cuentaId: '', descripcion: v.descripcion || 'Aporte para la casa', notas: 'Registrado desde mi espacio personal' });
+    saveLocal('hogar'); if (SYNC.on) pushChanges();
+    toast('También quedó registrado en Hogar');
+  } else {
+    const P = DATA.personal;
+    if (!P.categorias.some(c => c.id === 'c-casa')) P.categorias.unshift(personalState().categorias[0]);
+    P.movimientos.push({ id: uid(), tipo: 'gasto', fecha: v.fecha, monto: v.monto, categoriaId: 'c-casa', personaId: '', cuentaId: '', descripcion: v.descripcion || 'Gasto de la casa', notas: 'Registrado desde Hogar' });
+    saveLocal('personal');
+    toast('También quedó en tus gastos personales');
+  }
+}
 function applyFijo(f, ym) {
   const [y, m] = parseYM(ym); const d = Math.min(f.dia, dim(y, m));
   const { id, dia, activo, ...rest } = f;
@@ -1498,9 +1559,10 @@ const ACT = {
     const v = readMov(); if (!v) return; v.fecha = fv('mv-fecha') || todayStr(); v.notas = fv('mv-notas').trim();
     const id = $('[data-act="save-mov"][data-id]').dataset.id;
     upsert(S.movimientos, id, v);
-    if (v.cuentaId) { LOCAL.ultCuenta = v.cuentaId; saveLocalPrefs(); }
+    if (v.cuentaId) { LOCAL[isPersonal() ? 'ultCuentaP' : 'ultCuenta'] = v.cuentaId; saveLocalPrefs(); }
+    if (!id && v.tipo === 'gasto' && $('#mv-mirror')?.checked) espejo(v);
     save(); render(); toast(id ? 'Cambios guardados' : { gasto: 'Gasto registrado', ingreso: 'Ingreso registrado', ahorro: v.retiro ? 'Retiro registrado' : 'Ahorro registrado', transferencia: 'Movimiento entre cuentas registrado' }[v.tipo]);
-    if (d.more) movForm({ tipo: v.tipo, fecha: v.fecha, personaId: v.personaId, cuentaId: v.cuentaId, categoriaId: v.categoriaId, metaId: v.metaId }); else closeModal();
+    if (d.more) movForm({ espejo: $('#mv-mirror')?.checked, tipo: v.tipo, fecha: v.fecha, personaId: v.personaId, cuentaId: v.cuentaId, categoriaId: v.categoriaId, metaId: v.metaId }); else closeModal();
   },
   'new-per': () => perForm(),
   'edit-per': d => perForm(per(d.id)),
@@ -1552,8 +1614,11 @@ const ACT = {
   'del-meta': d => confirmBox('Se eliminará esta meta. Los ahorros registrados se conservan como ahorro general.', 'Eliminar', () => { S.metas = S.metas.filter(g => g.id !== d.id); save(); render(); }),
   'abono': d => { const g = metaOf(d.id); const ah = S.cuentas.find(c => c.tipo === 'ahorros');
     movForm({ tipo: 'ahorro', metaId: d.id, retiro: !!d.retiro, descripcion: (d.retiro ? 'Retiro de ' : 'Abono a ') + g.nombre, cuentaDestinoId: ah?.id || '' }); },
+  'env': d => { if (d.v === envName()) return; LOCAL.entorno = d.v; saveLocalPrefs(); S = DATA[envName()];
+    UI.f = { mes: UI.mes, tipo: '', cat: '', per: '', q: '', cta: '' }; applyTheme(); render(); window.scrollTo(0, 0);
+    toast(isPersonal() ? 'Estás en tu espacio personal' : 'Estás en el espacio del hogar'); },
   'set-tema': d => { LOCAL.tema = d.v; saveLocalPrefs(); applyTheme(); render(); },
-  'set-acento': d => { LOCAL.acento = d.v; saveLocalPrefs(); applyTheme(); render(); toast(`Color ${ACCENTS[d.v].n.toLowerCase()} aplicado`); },
+  'set-acento': d => { LOCAL[isPersonal() ? 'acentoP' : 'acento'] = d.v; saveLocalPrefs(); applyTheme(); render(); toast(`Color ${ACCENTS[d.v].n.toLowerCase()} aplicado a ${isPersonal() ? 'tu espacio personal' : 'Hogar'}`); },
   'mes-prev': d => { UI[d.k] = shiftYM(UI[d.k], -1); render(); },
   'mes-next': d => { UI[d.k] = shiftYM(UI[d.k], 1); render(); },
   'rep': d => { UI.rep = d.v; render(); },
@@ -1570,11 +1635,11 @@ const ACT = {
   },
   'export-csv-filter': () => csv(filtrarMovs(UI.f), `movimientos-${UI.f.mes || 'todos'}.csv`),
   'export-csv-all': () => csv(S.movimientos, 'movimientos-completos.csv'),
-  'export-json': () => { download(`copia-cuentas-casa-${todayStr()}.json`, JSON.stringify(S, null, 1), 'application/json'); toast('Copia descargada'); },
+  'export-json': () => { download(`copia-${isPersonal() ? 'personal' : 'hogar'}-${todayStr()}.json`, JSON.stringify(S, null, 1), 'application/json'); toast('Copia descargada'); },
   'import-json': () => $('#import-file').click(),
-  'clear-sample': () => confirmBox('Se borrarán los movimientos, personas, cuentas, fijos y metas de ejemplo. Se conservan las categorías.', 'Borrar ejemplos', () => { S = Object.assign(emptyState(), { moneda: S.moneda }); save(); render(); toast('Listo. Empieza agregando a las personas de la casa'); location.hash = '#personas'; }),
-  'load-sample': () => confirmBox('Se reemplazarán tus datos actuales por datos de ejemplo. Descarga una copia antes si quieres conservarlos.', 'Cargar ejemplos', () => { S = sampleState(); save(); render(); }),
-  'reset-all': () => confirmBox('Se borrarán <b>todos</b> los datos: movimientos, personas, cuentas, categorías, fijos y metas. Esta acción no se puede deshacer.', 'Borrar todo', () => { S = emptyState(); save(); render(); toast('Datos borrados'); }),
+  'clear-sample': () => confirmBox('Se borrarán los movimientos, personas, cuentas, fijos y metas de ejemplo. Se conservan las categorías.', 'Borrar ejemplos', () => { setS(Object.assign(isPersonal() ? personalState() : emptyState(), { moneda: S.moneda })); save(); render(); toast(isPersonal() ? 'Listo. Empieza agregando tus cuentas' : 'Listo. Empieza agregando a las personas de la casa'); location.hash = isPersonal() ? '#cuentas' : '#personas'; }),
+  'load-sample': () => confirmBox('Se reemplazarán tus datos actuales por datos de ejemplo. Descarga una copia antes si quieres conservarlos.', 'Cargar ejemplos', () => { setS(isPersonal() ? personalSample() : sampleState()); save(); render(); }),
+  'reset-all': () => confirmBox((isPersonal() ? 'Solo se borra tu espacio personal; el hogar no se toca. ' : '') + 'Se borrarán <b>todos</b> los datos de este espacio: movimientos, personas, cuentas, categorías, fijos y metas. Esta acción no se puede deshacer.', 'Borrar todo', () => { setS(isPersonal() ? personalState() : emptyState()); save(); render(); toast('Datos borrados'); }),
 };
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-act]'); if (!a) return;
@@ -1613,7 +1678,7 @@ function syncBadge() {
 }
 function setEstado(e) {
   SYNC.estado = e;
-  const el = $('#sync-status'); if (el) el.innerHTML = `${syncBadge()}<span>${SYNC.on ? 'Los cambios se ven en todos los teléfonos del hogar.' : 'Los datos están solo en este teléfono. Compártelos desde Ajustes.'}</span>`;
+  const el = $('#sync-status'); if (el && !isPersonal()) el.innerHTML = `${syncBadge()}<span>${SYNC.on ? 'Los cambios se ven en todos los teléfonos del hogar.' : 'Los datos están solo en este teléfono. Compártelos desde Ajustes.'}</span>`;
   $$('.sync-badge-slot').forEach(x => x.innerHTML = syncBadge());
   icons();
 }
@@ -1650,8 +1715,8 @@ let remoteT;
 function remoteChanged() {
   clearTimeout(remoteT);
   remoteT = setTimeout(() => {
-    saveLocal(); render();
-    if (SYNC.preguntarYo && S.personas.length && !per(LOCAL.yo)) { SYNC.preguntarYo = false; if (!dlg.open) quienSoy(); }
+    saveLocal('hogar'); if (!isPersonal()) render();
+    if (SYNC.preguntarYo && DATA.hogar.personas.length && !per(LOCAL.yo)) { SYNC.preguntarYo = false; if (!dlg.open) quienSoy(); }
   }, 120);
 }
 async function startSync() {
@@ -1661,17 +1726,17 @@ async function startSync() {
     await ensureFirebase(c.firebase);
     SYNC.unsub.forEach(u => u()); SYNC.unsub = [];
     SYNC.ref = SYNC.db.collection('hogares').doc(c.codigo);
-    SYNC.on = true; S.ejemplo = false;
+    SYNC.on = true; DATA.hogar.ejemplo = false;
     SYNC.unsub.push(SYNC.ref.onSnapshot({ includeMetadataChanges: true }, snap => {
       if (!snap.exists) { if (!snap.metadata.fromCache) { setEstado('error'); toast('Este hogar ya no existe en la nube. Revisa Ajustes.'); } return; }
       const d = snap.data();
-      CFG_KEYS.forEach(k => { if (d[k] !== undefined) { const j = canon(d[k]); if (SYNC.last.cfg[k] !== j) { S[k] = d[k]; SYNC.last.cfg[k] = j; } } });
+      CFG_KEYS.forEach(k => { if (d[k] !== undefined) { const j = canon(d[k]); if (SYNC.last.cfg[k] !== j) { DATA.hogar[k] = d[k]; SYNC.last.cfg[k] = j; } } });
       setEstado(snap.metadata.fromCache || !navigator.onLine ? 'offline' : 'ok');
       remoteChanged();
     }, err => { setEstado('error'); toast(syncErr(err)); }));
     SYNC.unsub.push(SYNC.ref.collection('movimientos').onSnapshot(snap => {
-      S.movimientos = snap.docs.map(x => x.data());
-      SYNC.last.movs = new Map(S.movimientos.map(m => [m.id, canon(m)]));
+      DATA.hogar.movimientos = snap.docs.map(x => x.data());
+      SYNC.last.movs = new Map(DATA.hogar.movimientos.map(m => [m.id, canon(m)]));
       remoteChanged();
     }, err => { setEstado('error'); toast(syncErr(err)); }));
   } catch (e) { setEstado('error'); toast(syncErr(e)); }
@@ -1679,24 +1744,24 @@ async function startSync() {
 function pushChanges() {
   if (!SYNC.ref) return;
   const ops = []; const col = SYNC.ref.collection('movimientos');
-  const cur = new Map(S.movimientos.map(m => [m.id, m]));
+  const cur = new Map(DATA.hogar.movimientos.map(m => [m.id, m]));
   cur.forEach((m, id) => { const j = canon(m); if (SYNC.last.movs.get(id) !== j) { ops.push(b => b.set(col.doc(id), clean(m))); SYNC.last.movs.set(id, j); } });
   [...SYNC.last.movs.keys()].forEach(id => { if (!cur.has(id)) { ops.push(b => b.delete(col.doc(id))); SYNC.last.movs.delete(id); } });
-  const upd = {}; CFG_KEYS.forEach(k => { const j = canon(S[k]); if (SYNC.last.cfg[k] !== j) { upd[k] = clean(S[k] ?? null); SYNC.last.cfg[k] = j; } });
+  const upd = {}; CFG_KEYS.forEach(k => { const j = canon(DATA.hogar[k]); if (SYNC.last.cfg[k] !== j) { upd[k] = clean(DATA.hogar[k] ?? null); SYNC.last.cfg[k] = j; } });
   if (Object.keys(upd).length) { upd.actualizado = firebase.firestore.FieldValue.serverTimestamp(); ops.push(b => b.update(SYNC.ref, upd)); }
   for (let i = 0; i < ops.length; i += 450) { const b = SYNC.db.batch(); ops.slice(i, i + 450).forEach(f => f(b)); b.commit().catch(e => { setEstado('error'); toast(syncErr(e)); }); }
 }
 async function crearHogar(fbConf, subirDatos) {
   if (!navigator.onLine) throw new Error('Necesitas internet para crear el hogar compartido.');
   await ensureFirebase(fbConf);
-  if (!subirDatos || S.ejemplo) { const keep = { hogar: S.ejemplo ? 'Mi casa' : S.hogar, moneda: S.moneda }; S = Object.assign(emptyState(), keep); }
+  if (!subirDatos || DATA.hogar.ejemplo) { const keep = { hogar: DATA.hogar.ejemplo ? 'Mi casa' : DATA.hogar.hogar, moneda: DATA.hogar.moneda }; setHogar(Object.assign(emptyState(), keep)); }
   const codigo = randomCode(); const ref = SYNC.db.collection('hogares').doc(codigo);
-  const cfg = {}; CFG_KEYS.forEach(k => cfg[k] = clean(S[k])); cfg.creado = firebase.firestore.FieldValue.serverTimestamp();
+  const cfg = {}; CFG_KEYS.forEach(k => cfg[k] = clean(DATA.hogar[k])); cfg.creado = firebase.firestore.FieldValue.serverTimestamp();
   await ref.set(cfg);
-  const movs = S.movimientos;
+  const movs = DATA.hogar.movimientos;
   for (let i = 0; i < movs.length; i += 450) { const b = SYNC.db.batch(); movs.slice(i, i + 450).forEach(m => b.set(ref.collection('movimientos').doc(m.id), clean(m))); await b.commit(); }
   SYNC.conf = { firebase: fbConf, codigo }; lsSet(SYNC_KEY, SYNC.conf);
-  SYNC.last = { movs: new Map(movs.map(m => [m.id, canon(m)])), cfg: Object.fromEntries(CFG_KEYS.map(k => [k, canon(S[k])])) };
+  SYNC.last = { movs: new Map(movs.map(m => [m.id, canon(m)])), cfg: Object.fromEntries(CFG_KEYS.map(k => [k, canon(DATA.hogar[k])])) };
   await startSync();
 }
 async function unirseHogar(fbConf, codigo) {
@@ -1704,18 +1769,18 @@ async function unirseHogar(fbConf, codigo) {
   await ensureFirebase(fbConf);
   const snap = await SYNC.db.collection('hogares').doc(codigo).get({ source: 'server' });
   if (!snap.exists) throw new Error('No existe un hogar con ese enlace. Pide uno nuevo.');
-  S = emptyState(); SYNC.last = { movs: new Map(), cfg: {} };
+  setHogar(emptyState()); SYNC.last = { movs: new Map(), cfg: {} };
   SYNC.conf = { firebase: fbConf, codigo }; lsSet(SYNC_KEY, SYNC.conf);
   SYNC.preguntarYo = true;
   await startSync();
 }
 function salirHogar() {
   SYNC.unsub.forEach(u => u()); SYNC.unsub = []; SYNC.on = false; SYNC.ref = null; SYNC.conf = null; SYNC.last = { movs: new Map(), cfg: {} };
-  lsSet(SYNC_KEY, null); setEstado('local'); saveLocal(); render();
+  lsSet(SYNC_KEY, null); setEstado('local'); saveLocal('hogar'); render();
 }
 const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const dec = t => JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g, '+').replace(/_/g, '/')))));
-const inviteLink = () => `${location.origin}${location.pathname}#unirse=${enc({ f: SYNC.conf.firebase, c: SYNC.conf.codigo, n: S.hogar })}`;
+const inviteLink = () => `${location.origin}${location.pathname}#unirse=${enc({ f: SYNC.conf.firebase, c: SYNC.conf.codigo, n: DATA.hogar.hogar })}`;
 const isOnline = () => location.protocol.startsWith('http');
 
 function invitacion(token) {
@@ -1723,7 +1788,7 @@ function invitacion(token) {
   if (SYNC.conf && SYNC.conf.codigo === d.c) { toast('Este teléfono ya está en ese hogar'); return; }
   openModal(`Unirte a “${esc(d.n || 'el hogar')}”`, `
     <p>Este teléfono verá y registrará los mismos gastos e ingresos que el resto del hogar, en tiempo real.</p>
-    ${S.movimientos.length && !S.ejemplo ? `<div class="banner warn">${ic('triangle-alert')}<div class="grow small">Los datos que tienes ahora en este teléfono se reemplazarán por los del hogar. Si quieres conservarlos, descarga una copia antes desde Ajustes.</div></div>` : ''}
+    ${DATA.hogar.movimientos.length && !DATA.hogar.ejemplo ? `<div class="banner warn">${ic('triangle-alert')}<div class="grow small">Los datos que tienes ahora en este teléfono se reemplazarán por los del hogar. Si quieres conservarlos, descarga una copia antes desde Ajustes.</div></div>` : ''}
     <p class="small out" id="un-err" hidden></p>`,
     `<button class="btn" data-act="close">Ahora no</button><button class="btn primary" id="un-ok">${ic('users')}Unirme</button>`,
     () => { $('#un-ok').onclick = async () => { const b = $('#un-ok'); b.disabled = true; b.textContent = 'Uniendo…';
@@ -1732,8 +1797,18 @@ function invitacion(token) {
 }
 function quienSoy() {
   openModal('¿Quién usa este teléfono?', `<p class="small muted">Así, cuando registres un gasto, aparecerás como quien pagó. Lo puedes cambiar en Ajustes.</p>
-    <div class="list">${S.personas.map(p => `<button type="button" class="btn" style="justify-content:flex-start" data-act="set-yo" data-id="${p.id}">${avatar(p, true)}${esc(p.nombre)}</button>`).join('')}</div>`,
+    <div class="list">${DATA.hogar.personas.map(p => `<button type="button" class="btn" style="justify-content:flex-start" data-act="set-yo" data-id="${p.id}">${avatar(p, true)}${esc(p.nombre)}</button>`).join('')}</div>`,
     `<button class="btn" data-act="close">Omitir</button>`);
+}
+function personalCard() {
+  const hp = DATA.hogar.personas;
+  return `<section class="card"><div class="card-h"><h2>${ic('lock')}Privacidad</h2><span class="pill save">Solo en este teléfono</span></div>
+    <div class="insights">
+      <div class="insight" style="--t:var(--save)">${pic('locked', 30)}<p>Lo que registras aquí <b>no se comparte</b> con nadie del hogar ni se sube a la nube.</p></div>
+      <div class="insight" style="--t:var(--accent)">${pic('house-with-garden', 30)}<p>Cuando des plata para la casa, marca <b>“Es un aporte para la casa”</b> al registrar el gasto y aparecerá también en Hogar.</p></div>
+    </div>
+    ${hp.length ? `<div class="field"><label for="s-yo2">En el hogar, mis aportes van a nombre de</label><select class="input" id="s-yo2" data-yo="1"><option value="">Nadie en particular</option>${hp.map(p => `<option value="${p.id}" ${LOCAL.yo === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></div>` : ''}
+  </section>`;
 }
 function familiaCard() {
   const inst = isStandalone() ? `<span class="pill ok">${ic('check')}Ya está instalada en este teléfono</span>`
@@ -1741,7 +1816,7 @@ function familiaCard() {
     : isIOS ? `<ol class="steps"><li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> ${ic('share')}.</li><li>Elige <b>Agregar a pantalla de inicio</b>.</li></ol>`
     : isOnline() ? `<ol class="steps"><li>Abre el menú del navegador (⋮).</li><li>Toca <b>Instalar app</b> o <b>Agregar a pantalla principal</b>.</li></ol>`
     : `<p class="small muted">Para instalarla, primero hay que publicarla en internet. Los pasos están en el archivo README.md.</p>`;
-  const yo = `<div class="field"><label for="s-yo">En este teléfono soy</label><select class="input" id="s-yo" data-yo="1"><option value="">Nadie en particular</option>${S.personas.map(p => `<option value="${p.id}" ${LOCAL.yo === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></div>`;
+  const yo = `<div class="field"><label for="s-yo">En este teléfono soy</label><select class="input" id="s-yo" data-yo="1"><option value="">Nadie en particular</option>${DATA.hogar.personas.map(p => `<option value="${p.id}" ${LOCAL.yo === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></div>`;
   return `<div class="grid g2">
     <section class="card"><div class="card-h"><h2>${ic('users')}Compartir con la familia</h2>${syncBadge()}</div>
     ${SYNC.conf ? `
@@ -1755,7 +1830,7 @@ function familiaCard() {
     : `
       <p class="small muted">Ahora los datos están solo en este teléfono. Crea un hogar compartido para que cada persona registre desde su celular y todos vean lo mismo.</p>
       <div class="inline"><button class="btn primary" data-act="create-sync">${ic('cloud-upload')}Crear hogar compartido</button><button class="btn" data-act="join-sync">${ic('link')}Tengo un enlace de invitación</button></div>
-      ${S.personas.length ? yo : ''}`}
+      ${DATA.hogar.personas.length ? yo : ''}`}
     </section>
     <section class="card"><div class="card-h"><h2>${ic('smartphone')}Instalar como app</h2></div>
       <p class="small muted">Queda con su propio icono en la pantalla de inicio, abre a pantalla completa y funciona sin conexión.</p>${inst}</section>
@@ -1770,7 +1845,7 @@ function crearForm() {
       <li>En <b>Configuración del proyecto → Tus apps</b>, agrega una app web (&lt;/&gt;) y copia el bloque <code>firebaseConfig</code>.</li>
     </ol>
     <div class="field"><label for="cr-conf">Pega aquí la configuración de Firebase</label><textarea class="input" id="cr-conf" rows="6" placeholder='const firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." };'></textarea></div>
-    ${S.ejemplo ? '<p class="small muted">Los datos de ejemplo no se suben: el hogar empieza vacío.</p>' : `<label class="inline small"><input type="checkbox" id="cr-subir" checked> Subir los datos que ya tengo en este teléfono (${S.movimientos.length} movimientos)</label>`}
+    ${DATA.hogar.ejemplo ? '<p class="small muted">Los datos de ejemplo no se suben: el hogar empieza vacío.</p>' : `<label class="inline small"><input type="checkbox" id="cr-subir" checked> Subir los datos que ya tengo en este teléfono (${DATA.hogar.movimientos.length} movimientos)</label>`}
     <p class="small out" id="cr-err" hidden></p>`,
     `<button class="btn" data-act="close">Cancelar</button><button class="btn primary" id="cr-ok">${ic('cloud-upload')}Crear hogar</button>`,
     () => { $('#cr-ok').onclick = async () => {
@@ -1800,12 +1875,13 @@ Object.assign(ACT, {
   'copy-invite': () => { const link = inviteLink(); const inp = $('#invite-text');
     navigator.clipboard.writeText(link).then(() => toast('Enlace copiado. Envíalo a tu familia'))
       .catch(() => { inp.value = link; inp.hidden = false; inp.select(); toast('Copia el enlace que aparece seleccionado'); }); },
-  'share-invite': () => navigator.share({ title: 'Cuentas de la Casa', text: `Únete a las cuentas de ${S.hogar}:`, url: inviteLink() }).catch(() => {}),
+  'share-invite': () => navigator.share({ title: 'Cuentas de la Casa', text: `Únete a las cuentas de ${DATA.hogar.hogar}:`, url: inviteLink() }).catch(() => {}),
   'leave-sync': () => confirmBox('Este teléfono dejará de recibir y enviar cambios. Conserva una copia local de los datos y el hogar sigue igual para los demás.', 'Dejar de sincronizar', salirHogar),
   'set-yo': d => { LOCAL.yo = d.id; lsSet(LOCAL_KEY, LOCAL); closeModal(); toast(`Hola, ${perName(d.id)}`); },
 });
 
 if ('serviceWorker' in navigator && isOnline()) navigator.serviceWorker.register('sw.js').catch(() => {});
+window.__syncReady = true;
 setEstado('local');
 startSync();
 
