@@ -3,7 +3,7 @@
 Isabela Escobar Marroquín, Licenciatura en Español e Inglés (UPB). Normas APA 7.ª edición.
 Informe de partida: Turnitin, 28-09-2026, **34 % de IA**.
 
-**Versión final: `Trabajo lectoescritura v5.docx`**: la v4 (reescritura de estilo sobre la v3) ampliada con contenido nuevo. Ver `DIAGNOSTICO_ESTILO.md`. La v3 contiene las correcciones de contenido descritas abajo. Se genera con `python version3.py original.docx "Trabajo lectoescritura v3.docx"`, que aplica los cambios de `reescribir.py` (v2) y las correcciones de contenido de la v3.
+**Versión final: `Trabajo lectoescritura v6.docx`**: la v5 con formato APA 7 corregido y la discusión ampliada (sección 6). La v5 es la v4 (reescritura de estilo sobre la v3) ampliada con contenido nuevo. Ver `DIAGNOSTICO_ESTILO.md`. La v3 contiene las correcciones de contenido descritas abajo. Se genera con `python version3.py original.docx "Trabajo lectoescritura v3.docx"`, que aplica los cambios de `reescribir.py` (v2) y las correcciones de contenido de la v3.
 
 ## 1. Estado
 
@@ -98,3 +98,30 @@ El detalle está en `PATRONES_TURNITIN_COMPILATIO.md`. En resumen:
 5. **Rivera Cintrón y Batiz Cartagena (2024)**: no pude verificar páginas ni DOI. Si los tienen, agréguenlos. Lo mismo con el DOI de Gutiérrez Fresneda y Díez Mediavilla (2018).
 6. **Duarte-Hernández y Pérez-Mendoza (2020)**: verifiquen que el dato de "lateralidad definida hacia los 6 años" sale de ese estudio. Si no, cambien la cita.
 7. **Arnau (1995)**: verifiquen que la definición de diseño cuasiexperimental la tomaron de Núñez Peña (2011). Si la tomaron de otra fuente, citen esa.
+
+## 6. Formato APA 7 (v6)
+
+Se genera con `python version6.py "Trabajo lectoescritura v5.docx" "Trabajo lectoescritura v6.docx"`.
+
+| Aspecto | v5 | v6 |
+|---|---|---|
+| Márgenes | 2,5 cm | **2,54 cm** en todas las secciones |
+| Interlineado del cuerpo | Mezcla de 1,5, 1,08, sencillo y doble | **Doble**, sin espacio antes ni después |
+| Alineación | Justificada | **Izquierda** |
+| Sangría de primera línea | 1,25 cm | **1,27 cm**. Sin sangría en el resumen, el abstract, las tablas, los rótulos y las notas |
+| Párrafos vacíos para separar | 142 | **0**. Cada sección principal empieza en página nueva con "salto de página anterior" |
+| Títulos | Fuente de tema, interlineado 1,5 | Times New Roman 12 en negro. Nivel 1 centrado en negrita, nivel 2 a la izquierda en negrita, sin punto final |
+| Niveles | Antecedentes y Justificación dependían de la carta "Un alto en el camino"; las reseñas eran nivel 3 | Antecedentes y Justificación pasan a **nivel 1** y las reseñas a **nivel 2** |
+| Numeración de tablas | La Tabla 2 se citaba antes que la 1 | **Numeradas en el orden en que se citan** |
+| Tablas | Centradas. Las del anexo tenían cuadrícula completa, sangría y doble espacio | **Alineadas al margen, sin sangría**, solo líneas horizontales (arriba, debajo del encabezado y al final), texto a 12 pt con interlineado sencillo |
+| Tablas del anexo | Sin número ni título ("Lo que dijo:", "Escribió:") | **Tabla A1 a A22**, con número en negrita y título en cursiva |
+| Fotografías | 24 imágenes flotantes, sin número ni título, encima del texto de "Análisis de resultados" | **Anexo B** con las **Figuras B1 a B3** (aplicación, primera y segunda página de las hojas de respuesta), en línea, con título y nota. El Procedimiento remite a ellas |
+| Espacios | Dobles en el anexo, "( q  )", tabuladores para alinear | Corregidos, sin cambiar ninguna respuesta |
+| Referencias | Interlineado 1,5 | **Doble**, con sangría francesa de 1,27 cm |
+
+Pendiente para la autora:
+1. **Portada**: dice "Danny Jean Paul Mejía,  en Literatura", con dos espacios. Parece que falta el título del orientador (por ejemplo "Magíster"). No lo cambié porque está en un control de contenido de la plantilla de la UPB.
+2. **Fotografías de menores**: en las figuras se ven brazos y manos, no rostros. Confirmen que el consentimiento de los acudientes cubre las fotos.
+3. **Actividad de unir**: las hojas de respuesta (Figura B3) muestran las líneas con que los estudiantes unieron cada pseudopalabra con su sonido. El trabajo dice que esa parte "no quedó registrada en la transcripción y no se analizó". Pueden agregarla desde las hojas si quieren.
+4. **Grado y edad** de los participantes: la nueva discusión explica por qué hacen falta para valorar los errores en sílabas trabadas.
+5. Al abrir el Word, acepten el aviso de **actualizar campos**, para que el índice recoja los nuevos niveles de título y el Anexo B.

@@ -99,3 +99,26 @@ El texto quedó con oraciones más largas y encadenadas, aunque variadas (solo 5
 | "proceso complejo" | 4 | 0 |
 
 La prosa queda en unas 7.900 palabras (la v4 tenía 5.600 y la v3 11.700, de las cuales casi la mitad eran repeticiones). Del texto que Turnitin marcó en el original sigue igual el 8 %.
+
+## v6: formato APA 7 y discusión ampliada
+
+`Trabajo lectoescritura v6.docx` se genera con `python version6.py "Trabajo lectoescritura v5.docx" "Trabajo lectoescritura v6.docx"`.
+
+La Discusión pasa de 5 a 10 párrafos. Los cinco nuevos tratan temas que el trabajo no había discutido y usan solo datos de la transcripción y fuentes ya verificadas:
+- La dislexia como un continuo (Snowling et al., 2020), frente a la distribución de 0 a 9 errores.
+- El grado y la edad de los participantes, que no constan, y los grupos consonánticos (Jiménez González y Jiménez Rodríguez, 1999).
+- El problema de medición de las intervenciones revisadas (Rivera Cintrón y Batiz Cartagena; Domínguez Vázquez).
+- La formación docente y el conocimiento fonológico necesario para corregir el dictado ("Sutel" frente a "Pamil").
+- La falta de baremos de la prueba propia frente al PROLEC-R (Cuetos et al., 2007).
+
+También se quitaron los últimos "por eso" (había 4), un "no pretende… sino" y dos dos puntos que anunciaban la idea.
+
+| Medida | v5 | v6 |
+|---|---|---|
+| Palabras de prosa | 7.885 | 8.531 |
+| Largo medio de oración | 31,0 | 30,9 |
+| Variación del largo (CV) | 0,49 | 0,49 |
+| "Por eso" | 4 | 0 |
+| "no es… sino" | 1 | 0 |
+| Dos puntos de revelación | 4 | 1 (título de libro) |
+| Simulador Turnitin: texto marcado que sigue igual | 8 % | 8 % |
