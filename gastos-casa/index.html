@@ -77,6 +77,19 @@ svg.lucide{width:18px;height:18px;stroke-width:2;flex:none}
 .side-foot{margin-top:auto;font-size:.78rem;color:var(--muted);padding-inline:8px;display:flex;flex-direction:column;gap:6px}
 .side-foot .pill{white-space:normal}
 .install-btn{margin-top:auto}
+.topbar,.scrim{display:none}
+.scrim{position:fixed;inset:0;z-index:35;background:rgba(10,20,15,.45)}
+.topbar-logo{width:36px;height:36px;border-radius:10px;flex:none;box-shadow:0 3px 10px rgba(23,47,122,.3)}
+.topbar-t{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+.topbar-t b{font-family:var(--f-display);font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-t span{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:4px}
+.topbar .icon-btn{width:42px;height:42px}
+.topbar .icon-btn svg.lucide{width:22px;height:22px}
+.env-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);border-radius:99px;padding:6px 10px;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--fg)}
+.env-chip svg.lucide{width:15px;height:15px;color:var(--accent)}
+.icon-btn.drawer-close{display:none}
+@media (max-width:860px){.icon-btn.drawer-close{display:inline-grid;position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:10px}}
+@media (prefers-reduced-motion:reduce){.side{transition:none}}
 .env-switch{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
 .env-switch button{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:transparent;padding:8px 6px;border-radius:9px;font-weight:700;color:var(--muted);cursor:pointer}
 .env-switch button.on{background:var(--accent);color:var(--accent-fg);box-shadow:var(--shadow)}
@@ -336,19 +349,11 @@ details.card summary svg.lucide{color:var(--accent)}
 @media (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:860px){
   .app{grid-template-columns:minmax(0,1fr)}
-  .side{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;padding:10px 16px;z-index:15;border-right:0;border-bottom:1px solid var(--line);gap:12px}
-  .brand > div:not(.brand-mark){display:none}
-  .brand-mark{width:36px;height:36px;border-radius:10px}
-  .nav{flex-direction:row;overflow-x:auto;scrollbar-width:none}
-  .nav a{padding:8px 10px}
-  .nav a span{display:none}
-  .nav a.on span{display:inline}
-  .side-foot{display:none}
-  .install-btn{margin-top:0;padding:7px}
-  .env-switch{flex:none}
-  .env-switch button{padding:7px 9px}
-  .env-switch button span{display:none}
-  .install-btn span{display:none}
+  .topbar{display:flex;position:sticky;top:0;z-index:25;align-items:center;gap:10px;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--surface);border-bottom:1px solid var(--line)}
+  .side{position:fixed;top:0;left:0;bottom:0;width:min(300px,84vw);height:100%;z-index:40;overflow-y:auto;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-105%);transition:transform .25s ease;border-right:1px solid var(--line)}
+  .app.menu-open .side{transform:none;box-shadow:0 0 40px rgba(0,0,0,.3)}
+  .app.menu-open .scrim{display:block}
+  .nav a{padding:11px 12px}
   .g2,.g3{grid-template-columns:minmax(0,1fr)}
   .span2{grid-column:auto}
   .split,.split.wide{grid-template-columns:minmax(0,1fr)}
@@ -387,7 +392,15 @@ details.card summary svg.lucide{color:var(--accent)}
 </head>
 <body>
 <div class="app">
-  <aside class="side">
+  <header class="topbar">
+    <button class="icon-btn" data-act="menu" id="menu-btn" aria-label="Abrir menú" aria-controls="side" aria-expanded="false"><i data-lucide="menu"></i></button>
+    <img src="icons/icon-192.png" class="topbar-logo" alt="">
+    <div class="topbar-t"><b id="top-title">Inicio</b><span id="top-sub">Hogar</span></div>
+    <button class="env-chip" data-act="env-toggle" id="env-chip"></button>
+  </header>
+  <div class="scrim" data-act="menu-close"></div>
+  <aside class="side" id="side">
+    <button class="icon-btn drawer-close" data-act="menu-close" aria-label="Cerrar menú"><i data-lucide="x"></i></button>
     <div class="brand">
       <div class="brand-mark"><img src="icons/icon-192.png" alt="" width="42" height="42"></div>
       <div><b id="brand-name">Cuentas de la Casa</b><span id="brand-sub">Finanzas del hogar</span></div>
@@ -1328,6 +1341,9 @@ function render() {
   destroyCharts();
   if (isPersonal() && UI.view === 'personas') UI.view = 'inicio';
   const v = VIEWS[UI.view] ? UI.view : 'inicio';
+  $('#top-title').textContent = $(`#nav a[data-v="${v}"] span`)?.textContent || 'Inicio';
+  $('#top-sub').innerHTML = `${ic(isPersonal() ? 'lock' : 'house')}${isPersonal() ? 'Personal' : esc(S.hogar || 'Hogar')}`;
+  $('#env-chip').innerHTML = `${ic(isPersonal() ? 'house' : 'user')}${isPersonal() ? 'Ir a Hogar' : 'Ir a Personal'}`;
   $$('#env-switch button').forEach(b => { const on = b.dataset.v === envName(); b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
   $('#nav a[data-v="personas"]').hidden = isPersonal();
   $('#brand-sub').textContent = isPersonal() ? 'Espacio personal' : 'Finanzas del hogar';
@@ -1339,12 +1355,23 @@ function render() {
   icons();
   if (VIEWS[v].after) VIEWS[v].after();
 }
+// menú lateral desplegable en el teléfono
+const mqMovil = matchMedia('(max-width:860px)');
+function setMenu(open) {
+  const app = $('.app'); app.classList.toggle('menu-open', open);
+  $('#menu-btn').setAttribute('aria-expanded', open);
+  $('#side').inert = mqMovil.matches && !open;
+  document.body.style.overflow = open ? 'hidden' : '';
+  if (open) $('#side a.on, #side a')?.focus();
+}
+mqMovil.addEventListener?.('change', () => setMenu(false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('.app').classList.contains('menu-open')) setMenu(false); });
 function icons() { if (window.lucide) lucide.createIcons({ attrs: { 'aria-hidden': 'true' } }); }
 function route() {
   const h = location.hash.slice(1);
   if (h.startsWith('unirse=')) { history.replaceState(null, '', location.pathname + '#inicio'); UI.view = 'inicio'; render(); invitacion(h.slice(7)); return; }
   if (h === 'nuevo') { history.replaceState(null, '', location.pathname + '#inicio'); UI.view = 'inicio'; render(); movForm({}); return; }
-  UI.view = h || 'inicio'; render(); window.scrollTo(0, 0);
+  UI.view = h || 'inicio'; setMenu(false); render(); window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', route);
 
@@ -1615,9 +1642,12 @@ const ACT = {
   'del-meta': d => confirmBox('Se eliminará esta meta. Los ahorros registrados se conservan como ahorro general.', 'Eliminar', () => { S.metas = S.metas.filter(g => g.id !== d.id); save(); render(); }),
   'abono': d => { const g = metaOf(d.id); const ah = S.cuentas.find(c => c.tipo === 'ahorros');
     movForm({ tipo: 'ahorro', metaId: d.id, retiro: !!d.retiro, descripcion: (d.retiro ? 'Retiro de ' : 'Abono a ') + g.nombre, cuentaDestinoId: ah?.id || '' }); },
+  'menu': () => setMenu(!$('.app').classList.contains('menu-open')),
+  'menu-close': () => setMenu(false),
+  'env-toggle': () => ACT.env({ v: isPersonal() ? 'hogar' : 'personal' }),
   'env': d => { if (d.v === envName()) return; LOCAL.entorno = d.v; saveLocalPrefs(); S = DATA[envName()];
     UI.f = { mes: UI.mes, tipo: '', cat: '', per: '', q: '', cta: '' }; applyTheme(); render(); window.scrollTo(0, 0);
-    toast(isPersonal() ? 'Estás en tu espacio personal' : 'Estás en el espacio del hogar'); },
+    setMenu(false); toast(isPersonal() ? 'Estás en tu espacio personal' : 'Estás en el espacio del hogar'); },
   'set-tema': d => { LOCAL.tema = d.v; saveLocalPrefs(); applyTheme(); render(); },
   'set-acento': d => { LOCAL[isPersonal() ? 'acentoP' : 'acento'] = d.v; saveLocalPrefs(); applyTheme(); render(); toast(`Color ${ACCENTS[d.v].n.toLowerCase()} aplicado a ${isPersonal() ? 'tu espacio personal' : 'Hogar'}`); },
   'mes-prev': d => { UI[d.k] = shiftYM(UI[d.k], -1); render(); },

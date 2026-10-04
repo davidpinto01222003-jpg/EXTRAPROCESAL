@@ -1,6 +1,6 @@
 // Service worker de Cuentas de la Casa: guarda la app para que abra sin conexión.
 // Cambia VERSION cada vez que publiques una versión nueva de la app.
-const VERSION = 'cuentas-casa-v7';
+const VERSION = 'cuentas-casa-v8';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './vendor/chart.umd.min.js', './vendor/lucide.min.js', './vendor/iconos-casa.js',
