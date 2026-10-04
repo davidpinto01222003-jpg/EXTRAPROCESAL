@@ -1,31 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 <defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#12c98a"/><stop offset=".55" stop-color="#0b8a62"/><stop offset="1" stop-color="#064e3b"/></linearGradient>
-  <radialGradient id="glow" cx=".3" cy=".22" r=".75"><stop offset="0" stop-color="#ffffff" stop-opacity=".35"/><stop offset=".6" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
-  <linearGradient id="coin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe07a"/><stop offset=".5" stop-color="#fbbf24"/><stop offset="1" stop-color="#d97706"/></linearGradient>
-  <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e3f7ef"/></linearGradient>
-  <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#022c22" flood-opacity=".35"/></filter>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5aa8ff"/><stop offset=".5" stop-color="#2563eb"/><stop offset="1" stop-color="#172f7a"/></linearGradient>
+  <radialGradient id="glow" cx=".28" cy=".18" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="ground" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#0b1b4d" stop-opacity=".55"/><stop offset="1" stop-color="#0b1b4d" stop-opacity="0"/></radialGradient>
+  <linearGradient id="front" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe9fb"/></linearGradient>
+  <linearGradient id="side" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b8cbef"/><stop offset="1" stop-color="#8ea8dc"/></linearGradient>
+  <linearGradient id="roofF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb35c"/><stop offset="1" stop-color="#f26b1d"/></linearGradient>
+  <linearGradient id="roofS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2600f"/><stop offset="1" stop-color="#b8440a"/></linearGradient>
+  <linearGradient id="roofEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c2410c"/><stop offset="1" stop-color="#9a330a"/></linearGradient>
+  <linearGradient id="door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1e40af"/></linearGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfe3ff"/><stop offset="1" stop-color="#4f9cf5"/></linearGradient>
+  <linearGradient id="coinTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1a8"/><stop offset=".45" stop-color="#fbbf24"/><stop offset="1" stop-color="#e08a00"/></linearGradient>
+  <linearGradient id="coinRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c77700"/><stop offset="1" stop-color="#8a4b00"/></linearGradient>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="6" dy="14" stdDeviation="10" flood-color="#0b1b4d" flood-opacity=".45"/></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
 </defs>
 <rect width="512" height="512" rx="0" fill="url(#bg)"/>
 <rect width="512" height="512" rx="0" fill="url(#glow)"/>
-<g transform="translate(256 262) scale(1) translate(-256 -262)">
+<g transform="translate(256 270) scale(1) translate(-256 -270)">
+  <ellipse cx="272" cy="414" rx="170" ry="28" fill="url(#ground)"/>
   <g filter="url(#sh)">
-    <rect x="148" y="236" width="216" height="172" rx="30" fill="url(#wall)"/>
-    <path d="M112 262 L256 136 L400 262" fill="none" stroke="#ffffff" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="322" y="150" width="34" height="70" rx="10" fill="#ffffff"/>
+    <!-- cuerpo: cara lateral y frontal -->
+    <path d="M336 252 L392 220 L392 368 L336 400 Z" fill="url(#side)"/>
+    <rect x="138" y="252" width="198" height="148" rx="10" fill="url(#front)"/>
+    <path d="M140 266 L237 170 L334 266 Z" fill="url(#front)"/>
+    <!-- techo: plano lateral, plano frontal y canto -->
+    <path d="M237 136 L293 104 L420 230 L364 262 Z" fill="url(#roofS)"/>
+    <path d="M110 262 L237 136 L364 262 L346 276 L237 168 L128 276 Z" fill="url(#roofF)"/>
+    <path d="M128 276 L237 168 L346 276 L346 290 L237 182 L128 290 Z" fill="url(#roofEdge)" opacity=".9"/>
+    <path d="M364 262 L420 230 L420 244 L364 276 Z" fill="#9a330a"/>
+    <path d="M110 262 L128 276 L128 290 L110 276 Z" fill="#9a330a"/>
+    <path d="M135 250 L237 150" stroke="#ffd59a" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+    <circle cx="237" cy="228" r="17" fill="#1e3a8a"/><circle cx="237" cy="228" r="13" fill="url(#glass)"/><path d="M230 236 L244 221" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+    <!-- puerta -->
+    <rect x="212" y="318" width="52" height="82" rx="8" fill="url(#door)"/>
+    <rect x="216" y="322" width="16" height="74" rx="6" fill="#ffffff" opacity=".18"/>
+    <circle cx="253" cy="362" r="5" fill="#fbbf24"/>
+    <!-- ventanas -->
+    <g><rect x="158" y="300" width="40" height="40" rx="7" fill="#1e3a8a"/><rect x="161" y="303" width="34" height="34" rx="5" fill="url(#glass)"/>
+      <path d="M178 303 V337 M161 320 H195" stroke="#ffffff" stroke-width="4"/><path d="M165 330 L185 307" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/></g>
+    <g><rect x="280" y="300" width="40" height="40" rx="7" fill="#1e3a8a"/><rect x="283" y="303" width="34" height="34" rx="5" fill="url(#glass)"/>
+      <path d="M300 303 V337 M283 320 H317" stroke="#ffffff" stroke-width="4"/><path d="M287 330 L307 307" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/></g>
   </g>
-  <rect x="186" y="330" width="34" height="50" rx="9" fill="#34d399"/>
-  <rect x="232" y="296" width="34" height="84" rx="9" fill="#10b981"/>
-  <rect x="278" y="262" width="34" height="118" rx="9" fill="#047857"/>
-  <path d="M190 300 L246 258 L276 274 L318 232" fill="none" stroke="#f59e0b" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M296 226 L322 226 L322 252" fill="none" stroke="#f59e0b" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- moneda 3D -->
   <g filter="url(#sh)">
-    <circle cx="360" cy="378" r="66" fill="url(#coin)" stroke="#ffffff" stroke-width="12"/>
-    <circle cx="360" cy="378" r="46" fill="none" stroke="#b45309" stroke-opacity=".35" stroke-width="5"/>
-    <text x="360" y="402" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="68" fill="#ffffff">$</text>
+    <ellipse cx="372" cy="398" rx="66" ry="66" fill="url(#coinRim)"/>
+    <rect x="306" y="380" width="132" height="18" fill="url(#coinRim)"/>
+    <circle cx="372" cy="380" r="66" fill="url(#coinTop)"/>
+    <circle cx="372" cy="380" r="50" fill="none" stroke="#c77700" stroke-width="6" opacity=".55"/>
+    <circle cx="372" cy="380" r="50" fill="none" stroke="#fff6c8" stroke-width="2" opacity=".8" transform="translate(-2 -2)"/>
+    <text x="374" y="406" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="72" fill="#b45f00">$</text>
+    <text x="371" y="403" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="72" fill="#fffbe8">$</text>
+    <path d="M326 352 A54 54 0 0 1 380 326" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity=".7"/>
   </g>
-  <path d="M120 128 l8 22 l22 8 l-22 8 l-8 22 l-8 -22 l-22 -8 l22 -8 z" fill="#fde68a"/>
-  <path d="M412 104 l5 14 l14 5 l-14 5 l-5 14 l-5 -14 l-14 -5 l14 -5 z" fill="#ffffff" opacity=".9"/>
-  <path d="M100 360 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 z" fill="#ffffff" opacity=".7"/>
+  <!-- destellos -->
+  <path d="M104 118 l9 24 l24 9 l-24 9 l-9 24 l-9 -24 l-24 -9 l24 -9 z" fill="#ffe680"/>
+  <path d="M420 96 l6 15 l15 6 l-15 6 l-6 15 l-6 -15 l-15 -6 l15 -6 z" fill="#ffffff" opacity=".95"/>
+  <path d="M86 352 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 z" fill="#ffffff" opacity=".7"/>
 </g>
 </svg>
