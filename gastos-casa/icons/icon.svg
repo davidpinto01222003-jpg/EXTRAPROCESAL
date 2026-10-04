@@ -20,27 +20,26 @@
 <g transform="translate(256 270) scale(1) translate(-256 -270)">
   <ellipse cx="272" cy="414" rx="170" ry="28" fill="url(#ground)"/>
   <g filter="url(#sh)">
-    <!-- cuerpo: cara lateral y frontal -->
-    <path d="M336 252 L392 220 L392 368 L336 400 Z" fill="url(#side)"/>
-    <rect x="138" y="252" width="198" height="148" rx="10" fill="url(#front)"/>
-    <path d="M140 266 L237 170 L334 266 Z" fill="url(#front)"/>
-    <!-- techo: plano lateral, plano frontal y canto -->
-    <path d="M237 136 L293 104 L420 230 L364 262 Z" fill="url(#roofS)"/>
-    <path d="M110 262 L237 136 L364 262 L346 276 L237 168 L128 276 Z" fill="url(#roofF)"/>
-    <path d="M128 276 L237 168 L346 276 L346 290 L237 182 L128 290 Z" fill="url(#roofEdge)" opacity=".9"/>
-    <path d="M364 262 L420 230 L420 244 L364 276 Z" fill="#9a330a"/>
-    <path d="M110 262 L128 276 L128 290 L110 276 Z" fill="#9a330a"/>
-    <path d="M135 250 L237 150" stroke="#ffd59a" stroke-width="5" stroke-linecap="round" opacity=".8"/>
-    <circle cx="237" cy="228" r="17" fill="#1e3a8a"/><circle cx="237" cy="228" r="13" fill="url(#glass)"/><path d="M230 236 L244 221" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+    <!-- cuerpo: pared lateral, fachada y gablete -->
+    <path d="M346 250 L406 216 L406 366 L346 400 Z" fill="url(#side)"/>
+    <path d="M140 250 L243 149 L346 250 L346 392 Q346 400 338 400 L148 400 Q140 400 140 392 Z" fill="url(#front)"/>
+    <!-- techo: faldón derecho (une con la cumbrera) -->
+    <path d="M243 138 L303 104 L434 232 L374 266 Z" fill="url(#roofS)"/>
+    <path d="M374 266 L434 232 L434 254 L374 288 Z" fill="#8f2f08"/>
+    <!-- borde frontal del techo -->
+    <path d="M112 266 L243 138 L374 266 L374 288 L243 160 L112 288 Z" fill="url(#roofF)"/>
+    <path d="M134 298 L243 190 L352 298" fill="none" stroke="#0b1b4d" stroke-opacity=".12" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M124 262 L243 146" stroke="#ffd59a" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+    <circle cx="243" cy="232" r="17" fill="#1e3a8a"/><circle cx="243" cy="232" r="13" fill="url(#glass)"/><path d="M236 240 L250 225" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>
     <!-- puerta -->
-    <rect x="212" y="318" width="52" height="82" rx="8" fill="url(#door)"/>
-    <rect x="216" y="322" width="16" height="74" rx="6" fill="#ffffff" opacity=".18"/>
-    <circle cx="253" cy="362" r="5" fill="#fbbf24"/>
+    <rect x="217" y="318" width="52" height="82" rx="8" fill="url(#door)"/>
+    <rect x="221" y="322" width="16" height="74" rx="6" fill="#ffffff" opacity=".18"/>
+    <circle cx="258" cy="362" r="5" fill="#fbbf24"/>
     <!-- ventanas -->
     <g><rect x="158" y="300" width="40" height="40" rx="7" fill="#1e3a8a"/><rect x="161" y="303" width="34" height="34" rx="5" fill="url(#glass)"/>
       <path d="M178 303 V337 M161 320 H195" stroke="#ffffff" stroke-width="4"/><path d="M165 330 L185 307" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/></g>
-    <g><rect x="280" y="300" width="40" height="40" rx="7" fill="#1e3a8a"/><rect x="283" y="303" width="34" height="34" rx="5" fill="url(#glass)"/>
-      <path d="M300 303 V337 M283 320 H317" stroke="#ffffff" stroke-width="4"/><path d="M287 330 L307 307" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/></g>
+    <g><rect x="286" y="300" width="40" height="40" rx="7" fill="#1e3a8a"/><rect x="289" y="303" width="34" height="34" rx="5" fill="url(#glass)"/>
+      <path d="M306 303 V337 M289 320 H323" stroke="#ffffff" stroke-width="4"/><path d="M293 330 L313 307" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/></g>
   </g>
   <!-- moneda 3D -->
   <g filter="url(#sh)">
