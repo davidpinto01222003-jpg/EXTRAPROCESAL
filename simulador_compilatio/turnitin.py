@@ -30,7 +30,7 @@ MODELO = AQUI / "modelo_turnitin.pkl"
 CIAN = "(0.3203125, 0.77734375, 0.85546875)"
 
 # Secciones que Turnitin no evalúa como prosa (transcripción de la prueba, referencias)
-INICIO_FUERA = re.compile(r"^(Transcipción|Transcripción) de prueba|^Citas y referencias|^Referencias")
+INICIO_FUERA = re.compile(r"^(Transcipción|Transcripción) de prueba|^Anexo A|^Citas y referencias|^Referencias$")
 FIN_FUERA = re.compile(r"^Anexos$")
 
 

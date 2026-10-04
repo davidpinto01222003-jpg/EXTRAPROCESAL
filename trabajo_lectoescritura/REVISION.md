@@ -1,69 +1,100 @@
 # Revisión del trabajo de grado: ¿Cuáles son los procesos de enseñanza en la lectoescritura?
 
 Isabela Escobar Marroquín, Licenciatura en Español e Inglés (UPB). Normas APA 7.ª edición.
-Informe de partida: Turnitin, 28-09-2026, **34 % de IA** (17.710 palabras, 40 bloques marcados). No hay informe de similitud.
+Informe de partida: Turnitin, 28-09-2026, **34 % de IA**.
 
-## 1. ¿Puede pasar?
+**Versión final: `Trabajo lectoescritura v3.docx`.** Se genera con `python version3.py original.docx "Trabajo lectoescritura v3.docx"`, que aplica los cambios de `reescribir.py` (v2) y las correcciones de contenido de la v3.
 
-**Así como está, no lo recomiendo.** Hay tres riesgos, de mayor a menor:
+## 1. Estado
 
-1. **Frases que parecen comentarios de un revisor (o de una IA) pegados en el texto.** En el análisis de la transcripción había frases como *"lo cual constituye una inconsistencia de identificación que debe revisarse en el documento original… Esta duplicación debe corregirse"*, *"Esto representa una oportunidad para fortalecer el trabajo… se debe señalar…"* y *"En el documento se plantea…"*, *"El trabajo señala expresamente…"*. Un jurado las detecta enseguida. Una de ellas además es falsa: dice que hay dos "Estudiante 8", pero la transcripción va del 1 al 10 sin repetir. **Corregido en la v2.**
-2. **34 % de IA en Turnitin.** Muchas universidades piden revisión manual por encima de 20 %. Ese umbral es una referencia, no la regla de la UPB: confírmenlo con el programa. **Reescrito en la v2** (ver punto 3).
-3. **APA y coherencia metodológica.** Hay problemas que un evaluador puede señalar aunque el % salga bien (ver punto 4). Algunos los corregí; otros requieren una decisión de la autora.
-
-## 2. Qué patrones tuvo en cuenta Turnitin, comparados con los de Compilatio
-
-Turnitin no marca palabras sueltas: marca **bloques enteros de prosa** (párrafos completos o varios seguidos). Comparando lo marcado con lo no marcado en este trabajo, y lo marcado por Compilatio en el trabajo de Suárez y Rivera, el detalle está en `PATRONES_TURNITIN_COMPILATIO.md`:
-
-| Patrón | Turnitin | Compilatio |
+| Aspecto | Original | v3 |
 |---|---|---|
-| Conectores de apertura ("Asimismo", "Por consiguiente", "En este sentido", "Sin embargo") | **Pesa**: 7,5 vs 5,5 por mil palabras | Casi no aparecen |
-| Verbos comodín ("permite", "evidencia", "constituye", "destaca", "resalta") | **Pesa**: 13,4 vs 10,4 | Neutro |
-| Adjetivos de relleno ("fundamental", "esencial", "relevante", "significativo", "importante") | **Pesa**: 7,0 vs 4,1 | Neutro |
-| Vocabulario genérico de revisión ("factores", "intervenciones", "brechas", "contextos", "enfoques", "fortalecer") | **Pesa** | Pesa el vocabulario genérico del tema |
-| Primera persona ("planteamos", "abordamos") | **No protege**: aparece más en lo marcado | No protege |
-| Dos puntos y punto y coma | No pesa | **Pesa**: 10,1 vs 6,6 |
-| Citas con autor y año dentro de la frase | Protege un poco | **Protege**: 4,9 vs 9,5 |
-| Datos concretos (respuestas textuales de los estudiantes, ejemplos) | **Protege**: casi nunca se marcan | Protege |
-| Textos formulaicos (resumen, abstract, objetivos, dedicatoria con frases hechas) | **Se marcan casi siempre** | Se marcan |
+| Comentarios de revisor o IA pegados en el texto ("debe corregirse", "el documento señala…") | Sí | **No** |
+| Metodología coherente con lo que se hizo (10 estudiantes, prueba propia) | No | **Sí** |
+| Datos de los estudiantes verificados contra la transcripción | Con errores | **Sí** |
+| Citas en el texto con referencia en la lista | Faltaban ~27 | **Todas** |
+| Referencias APA completas (revista, volumen, páginas, DOI) | Incompletas | **Completas** (salvo dos, sección 5) |
+| Preguntas de investigación respondidas en las conclusiones | 2 de 4 | **4 de 4** |
+| Estructura (análisis en Anexos, niveles de título) | Desordenada | **Corregida** |
+| Texto que Turnitin marcó y sigue igual | 100 % | **15 %** |
 
-En pocas palabras: **Turnitin castiga la prosa genérica y "redonda"**, con frases intercambiables, conectores de manual y adjetivos de relleno, sin datos ni ejemplos. **Compilatio castiga más la estructura**, con oraciones largas, dos puntos y punto y coma, y párrafos uniformes. Lo que sirve para los dos es lo mismo: concretar (ejemplos, cifras, quién dijo qué), quitar muletillas y variar el ritmo. La primera persona sola no basta.
+**Estimación de Turnitin para la v3: entre ~5 % y ~30 %.** La cota baja supone que Turnitin solo vuelve a marcar el 15 % del texto marcado que sigue igual, que son sobre todo títulos de artículos, términos técnicos y las frases de la prueba en el anexo. La cota alta la da el simulador de estilo, que es pesimista y poco preciso (AUC 0,61). El número real solo lo da Turnitin.
 
-## 3. Qué se cambió en la v2 (`Trabajo lectoescritura v2.docx`)
+## 2. Correcciones de contenido en la v3
 
-- **Reescritos 146 párrafos**: los que marcó Turnitin y algunos parcialmente marcados, para dar margen. Incluye dedicatoria, agradecimientos, resumen, abstract, introducción, preguntas, planteamiento, antecedentes, justificación, objetivos, marco teórico, resultados, análisis de la transcripción, discusión y conclusiones.
-- **No se tocaron**: datos, respuestas de los estudiantes, pseudopalabras, citas textuales, transcripciones de la prueba, tablas ni la carta "Un alto en el camino" (solo su última línea).
-- **Se quitaron** los comentarios tipo revisor y la frase falsa sobre el "Estudiante 8" duplicado.
-- **Erratas corregidas**: "dyslexia continue" → *"dyslexia is still…"* (abstract), "descenlace", "El este trabajo", "Teniendo en cuento", "donde el cual", "Molina en (2017)", "cambios los curriculares", "se asemejad", "Transcipción".
-- **APA corregido en el texto**: "Londoño (2018)" → **Morales Londoño (2018)**; "Gaviria y Lopera (2022)" → **Giraldo Gaviria y Caro Lopera (2022)**; año agregado a Aguirre-Medrano y González-López (2021) y a Duarte-Hernández y Pérez-Mendoza (2020) donde faltaba. Se quitó la negrita de citas y de términos dentro de párrafos reescritos.
-- **Referencias**: se eliminó la entrada duplicada de Morales Londoño (2018).
-- **Pregunta 2**: decía "¿Cómo se manifiestan *dichas* dificultades…?" sin haber nombrado ninguna dificultad antes. Quedó *"las dificultades de lectoescritura"*.
+### Metodología
+- **Tipo de estudio:** decía "grupo focal/caso" y "un único participante". Ahora dice **estudio de casos múltiples descriptivo con diez estudiantes**.
+- **Participantes:** se agregó el apartado, con lo que el trabajo permite afirmar: diez estudiantes de básica, evaluados individualmente e identificados del 1 al 10.
+- **Instrumento:** decía que "la única técnica fue el PROLEC-R", pero los resultados describen una prueba propia de cinco actividades. Ahora dice que es **una prueba diagnóstica de pseudopalabras diseñada para el estudio, con base en la tarea de pseudopalabras del PROLEC-R**. Las cinco actividades se listan, y lo mismo se ajustó en el marco teórico y en el enfoque.
+- **Método:** se agregó la revisión documental (artículos de 2018 a 2024), que el resumen mencionaba pero la metodología no describía.
+- **Alcance:** decía "del estudiante", en singular; ahora habla de los estudiantes.
 
-### Estimación
+### Datos de los diez estudiantes (verificados uno por uno contra las 22 tablas de la transcripción)
 
-| Medida | Original | v2 |
-|---|---|---|
-| Texto que Turnitin marcó y sigue igual | 100 % | **18 %** (sobre todo títulos de artículos, pseudopalabras y frases de la prueba) |
-| Si Turnitin solo volviera a marcar ese texto | 34 % | **~6 %** (cota baja) |
-| Simulador de estilo calibrado con este informe | 35,2 % | 30,5 % (cota alta, modelo débil: AUC 0,61) |
+| Afirmación en el original | Lo que dicen los datos |
+|---|---|
+| "Trapi" aparece como error de lectura (estudiante 3) | No existe en ninguna transcripción. El estudiante 3 solo cambió "Zepa" y "Cuome" |
+| "Lused" como error del estudiante 3 | "Lused" es la pseudopalabra original |
+| El estudiante 4 "presentó modificaciones en lectura" | Leyó las 30 pseudopalabras sin cambios |
+| El estudiante 5 "presentó transformaciones en lectura" | Cambió una sola ("Plerox") |
+| "Tru-nal" "especialmente en los estudiantes 2, 3, 4, 5, 7, 8 y 9" | Lo dieron los diez |
+| "“Pamil” por “Pamil”" | Era "“Pamil” por “Pamir”" |
+| El estudiante 10 sin datos fonológicos | Respondió bien todas las preguntas fonológicas |
+| Leían mejor "esas mismas palabras" dentro de las frases | Las pseudopalabras de las frases no eran las que alteraron al leer; "teniq" y "bapo" también se leyeron bien sueltas. Se matizó |
+| Un estudiante "altera una misma pseudopalabra al leerla y al escribirla" | Las listas de lectura y de dictado eran distintas. Se reformuló como coincidencia en el tipo de error |
+| Asociación grafema-fonema: "unir pseudopalabras con su sonido inicial" | La transcripción no registra respuestas; ahora se dice explícitamente |
 
-El resultado real debería quedar entre esas dos cifras. **Solo Turnitin da el número definitivo.** Pásenlo de nuevo y súbanme el informe: con él recalibro el simulador y hago otra pasada sobre lo que siga marcado.
+Se agregaron datos concretos que antes faltaban:
+- 9 de 10 estudiantes cambiaron alguna pseudopalabra al leer, con un rango de 0 a 9 cambios.
+- Los 10 transformaron alguna al dictado.
+- Sonidos: 5 de 10 aislaron bien el inicial de "gropel", 4 el final de "finod" y 4 el interno de "lumep".
+- Solo 3 de 10 acertaron todas las preguntas fonológicas.
+- En las frases, 8 de 10 dijeron "un bapo" en lugar de "el bapo".
 
-## 4. Pendientes que debe decidir la autora (no los cambié porque tocan el contenido)
+### Citas y referencias
+- **Citas no verificables eliminadas**, con la frase reescrita para no afirmar lo que esas fuentes no respaldan: Medina (2020), Cameron (2021), Santana et al. (2021), Snow et al. (2018), Dickinson et al. (2019), Downer et al. (2017), Suárez-Álvarez y Fernández-Alonso (2018), González-Castro y Núñez (2016), Creswell (2014), UNESCO (2017), Save the Children (2018), Casillas Alvarado y Ramírez Martinell (2018).
+- **IBM (2013)** como fuente de los efectos de la pandemia (imposible por la fecha) → **López Rivas (2024)**.
+- **Duarte-Hernández y Pérez-Mendoza (2020)** existe, pero es un estudio de lateralidad en niños de 2 a 5 años con el test de Harris. Se mantiene donde habla de lateralidad. Donde se le atribuían las confusiones visomotoras y los errores de lectura, la cita se pasó a Aguirre-Medrano y González-López (2021), que sí trata eso.
+- **Gutiérrez y Díez (2018)** estaba mal usado como respaldo del "estudio de caso". Se quitó de la metodología y se dejó en la crítica al antecedente, con el nombre completo (Gutiérrez Fresneda y Díez Mediavilla) y su tema real.
+- **Citas secundarias en formato APA ("como se citó en")**: Manchado, Vargas Franco, Molina, Carlino et al. y Zambrano y Aragón de Moreno, vía Giraldo Gaviria y Caro Lopera; McLuhan y Birkerts, vía Caamaño Tomás; Nyathi et al., vía Morales Londoño; Vargas et al., vía Rivera Cintrón y Batiz Cartagena; Arnau, vía Núñez Peña (que estaba en la lista sin citarse).
+- **Citas textuales sin comillas** (Pisco-Román y Bailón-Panta, pp. 331, 333 y 335; López Rivas, pp. 2 y 3; Rivera Cintrón y Batiz Cartagena, pp. 8 y 9) → **paráfrasis con número de página**.
+- **Apellidos**: "Tomás" → **Caamaño Tomás**; "Londoño" → **Morales Londoño**; "Gaviria y Lopera" → **Giraldo Gaviria y Caro Lopera**; "González-López, C. M." → **González-López, M.** ("Dra. C" es un título, no una inicial).
+- **"Este autor analiza…"** (López Rivas) no nombraba al autor; corregido.
+- **Lista de referencias** reconstruida en orden alfabético, con cursivas APA, y titulada **"Referencias"**. Se agregaron revista, volumen, número, páginas y DOI verificados de:
+  - Aguirre-Medrano y González-López (*Santiago*, 156)
+  - Pisco-Román y Bailón-Panta (*593 Digital Publisher CEIT*, 8(1-1), DOI)
+  - Giraldo Gaviria y Caro Lopera (DOI)
+  - Morales Londoño (DOI)
+  - López Rivas (DOI)
+  - Tinta Aruquipa (año corregido a **2020**)
+  - Se agregaron Duarte-Hernández y Pérez-Mendoza (2020), Gutiérrez Fresneda y Díez Mediavilla (2018), Snowling et al. (2020) y Naciones Unidas (2015).
 
-1. **Metodología contradictoria con los resultados.**
-   - "Tipo de estudio" dice *"se analiza detalladamente el desempeño lector de un **único participante**"*, pero la prueba se aplicó a **diez** estudiantes.
-   - "Alcance" habla de *"las dificultades lectoras **del estudiante**"*, en singular.
-   - Dice *"estudio de grupo focal/caso"*: hay que escoger uno. Un grupo focal es una entrevista grupal, y aquí no la hubo.
-   - Dice que *"la única técnica… fue… PROLEC-R"*, pero los resultados describen una **prueba propia de pseudopalabras** con cinco actividades. Hay que aclarar si la prueba se basó en el PROLEC-R o si se aplicó el PROLEC-R completo.
-2. **Faltan en la lista de referencias unas 25 obras citadas en el texto**: Duarte-Hernández y Pérez-Mendoza (2020), Medina (2020), Cameron (2021), Santana et al. (2021), Gutiérrez y Díez (2018), Snowling et al. (2020), Manchado (2009), Vargas Franco (2020), Molina (2017), Carlino et al. (2013), Zambrano y Aragón de Moreno (2015), McLuhan (1962, 1969), Birkerts (1994), Casillas Alvarado y Ramírez Martinell (2018), Nyathi et al. (2011) / Silva (2014), Vargas et al. (2019), Arnau (1995), Naciones Unidas (2015), UNESCO (2017), Save the Children (2018), Snow et al. (2018), Dickinson et al. (2019), Suárez-Álvarez y Fernández-Alonso (2018), Downer et al. (2017), González-Castro y Núñez (2016), Creswell (2014) e IBM (2013). Si son citas tomadas de los artículos reseñados, en APA 7 se escriben *"(Snow et al., 2018, como se citó en Domínguez Vázquez, 2023)"* y solo va a la lista la fuente que sí leyeron. **Núñez Peña (2011)** está en la lista y no se cita en el texto.
-3. **IBM (2013)** aparece como fuente de *"la pandemia profundizó las brechas"*. Es imposible por la fecha: hay que cambiarla por una fuente sobre la pandemia (por ejemplo, López Rivas, 2024, que ya está en la lista).
-4. **Referencias incompletas o mal formateadas**:
-   - Faltan revista, volumen, páginas o DOI en Aguirre-Medrano y González-López (2021) y en Pisco-Román y Bailón-Panta (2023).
-   - "Caamaño Tomás, Alejandro." y "López Rivas, Oscar Hugo." llevan el nombre completo; en APA va solo la inicial: *Caamaño Tomás, A.*
-   - Tinta Aruquipa se cita como 2020 en el texto y como 2021 en la lista.
-   - Falta DOI o URL en casi todas.
-5. **Citas textuales sin comillas** (párrafos con "(p. 331)", "(p.2)", "(p.3)" de Pisco-Román y Bailón-Panta y de López Rivas): si son textuales y de menos de 40 palabras, van entre comillas dentro del párrafo. Si no lo son, hay que quitar el número de página.
-6. **Estructura**: el análisis largo de la transcripción quedó bajo el título **"Anexos"**, después de las transcripciones. Debería ir en **Resultados** o en **Análisis de resultados**, y en Anexos solo las transcripciones. Los niveles de título también están desordenados: "Alcance", "Método" y "Técnica" están como Título 3, 4 y 5 aunque son del mismo nivel.
-7. **Resumen**: habla casi solo de la revisión documental. Convendría agregar una o dos frases con lo que arrojó la prueba de pseudopalabras.
-8. La portada de Turnitin dice **80 páginas**, y ustedes me dijeron 36. La diferencia probablemente sale de los anexos y las transcripciones; confirmen el límite de páginas del programa.
+### Estructura y coherencia
+- El análisis largo, que estaba bajo el título **"Anexos"**, ahora se llama **"Análisis de resultados"**. La transcripción pasó a **"Anexo A. Transcripción de la prueba"**, después de las referencias, como pide APA.
+- Niveles de título unificados: Metodología pasa a Título 1; Alcance, Método y Técnica a Título 2; subtemas del marco teórico a Título 2; antecedentes, con el título de cada artículo y su cita, a Título 3. Los títulos vacíos dejaron de ser títulos.
+- Se eliminó la lista de "siete hallazgos", que estaba repetida en Resultados, en Análisis y en Conclusiones.
+- **Conclusiones:**
+  - Nuevo párrafo que responde las preguntas 1 y 3 (qué estrategias funcionan) con los estudios revisados.
+  - Respuesta a la pregunta 4 (relación entre los errores de lectura y de escritura).
+  - Explicación de cómo se cumplió cada objetivo específico.
+- **Resumen y Abstract**: incluyen ahora los resultados de la prueba (239 y 207 palabras; el límite APA es 250).
+- **Siglas**: se agregaron ENS, MEN, ONU, PISA, PROLEC-R, PSC y WISC IV.
+- **Carta "Un alto en el camino"**: solo ortografía ("estás", "tú", "sé", "para dónde", "sino también").
+- El Word **actualiza la tabla de contenido al abrirlo**: hay que aceptar el aviso.
+
+## 3. Patrones de Turnitin vs. Compilatio
+
+El detalle está en `PATRONES_TURNITIN_COMPILATIO.md`. En resumen:
+- **Turnitin** castiga la prosa genérica: conectores de manual, verbos comodín ("permite", "evidencia", "constituye"), adjetivos de relleno ("fundamental", "esencial") y textos formulaicos.
+- **Compilatio** castiga más la estructura: oraciones largas, dos puntos y punto y coma.
+- **A los dos los baja** lo concreto: cifras, ejemplos y respuestas textuales. Por eso la v3 metió los datos reales de los estudiantes en resultados, análisis, discusión y conclusiones.
+
+## 4. Lo que solo la autora puede completar o confirmar
+
+1. **Participantes**: grado, edad, institución, ciudad y fecha de aplicación. También el **consentimiento informado** de los acudientes, porque son menores: si existe, conviene mencionarlo en Participantes y adjuntarlo como Anexo B.
+2. **Estudiantes 7 y 8**: sus respuestas de lectura son **idénticas palabra por palabra**, incluidos los nueve errores. Hay que confirmar que no fue un error al copiar la tabla.
+3. **"Zolid"**: los diez estudiantes leyeron "Zolid", pero esa palabra no está en la lista de estímulos (que tiene "Solip"). Confirmen cuál fue la palabra presentada.
+4. **Listas de dictado**: a los estudiantes 1 y 2 se les dictó una lista y a los demás otra (la tabla del dictado tiene dos bloques). Confirmen que fue así.
+5. **Rivera Cintrón y Batiz Cartagena (2024)**: no pude verificar páginas ni DOI. Si los tienen, agréguenlos. Lo mismo con el DOI de Gutiérrez Fresneda y Díez Mediavilla (2018).
+6. **Duarte-Hernández y Pérez-Mendoza (2020)**: verifiquen que el dato de "lateralidad definida hacia los 6 años" sale de ese estudio. Si no, cambien la cita.
+7. **Arnau (1995)**: verifiquen que la definición de diseño cuasiexperimental la tomaron de Núñez Peña (2011). Si la tomaron de otra fuente, citen esa.
