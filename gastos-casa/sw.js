@@ -1,9 +1,9 @@
 // Service worker de Cuentas de la Casa: guarda la app para que abra sin conexión.
 // Cambia VERSION cada vez que publiques una versión nueva de la app.
-const VERSION = 'cuentas-casa-v2';
+const VERSION = 'cuentas-casa-v3';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
-  './vendor/chart.umd.min.js', './vendor/lucide.min.js',
+  './vendor/chart.umd.min.js', './vendor/lucide.min.js', './vendor/iconos-casa.js',
   './vendor/firebase-app-compat.js', './vendor/firebase-auth-compat.js', './vendor/firebase-firestore-compat.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png'
 ];
