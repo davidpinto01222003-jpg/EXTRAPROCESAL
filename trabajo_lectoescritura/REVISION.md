@@ -3,7 +3,7 @@
 Isabela Escobar Marroquín, Licenciatura en Español e Inglés (UPB). Normas APA 7.ª edición.
 Informe de partida: Turnitin, 28-09-2026, **34 % de IA**.
 
-**Versión final: `Trabajo lectoescritura v4.docx`** (reescritura de estilo sobre la v3; ver `DIAGNOSTICO_ESTILO.md`). La v3 contiene las correcciones de contenido descritas abajo. Se genera con `python version3.py original.docx "Trabajo lectoescritura v3.docx"`, que aplica los cambios de `reescribir.py` (v2) y las correcciones de contenido de la v3.
+**Versión final: `Trabajo lectoescritura v5.docx`**: la v4 (reescritura de estilo sobre la v3) ampliada con contenido nuevo. Ver `DIAGNOSTICO_ESTILO.md`. La v3 contiene las correcciones de contenido descritas abajo. Se genera con `python version3.py original.docx "Trabajo lectoescritura v3.docx"`, que aplica los cambios de `reescribir.py` (v2) y las correcciones de contenido de la v3.
 
 ## 1. Estado
 

@@ -56,3 +56,46 @@ El texto quedó con oraciones más largas y encadenadas, aunque variadas (solo 5
 - Del texto que Turnitin marcó en el original, en la v4 sigue igual el **7 %**, frente al 15 % en la v3. Si Turnitin solo volviera a marcar eso, saldría alrededor de **3 %**.
 - El simulador de estilo da **~31 %**, pero es poco confiable (AUC 0,61) y castiga los párrafos largos y con citas, así que tómalo como el peor caso.
 - El número real solo lo da Turnitin.
+
+
+## v5: ampliación con contenido nuevo
+
+`Trabajo lectoescritura v5.docx` se genera con `python version5.py "Trabajo lectoescritura v4.docx" "Trabajo lectoescritura v5.docx"`. Recupera extensión con contenido que antes no estaba en el trabajo, sin volver a los patrones anteriores.
+
+**Contenido nuevo que sale de los datos de la transcripción**
+- **Tipología de los 41 errores de lectura (Tabla 2).** El 43,9 % afecta grupos consonánticos con l o r: 10 casos ocurren en las 13 pseudopalabras que tienen grupo y 8 en palabras sin grupo, donde el estudiante lo creó.
+- **Ningún estudiante confundió b con d ni p con q,** aunque la lista tenía esas letras. Esto refuerza que las dificultades son fonológicas y no visoespaciales.
+- **Dictado: errores fonológicos frente a ortográficos.** "Sutel" por "Zutel" (5 estudiantes), "Bentil" por "Ventil" (3) y "Cuamir" por "Quamir" (2) suenan igual en el español de Colombia. Los cambios que sí alteran el sonido son "Pamil" por "Pamir" (4), "Ventir" (3), "Tralu" (3) y "Neclon" (3).
+- **Descripción del instrumento** (30 pseudopalabras bisílabas, 13 con grupo consonántico; dos listas de dictado), del procedimiento y de los criterios de análisis.
+
+**Contenido nuevo con fuentes verificadas**
+- **Planteamiento:** PISA 2022, Colombia 409 en lectura frente a 476 de la OCDE (OECD, 2023).
+- **Marco teórico:**
+  - el modelo de doble ruta (Coltheart et al., 2001) y su uso en el PROLEC-R (Cuetos et al., 2007);
+  - los niveles de la conciencia fonológica (Jiménez González & Ortiz González, 1998);
+  - las sílabas con grupos consonánticos (Jiménez González & Jiménez Rodríguez, 1999);
+  - la ortografía del español de América (RAE & ASALE, 2010).
+- **Discusión:** relación con la comprensión lectora (Pisco-Román & Bailón-Panta, 2023) y con las intervenciones de Domínguez Vázquez (2023) y Rivera Cintrón y Batiz Cartagena (2024).
+- **Propuesta pedagógica** por perfiles (de la sílaba al fonema, sílabas trabadas, escritura y ortografía), basada en la Tabla 1.
+
+**La autora debe revisar las fuentes nuevas antes de entregar.** Estas siete referencias las agregué yo y ella no las consultó: Coltheart et al. (2001), Cuetos et al. (2007), Jiménez González y Jiménez Rodríguez (1999), Jiménez González y Ortiz González (1998), OECD (2023) y RAE y ASALE (2010). De Jiménez González y Ortiz González conviene confirmar el año de la edición que consulte: el catálogo indica 1998, pero hay otras ediciones.
+
+| Medida | v3 | v5 |
+|---|---|---|
+| Palabras de prosa (sin carta ni tablas) | 11687 | 7885 |
+| Párrafos de prosa | 206 | 101 |
+| Oraciones | 502 | 254 |
+| Largo medio de oración | 23.3 | 31.0 |
+| Variación del largo (CV) | 0.44 | 0.49 |
+| Oraciones de ≤8 palabras | 32 | 25 |
+| Párrafos de 1 o 2 oraciones | 109 | 50 |
+| dos puntos de revelación | 52 | 4 |
+| "Por eso" | 16 | 4 |
+| "entonces," | 8 | 0 |
+| advertencias repetidas | 14 | 3 |
+| "no es... sino" | 3 | 1 |
+| "Sin embargo/No obstante" | 11 | 0 |
+| explicación de por qué pseudopalabras | 9 | 3 |
+| "proceso complejo" | 4 | 0 |
+
+La prosa queda en unas 7.900 palabras (la v4 tenía 5.600 y la v3 11.700, de las cuales casi la mitad eran repeticiones). Del texto que Turnitin marcó en el original sigue igual el 8 %.
