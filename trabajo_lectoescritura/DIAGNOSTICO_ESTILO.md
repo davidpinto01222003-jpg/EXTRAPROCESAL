@@ -78,7 +78,7 @@ El texto quedó con oraciones más largas y encadenadas, aunque variadas (solo 5
 - **Discusión:** relación con la comprensión lectora (Pisco-Román & Bailón-Panta, 2023) y con las intervenciones de Domínguez Vázquez (2023) y Rivera Cintrón y Batiz Cartagena (2024).
 - **Propuesta pedagógica** por perfiles (de la sílaba al fonema, sílabas trabadas, escritura y ortografía), basada en la Tabla 1.
 
-**La autora debe revisar las fuentes nuevas antes de entregar.** Estas siete referencias las agregué yo y ella no las consultó: Coltheart et al. (2001), Cuetos et al. (2007), Jiménez González y Jiménez Rodríguez (1999), Jiménez González y Ortiz González (1998), OECD (2023) y RAE y ASALE (2010). De Jiménez González y Ortiz González conviene confirmar el año de la edición que consulte: el catálogo indica 1998, pero hay otras ediciones.
+**La autora debe revisar las fuentes nuevas antes de entregar.** Estas seis referencias las agregué yo y ella no las consultó: Coltheart et al. (2001), Cuetos et al. (2007), Jiménez González y Jiménez Rodríguez (1999), Jiménez González y Ortiz González (1998), OECD (2023) y RAE y ASALE (2010). De Jiménez González y Ortiz González conviene confirmar el año de la edición que consulte: el catálogo indica 1998, pero hay otras ediciones.
 
 | Medida | v3 | v5 |
 |---|---|---|
