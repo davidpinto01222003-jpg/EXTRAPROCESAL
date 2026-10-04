@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cuentas de la Casa</title>
+<meta name="description" content="Gastos, ingresos, aportes e informes del hogar, compartidos con toda la familia.">
+<meta name="theme-color" content="#0f6b4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cuentas Casa">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
@@ -64,7 +73,13 @@ svg.lucide{width:18px;height:18px;stroke-width:2;flex:none}
 .nav a{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:600;white-space:nowrap}
 .nav a:hover{background:var(--surface-2);color:var(--fg)}
 .nav a.on{background:var(--accent-soft);color:var(--accent)}
-.side-foot{margin-top:auto;font-size:.78rem;color:var(--muted);padding-inline:8px}
+.side-foot{margin-top:auto;font-size:.78rem;color:var(--muted);padding-inline:8px;display:flex;flex-direction:column;gap:6px}
+.side-foot .pill{white-space:normal}
+.install-btn{margin-top:auto}
+.install-btn + .side-foot{margin-top:0}
+.code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:1.05rem;letter-spacing:.06em;background:var(--surface-2);border:1px dashed var(--line);padding:6px 10px;border-radius:8px;overflow-wrap:anywhere}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.pill svg.lucide{width:13px;height:13px}
 .main{padding-block:28px 96px;padding-inline:clamp(16px,3vw,40px);min-width:0;display:flex;flex-direction:column;gap:22px;max-width:1360px;width:100%}
 .head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
 .head .eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
@@ -199,6 +214,8 @@ dialog::backdrop{background:rgba(10,20,15,.45)}
   .nav a span{display:none}
   .nav a.on span{display:inline}
   .side-foot{display:none}
+  .install-btn{margin-top:0;padding:7px}
+  .install-btn span{display:none}
   .g2,.g3{grid-template-columns:minmax(0,1fr)}
   .span2{grid-column:auto}
   .split{grid-template-columns:minmax(0,1fr)}
@@ -245,7 +262,8 @@ dialog::backdrop{background:rgba(10,20,15,.45)}
       <a href="#metas" data-v="metas"><i data-lucide="piggy-bank"></i><span>Metas de ahorro</span></a>
       <a href="#ajustes" data-v="ajustes"><i data-lucide="settings"></i><span>Ajustes y copias</span></a>
     </nav>
-    <div class="side-foot">Tus datos se guardan solo en este navegador. Haz copias de seguridad desde Ajustes.</div>
+    <button class="btn sm install-btn" id="install-btn" data-act="install" hidden><i data-lucide="download"></i><span>Instalar app</span></button>
+    <div class="side-foot" id="sync-status"></div>
   </aside>
   <main class="main" id="main"></main>
 </div>
@@ -254,8 +272,8 @@ dialog::backdrop{background:rgba(10,20,15,.45)}
 <div class="toast" id="toast" hidden></div>
 <input type="file" id="import-file" accept="application/json,.json" hidden>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
+<script src="vendor/lucide.min.js"></script>
 <script>
 "use strict";
 /* =========================================================
@@ -387,10 +405,11 @@ function load() {
   try { const raw = localStorage.getItem(KEY); if (raw) { const d = JSON.parse(raw); return Object.assign(emptyState(), d); } } catch (e) { /* almacenamiento no disponible */ }
   return sampleState();
 }
-function save() {
+function saveLocal() {
   try { localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch (e) { toast('No se pudo guardar en este navegador. Exporta una copia de seguridad desde Ajustes.'); }
+  catch (e) { toast('No se pudo guardar en este teléfono. Exporta una copia de seguridad desde Ajustes.'); }
 }
+function save() { saveLocal(); if (SYNC.on) pushChanges(); }
 
 /* =========================================================
    Consultas
@@ -509,7 +528,7 @@ VIEWS.inicio = () => {
   return `
   ${S.ejemplo ? `<div class="banner info no-print">${ic('flask-conical')}<div class="grow"><b>Estás viendo datos de ejemplo.</b> <span class="muted">Explora la app y, cuando quieras empezar con tus cuentas reales, borra los ejemplos.</span></div><button class="btn sm" data-act="clear-sample">${ic('eraser')}Empezar con mis datos</button></div>` : ''}
   <div class="head">
-    <div><div class="eyebrow">${esc(S.hogar)}</div><h1>Resumen de ${MESES[m - 1].toLowerCase()}</h1></div>
+    <div><div class="eyebrow inline">${esc(S.hogar)}${SYNC.conf ? `<span class="sync-badge-slot">${syncBadge()}</span>` : ''}</div><h1>Resumen de ${MESES[m - 1].toLowerCase()}</h1></div>
     <div class="head-actions">${monthNav('mes')}<button class="btn primary" data-act="new-mov">${ic('plus')}Registrar</button></div>
   </div>
   ${pend.length ? `<div class="banner warn no-print">${ic('calendar-clock')}<div class="grow"><b>${pend.length} pago${pend.length > 1 ? 's' : ''} fijo${pend.length > 1 ? 's' : ''} sin registrar en ${ymLabel(ym).toLowerCase()}</b><div class="small muted">${pend.slice(0, 4).map(f => esc(f.descripcion)).join(' · ')}${pend.length > 4 ? '…' : ''}</div></div><button class="btn sm" data-act="apply-fijos" data-ym="${ym}">${ic('check-check')}Registrar todos</button><a class="btn sm ghost" href="#fijos">Revisar</a></div>` : ''}
@@ -867,13 +886,14 @@ VIEWS.ajustes = () => `
         <div class="field"><label for="s-tema">Apariencia</label><select class="input" id="s-tema" data-s="tema">${[['sistema', 'Según el sistema'], ['light', 'Claro'], ['dark', 'Oscuro']].map(([k, l]) => `<option value="${k}" ${S.tema === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       </div></section>
     <section class="card"><div class="card-h"><h2>${ic('database-backup')}Copias de seguridad</h2></div>
-      <p class="small muted">Los datos viven en este navegador. Descarga una copia con frecuencia y guárdala en tu correo o en la nube; con ella puedes pasar tus cuentas a otro computador o celular.</p>
+      <p class="small muted">${SYNC.on ? 'Tus datos están en la nube del hogar, pero una copia propia nunca sobra.' : 'Los datos viven en este navegador.'} Descarga una copia con frecuencia y guárdala en tu correo o en la nube; con ella puedes pasar tus cuentas a otro computador o celular.</p>
       <div class="inline"><button class="btn primary" data-act="export-json">${ic('download')}Descargar copia</button><button class="btn" data-act="import-json">${ic('upload')}Restaurar copia</button></div>
       <div class="inline"><button class="btn" data-act="export-csv-all">${ic('file-spreadsheet')}Exportar todos los movimientos a Excel</button></div>
       <p class="small muted">${S.movimientos.length} movimientos · ${S.personas.length} personas · ${S.categorias.length} categorías · ${S.fijos.length} fijos · ${S.metas.length} metas</p></section>
   </div>
+  ${familiaCard()}
   <section class="card"><div class="card-h"><h2>${ic('triangle-alert')}Zona de cuidado</h2></div>
-    <div class="inline">${S.ejemplo ? `<button class="btn" data-act="clear-sample">${ic('eraser')}Borrar datos de ejemplo</button>` : `<button class="btn" data-act="load-sample">${ic('flask-conical')}Cargar datos de ejemplo</button>`}
+    <div class="inline">${S.ejemplo ? `<button class="btn" data-act="clear-sample">${ic('eraser')}Borrar datos de ejemplo</button>` : (SYNC.on ? '' : `<button class="btn" data-act="load-sample">${ic('flask-conical')}Cargar datos de ejemplo</button>`)}
     <button class="btn danger" data-act="reset-all">${ic('trash-2')}Borrar todo y empezar de cero</button></div></section>`;
 
 /* =========================================================
@@ -890,7 +910,12 @@ function render() {
   if (VIEWS[v].after) VIEWS[v].after();
 }
 function icons() { if (window.lucide) lucide.createIcons({ attrs: { 'aria-hidden': 'true' } }); }
-function route() { UI.view = (location.hash || '#inicio').slice(1) || 'inicio'; render(); window.scrollTo(0, 0); }
+function route() {
+  const h = location.hash.slice(1);
+  if (h.startsWith('unirse=')) { history.replaceState(null, '', location.pathname + '#inicio'); UI.view = 'inicio'; render(); invitacion(h.slice(7)); return; }
+  if (h === 'nuevo') { history.replaceState(null, '', location.pathname + '#inicio'); UI.view = 'inicio'; render(); movForm({}); return; }
+  UI.view = h || 'inicio'; render(); window.scrollTo(0, 0);
+}
 window.addEventListener('hashchange', route);
 
 let toastT;
@@ -907,7 +932,7 @@ function openModal(title, body, foot, onMount) {
 function closeModal() { if (dlg.open) dlg.close(); }
 dlg.addEventListener('click', e => { if (e.target === dlg) closeModal(); });
 function confirmBox(text, okLabel, onOk) {
-  openModal('¿Estás seguro?', `<p>${text}</p>`, `<button class="btn" data-act="close">Cancelar</button><button class="btn danger" id="cf-ok">${ic('trash-2')}${okLabel}</button>`);
+  openModal('¿Estás seguro?', `<p>${text}</p>${SYNC.on ? '<p class="small muted">El cambio se verá en todos los teléfonos del hogar.</p>' : ''}`, `<button class="btn" data-act="close">Cancelar</button><button class="btn danger" id="cf-ok">${ic('trash-2')}${okLabel}</button>`);
   $('#cf-ok').onclick = () => { closeModal(); onOk(); };
 }
 const fv = id => $('#' + id)?.value ?? '';
@@ -924,7 +949,7 @@ function movForm(m, isFijo) {
       <div class="field full"><label for="mv-desc">Descripción</label><input class="input" id="mv-desc" placeholder="${tipo === 'gasto' ? 'Ej.: Mercado de la semana' : 'Ej.: Salario de octubre'}" value="${esc(m.descripcion || '')}"></div>
       ${isFijo ? `<div class="field"><label for="mv-dia">Día del mes</label><input class="input" type="number" min="1" max="31" id="mv-dia" value="${m.dia || 1}"></div>` : `<div class="field"><label for="mv-fecha">Fecha</label><input class="input" type="date" id="mv-fecha" value="${m.fecha || todayStr()}"></div>`}
       <div class="field"><label for="mv-cat">Categoría</label><select class="input" id="mv-cat">${catOptions(tipo, m.categoriaId)}</select></div>
-      <div class="field"><label for="mv-per" id="mv-per-l">${tipo === 'gasto' ? 'Quién pagó' : 'Quién aportó'}</label><select class="input" id="mv-per">${perOptions(m.personaId)}</select></div>
+      <div class="field"><label for="mv-per" id="mv-per-l">${tipo === 'gasto' ? 'Quién pagó' : 'Quién aportó'}</label><select class="input" id="mv-per">${perOptions(m.id ? m.personaId : (m.personaId ?? LOCAL.yo))}</select></div>
       <div class="field"><label for="mv-met">Medio de pago</label><select class="input" id="mv-met">${METODOS.map(x => `<option ${x === (m.metodo || 'Efectivo') ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
       ${isFijo ? `<div class="field full"><label class="inline" style="font-weight:600;color:var(--fg)"><input type="checkbox" id="mv-activo" ${m.activo !== false ? 'checked' : ''}> Activo (se propone registrarlo cada mes)</label></div>` : `<div class="field full"><label for="mv-notas">Notas (opcional)</label><textarea class="input" id="mv-notas" rows="2">${esc(m.notas || '')}</textarea></div>`}
     </div>
@@ -1116,6 +1141,223 @@ document.addEventListener('keydown', e => {
   if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !dlg.open && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); movForm({}); }
 });
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => render());
+
+/* =========================================================
+   Hogar compartido (Firebase) e instalación como app
+   ========================================================= */
+const SYNC_KEY = 'cuentas-casa-sync', LOCAL_KEY = 'cuentas-casa-local';
+const lsGet = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sin almacenamiento */ } };
+const LOCAL = lsGet(LOCAL_KEY, { yo: '' });
+const SYNC = { conf: lsGet(SYNC_KEY, null), on: false, estado: 'local', db: null, ref: null, last: { movs: new Map(), cfg: {} }, unsub: [], preguntarYo: false };
+const CFG_KEYS = ['hogar', 'moneda', 'personas', 'categorias', 'fijos', 'fijosAplicados', 'metas'];
+// texto canónico (claves ordenadas) para saber si algo cambió de verdad
+const canon = v => Array.isArray(v) ? '[' + v.map(canon).join(',') + ']' : v && typeof v === 'object' ? '{' + Object.keys(v).sort().filter(k => v[k] !== undefined).map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}' : JSON.stringify(v ?? null);
+const clean = v => JSON.parse(JSON.stringify(v));
+const randomCode = () => { const a = 'abcdefghjkmnpqrstuvwxyz23456789'; const r = crypto.getRandomValues(new Uint8Array(20)); return [...r].map(x => a[x % a.length]).join(''); };
+
+function syncBadge() {
+  const m = { local: ['neutral', 'smartphone', 'Solo en este teléfono'], conectando: ['warn', 'refresh-cw', 'Conectando…'], ok: ['ok', 'cloud', 'Sincronizado'],
+    offline: ['warn', 'cloud-off', 'Sin conexión · se sincroniza al volver'], error: ['bad', 'triangle-alert', 'Error de sincronización'] }[SYNC.estado];
+  return `<span class="pill ${m[0]}">${ic(m[1])}${m[2]}</span>`;
+}
+function setEstado(e) {
+  SYNC.estado = e;
+  const el = $('#sync-status'); if (el) el.innerHTML = `${syncBadge()}<span>${SYNC.on ? 'Los cambios se ven en todos los teléfonos del hogar.' : 'Los datos están solo en este teléfono. Compártelos desde Ajustes.'}</span>`;
+  $$('.sync-badge-slot').forEach(x => x.innerHTML = syncBadge());
+  icons();
+}
+function syncErr(e) {
+  const c = e && e.code || '';
+  if (c === 'permission-denied') return 'Firebase no dio permiso. Revisa que publicaste las reglas de seguridad.';
+  if (c === 'auth/operation-not-allowed' || c === 'auth/admin-restricted-operation') return 'Activa el acceso "Anónimo" en Firebase Authentication.';
+  if (c.includes('api-key') || c === 'auth/invalid-api-key') return 'La configuración de Firebase no es válida. Cópiala de nuevo desde la consola.';
+  if (c === 'unavailable' || c === 'auth/network-request-failed') return 'No hay conexión con la nube. Revisa tu internet.';
+  return 'Error de sincronización: ' + (e && e.message || e);
+}
+function parseFirebaseConfig(text) {
+  const o = {}; let m; const re = /["']?(\w+)["']?\s*:\s*["']([^"']+)["']/g;
+  while ((m = re.exec(text || ''))) o[m[1]] = m[2];
+  if (!o.apiKey || !o.projectId || !o.appId) return null;
+  return { apiKey: o.apiKey, authDomain: o.authDomain || `${o.projectId}.firebaseapp.com`, projectId: o.projectId, storageBucket: o.storageBucket || '', messagingSenderId: o.messagingSenderId || '', appId: o.appId };
+}
+const loadScript = src => new Promise((ok, ko) => { const el = document.createElement('script'); el.src = src; el.onload = ok; el.onerror = () => ko(new Error('No se pudo cargar ' + src)); document.head.appendChild(el); });
+let fbApp = null;
+async function ensureFirebase(conf) {
+  if (!window.firebase || !firebase.firestore) {
+    await loadScript('vendor/firebase-app-compat.js'); await loadScript('vendor/firebase-auth-compat.js'); await loadScript('vendor/firebase-firestore-compat.js');
+  }
+  if (fbApp && fbApp.options.projectId !== conf.projectId) { location.reload(); throw new Error('Reiniciando con el nuevo proyecto…'); }
+  if (!fbApp) {
+    fbApp = firebase.initializeApp(conf); SYNC.db = firebase.firestore();
+    if (window.CUENTAS_EMULADOR) { firebase.auth().useEmulator('http://127.0.0.1:9099'); SYNC.db.useEmulator('127.0.0.1', 8080); } // solo para pruebas locales
+    try { await SYNC.db.enablePersistence({ synchronizeTabs: true }); } catch (e) { /* otra pestaña ya la tiene o el navegador no la admite */ }
+  }
+  if (!firebase.auth().currentUser) await firebase.auth().signInAnonymously();
+}
+
+let remoteT;
+function remoteChanged() {
+  clearTimeout(remoteT);
+  remoteT = setTimeout(() => {
+    saveLocal(); render();
+    if (SYNC.preguntarYo && S.personas.length && !per(LOCAL.yo)) { SYNC.preguntarYo = false; if (!dlg.open) quienSoy(); }
+  }, 120);
+}
+async function startSync() {
+  const c = SYNC.conf; if (!c) { setEstado('local'); return; }
+  setEstado('conectando');
+  try {
+    await ensureFirebase(c.firebase);
+    SYNC.unsub.forEach(u => u()); SYNC.unsub = [];
+    SYNC.ref = SYNC.db.collection('hogares').doc(c.codigo);
+    SYNC.on = true; S.ejemplo = false;
+    SYNC.unsub.push(SYNC.ref.onSnapshot({ includeMetadataChanges: true }, snap => {
+      if (!snap.exists) { if (!snap.metadata.fromCache) { setEstado('error'); toast('Este hogar ya no existe en la nube. Revisa Ajustes.'); } return; }
+      const d = snap.data();
+      CFG_KEYS.forEach(k => { if (d[k] !== undefined) { const j = canon(d[k]); if (SYNC.last.cfg[k] !== j) { S[k] = d[k]; SYNC.last.cfg[k] = j; } } });
+      setEstado(snap.metadata.fromCache || !navigator.onLine ? 'offline' : 'ok');
+      remoteChanged();
+    }, err => { setEstado('error'); toast(syncErr(err)); }));
+    SYNC.unsub.push(SYNC.ref.collection('movimientos').onSnapshot(snap => {
+      S.movimientos = snap.docs.map(x => x.data());
+      SYNC.last.movs = new Map(S.movimientos.map(m => [m.id, canon(m)]));
+      remoteChanged();
+    }, err => { setEstado('error'); toast(syncErr(err)); }));
+  } catch (e) { setEstado('error'); toast(syncErr(e)); }
+}
+function pushChanges() {
+  if (!SYNC.ref) return;
+  const ops = []; const col = SYNC.ref.collection('movimientos');
+  const cur = new Map(S.movimientos.map(m => [m.id, m]));
+  cur.forEach((m, id) => { const j = canon(m); if (SYNC.last.movs.get(id) !== j) { ops.push(b => b.set(col.doc(id), clean(m))); SYNC.last.movs.set(id, j); } });
+  [...SYNC.last.movs.keys()].forEach(id => { if (!cur.has(id)) { ops.push(b => b.delete(col.doc(id))); SYNC.last.movs.delete(id); } });
+  const upd = {}; CFG_KEYS.forEach(k => { const j = canon(S[k]); if (SYNC.last.cfg[k] !== j) { upd[k] = clean(S[k] ?? null); SYNC.last.cfg[k] = j; } });
+  if (Object.keys(upd).length) { upd.actualizado = firebase.firestore.FieldValue.serverTimestamp(); ops.push(b => b.update(SYNC.ref, upd)); }
+  for (let i = 0; i < ops.length; i += 450) { const b = SYNC.db.batch(); ops.slice(i, i + 450).forEach(f => f(b)); b.commit().catch(e => { setEstado('error'); toast(syncErr(e)); }); }
+}
+async function crearHogar(fbConf, subirDatos) {
+  if (!navigator.onLine) throw new Error('Necesitas internet para crear el hogar compartido.');
+  await ensureFirebase(fbConf);
+  if (!subirDatos || S.ejemplo) { const keep = { hogar: S.ejemplo ? 'Mi casa' : S.hogar, moneda: S.moneda, tema: S.tema }; S = Object.assign(emptyState(), keep); }
+  const codigo = randomCode(); const ref = SYNC.db.collection('hogares').doc(codigo);
+  const cfg = {}; CFG_KEYS.forEach(k => cfg[k] = clean(S[k])); cfg.creado = firebase.firestore.FieldValue.serverTimestamp();
+  await ref.set(cfg);
+  const movs = S.movimientos;
+  for (let i = 0; i < movs.length; i += 450) { const b = SYNC.db.batch(); movs.slice(i, i + 450).forEach(m => b.set(ref.collection('movimientos').doc(m.id), clean(m))); await b.commit(); }
+  SYNC.conf = { firebase: fbConf, codigo }; lsSet(SYNC_KEY, SYNC.conf);
+  SYNC.last = { movs: new Map(movs.map(m => [m.id, canon(m)])), cfg: Object.fromEntries(CFG_KEYS.map(k => [k, canon(S[k])])) };
+  await startSync();
+}
+async function unirseHogar(fbConf, codigo) {
+  if (!navigator.onLine) throw new Error('Necesitas internet para unirte al hogar.');
+  await ensureFirebase(fbConf);
+  const snap = await SYNC.db.collection('hogares').doc(codigo).get({ source: 'server' });
+  if (!snap.exists) throw new Error('No existe un hogar con ese enlace. Pide uno nuevo.');
+  S = Object.assign(emptyState(), { tema: S.tema }); SYNC.last = { movs: new Map(), cfg: {} };
+  SYNC.conf = { firebase: fbConf, codigo }; lsSet(SYNC_KEY, SYNC.conf);
+  SYNC.preguntarYo = true;
+  await startSync();
+}
+function salirHogar() {
+  SYNC.unsub.forEach(u => u()); SYNC.unsub = []; SYNC.on = false; SYNC.ref = null; SYNC.conf = null; SYNC.last = { movs: new Map(), cfg: {} };
+  lsSet(SYNC_KEY, null); setEstado('local'); saveLocal(); render();
+}
+const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const dec = t => JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g, '+').replace(/_/g, '/')))));
+const inviteLink = () => `${location.origin}${location.pathname}#unirse=${enc({ f: SYNC.conf.firebase, c: SYNC.conf.codigo, n: S.hogar })}`;
+const isOnline = () => location.protocol.startsWith('http');
+
+function invitacion(token) {
+  let d; try { d = dec(token.includes('unirse=') ? token.split('unirse=')[1] : token); } catch (e) { toast('El enlace de invitación está incompleto. Pide que te lo envíen de nuevo.'); return; }
+  if (SYNC.conf && SYNC.conf.codigo === d.c) { toast('Este teléfono ya está en ese hogar'); return; }
+  openModal(`Unirte a “${esc(d.n || 'el hogar')}”`, `
+    <p>Este teléfono verá y registrará los mismos gastos e ingresos que el resto del hogar, en tiempo real.</p>
+    ${S.movimientos.length && !S.ejemplo ? `<div class="banner warn">${ic('triangle-alert')}<div class="grow small">Los datos que tienes ahora en este teléfono se reemplazarán por los del hogar. Si quieres conservarlos, descarga una copia antes desde Ajustes.</div></div>` : ''}
+    <p class="small out" id="un-err" hidden></p>`,
+    `<button class="btn" data-act="close">Ahora no</button><button class="btn primary" id="un-ok">${ic('users')}Unirme</button>`,
+    () => { $('#un-ok').onclick = async () => { const b = $('#un-ok'); b.disabled = true; b.textContent = 'Uniendo…';
+      try { await unirseHogar(d.f, d.c); closeModal(); toast('¡Listo! Ya estás en el hogar'); }
+      catch (e) { const er = $('#un-err'); er.textContent = e.code ? syncErr(e) : e.message; er.hidden = false; b.disabled = false; b.textContent = 'Reintentar'; } }; });
+}
+function quienSoy() {
+  openModal('¿Quién usa este teléfono?', `<p class="small muted">Así, cuando registres un gasto, aparecerás como quien pagó. Lo puedes cambiar en Ajustes.</p>
+    <div class="list">${S.personas.map(p => `<button type="button" class="btn" style="justify-content:flex-start" data-act="set-yo" data-id="${p.id}">${avatar(p, true)}${esc(p.nombre)}</button>`).join('')}</div>`,
+    `<button class="btn" data-act="close">Omitir</button>`);
+}
+function familiaCard() {
+  const inst = isStandalone() ? `<span class="pill ok">${ic('check')}Ya está instalada en este teléfono</span>`
+    : installEvt ? `<button class="btn primary" data-act="install">${ic('download')}Instalar en este teléfono</button>`
+    : isIOS ? `<ol class="steps"><li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> ${ic('share')}.</li><li>Elige <b>Agregar a pantalla de inicio</b>.</li></ol>`
+    : isOnline() ? `<ol class="steps"><li>Abre el menú del navegador (⋮).</li><li>Toca <b>Instalar app</b> o <b>Agregar a pantalla principal</b>.</li></ol>`
+    : `<p class="small muted">Para instalarla, primero hay que publicarla en internet. Los pasos están en el archivo README.md.</p>`;
+  const yo = `<div class="field"><label for="s-yo">En este teléfono soy</label><select class="input" id="s-yo" data-yo="1"><option value="">Nadie en particular</option>${S.personas.map(p => `<option value="${p.id}" ${LOCAL.yo === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></div>`;
+  return `<div class="grid g2">
+    <section class="card"><div class="card-h"><h2>${ic('users')}Compartir con la familia</h2>${syncBadge()}</div>
+    ${SYNC.conf ? `
+      <p class="small muted">Todos los teléfonos que se unan con el enlace ven y registran lo mismo, aunque estén lejos. Sin internet se sigue usando y se sincroniza al volver la conexión.</p>
+      <div class="field"><label>Código del hogar</label><div class="code">${esc(SYNC.conf.codigo)}</div></div>
+      ${isOnline() ? `<div class="inline"><button class="btn primary" data-act="copy-invite">${ic('link')}Copiar enlace de invitación</button>${navigator.share ? `<button class="btn" data-act="share-invite">${ic('share-2')}Enviar por WhatsApp u otra app</button>` : ''}</div>
+      <input class="input small" id="invite-text" readonly hidden>` : `<p class="small warn">Publica la app en internet para poder invitar a otros teléfonos.</p>`}
+      <p class="small muted">Quien tenga el enlace puede ver y cambiar las cuentas. Compártelo solo con tu familia.</p>
+      ${yo}
+      <div><button class="btn sm ghost" data-act="leave-sync">${ic('log-out')}Dejar de sincronizar en este teléfono</button></div>`
+    : `
+      <p class="small muted">Ahora los datos están solo en este teléfono. Crea un hogar compartido para que cada persona registre desde su celular y todos vean lo mismo.</p>
+      <div class="inline"><button class="btn primary" data-act="create-sync">${ic('cloud-upload')}Crear hogar compartido</button><button class="btn" data-act="join-sync">${ic('link')}Tengo un enlace de invitación</button></div>
+      ${S.personas.length ? yo : ''}`}
+    </section>
+    <section class="card"><div class="card-h"><h2>${ic('smartphone')}Instalar como app</h2></div>
+      <p class="small muted">Queda con su propio icono en la pantalla de inicio, abre a pantalla completa y funciona sin conexión.</p>${inst}</section>
+  </div>`;
+}
+function crearForm() {
+  openModal('Crear hogar compartido', `
+    <ol class="steps">
+      <li>Entra a <b>console.firebase.google.com</b> y crea un proyecto gratuito.</li>
+      <li>En <b>Authentication → Método de acceso</b>, activa <b>Anónimo</b>.</li>
+      <li>En <b>Firestore Database</b>, crea la base de datos y pega las reglas del archivo <b>firestore.rules</b> en la pestaña Reglas.</li>
+      <li>En <b>Configuración del proyecto → Tus apps</b>, agrega una app web (&lt;/&gt;) y copia el bloque <code>firebaseConfig</code>.</li>
+    </ol>
+    <div class="field"><label for="cr-conf">Pega aquí la configuración de Firebase</label><textarea class="input" id="cr-conf" rows="6" placeholder='const firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." };'></textarea></div>
+    ${S.ejemplo ? '<p class="small muted">Los datos de ejemplo no se suben: el hogar empieza vacío.</p>' : `<label class="inline small"><input type="checkbox" id="cr-subir" checked> Subir los datos que ya tengo en este teléfono (${S.movimientos.length} movimientos)</label>`}
+    <p class="small out" id="cr-err" hidden></p>`,
+    `<button class="btn" data-act="close">Cancelar</button><button class="btn primary" id="cr-ok">${ic('cloud-upload')}Crear hogar</button>`,
+    () => { $('#cr-ok').onclick = async () => {
+      const er = $('#cr-err'); const conf = parseFirebaseConfig(fv('cr-conf'));
+      if (!conf) { er.textContent = 'No encontré apiKey, projectId y appId en lo que pegaste. Copia el bloque firebaseConfig completo.'; er.hidden = false; return; }
+      const b = $('#cr-ok'); b.disabled = true; b.textContent = 'Creando…';
+      try { await crearHogar(conf, $('#cr-subir')?.checked); closeModal(); render(); toast('Hogar compartido creado. Ahora invita a tu familia'); }
+      catch (e) { er.textContent = e.code ? syncErr(e) : e.message; er.hidden = false; b.disabled = false; b.textContent = 'Reintentar'; setEstado(SYNC.on ? SYNC.estado : 'local'); }
+    }; });
+}
+
+let installEvt = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; $('#install-btn').hidden = false; if (UI.view === 'ajustes') render(); });
+window.addEventListener('appinstalled', () => { installEvt = null; $('#install-btn').hidden = true; toast('App instalada'); });
+window.addEventListener('online', () => SYNC.on && setEstado('ok'));
+window.addEventListener('offline', () => SYNC.on && setEstado('offline'));
+document.addEventListener('change', e => { if (e.target.dataset.yo) { LOCAL.yo = e.target.value; lsSet(LOCAL_KEY, LOCAL); toast('Listo'); } });
+
+Object.assign(ACT, {
+  'install': async () => { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; $('#install-btn').hidden = true; render(); },
+  'create-sync': () => { if (!isOnline()) { toast('Primero publica la app en internet (ver README.md)'); return; } crearForm(); },
+  'join-sync': () => openModal('Unirme a un hogar', `<div class="field"><label for="jn-link">Pega el enlace de invitación que te enviaron</label><textarea class="input" id="jn-link" rows="4"></textarea></div><p class="small muted">Lo más fácil es abrir el enlace directamente desde WhatsApp o el correo.</p>`,
+    `<button class="btn" data-act="close">Cancelar</button><button class="btn primary" id="jn-ok">${ic('link')}Continuar</button>`,
+    () => { $('#jn-ok').onclick = () => { const t = fv('jn-link').trim(); closeModal(); invitacion(t); }; }),
+  'copy-invite': () => { const link = inviteLink(); const inp = $('#invite-text');
+    navigator.clipboard.writeText(link).then(() => toast('Enlace copiado. Envíalo a tu familia'))
+      .catch(() => { inp.value = link; inp.hidden = false; inp.select(); toast('Copia el enlace que aparece seleccionado'); }); },
+  'share-invite': () => navigator.share({ title: 'Cuentas de la Casa', text: `Únete a las cuentas de ${S.hogar}:`, url: inviteLink() }).catch(() => {}),
+  'leave-sync': () => confirmBox('Este teléfono dejará de recibir y enviar cambios. Conserva una copia local de los datos y el hogar sigue igual para los demás.', 'Dejar de sincronizar', salirHogar),
+  'set-yo': d => { LOCAL.yo = d.id; lsSet(LOCAL_KEY, LOCAL); closeModal(); toast(`Hola, ${perName(d.id)}`); },
+});
+
+if ('serviceWorker' in navigator && isOnline()) navigator.serviceWorker.register('sw.js').catch(() => {});
+setEstado('local');
+startSync();
 
 applyTheme();
 route();

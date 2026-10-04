@@ -1,0 +1,16 @@
+rules_version = '2';
+// Reglas de seguridad de Cuentas de la Casa.
+// Solo entra quien conoce el código del hogar (un texto aleatorio de 20 caracteres).
+// Nadie puede listar los hogares existentes, así que el código no se puede adivinar desde la app.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /hogares/{hogar} {
+      allow get, create, update: if request.auth != null;
+      allow list, delete: if false;
+
+      match /movimientos/{mov} {
+        allow read, write: if request.auth != null;
+      }
+    }
+  }
+}
