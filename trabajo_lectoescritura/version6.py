@@ -1,15 +1,23 @@
 # Versión 6: formato APA 7 sobre la v5 y discusión ampliada.
 # - Márgenes de 2,54 cm, interlineado doble, alineación a la izquierda, sangría de 1,27 cm y sin
 #   espacio antes ni después; títulos en Times New Roman 12 negro (nivel 1 centrado y en negrita,
-#   nivel 2 a la izquierda en negrita); sin párrafos vacíos.
+#   nivel 2 a la izquierda en negrita, nivel 3 en negrita y cursiva); sin párrafos vacíos (los
+#   saltos de página se conservan como "salto de página anterior"). No cambia la organización:
+#   secciones, niveles de título y lugar de cada elemento son los de la v5.
 # - Tablas APA: solo líneas horizontales, sin sangría, alineadas al margen, número en negrita y
 #   título en cursiva; Tabla 1 y Tabla 2 numeradas en el orden en que se citan; las tablas de la
 #   transcripción numeradas A1 a A22 con su título.
-# - Las 24 fotografías flotantes que estaban debajo de "Análisis de resultados" pasan, en línea,
-#   al Anexo B como Figuras B1 a B3, con número, título y nota.
+# - Las 24 fotografías flotantes que están debajo de "Análisis de resultados" se quedan en ese
+#   lugar, en línea y agrupadas como Figuras 1 a 3, con número, título y nota.
+# - La tabla de contenido se regenera con los títulos y las páginas reales (requiere LibreOffice
+#   Writer; se omite si no está instalado). Word la vuelve a actualizar al abrir el archivo.
 # Uso: python version6.py "Trabajo lectoescritura v5.docx" "Trabajo lectoescritura v6.docx"
+import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from copy import deepcopy
 
 import docx
@@ -82,26 +90,25 @@ DISCUSION = [
 
 PROCEDIMIENTO = ("No se registraron tiempos de lectura ni número de pausas.",
                  "No se registraron tiempos de lectura ni número de pausas. Las hojas de respuesta "
-                 "y dos fotografías de la aplicación se reproducen en el Anexo B (Figuras B1 a B3).")
+                 "y dos fotografías de la aplicación se presentan en las Figuras 1 a 3.")
 
 # Clasificación de las 24 fotografías por el número de su relación (rId) en la v5
 APLICACION = {17, 19}
 PAGINA1 = {11, 12, 13, 16, 18, 22, 23, 26, 28, 31, 33}
 PAGINA2 = {14, 15, 20, 21, 24, 25, 27, 29, 30, 32, 34}
 FIGURAS = [
-    ("Figura B1", "Aplicación individual de la prueba de pseudopalabras", APLICACION, 6.0,
+    ("Figura 1", "Aplicación individual de la prueba de pseudopalabras", APLICACION, 6.0,
      "Fotografías tomadas durante la aplicación de la prueba."),
-    ("Figura B2", "Primera página de las hojas de respuesta (lectura y dictado de pseudopalabras)",
+    ("Figura 2", "Primera página de las hojas de respuesta (lectura y dictado de pseudopalabras)",
      PAGINA1, 5.0,
      "La primera página incluye la lista de treinta pseudopalabras para la lectura en voz alta, "
      "el espacio para la escritura al dictado y la primera pregunta de conciencia fonológica."),
-    ("Figura B3", "Segunda página de las hojas de respuesta (conciencia fonológica, frases y "
+    ("Figura 3", "Segunda página de las hojas de respuesta (conciencia fonológica, frases y "
      "asociación grafema-fonema)", PAGINA2, 5.0,
      "La segunda página incluye las demás preguntas de conciencia fonológica, las frases con "
      "pseudopalabras y la asociación grafema-fonema, con la actividad de unir cada pseudopalabra "
      "con su sonido inicial."),
 ]
-ANEXO_B = "Anexo B. Hojas de respuesta y fotografías de la prueba"
 
 # Patrones que quedaban de la v5: "por eso", dos puntos que anuncian y "no pretende... sino"
 AJUSTES = [
@@ -270,13 +277,18 @@ def formato_tabla(tbl, propia):
     tblPr.append(bordes)
     filas = tbl.findall(qn("w:tr"))
     ncol = len(tbl.findall(qn("w:tblGrid") + "/" + qn("w:gridCol")))
+    tblW = tblPr.find(qn("w:tblW"))
+    tblW.set(qn("w:type"), "pct")
+    tblW.set(qn("w:w"), "5000")
+    if not propia:
+        anchos = [9360 // ncol] * ncol
+    elif ncol == 4:
+        anchos = [2600, 4560, 1100, 1100]
+    else:
+        anchos = [1300, 1850, 1450, 1700, 1350, 1710]
+    for g, a in zip(tbl.findall(qn("w:tblGrid") + "/" + qn("w:gridCol")), anchos):
+        g.set(qn("w:w"), str(a))
     if propia:
-        tblW = tblPr.find(qn("w:tblW"))
-        tblW.set(qn("w:type"), "pct")
-        tblW.set(qn("w:w"), "5000")
-        anchos = [2600, 4560, 1100, 1100] if ncol == 4 else [1300] + [1612] * 5
-        for g, a in zip(tbl.findall(qn("w:tblGrid") + "/" + qn("w:gridCol")), anchos):
-            g.set(qn("w:w"), str(a))
         trPr = filas[0].find(qn("w:trPr"))
         if trPr is None:
             trPr = OxmlElement("w:trPr")
@@ -289,14 +301,23 @@ def formato_tabla(tbl, propia):
         for c in range(1, ncol):
             if all(len("".join(f.findall(qn("w:tc"))[c].itertext())) <= 12 for f in filas[1:]):
                 centradas.add(c)
+    for fila in filas:  # una fila no se parte entre dos páginas
+        trPr = fila.find(qn("w:trPr"))
+        if trPr is None:
+            trPr = OxmlElement("w:trPr")
+            tblPrEx = fila.find(qn("w:tblPrEx"))
+            (tblPrEx.addnext if tblPrEx is not None else lambda e: fila.insert(0, e))(trPr)
+        hijo(trPr, "w:cantSplit", ORDEN_TRPR)
     for nf, fila in enumerate(filas):
         for nc, tc in enumerate(fila.findall(qn("w:tc"))):
             tcPr = tc.find(qn("w:tcPr"))
             if tcPr is not None:
                 for e in tcPr.findall(qn("w:tcBorders")):
                     tcPr.remove(e)
-                if propia:
-                    tcPr.find(qn("w:tcW")).set(qn("w:w"), str(anchos[nc]))
+                tcW = tcPr.find(qn("w:tcW"))
+                if tcW is not None:
+                    tcW.set(qn("w:w"), str(anchos[nc]))
+                    tcW.set(qn("w:type"), "dxa")
                 if propia and nf == 0:
                     tb = hijo(tcPr, "w:tcBorders", ORDEN_TCPR)
                     b = OxmlElement("w:bottom")
@@ -352,7 +373,7 @@ def main(origen, destino):
     assert proc.text.strip().endswith(PROCEDIMIENTO[0])
     poner_texto(proc, proc.text.strip().replace(PROCEDIMIENTO[0], PROCEDIMIENTO[1]))
 
-    # 3. Fotografías: se sacan de debajo de "Análisis de resultados"
+    # 3. Fotografías: se toman de los párrafos flotantes de "Análisis de resultados"
     analisis = buscar(d, "Análisis de resultados")._p
     fotos = {}
     sig = analisis.getnext()
@@ -379,9 +400,6 @@ def main(origen, destino):
             m = re.fullmatch(r"Estudiante (\d+)\.?", texto(el).strip())
             if m:
                 estudiante = int(m.group(1))
-                p = Paragraph(el, d._body)
-                p.style = d.styles["Heading 2"]
-                poner_texto(p, "Estudiante %d" % estudiante)
             continue
         if el.tag != qn("w:tbl"):
             continue
@@ -404,39 +422,38 @@ def main(origen, destino):
         formato_tabla(el, propia=False)
     assert n == 22, n
 
-    # 5. Niveles de título: Antecedentes y Justificación son secciones, no partes de la carta
-    for t in ("Antecedentes", "Justificación"):
-        buscar(d, t).style = d.styles["Heading 1"]
-    for p in d.paragraphs:
-        if p.style.name == "Heading 3":
-            p.style = d.styles["Heading 2"]
-
-    # 6. Párrafos vacíos desde el Resumen
+    # 6. Párrafos vacíos desde el Resumen; un salto de página pasa al párrafo siguiente
     resumen = buscar(d, "Resumen")._p
     hijos = list(body)
     desde = hijos.index(resumen)
-    for el in hijos[desde:]:
-        if el.tag != qn("w:p") or texto(el).strip():
+    saltos, pendiente = [], False
+    for el in hijos[desde - 1:]:
+        if el.tag != qn("w:p"):
             continue
-        if el.find(".//" + qn("w:sectPr")) is not None or el.find(".//" + qn("w:drawing")) is not None:
+        if el.find(".//" + qn("w:sectPr")) is not None:
+            pendiente = False
+            continue
+        if texto(el).strip() or el.find(".//" + qn("w:drawing")) is not None:
+            if pendiente:
+                saltos.append(el)
+            pendiente = False
             continue
         a, b = el.getprevious(), el.getnext()
         if a is not None and b is not None and a.tag == b.tag == qn("w:tbl"):
             continue
+        if any(br.get(qn("w:type")) == "page" for br in el.iter(qn("w:br"))):
+            pendiente = True
         body.remove(el)
 
     # 7. Formato de párrafo del cuerpo
     referencias = buscar(d, "Referencias")._p
     primeros = {buscar(d, "Este trabajo examina")._p, buscar(d, "This study examines")._p}
     zona = "cuerpo"
-    tras_seccion = False
     for el in list(body)[list(body).index(resumen):]:
-        if el.tag != qn("w:p"):
-            tras_seccion = False
+        if el.tag != qn("w:p") or el.find(".//" + qn("w:sectPr")) is not None:
             continue
-        if el.find(".//" + qn("w:sectPr")) is not None:
-            tras_seccion = True
-            continue
+        if any(el is s for s in saltos):
+            Paragraph(el, d._body).paragraph_format.page_break_before = True
         if any(el is h for h in HECHOS):
             continue
         p = Paragraph(el, d._body)
@@ -466,6 +483,8 @@ def main(origen, destino):
             p.runs[-1].text = p.runs[-1].text.rstrip(" ")
         if es_titulo(el):
             pf = p.paragraph_format
+            if p.style.name == "Heading 1" and el.getprevious().find(".//" + qn("w:sectPr")) is None:
+                pf.page_break_before = True  # cada sección principal en página nueva
             pf.alignment = None
             pf.first_line_indent = None
             pf.left_indent = None
@@ -474,10 +493,7 @@ def main(origen, destino):
             pf.space_after = None
             if t.endswith(".") and p.runs:
                 p.runs[-1].text = p.runs[-1].text.rstrip(".")
-            pf.page_break_before = (p.style.name == "Heading 1" and not tras_seccion) or None
-            tras_seccion = False
             continue
-        tras_seccion = False
         if zona == "referencias":
             formato_cuerpo(p, sangria=None)
             p.paragraph_format.left_indent = Cm(1.27)
@@ -487,6 +503,8 @@ def main(origen, destino):
         elif re.fullmatch(r"(Tabla|Figura) [A-Z]?\d+", t) or t.startswith("Nota.") or el in primeros:
             formato_cuerpo(p, sangria=Cm(0))
             p.paragraph_format.keep_with_next = not t.startswith("Nota.")
+            for r in p.runs:
+                r.font.size = Pt(12)
         elif el.getnext() is not None and el.getnext().tag == qn("w:tbl") and re.fullmatch(r"Tabla \d+", texto(el.getprevious()).strip()):
             formato_cuerpo(p, sangria=Cm(0))
             p.paragraph_format.keep_with_next = True
@@ -502,14 +520,8 @@ def main(origen, destino):
     for t in propias:
         formato_tabla(t, propia=True)
 
-    # 9. Anexo B con las figuras
-    final = body[-1] if body[-1].tag == qn("w:sectPr") else None
+    # 9. Figuras en el mismo lugar donde estaban las fotografías
     bloques = []
-    h = Paragraph(OxmlElement("w:p"), d._body)
-    h.style = d.styles["Heading 1"]
-    h.add_run(ANEXO_B)
-    h.paragraph_format.page_break_before = True
-    bloques.append(h)
     for numero, titulo, ids, alto, cuerpo in FIGURAS:
         bloques += rotulo(d, numero, titulo)
         img = Paragraph(OxmlElement("w:p"), d._body)
@@ -525,11 +537,8 @@ def main(origen, destino):
             img._p.append(a_linea(fotos[rid], alto))
         bloques.append(img)
         bloques.append(nota(d, cuerpo))
-    for b in bloques:
-        if final is not None:
-            final.addprevious(b._p)
-        else:
-            body.append(b._p)
+    for b in reversed(bloques):
+        analisis.addnext(b._p)
 
     # 10. Estilos y márgenes
     for nombre, centrado, cursiva in (("Heading 1", True, False), ("Heading 2", False, False),
@@ -570,5 +579,150 @@ def main(origen, destino):
     d.save(destino)
 
 
+def paginas_pdf(ruta):
+    """Texto y número impreso de cada página, renderizando el documento con LibreOffice."""
+    import pdfplumber
+    tmp = tempfile.mkdtemp()
+    try:
+        shutil.copy(ruta, os.path.join(tmp, "doc.docx"))
+        subprocess.run(["soffice", "-env:UserInstallation=file://" + os.path.join(tmp, "perfil"),
+                        "--headless", "--norestore", "--convert-to", "pdf", "--outdir", tmp,
+                        os.path.join(tmp, "doc.docx")], check=True, capture_output=True,
+                       env=dict(os.environ, HOME=tmp), timeout=300)
+        paginas = []
+        with pdfplumber.open(os.path.join(tmp, "doc.pdf")) as pdf:
+            for i, pg in enumerate(pdf.pages):
+                arriba = [w["text"] for w in pg.extract_words() if w["top"] < 60 and w["text"].isdigit()]
+                lineas = [re.sub(r"\s+", " ", l).strip() for l in (pg.extract_text() or "").split("\n")]
+                paginas.append((arriba[-1] if arriba else str(i + 1), lineas))
+        return paginas
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def entrada_indice(ppr, nivel, texto_titulo, marca, pagina, inicio_campo=None):
+    p = OxmlElement("w:p")
+    pPr = deepcopy(ppr)
+    pPr.find(qn("w:pStyle")).set(qn("w:val"), "TDC%d" % nivel)
+    p.append(pPr)
+    for r in inicio_campo or []:
+        p.append(r)
+
+    def run(oculto=False, t=None, tab=False, fld=None, instr=None):
+        r = OxmlElement("w:r")
+        rpr = OxmlElement("w:rPr")
+        if not oculto:
+            st = OxmlElement("w:rStyle")
+            st.set(qn("w:val"), "Hipervnculo")
+            rpr.append(st)
+        rpr.append(OxmlElement("w:noProof"))
+        if oculto:
+            rpr.append(OxmlElement("w:webHidden"))
+        r.append(rpr)
+        if t is not None:
+            e = OxmlElement("w:t")
+            e.text = t
+            e.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+            r.append(e)
+        if tab:
+            r.append(OxmlElement("w:tab"))
+        if fld:
+            e = OxmlElement("w:fldChar")
+            e.set(qn("w:fldCharType"), fld)
+            r.append(e)
+        if instr:
+            e = OxmlElement("w:instrText")
+            e.text = instr
+            e.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+            r.append(e)
+        return r
+
+    h = OxmlElement("w:hyperlink")
+    h.set(qn("w:anchor"), marca)
+    h.set(qn("w:history"), "1")
+    for r in (run(t=texto_titulo), run(True, tab=True), run(True, fld="begin"),
+              run(True, instr=" PAGEREF %s \\h " % marca), run(True, fld="separate"),
+              run(True, t=pagina), run(True, fld="end")):
+        h.append(r)
+    p.append(h)
+    return p
+
+
+def actualizar_indice(ruta):
+    """Reescribe el contenido guardado de la tabla de contenido con los títulos y páginas actuales."""
+    d = docx.Document(ruta)
+    body = d.element.body
+    resumen = buscar(d, "Resumen")
+    titulos = []
+    en_cuerpo = False
+    for p in d.paragraphs:
+        if p._p is resumen._p:
+            en_cuerpo = True
+        m = re.fullmatch(r"Heading (\d)", p.style.name)
+        if en_cuerpo and m and p.text.strip():
+            titulos.append((int(m.group(1)), re.sub(r"\s+", " ", p.text).strip(), p))
+    # marcadores en los títulos
+    ids = [int(b.get(qn("w:id"))) for b in body.iter(qn("w:bookmarkStart"))]
+    siguiente = max(ids + [0]) + 1
+    marcas = []
+    for k, (_, _, p) in enumerate(titulos):
+        nombre = None
+        for b in p._p.findall(qn("w:bookmarkStart")):
+            if b.get(qn("w:name")).startswith("_Toc9"):
+                nombre = b.get(qn("w:name"))
+        if nombre is None:
+            nombre = "_Toc9%07d" % k
+            bs = OxmlElement("w:bookmarkStart")
+            bs.set(qn("w:id"), str(siguiente))
+            bs.set(qn("w:name"), nombre)
+            be = OxmlElement("w:bookmarkEnd")
+            be.set(qn("w:id"), str(siguiente))
+            siguiente += 1
+            ppr = p._p.find(qn("w:pPr"))
+            if ppr is not None:
+                ppr.addnext(bs)
+            else:
+                p._p.insert(0, bs)
+            p._p.append(be)
+        marcas.append(nombre)
+    d.save(ruta)
+    # páginas
+    paginas = paginas_pdf(ruta)
+    inicio = next(i for i, (_, ls) in enumerate(paginas) if "Tabla de contenido" in ls)
+    i = inicio + 1
+    while not any(l == "Resumen" for l in paginas[i][1]):
+        i += 1
+    numeros = []
+    for _, t, _ in titulos:
+        clave = t[:40]
+        while not any(l.startswith(clave) or (len(t) > 40 and t.startswith(l) and len(l) > 15)
+                      for l in paginas[i][1]):
+            i += 1
+        numeros.append(paginas[i][0])
+    # contenido del campo
+    sdt = next(s for s in body.iter(qn("w:sdt"))
+               if any("TOC" in (x.text or "") for x in s.iter(qn("w:instrText"))))
+    contenido = sdt.find(qn("w:sdtContent"))
+    ps = contenido.findall(qn("w:p"))
+    primera = ps[1]
+    ppr = primera.find(qn("w:pPr"))
+    campo = []
+    for r in primera.findall(qn("w:r")):
+        campo.append(r)
+        if r.find(qn("w:fldChar")) is not None and r.find(qn("w:fldChar")).get(qn("w:fldCharType")) == "separate":
+            break
+    for p in ps[1:-1]:
+        contenido.remove(p)
+    ultimo = ps[-1]
+    for k, ((nivel, t, _), marca, num) in enumerate(zip(titulos, marcas, numeros)):
+        ultimo.addprevious(entrada_indice(ppr, nivel, t, marca, num, campo if k == 0 else None))
+    d.save(ruta)
+    return list(zip([t for _, t, _ in titulos], numeros))
+
+
 if __name__ == "__main__":
     main(*sys.argv[1:3])
+    if shutil.which("soffice"):
+        actualizar_indice(sys.argv[2])
+        for t, n in actualizar_indice(sys.argv[2]):  # segunda pasada por si el índice cambió de largo
+            print(n.rjust(3), t[:70])
