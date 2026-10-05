@@ -736,12 +736,17 @@ class FuenteDriveAPI:
         ids = set()
         for termino in terminos:
             t = termino.replace("'", "\\'")
-            try:
-                for f in self._listar(f"fullText contains '{t}' and trashed = false", campos="id"):
-                    ids.add(f["id"])
-            except Exception as e:  # noqa: BLE001
-                logging.warning("No se pudo usar el buscador de Drive para '%s' (%s).", termino, e)
-                return None
+            for intento in range(1, 4):
+                try:
+                    for f in self._listar(f"fullText contains '{t}' and trashed = false", campos="id"):
+                        ids.add(f["id"])
+                    break
+                except Exception as e:  # noqa: BLE001  (ej. error 500 temporal de Google)
+                    if intento < 3:
+                        time.sleep(10 * intento)
+                        continue
+                    logging.warning("No se pudo usar el buscador de Drive para '%s' (%s).", termino, str(e)[:200])
+                    return None
         return ids
 
     def leer(self, archivo):
@@ -1838,10 +1843,14 @@ def procesar():
                 ids_entidad = fuente.ids_con_texto(list(ENTIDAD_OBJETIVO) + ["Bilbao Vizcaya"])
                 if ids_entidad is not None:
                     ids_indexados &= ids_entidad
+                else:
+                    logging.info("   (No se pudo cruzar con %s en el buscador: se descargan todos los que mencionan "
+                                 "FNG/leasing. El resultado es el mismo, solo tarda mas.)", ETIQUETA_ENTIDAD)
+                    progreso.poner("cruce_entidad_fallo", True)
             progreso.poner(clave_ids, ids_indexados)
         if ids_indexados is not None:
             logging.info("   %d documentos del Drive mencionan FNG / leasing%s.", len(ids_indexados),
-                         f" y {ETIQUETA_ENTIDAD}" if ENTIDAD_OBJETIVO else "")
+                         f" y {ETIQUETA_ENTIDAD}" if ENTIDAD_OBJETIVO and not progreso.get("cruce_entidad_fallo") else "")
 
     cache = Cache(ARCHIVO_CACHE)
     resultados = []
