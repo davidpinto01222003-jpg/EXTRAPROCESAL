@@ -215,6 +215,14 @@ ARCHIVO_CACHE_VIEJO = os.path.join(DIRECTORIO, "depurar_fng_leasing_cache.json")
 ARCHIVO_PROGRESO = os.path.join(DIRECTORIO, "depurar_fng_leasing_progreso.json")
 DIAS_VALIDEZ_PROGRESO = 15
 
+# Excel de una corrida ANTERIOR (depuracion_fng_leasing_*.xlsx) para
+# arrancar desde ahi cuando no hay avance guardado (ej. en otro PC): se
+# usan sus enlaces a la carpeta de cada proceso (no se vuelve a buscar
+# entre todas las carpetas del Drive) y se SALTAN los procesos en los que
+# no se encontro ninguna mencion de FNG ni de leasing. "" = el mas reciente
+# de esta carpeta (si hay); None = no usar ninguno.
+EXCEL_CORRIDA_ANTERIOR = ""
+
 # Si falla la conexion (ej. el PC se suspendio y al volver no hay red),
 # cuantas veces reintentar cada proceso y cuantos segundos esperar entre
 # intentos antes de darlo por fallido.
@@ -282,6 +290,11 @@ RE_LEASING = re.compile(
 )
 # Palabras en el NOMBRE de un archivo que hacen que valga la pena leerlo
 # aunque el buscador de Drive no lo haya marcado.
+# Con ENTIDAD_OBJETIVO solo sirven los 3 documentos (presentacion,
+# objecion, proyecto): por nombre, solo se descargan los que lo parecen.
+RE_NOMBRE_ESCRITO = re.compile(
+    r"PRESENTACION|ACREENCIA|OBJECION|RECONOCIMIENTO|PROYECTO|GRADUACION|CALIFICACION|BBVA|BILBAO"
+)
 RE_NOMBRE_RELEVANTE = re.compile(
     r"FNG|FONDO NACIONAL|GARANT|LEASING|ARRENDAMIENTO|CONTRATO|CERTIFICADO|PRESENTACION|ACREENCIA|OBJECION|RECONOCIMIENTO"
 )
@@ -1356,7 +1369,8 @@ def revisar_proceso(fuente, cache, carpetas, ids_indexados):
     def debe_leerse(a):
         if ids_indexados is None:
             return True
-        return a["id"] in ids_indexados or bool(RE_NOMBRE_RELEVANTE.search(normalizar(a["ruta"])))
+        nombre_relevante = RE_NOMBRE_ESCRITO if RE_ENTIDAD_OBJETIVO is not None else RE_NOMBRE_RELEVANTE
+        return a["id"] in ids_indexados or bool(nombre_relevante.search(normalizar(a["ruta"])))
 
     a_leer = [a for a in archivos if debe_leerse(a)]
     hilos = NUM_HILOS if isinstance(fuente, FuenteDriveAPI) else 1
@@ -1650,6 +1664,62 @@ def reanalizar_proceso(hecho, cache):
     return nuevo
 
 
+def cargar_corrida_anterior():
+    """Lee un depuracion_fng_leasing_*.xlsx de una corrida anterior.
+    Devuelve {nombre_normalizado: [ {carpeta, saltar, total}, ... ]} (una
+    entrada por fila, en orden) y la ruta, o (None, None)."""
+    if EXCEL_CORRIDA_ANTERIOR is None:
+        return None, None
+    ruta = EXCEL_CORRIDA_ANTERIOR
+    if not ruta:
+        candidatos = [
+            p for p in Path(DIRECTORIO).glob("depuracion_fng_leasing_*.xlsx")
+            if not p.name.startswith("~$") and not p.stem.upper().endswith("_BBVA")
+        ]
+        if not candidatos:
+            return None, None
+        ruta = str(max(candidatos, key=lambda p: p.stat().st_mtime))
+    try:
+        libro = openpyxl.load_workbook(ruta)  # no read_only: hacen falta los hipervinculos
+        hoja = libro["PROCESOS"]
+    except Exception as e:  # noqa: BLE001
+        logging.warning("No se pudo leer el Excel anterior %s (%s): se ignora.", ruta, e)
+        return None, None
+    filas = list(hoja.iter_rows())
+    enc = [str(c.value or "") for c in filas[0]]
+    try:
+        n_orig = enc.index("¿EN DRIVE?")
+        c_carp, c_enl, c_tot = enc.index("CARPETA(S) EN DRIVE"), enc.index("ENLACE CARPETA"), enc.index("ARCHIVOS EN CARPETA")
+        c_fng = next(i for i, e in enumerate(enc) if e.startswith("¿TIENE FNG"))
+        c_lea = next(i for i, e in enumerate(enc) if e.startswith("¿TIENE LEASING"))
+        c_obs = enc.index("OBSERVACIONES")
+    except (ValueError, StopIteration):
+        logging.warning("El Excel anterior %s no tiene el formato esperado: se ignora.", ruta)
+        return None, None
+    idx_conc = next((i for i, e in enumerate(enc[:n_orig]) if _encabezado_norm(e) in ENCABEZADOS_CONCURSADO), 0)
+    # Notas que indican que SI hubo menciones de FNG/leasing (de otro banco,
+    # negadas, etc.) o que algo no se pudo leer: esos procesos se revisan.
+    hubo_algo = re.compile(r"SIN BBVA|NO son presentacion|otra entidad|OTROS acreedores|NEGADO|ERROR|sin poder leer"
+                           r"|sin verificar|Documentos usados|Escritos de", re.I)
+    semilla = {}
+    for fila in filas[1:]:
+        v = [c.value for c in fila]
+        if not any(x not in (None, "") for x in v[:n_orig]):
+            continue
+        nombre = normalizar(str(v[idx_conc] or "").strip())
+        celda = fila[c_enl]
+        enlace = celda.hyperlink.target if celda.hyperlink else ""
+        m = re.search(r"/folders/([A-Za-z0-9_\-]+)", enlace or "")
+        carpeta = None
+        if v[n_orig] == "SI" and m:
+            nombre_carpeta = str(v[c_carp] or "").split(" | ")[0]
+            carpeta = {"id": m.group(1), "nombre": nombre_carpeta, "padres": [], "enlace": enlace}
+        saltar = (v[c_fng] != "SI" and v[c_lea] != "SI" and not hubo_algo.search(str(v[c_obs] or "")))
+        semilla.setdefault(nombre, []).append({"carpeta": carpeta, "saltar": saltar, "total": v[c_tot] or 0,
+                                              "en_drive": v[n_orig] == "SI"})
+    return semilla, ruta
+
+
 def calcular_contadores(resultados, total_filas=None):
     """Lineas de la hoja RESUMEN. total_filas: filas del listado antes del filtro por tipo."""
     en_drive = [r for r in resultados if r["carpetas"]]
@@ -1734,27 +1804,44 @@ def procesar():
     progreso = Progreso(ARCHIVO_PROGRESO, firma)
 
     carpetas = progreso.get("carpetas")
+    semilla = None
+    if carpetas is None and isinstance(fuente, FuenteDriveAPI):
+        semilla, ruta_semilla = cargar_corrida_anterior()
+        if semilla is not None:
+            logging.info(">>> ARRANCANDO DESDE EL EXCEL ANTERIOR %s: se usan sus carpetas (no se busca en todo el "
+                         "Drive) y se saltan los procesos sin ninguna mencion de FNG/leasing.",
+                         os.path.basename(ruta_semilla))
+            carpetas = []
     if carpetas is None:
         carpetas = fuente.listar_carpetas_candidatas()
         progreso.poner("carpetas", carpetas)
-    else:
+    elif semilla is None:
         logging.info("(Lista de carpetas del Drive tomada del avance guardado.)")
     padres_de = {c["id"]: c["padres"] for c in carpetas}
-    logging.info("%d carpetas candidatas en el Drive.", len(carpetas))
+    if semilla is None:
+        logging.info("%d carpetas candidatas en el Drive.", len(carpetas))
 
     ids_indexados = None
     if MODO_LECTURA == "rapido" and isinstance(fuente, FuenteDriveAPI):
-        if "ids_indexados" in progreso.datos:
-            guardados = progreso.get("ids_indexados")
+        clave_ids = "ids_indexados_entidad" if ENTIDAD_OBJETIVO else "ids_indexados"
+        if clave_ids in progreso.datos:
+            guardados = progreso.get(clave_ids)
             ids_indexados = set(guardados) if guardados is not None else None
         else:
             logging.info("Preguntando al buscador de Drive que documentos mencionan FNG / leasing...")
             ids_indexados = fuente.ids_con_texto(
                 ["FNG", "Fondo Nacional de Garantías", "leasing", "arrendamiento financiero"]
             )
-            progreso.poner("ids_indexados", ids_indexados)
+            if ids_indexados is not None and ENTIDAD_OBJETIVO:
+                # Solo sirven los que ADEMAS mencionan a la entidad (sus
+                # escritos y el proyecto de graduacion siempre la nombran).
+                ids_entidad = fuente.ids_con_texto(list(ENTIDAD_OBJETIVO) + ["Bilbao Vizcaya"])
+                if ids_entidad is not None:
+                    ids_indexados &= ids_entidad
+            progreso.poner(clave_ids, ids_indexados)
         if ids_indexados is not None:
-            logging.info("   %d documentos del Drive mencionan FNG / leasing.", len(ids_indexados))
+            logging.info("   %d documentos del Drive mencionan FNG / leasing%s.", len(ids_indexados),
+                         f" y {ETIQUETA_ENTIDAD}" if ENTIDAD_OBJETIVO else "")
 
     cache = Cache(ARCHIVO_CACHE)
     resultados = []
@@ -1764,7 +1851,22 @@ def procesar():
             nit = nit_base(fila[idx_nit]) if idx_nit is not None and idx_nit < len(fila) else ""
             expedientes = numeros_expediente(fila[idx_exp]) if idx_exp is not None and idx_exp < len(fila) else []
             tipo = str(fila[idx_tipo] or "").strip() if idx_tipo is not None and idx_tipo < len(fila) else ""
-            elegidas, alternativas = buscar_carpetas_del_proceso(nombre, nit, expedientes, carpetas, padres_de)
+            info_previa = None
+            if semilla is not None:
+                pendientes = semilla.get(normalizar(nombre), [])
+                info_previa = pendientes.pop(0) if pendientes else None
+                if info_previa and info_previa["carpeta"]:
+                    elegidas, alternativas = [info_previa["carpeta"]], []
+                elif info_previa and not info_previa["en_drive"]:
+                    elegidas, alternativas = [], []
+                else:  # no estaba en el Excel anterior: se busca por nombre
+                    if not carpetas:
+                        carpetas = fuente.listar_carpetas_candidatas()
+                        padres_de = {c["id"]: c["padres"] for c in carpetas}
+                    elegidas, alternativas = buscar_carpetas_del_proceso(nombre, nit, expedientes, carpetas, padres_de)
+                    info_previa = None
+            else:
+                elegidas, alternativas = buscar_carpetas_del_proceso(nombre, nit, expedientes, carpetas, padres_de)
             res = {"fila": fila, "nombre": nombre, "nit": nit, "expedientes": expedientes, "tipo": tipo,
                    "carpetas": elegidas, "alternativas": alternativas}
             observaciones = []
@@ -1778,6 +1880,11 @@ def procesar():
                 observaciones.append("Otras carpetas parecidas: " + "; ".join(c["nombre"] for _, c in alternativas))
             clave = "|".join([nombre, tipo, ",".join(expedientes), ",".join(c["id"] for c in elegidas)])
             hecho = progreso.proceso(clave)
+            if hecho is None and info_previa and info_previa["saltar"]:
+                # En la corrida anterior no habia NINGUNA mencion de FNG ni leasing.
+                hecho = {"fng": [], "leasing": [], "sin_leer": [], "total": info_previa["total"], "otros": {},
+                         "candidatos": [], "sin_verificar": [], "entidad": criterio_entidad, "saltado": True}
+                progreso.marcar_proceso(clave, hecho)
             ya_hecho = hecho is not None
             if hecho is None:
                 for intento in range(1, REINTENTOS_POR_PROCESO + 1):
@@ -1803,6 +1910,8 @@ def procesar():
             fng, leasing, total = hecho["fng"], hecho["leasing"], hecho["total"]
             sin_leer = list(hecho.get("sin_leer", [])) + list(hecho.get("sin_verificar", []))
             otros = hecho.get("otros") or {}
+            if hecho.get("saltado"):
+                observaciones.append("Sin menciones de FNG/leasing en la corrida anterior (no se volvio a revisar)")
             if sin_leer:
                 observaciones.append(f"{len(sin_leer)} documento(s) relevante(s) sin poder leer (ver REVISAR_A_MANO)")
             if RE_ENTIDAD_OBJETIVO is not None:

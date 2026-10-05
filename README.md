@@ -1561,6 +1561,15 @@ La hoja de detalle trae la columna TIPO DE ESCRITO, y OBSERVACIONES dice qué
 documentos se usaron y cuántos se descartaron. Para contar las menciones de
 cualquier documento y entidad, deja la lista vacía `[]`.
 
+**Arrancar desde un Excel anterior** (por ejemplo en otro PC, sin el avance
+guardado): si en la carpeta hay un `depuracion_fng_leasing_*.xlsx` de una
+corrida anterior, se usan sus enlaces a la carpeta de cada proceso, así que
+no se busca entre todas las carpetas del Drive. También se saltan los
+procesos donde no hubo ninguna mención de FNG ni de leasing. Además, solo se
+descargan los documentos que el buscador de Drive marca con FNG/leasing **y**
+BBVA, o cuyo nombre parece presentación, objeción o proyecto. Configurable
+con `EXCEL_CORRIDA_ANTERIOR` (`None` = no usarlo).
+
 El avance (`depurar_fng_leasing_progreso.json`) **se conserva al
 terminar**: si vuelves a ejecutar (por ejemplo, tras ajustar el criterio),
 no se lee el Drive otra vez; solo se vuelven a analizar, con el texto
