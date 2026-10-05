@@ -1552,6 +1552,15 @@ corrida nueva solo descarga los documentos que cambiaron.
    atribuirle a BBVA el leasing de otro acreedor. Los datos (número,
    fechas) se toman solo de ese renglón.
 
+**Solo se abren esos 3 documentos** (`SOLO_3_DOCUMENTOS = True`, así viene):
+antes de descargar, el buscador de Google Drive marca los documentos que son
+presentación de crédito, objeción o proyecto de calificación y graduación y
+que además mencionan FNG o leasing y BBVA. Solo esos se descargan y se leen,
+más los que por su nombre son uno de los 3 (ej. "Presentación de crédito
+BBVA.pdf", "Proyecto de graduación.pdf"). Ningún otro documento de la carpeta
+se abre. En la ventana se ve cuántos se leyeron por proceso ("N archivos, K
+leídos") y cuáles se usaron ("usado: ...").
+
 En los escritos de BBVA (1 y 2), el leasing solo cuenta si trae número de
 contrato o placa cerca (las menciones genéricas, como "contratos de leasing,
 art. 22 Ley 1116", no cuentan). Tampoco cuentan el FNG o el leasing de otro

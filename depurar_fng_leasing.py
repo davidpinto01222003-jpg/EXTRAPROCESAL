@@ -185,6 +185,13 @@ MODO_LECTURA = "rapido"
 # documento y de cualquier entidad.
 ENTIDAD_OBJETIVO = ["BBVA", "BANCO BILBAO VIZCAYA", "BILBAO VIZCAYA ARGENTARIA"]
 ETIQUETA_ENTIDAD = "BBVA"  # como aparece en los encabezados del Excel
+# True: SOLO se descargan/leen esos 3 documentos (los que el buscador de
+# Google Drive encuentra como presentacion de credito, objecion o proyecto
+# de calificacion y graduacion que ademas nombran a la entidad y al FNG o
+# leasing, o los que por su NOMBRE son uno de ellos). Ningun otro documento
+# se abre. False: se leen todos los que mencionan FNG/leasing y la
+# clasificacion se hace al leerlos (mas lento, por si alguno se escapa).
+SOLO_3_DOCUMENTOS = True
 ZONA_ENCABEZADO = 6000
 
 # Que tan parecido debe ser el nombre de la carpeta al del concursado
@@ -293,8 +300,18 @@ RE_LEASING = re.compile(
 # Con ENTIDAD_OBJETIVO solo sirven los 3 documentos (presentacion,
 # objecion, proyecto): por nombre, solo se descargan los que lo parecen.
 RE_NOMBRE_ESCRITO = re.compile(
-    r"PRESENTACION|ACREENCIA|OBJECION|RECONOCIMIENTO|PROYECTO|GRADUACION|CALIFICACION|BBVA|BILBAO"
+    r"PRESENTACION|ACREENCIA|OBJECION|OBJETA|RECONOCIMIENTO|PROYECTO|GRADUACION|CALIFICACION|HACERSE PARTE|BBVA|BILBAO"
 )
+# Frases que el buscador de Google Drive debe encontrar en el CONTENIDO de
+# un documento para considerarlo uno de los 3 (se buscan con y sin tildes).
+FRASES_3_DOCUMENTOS = [
+    '"presentación de créditos"', '"presentacion de creditos"', '"presentación de crédito"',
+    '"presentacion de credito"', '"presentación de acreencias"', '"presentacion de acreencias"',
+    '"reconocimiento de créditos"', '"reconocimiento de creditos"', '"hacerse parte"',
+    "objeción", "objeciones", "objecion", "objeta",
+    '"proyecto de calificación"', '"proyecto de calificacion"', '"calificación y graduación"',
+    '"calificacion y graduacion"', '"proyecto de graduación"', '"proyecto de graduacion"',
+]
 RE_NOMBRE_RELEVANTE = re.compile(
     r"FNG|FONDO NACIONAL|GARANT|LEASING|ARRENDAMIENTO|CONTRATO|CERTIFICADO|PRESENTACION|ACREENCIA|OBJECION|RECONOCIMIENTO"
 )
@@ -1403,10 +1420,17 @@ def revisar_proceso(fuente, cache, carpetas, ids_indexados):
             archivos.append(a)
 
     def debe_leerse(a):
+        if ids_indexados is None and not isinstance(fuente, FuenteDriveAPI):
+            return True  # carpeta local: leer es rapido; se clasifica por contenido
+        if RE_ENTIDAD_OBJETIVO is not None and SOLO_3_DOCUMENTOS:
+            # SOLO los 3 documentos: los que el buscador de Drive marco como
+            # presentacion/objecion/proyecto con FNG o leasing y la entidad,
+            # o los que por su NOMBRE son uno de ellos. Nada mas.
+            return (ids_indexados is not None and a["id"] in ids_indexados) or bool(
+                RE_NOMBRE_ESCRITO.search(normalizar(a["nombre"])))
         if ids_indexados is None:
             return True
-        nombre_relevante = RE_NOMBRE_ESCRITO if RE_ENTIDAD_OBJETIVO is not None else RE_NOMBRE_RELEVANTE
-        return a["id"] in ids_indexados or bool(nombre_relevante.search(normalizar(a["ruta"])))
+        return a["id"] in ids_indexados or bool(RE_NOMBRE_RELEVANTE.search(normalizar(a["ruta"])))
 
     a_leer = [a for a in archivos if debe_leerse(a)]
     hilos = NUM_HILOS if isinstance(fuente, FuenteDriveAPI) else 1
@@ -1422,10 +1446,13 @@ def revisar_proceso(fuente, cache, carpetas, ids_indexados):
         tn = normalizar(texto) + " " + normalizar(nombre_y_ruta)
         if RE_FNG.search(tn) or RE_LEASING.search(tn):
             candidatos.append(a)
-        if motivo and RE_NOMBRE_RELEVANTE.search(normalizar(nombre_y_ruta)):
+        nombre_sirve = (RE_NOMBRE_ESCRITO.search(normalizar(a["nombre"]))
+                        if RE_ENTIDAD_OBJETIVO is not None and SOLO_3_DOCUMENTOS
+                        else RE_NOMBRE_RELEVANTE.search(normalizar(nombre_y_ruta)))
+        if motivo and nombre_sirve:
             sin_leer.append((a, motivo))
     resultado = analizar_candidatos(candidatos, cache)
-    resultado.update(candidatos=candidatos, sin_leer=sin_leer, total=len(archivos))
+    resultado.update(candidatos=candidatos, sin_leer=sin_leer, total=len(archivos), leidos=len(a_leer))
     return resultado
 
 
@@ -1859,7 +1886,8 @@ def procesar():
 
     ids_indexados = None
     if MODO_LECTURA == "rapido" and isinstance(fuente, FuenteDriveAPI):
-        clave_ids = "ids_indexados_entidad" if ENTIDAD_OBJETIVO else "ids_indexados"
+        clave_ids = ("ids_3_documentos" if ENTIDAD_OBJETIVO and SOLO_3_DOCUMENTOS
+                     else "ids_indexados_entidad" if ENTIDAD_OBJETIVO else "ids_indexados")
         if clave_ids in progreso.datos:
             guardados = progreso.get(clave_ids)
             ids_indexados = set(guardados) if guardados is not None else None
@@ -1878,10 +1906,26 @@ def procesar():
                     logging.info("   (No se pudo cruzar con %s en el buscador: se descargan todos los que mencionan "
                                  "FNG/leasing. El resultado es el mismo, solo tarda mas.)", ETIQUETA_ENTIDAD)
                     progreso.poner("cruce_entidad_fallo", True)
+            if ids_indexados is not None and ENTIDAD_OBJETIVO and SOLO_3_DOCUMENTOS:
+                logging.info("Preguntando al buscador cuales son presentacion de credito / objecion / proyecto de "
+                             "graduacion...")
+                ids_tipo = fuente.ids_con_texto(FRASES_3_DOCUMENTOS)
+                if ids_tipo is not None:
+                    ids_indexados &= ids_tipo
+                else:
+                    logging.info("   (El buscador fallo: se leen solo los documentos cuyo NOMBRE es presentacion, "
+                                 "objecion o proyecto.)")
+                    ids_indexados = set()
             progreso.poner(clave_ids, ids_indexados)
         if ids_indexados is not None:
-            logging.info("   %d documentos del Drive mencionan FNG / leasing%s.", len(ids_indexados),
-                         f" y {ETIQUETA_ENTIDAD}" if ENTIDAD_OBJETIVO and not progreso.get("cruce_entidad_fallo") else "")
+            if ENTIDAD_OBJETIVO and SOLO_3_DOCUMENTOS:
+                logging.info("   %d documentos del Drive son presentacion/objecion/proyecto y mencionan FNG o leasing "
+                             "y %s (solo esos se leen, mas los que por su nombre son uno de los 3).",
+                             len(ids_indexados), ETIQUETA_ENTIDAD)
+            else:
+                logging.info("   %d documentos del Drive mencionan FNG / leasing%s.", len(ids_indexados),
+                             f" y {ETIQUETA_ENTIDAD}" if ENTIDAD_OBJETIVO and not progreso.get("cruce_entidad_fallo")
+                             else "")
 
     cache = Cache(ARCHIVO_CACHE)
     resultados = []
@@ -1960,20 +2004,18 @@ def procesar():
                 if otros.get("negados"):
                     observaciones.append(f"En {otros['negados']} mencion(es) de un escrito de {ETIQUETA_ENTIDAD} el "
                                          "FNG/leasing aparece NEGADO (ej. 'no cuenta con garantia FNG')")
-                if otros.get("fng") or otros.get("leasing"):
-                    observaciones.append(
-                        f"FNG en {otros.get('fng', 0)} y leasing en {otros.get('leasing', 0)} documento(s) que NO son "
-                        f"presentacion de credito/objecion de {ETIQUETA_ENTIDAD} ni proyecto de graduacion (no se cuentan)")
                 if otros.get("proyecto_otro_acreedor"):
                     observaciones.append(
-                        f"El proyecto de graduacion trae FNG/leasing solo de OTROS acreedores "
-                        f"({otros['proyecto_otro_acreedor']} vez/veces; no se cuentan)")
+                        f"El proyecto de graduacion trae FNG/leasing solo de OTROS acreedores (no se cuentan)")
             res.update(fng=fng, leasing=leasing, sin_leer=sin_leer, total_archivos=total,
                        resumen=resumir_proceso(fng, leasing), observaciones=". ".join(observaciones))
             s = res["resumen"]
-            logging.info("[%d/%d] %s%s -> carpeta '%s' (%d archivos) | FNG: %s %s | LEASING: %s %s",
+            leidos = f", {hecho['leidos']} leidos" if "leidos" in hecho else ""
+            logging.info("[%d/%d] %s%s -> carpeta '%s' (%d archivos%s) | FNG: %s %s | LEASING: %s %s",
                          n, len(filas), nombre, " (ya revisado)" if ya_hecho else "", elegidas[0]["nombre"], total,
-                         s["fng"], s["fng_vencimientos"], s["leasing"], s["leasing_terminaciones"])
+                         leidos, s["fng"], s["fng_vencimientos"], s["leasing"], s["leasing_terminaciones"])
+            for doc in otros.get("escritos", []) if RE_ENTIDAD_OBJETIVO is not None else []:
+                logging.info("      usado: %s", doc)
             resultados.append(res)
     finally:
         cache.guardar()
