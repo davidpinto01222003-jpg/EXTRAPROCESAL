@@ -169,16 +169,20 @@ DRIVE_SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 MODO_LECTURA = "rapido"
 
 # --- Solo garantias FNG / leasing DE esta entidad ---
-# Se cuentan SOLO las menciones de FNG / leasing que estan en los ESCRITOS
-# PROPIOS de la entidad: su PRESENTACION (reconocimiento) DE CREDITO y sus
-# OBJECIONES / observaciones al proyecto de calificacion y graduacion --
-# ahi la entidad siempre dice si su credito tiene garantia FNG o leasing.
-# Un documento es "escrito de la entidad" si al INICIO (los primeros
-# ZONA_ENCABEZADO caracteres) o en su nombre dice que es una presentacion
-# de credito / objecion, Y que lo presenta la entidad (su apoderado o
-# representante). Proyectos de graduacion, autos, actas, etc. NO cuentan
-# aunque mencionen a la entidad. Lista vacia [] = contar el FNG / leasing
-# de cualquier documento y de cualquier entidad.
+# Se cuentan SOLO las menciones de FNG / leasing de estos 3 documentos:
+#   1. PRESENTACION (reconocimiento) DE CREDITO de la entidad.
+#   2. OBJECIONES / observaciones de la entidad al proyecto.
+#   3. PROYECTO DE CALIFICACION Y GRADUACION de creditos -- aqui aparecen
+#      TODOS los acreedores, asi que solo cuenta el FNG / leasing que esta
+#      en el renglon (o la fila) de la entidad: el acreedor mas cercano a
+#      la mencion tiene que ser ella.
+# 1 y 2 se reconocen porque al INICIO (los primeros ZONA_ENCABEZADO
+# caracteres) o en su nombre dicen que son presentacion de credito /
+# objecion, Y que los presenta la entidad (su apoderado o representante);
+# 3, porque al inicio o en el nombre dice "proyecto de calificacion y
+# graduacion". Autos, actas, acuerdos, etc. NO cuentan aunque mencionen a
+# la entidad. Lista vacia [] = contar el FNG / leasing de cualquier
+# documento y de cualquier entidad.
 ENTIDAD_OBJETIVO = ["BBVA", "BANCO BILBAO VIZCAYA", "BILBAO VIZCAYA ARGENTARIA"]
 ETIQUETA_ENTIDAD = "BBVA"  # como aparece en los encabezados del Excel
 ZONA_ENCABEZADO = 6000
@@ -1103,6 +1107,23 @@ RE_AUTORIA = re.compile(
     rf"(?:APODERAD[OA]|REPRESENTANTE|REPRESENTACION|ENDOSATARI[OA]|EN\s+NOMBRE|MANDATARI[OA])[^.;]{{0,160}}?(?:{_ENTIDAD_PATRON})"
     rf"|(?:{_ENTIDAD_PATRON})[^.;]{{0,160}}?(?:APODERAD|REPRESENTAD|ACTUANDO|OBRANDO|POR\s+MEDIO\s+DE)"
 ) if ENTIDAD_OBJETIVO else None
+RE_PROYECTO = re.compile(
+    r"PROYECTO\s+(?:DE\s+)?(?:CALIFICACION|GRADUACION|DETERMINACION|RECONOCIMIENTO)"
+    r"|CALIFICACION\s+Y\s+GRADUACION|GRADUACION\s+Y\s+CALIFICACION"
+)
+RE_AUTO_O_ACTA = re.compile(r"(?<![A-Z])AUTO(?![A-Z])|ACTA\s+(?:DE\s+(?:LA\s+)?)?AUDIENCIA|RESUELVE")
+TIPO_PROYECTO = "PROYECTO DE CALIFICACION Y GRADUACION"
+# Acreedores que se pueden "cruzar" en un proyecto de graduacion: la
+# entidad (grupo "obj"), los bancos de ENTIDADES y nombres genericos.
+RE_ACREEDORES = re.compile(
+    (rf"(?P<obj>{_ENTIDAD_PATRON})|" if ENTIDAD_OBJETIVO else "")
+    + "|".join(
+        r"(?<![A-Z])" + r"\s+".join(re.escape(p) for p in e.split()) + r"(?![A-Z])"
+        for e in sorted(ENTIDADES, key=len, reverse=True)
+        if not (RE_ENTIDAD_OBJETIVO and RE_ENTIDAD_OBJETIVO.fullmatch(e))
+    )
+    + r"|(?<![A-Z])BANCO\s+[A-Z]{3,}|(?<![A-Z])COOPERATIVA(?![A-Z])|(?<![A-Z])FINANCIERA\s+[A-Z]{3,}"
+)
 RE_NEGACION = re.compile(
     r"(?:(?<![A-Z])NO\s+(?:CUENTA|TIENE|ESTA|ESTAN|POSEE|EXISTE|HAY|SE\s+ENCUENTRA|GOZA|FUE|HA\s+SIDO)"
     r"|(?<![A-Z])SIN|(?<![A-Z])NINGUN[AO]?)[A-Z\s,]{0,45}$"
@@ -1129,7 +1150,17 @@ def clasificar_escrito(texto_norm, nombre_norm):
     if tipo and (RE_ENTIDAD_OBJETIVO.search(nombre_norm) or RE_AUTORIA.search(cab)
                  or RE_ENTIDAD_OBJETIVO.search(cab[:1500])):
         return tipo
+    if not tipo and RE_PROYECTO.search(nombre_archivo):
+        return TIPO_PROYECTO
     tipo, pos = tipo_en(cab)
+    proyecto = RE_PROYECTO.search(cab[:1500])
+    if proyecto and (tipo is None or proyecto.start() < pos):
+        # "PROYECTO DE CALIFICACION Y GRADUACION..." como titulo. Si antes
+        # dice AUTO / ACTA, es un auto o acta que habla del proyecto: no cuenta.
+        auto = RE_AUTO_O_ACTA.search(cab[:400])
+        if auto and auto.start() < proyecto.start():
+            return None
+        return TIPO_PROYECTO
     if not tipo:
         return None
     excluido = RE_NO_ESCRITO.search(cab[:400])
@@ -1156,7 +1187,39 @@ def _menciones_validas(texto_norm, nombre_norm, regex):
     validas = [m for m in menciones if not RE_NEGACION.search(texto_norm[max(0, m.start() - 80):m.start()])]
     if menciones and not validas:
         return [], escrito, "negado"
+    if escrito == TIPO_PROYECTO:
+        validas = [m for m in validas if _acreedor_es_la_entidad(texto_norm, m)]
+        if not validas:
+            return [], escrito, "otro_acreedor"
     return validas, escrito, None
+
+
+def _acreedor_es_la_entidad(texto_norm, mencion, lineas_atras=4, max_atras=600):
+    """En un proyecto de graduacion: el acreedor al que pertenece la mencion
+    es el de su MISMO renglon (el mas cercano), o si no hay ninguno, el
+    ultimo nombrado en los renglones anteriores. True si es la entidad."""
+    ini_linea = texto_norm.rfind("\n", 0, mencion.start()) + 1
+    fin_linea = texto_norm.find("\n", mencion.end())
+    fin_linea = len(texto_norm) if fin_linea == -1 else fin_linea
+    ini = ini_linea
+    for _ in range(lineas_atras):
+        if ini <= 0:
+            break
+        ini = texto_norm.rfind("\n", 0, ini - 1) + 1
+    ini = max(ini, mencion.start() - max_atras)
+    acreedores = [
+        a for a in RE_ACREEDORES.finditer(texto_norm, ini, fin_linea)
+        if a.end() <= mencion.start() or a.start() >= mencion.end()  # no la mencion misma ("LEASING ...")
+    ]
+    en_linea = [a for a in acreedores if a.start() >= ini_linea]
+    if en_linea:
+        elegido = min(en_linea, key=lambda a: min(abs(a.start() - mencion.start()), abs(a.end() - mencion.start())))
+    else:
+        previos = [a for a in acreedores if a.end() <= mencion.start()]
+        if not previos:
+            return False
+        elegido = previos[-1]
+    return elegido.group("obj") is not None
 
 
 def _ventanas_de(menciones, largo_texto, antes=500, despues=700):
@@ -1167,6 +1230,22 @@ def _ventanas_de(menciones, largo_texto, antes=500, despues=700):
             tramos[-1][1] = max(tramos[-1][1], fin)
         else:
             tramos.append([ini, fin])
+    return tramos
+
+
+def _ventanas_renglon(texto_norm, menciones, antes=150, despues=300):
+    """Para el proyecto de graduacion: solo el RENGLON de cada mencion (para
+    no mezclar datos de la fila de otro acreedor). Si el renglon es muy
+    corto (tablas partidas), se le suma el renglon siguiente."""
+    tramos = []
+    for m in menciones:
+        ini_linea = texto_norm.rfind("\n", 0, m.start()) + 1
+        fin_linea = texto_norm.find("\n", m.end())
+        fin_linea = len(texto_norm) if fin_linea == -1 else fin_linea
+        if fin_linea - ini_linea < 60 and fin_linea < len(texto_norm):
+            siguiente = texto_norm.find("\n", fin_linea + 1)
+            fin_linea = len(texto_norm) if siguiente == -1 else siguiente
+        tramos.append([max(ini_linea, m.start() - antes), min(fin_linea, m.end() + despues)])
     return tramos
 
 
@@ -1190,7 +1269,8 @@ def analizar_fng(texto, nombre_archivo):
     menciones, escrito, descarte = _menciones_validas(texto_norm, nombre_norm, RE_FNG)
     if descarte or (escrito and not menciones):
         return {"objetivo": False, "descarte": descarte or "otro_documento"}
-    tramos = _ventanas_de(menciones, len(texto_norm))
+    tramos = (_ventanas_renglon(texto_norm, menciones) if escrito == TIPO_PROYECTO
+              else _ventanas_de(menciones, len(texto_norm)))
     if escrito is not None and not escrito and en_nombre and not tramos and texto_norm.strip():
         # Documento cuyo NOMBRE dice FNG: se analiza completo.
         tramos = [[0, min(len(texto_norm), 6000)]]
@@ -1229,7 +1309,8 @@ def analizar_leasing(texto, nombre_archivo):
     menciones, escrito, descarte = _menciones_validas(texto_norm, nombre_norm, RE_LEASING)
     if descarte or (escrito and not menciones):
         return {"objetivo": False, "descarte": descarte or "otro_documento"}
-    tramos = _ventanas_de(menciones, len(texto_norm), antes=500, despues=900)
+    tramos = (_ventanas_renglon(texto_norm, menciones) if escrito == TIPO_PROYECTO
+              else _ventanas_de(menciones, len(texto_norm), antes=500, despues=900))
     if escrito is not None and not escrito and en_nombre and texto_norm.strip():
         # Un contrato de leasing: las fechas pueden estar en cualquier
         # clausula, se analiza el documento entero (hasta un limite).
@@ -1317,6 +1398,8 @@ def analizar_candidatos(candidatos, cache):
                 otros["escritos"].add(a.get("nombre", ""))
             elif h and h.get("descarte") == "negado":
                 otros["negados"] += 1
+            elif h and h.get("descarte") == "otro_acreedor":
+                otros["proyecto_otro_acreedor"] = otros.get("proyecto_otro_acreedor", 0) + 1
             elif h:
                 otros[clave] += 1
     otros["escritos"] = sorted(otros["escritos"])
@@ -1647,7 +1730,7 @@ def procesar():
     # El criterio de entidad (BBVA) NO va en la firma: si cambia, los
     # procesos ya revisados se vuelven a analizar con el texto guardado
     # (ver reanalizar_proceso), sin volver a leer el Drive.
-    criterio_entidad = "escritos-v1|" + ",".join(ENTIDAD_OBJETIVO) + "|" + str(ZONA_ENCABEZADO)
+    criterio_entidad = "escritos-v2|" + ",".join(ENTIDAD_OBJETIVO) + "|" + str(ZONA_ENCABEZADO)
     progreso = Progreso(ARCHIVO_PROGRESO, firma)
 
     carpetas = progreso.get("carpetas")
@@ -1724,14 +1807,18 @@ def procesar():
                 observaciones.append(f"{len(sin_leer)} documento(s) relevante(s) sin poder leer (ver REVISAR_A_MANO)")
             if RE_ENTIDAD_OBJETIVO is not None:
                 if otros.get("escritos"):
-                    observaciones.append(f"Escritos de {ETIQUETA_ENTIDAD} con FNG/leasing: " + "; ".join(otros["escritos"]))
+                    observaciones.append(f"Documentos usados ({ETIQUETA_ENTIDAD}): " + "; ".join(otros["escritos"]))
                 if otros.get("negados"):
                     observaciones.append(f"En {otros['negados']} mencion(es) de un escrito de {ETIQUETA_ENTIDAD} el "
                                          "FNG/leasing aparece NEGADO (ej. 'no cuenta con garantia FNG')")
                 if otros.get("fng") or otros.get("leasing"):
                     observaciones.append(
                         f"FNG en {otros.get('fng', 0)} y leasing en {otros.get('leasing', 0)} documento(s) que NO son "
-                        f"presentacion de credito/objecion de {ETIQUETA_ENTIDAD} (no se cuentan)")
+                        f"presentacion de credito/objecion de {ETIQUETA_ENTIDAD} ni proyecto de graduacion (no se cuentan)")
+                if otros.get("proyecto_otro_acreedor"):
+                    observaciones.append(
+                        f"El proyecto de graduacion trae FNG/leasing solo de OTROS acreedores "
+                        f"({otros['proyecto_otro_acreedor']} vez/veces; no se cuentan)")
             res.update(fng=fng, leasing=leasing, sin_leer=sin_leer, total_archivos=total,
                        resumen=resumir_proceso(fng, leasing), observaciones=". ".join(observaciones))
             s = res["resumen"]

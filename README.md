@@ -1541,18 +1541,25 @@ documento leído queda en `depurar_fng_leasing_cache.jsonl`, así que una
 corrida nueva solo descarga los documentos que cambiaron.
 
 **Solo BBVA:** con `ENTIDAD_OBJETIVO = ["BBVA", "BANCO BILBAO VIZCAYA", ...]`
-(así viene), el FNG y el leasing solo se cuentan si aparecen en un
-**escrito propio de BBVA**: su **presentación (reconocimiento) de crédito**
-o sus **objeciones / observaciones** al proyecto de calificación y
-graduación. Un documento es escrito de BBVA si al inicio (o en su nombre)
-dice que es una presentación de crédito / objeción **y** que lo presenta
-BBVA ("apoderado de BBVA...", o un asunto tipo "Presentación de créditos
-BBVA"). Proyectos de graduación del promotor, autos, actas, etc. no
-cuentan aunque mencionen a BBVA. Si el escrito dice "no cuenta con garantía
-FNG", tampoco cuenta. En OBSERVACIONES quedan los escritos de BBVA usados,
-las menciones negadas y cuántos documentos con FNG/leasing no eran escritos
-de BBVA. La hoja de detalle trae la columna TIPO DE ESCRITO. Para contar las
-de cualquier documento y entidad, deja la lista vacía `[]`.
+(así viene), el FNG y el leasing solo se toman de **3 tipos de documento**:
+
+1. La **presentación (reconocimiento) de crédito** de BBVA.
+2. Las **objeciones / observaciones** de BBVA al proyecto.
+3. El **proyecto de calificación y graduación de créditos**. Como ahí
+   aparecen todos los acreedores, solo cuenta el FNG o leasing del
+   **renglón de BBVA**: el acreedor más cercano a la mención, en el mismo
+   renglón o, si no hay ninguno, el último nombrado justo antes, tiene que
+   ser BBVA. Los datos (número, fechas) se toman solo de ese renglón.
+
+1 y 2 se reconocen porque al inicio (o en su nombre) dicen que son
+presentación de crédito / objeción **y** que las presenta BBVA ("apoderado
+de BBVA...", o un asunto tipo "Presentación de créditos BBVA"). El 3, porque
+al inicio o en el nombre dice "proyecto de calificación y graduación". Los
+autos, actas, acuerdos y demás no cuentan aunque mencionen a BBVA o al
+proyecto, y tampoco las menciones negadas ("no cuenta con garantía FNG").
+La hoja de detalle trae la columna TIPO DE ESCRITO, y OBSERVACIONES dice qué
+documentos se usaron y cuántos se descartaron. Para contar las menciones de
+cualquier documento y entidad, deja la lista vacía `[]`.
 
 El avance (`depurar_fng_leasing_progreso.json`) **se conserva al
 terminar**: si vuelves a ejecutar (por ejemplo, tras ajustar el criterio),
