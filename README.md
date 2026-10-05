@@ -1546,10 +1546,17 @@ corrida nueva solo descarga los documentos que cambiaron.
 1. La **presentación (reconocimiento) de crédito** de BBVA.
 2. Las **objeciones / observaciones** de BBVA al proyecto.
 3. El **proyecto de calificación y graduación de créditos**. Como ahí
-   aparecen todos los acreedores, solo cuenta el FNG o leasing del
-   **renglón de BBVA**: el acreedor más cercano a la mención, en el mismo
-   renglón o, si no hay ninguno, el último nombrado justo antes, tiene que
-   ser BBVA. Los datos (número, fechas) se toman solo de ese renglón.
+   aparecen todos los acreedores, solo cuenta el FNG o leasing que está en
+   el **mismo renglón que BBVA** (a menos de 200 caracteres), con BBVA
+   como el acreedor más cercano. No se miran renglones anteriores, para no
+   atribuirle a BBVA el leasing de otro acreedor. Los datos (número,
+   fechas) se toman solo de ese renglón.
+
+En los escritos de BBVA (1 y 2), el leasing solo cuenta si trae número de
+contrato o placa cerca (las menciones genéricas, como "contratos de leasing,
+art. 22 Ley 1116", no cuentan). Tampoco cuentan el FNG o el leasing de otro
+acreedor que BBVA menciona, por ejemplo cuando objeta el leasing de Leasing
+Bancolombia.
 
 1 y 2 se reconocen porque al inicio (o en su nombre) dicen que son
 presentación de crédito / objeción **y** que las presenta BBVA ("apoderado

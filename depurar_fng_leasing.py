@@ -301,7 +301,8 @@ RE_NOMBRE_RELEVANTE = re.compile(
 
 _NUM = r"(?:N\s?[O°\.]{1,2}|NO\.?|NRO\.?|NUM\.?|NUMERO|#)"
 RE_NUM_GARANTIA = re.compile(
-    rf"(?:GARANTIA|CERTIFICADO|CERT\.?)\s*(?:FNG\s*)?(?:DE\s+GARANTIA\s*)?(?:FNG\s*)?{_NUM}\s*[:\.]?\s*([0-9][0-9A-Z\-]{{3,}})"
+    rf"(?:GARANTIA|CERTIFICADO|CERT\.?)\s*(?:DEL?\s+)?(?:FNG\s*|FONDO\s+NACIONAL\s+DE\s+GARANTIAS\s*(?:S\.?\s?A\.?\s*)?)?"
+    rf"(?:DE\s+GARANTIA\s*)?(?:FNG\s*)?{_NUM}\s*[:\.]?\s*([0-9][0-9A-Z\-]{{3,}})"
 )
 RE_NUM_OBLIGACION = re.compile(
     rf"(?:OBLIGACION(?:ES)?|PAGARE|CREDITO)\s*{_NUM}\s*[:\.]?\s*([0-9][0-9A-Z\-]{{3,}})"
@@ -1209,35 +1210,65 @@ def _menciones_validas(texto_norm, nombre_norm, regex):
         validas = [m for m in validas if _acreedor_es_la_entidad(texto_norm, m)]
         if not validas:
             return [], escrito, "otro_acreedor"
+        return validas, escrito, None
+    # Escrito propio de la entidad: no cuentan las menciones del FNG/leasing
+    # de OTRO acreedor (ej. BBVA objeta el leasing de Bancolombia).
+    validas = [m for m in validas if not _otro_acreedor_mas_cerca(texto_norm, m)]
+    if regex is RE_LEASING:
+        # Un leasing propio trae numero de contrato o placa; sin eso suele
+        # ser una mencion generica ("...contratos de leasing, art. 22 Ley 1116").
+        validas = [m for m in validas if _leasing_identificado(texto_norm, m)]
+    if menciones and not validas:
+        return [], escrito, "otro_acreedor"
     return validas, escrito, None
 
 
-def _acreedor_es_la_entidad(texto_norm, mencion, lineas_atras=4, max_atras=600):
-    """En un proyecto de graduacion: el acreedor al que pertenece la mencion
-    es el de su MISMO renglon (el mas cercano), o si no hay ninguno, el
-    ultimo nombrado en los renglones anteriores. True si es la entidad."""
+def _mencion_es_nombre_de_otro(texto_norm, mencion):
+    """True si la mencion es parte del NOMBRE de otro acreedor (ej. el
+    "LEASING" de "LEASING BANCOLOMBIA")."""
+    ini, fin = max(0, mencion.start() - 60), min(len(texto_norm), mencion.end() + 60)
+    return any(a.start() < mencion.end() and a.end() > mencion.start() and a.group("obj") is None
+               for a in RE_ACREEDORES.finditer(texto_norm, ini, fin))
+
+
+def _otro_acreedor_mas_cerca(texto_norm, mencion, alcance=150):
+    if _mencion_es_nombre_de_otro(texto_norm, mencion):
+        return True
+    ini, fin = max(0, mencion.start() - alcance), min(len(texto_norm), mencion.end() + alcance)
+    acreedores = [a for a in RE_ACREEDORES.finditer(texto_norm, ini, fin)
+                  if a.end() <= mencion.start() or a.start() >= mencion.end()]
+    if not acreedores:
+        return False
+    cercano = min(acreedores, key=lambda a: min(abs(a.start() - mencion.end()), abs(a.end() - mencion.start())))
+    return cercano.group("obj") is None
+
+
+def _leasing_identificado(texto_norm, mencion):
+    tramo = texto_norm[max(0, mencion.start() - 300):mencion.end() + 400]
+    return bool(RE_NUM_CONTRATO.search(tramo) or re.search(r"PLACA\S?\s+[A-Z]{3}\s?-?\s?[0-9]{2,3}", tramo))
+
+
+def _acreedor_es_la_entidad(texto_norm, mencion, distancia_max=200):
+    """En un proyecto de graduacion (todos los acreedores juntos): la
+    mencion cuenta solo si en su MISMO renglon esta la entidad, a menos de
+    distancia_max caracteres, y es el acreedor mas cercano. No se mira a
+    renglones anteriores: en las tablas de PDF eso confundia el leasing de
+    otro acreedor con el del banco de la fila de arriba."""
+    if _mencion_es_nombre_de_otro(texto_norm, mencion):
+        return False
     ini_linea = texto_norm.rfind("\n", 0, mencion.start()) + 1
     fin_linea = texto_norm.find("\n", mencion.end())
     fin_linea = len(texto_norm) if fin_linea == -1 else fin_linea
-    ini = ini_linea
-    for _ in range(lineas_atras):
-        if ini <= 0:
-            break
-        ini = texto_norm.rfind("\n", 0, ini - 1) + 1
-    ini = max(ini, mencion.start() - max_atras)
+    ini = max(ini_linea, mencion.start() - distancia_max)
+    fin = min(fin_linea, mencion.end() + distancia_max)
     acreedores = [
-        a for a in RE_ACREEDORES.finditer(texto_norm, ini, fin_linea)
+        a for a in RE_ACREEDORES.finditer(texto_norm, ini, fin)
         if a.end() <= mencion.start() or a.start() >= mencion.end()  # no la mencion misma ("LEASING ...")
     ]
-    en_linea = [a for a in acreedores if a.start() >= ini_linea]
-    if en_linea:
-        elegido = min(en_linea, key=lambda a: min(abs(a.start() - mencion.start()), abs(a.end() - mencion.start())))
-    else:
-        previos = [a for a in acreedores if a.end() <= mencion.start()]
-        if not previos:
-            return False
-        elegido = previos[-1]
-    return elegido.group("obj") is not None
+    if not acreedores:
+        return False
+    cercano = min(acreedores, key=lambda a: min(abs(a.start() - mencion.end()), abs(a.end() - mencion.start())))
+    return cercano.group("obj") is not None
 
 
 def _ventanas_de(menciones, largo_texto, antes=500, despues=700):
@@ -1805,7 +1836,7 @@ def procesar():
     # El criterio de entidad (BBVA) NO va en la firma: si cambia, los
     # procesos ya revisados se vuelven a analizar con el texto guardado
     # (ver reanalizar_proceso), sin volver a leer el Drive.
-    criterio_entidad = "escritos-v2|" + ",".join(ENTIDAD_OBJETIVO) + "|" + str(ZONA_ENCABEZADO)
+    criterio_entidad = "escritos-v3|" + ",".join(ENTIDAD_OBJETIVO) + "|" + str(ZONA_ENCABEZADO)
     progreso = Progreso(ARCHIVO_PROGRESO, firma)
 
     carpetas = progreso.get("carpetas")
