@@ -35,6 +35,21 @@ cada día y vuelve a correr el envío.
 El número de la columna del medio es **acumulado del día**: el programa
 cuenta cuántos lleva enviados hoy y para cuando llega al tope.
 
+**Cada lote se demora.** Entre un correo y el siguiente hay una pausa de
+10 a 20 segundos, a propósito: enviar de corrido es lo que delata un
+envío automático. En la práctica:
+
+| Correos | Tiempo aproximado |
+|---|---|
+| 250 | 1 hora |
+| 450 | 1 hora 50 |
+| 650 | 2 horas 40 |
+| 850 | 3 horas 30 |
+
+El computador tiene que quedar prendido y el programa abierto todo ese
+rato. Si se interrumpe no pasa nada grave: el programa anota lo que ya
+mandó y al volver a correr sigue donde quedó.
+
 El lunes 12 es festivo en Colombia (Día de la Raza). Un correo
 institucional ese día lo lee nadie.
 
@@ -105,9 +120,16 @@ Si los rebotes pasan del 5 %, pare y avíseme: significa que la base
 trae direcciones viejas y seguir mandando castiga la reputación del
 dominio.
 
-**El brochure no va adjunto a propósito.** Con 3.864 destinatarios, un
-PDF de 1 MB en cada correo multiplica por seis el peso del envío y sube
-el riesgo de SPAM. Quien se inscriba lo recibe después.
+**El brochure va adjunto.** Con el PDF, cada correo pesa **1,65 MB** en
+vez de 144 KB. Funciona, pero tenga presente dos cosas:
+
+- Un adjunto pesado en correo masivo en frío es una señal que los
+  filtros miran. En septiembre se adjuntó y llegó a bandeja de entrada
+  sin problema, pero eran 415 correos, no 2.849.
+- Si los rebotes se disparan o empieza a caer en SPAM, **lo primero que
+  hay que quitar es el adjunto**. En `config.ini`, borre lo que va
+  después de `adjunto =` y guarde. El correo sale igual, solo con el
+  enlace.
 
 ---
 
