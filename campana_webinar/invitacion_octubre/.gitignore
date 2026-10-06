@@ -1,0 +1,6 @@
+# La base real de contactos y el registro de envios no van al
+# repositorio: son datos personales de terceros (Ley 1581 de 2012).
+contactos.xlsx
+contactos.csv
+estado/
+recursos/imagen_webinar.*
