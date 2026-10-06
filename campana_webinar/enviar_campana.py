@@ -694,20 +694,38 @@ def conectar(configuracion, clave, host=None, puerto=None):
     return servidor
 
 
+# El tope DIARIO: no se puede enviar nada mas hasta mañana.
 SENALES_DE_TOPE = (
     "daily user sending quota exceeded",
-    "quota exceeded",
+    "daily sending quota exceeded",
+    "5.4.5",
+)
+
+# Un freno TEMPORAL: Google pide bajar el ritmo. Se levanta solo, en
+# minutos o en un par de horas, el mismo dia. No es el tope diario, y
+# confundirlos hace perder un dia de campaña.
+SENALES_DE_FRENO = (
     "try again later",
     "rate limit",
     "too many",
+    "unusual",
+    "temporarily",
     "4.7.0",
-    "5.4.5",
+    "4.7.28",
+    "quota exceeded",
 )
 
 
 def es_tope_de_google(error):
     texto = str(error).lower()
     return any(senal in texto for senal in SENALES_DE_TOPE)
+
+
+def es_freno_temporal(error):
+    texto = str(error).lower()
+    if es_tope_de_google(error):
+        return False
+    return any(senal in texto for senal in SENALES_DE_FRENO)
 
 
 # ---------------------------------------------------------------------
@@ -1103,10 +1121,15 @@ def orden_enviar(args, configuracion):
                     servidor = conectar(configuracion, clave, args.host, args.puerto)
                 except smtplib.SMTPException as error:
                     if es_tope_de_google(error):
-                        print(marca + "  TOPE DE GOOGLE")
+                        print(marca + "  TOPE DIARIO DE GOOGLE")
                         anotar(contacto["correo"], contacto["institucion"],
-                               "pendiente", "tope de Google: %s" % error)
+                               "pendiente", "tope diario: %s" % error)
                         raise KeyboardInterrupt("tope")
+                    if es_freno_temporal(error):
+                        print(marca + "  GOOGLE PIDE BAJAR EL RITMO")
+                        anotar(contacto["correo"], contacto["institucion"],
+                               "pendiente", "freno temporal: %s" % error)
+                        raise KeyboardInterrupt("freno")
                     if intento >= reintentos:
                         print(marca + "  ERROR")
                         anotar(contacto["correo"], contacto["institucion"],
@@ -1125,7 +1148,17 @@ def orden_enviar(args, configuracion):
                 time.sleep(random.uniform(pausa_min, pausa_max))
 
     except KeyboardInterrupt as interrupcion:
-        if str(interrupcion) == "tope":
+        if str(interrupcion) == "freno":
+            print()
+            print("  " + "-" * 62)
+            print("  Google pidio bajar el ritmo. NO es el tope diario.")
+            print("  Esto se levanta solo. Espere entre una y dos horas y")
+            print("  vuelva a ejecutar la misma orden: retoma donde iba.")
+            print()
+            print("  Si vuelve a pasar en el mismo dia, el adjunto es la")
+            print("  causa mas probable. Deje vacio \"adjunto =\" en el")
+            print("  config.ini y el correo baja de 2 MB a 150 KB.")
+        elif str(interrupcion) == "tope":
             print()
             print("  " + "-" * 62)
             print("  Google no acepta mas correos por hoy. Se detuvo el envio.")
