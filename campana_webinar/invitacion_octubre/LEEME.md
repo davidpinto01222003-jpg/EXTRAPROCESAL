@@ -125,7 +125,7 @@ Si los rebotes pasan del 5 %, pare y avíseme: significa que la base
 trae direcciones viejas y seguir mandando castiga la reputación del
 dominio.
 
-**El brochure va adjunto.** Con el PDF, cada correo pesa **1,65 MB** en
+**El brochure va adjunto.** Con el PDF, cada correo pesa **2.2 MB** en
 vez de 144 KB. Funciona, pero tenga presente dos cosas:
 
 - Un adjunto pesado en correo masivo en frío es una señal que los
