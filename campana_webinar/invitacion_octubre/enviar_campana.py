@@ -141,9 +141,8 @@ def arreglar_mayusculas(texto):
                "para", "por", "con", "a", "al"}
     # Sin puntos: asi "S.A.S", "S.A.S." y "SAS" se reconocen igual. Las
     # bases del REPS escriben la misma sigla de las tres maneras.
-    siglas = {"IPS", "ESE", "EPS", "SAS", "SA", "LTDA", "UT", "ASI",
-              "SAI", "CAJA", "AC", "EU", "BIC", "SCA", "CTA", "ONG",
-              "UBA", "CAMI", "UPA", "UPZ"}
+    siglas = {"IPS", "ESE", "EPS", "SAS", "SA", "LTDA", "UT", "EU",
+              "BIC", "SCA", "CTA", "ONG", "UBA", "CAMI", "UPA", "UPZ"}
     # "A.V.A", "E.S.P.", "S.A.S": letras sueltas separadas por punto.
     # Son siglas aunque no esten en la lista, asi que van en mayuscula.
     punteada = re.compile(r"^[A-Za-zÁÉÍÓÚÑ](?:\.[A-Za-zÁÉÍÓÚÑ])+\.?$")

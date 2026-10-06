@@ -7,8 +7,9 @@ Inscripciones: https://forms.gle/rheWoEX9D3X2NjYm6
 
 ## Lo primero: esto NO se manda de un solo golpe
 
-La base tiene **3.864 correos**. La campaña de septiembre fueron 415.
-Es casi diez veces más.
+La base tiene **2.715 correos**, uno por IPS, ordenados de mayor a menor
+capacidad instalada. La campaña de septiembre fueron 415. Es casi siete
+veces más.
 
 La cuenta `contactoclientes@oscal.net` nunca ha enviado ese volumen, y
 **un salto repentino de volumen es lo que más dispara los filtros de
@@ -23,14 +24,14 @@ cada día y vuelve a correr el envío.
 
 ### Calendario sugerido
 
-| Día | `maximo_por_dia` | Correos |
+| Día | `maximo_por_dia` | A quién le llega |
 |---|---|---|
-| Martes 6 de octubre | 250 | 250 |
-| Miércoles 7 | 450 | 200 más |
-| Jueves 8 | 650 | 200 más |
-| Viernes 9 | 850 | 200 más |
+| Martes 6 de octubre | 250 | tramo A, las 250 IPS más grandes |
+| Miércoles 7 | 450 | tramo B |
+| Jueves 8 | 650 | tramo C |
+| Viernes 9 | 850 | tramo D |
 | Lunes 12 | — | **FESTIVO, no enviar** |
-| Martes 13 | 1500 | el resto |
+| Martes 13 | 600 | tramo E, las 515 restantes |
 
 El número de la columna del medio es **acumulado del día**: el programa
 cuenta cuántos lleva enviados hoy y para cuando llega al tope.
@@ -53,20 +54,24 @@ mandó y al volver a correr sigue donde quedó.
 El lunes 12 es festivo en Colombia (Día de la Raza). Un correo
 institucional ese día lo lee nadie.
 
-### Hasta dónde enviar
+### El orden importa, y no es alfabético
 
-La base viene en dos grupos, y el programa envía en ese orden:
+La base viene **ordenada por tamaño de la institución**: camas,
+consultorios, salas de procedimientos, ambulancias y número de sedes.
+El programa respeta ese orden exacto.
 
-- **Segmento A — 2.849 correos.** El correo principal de cada IPS.
-- **Segmento B — 1.015 correos.** Correos de sedes individuales de IPS
-  que **ya recibieron** la invitación en su correo principal.
+Eso significa que **el primer lote, el del martes, se lo lleva las 250
+IPS más grandes** de los cinco departamentos. Mired Barranquilla,
+Metrosalud, Pablo Tobón Uribe, Alma Máter, Comfama. Si la campaña
+tuviera que pararse a mitad de camino por lo que sea, lo que ya salió
+es lo que más vale.
 
-**La recomendación es enviar solo el segmento A** y dejar el B para una
-próxima campaña. Escribirle dos veces a la misma institución, en la
-misma semana, por el mismo evento, es exactamente lo que un filtro de
-SPAM interpreta como envío masivo indiscriminado.
+Los tramos A, B, C, D y E que aparecen en la vista previa son
+exactamente los lotes de cada día.
 
-Con el calendario de arriba el segmento A queda cubierto el martes 13.
+El archivo `contactos.xlsx` trae además el puesto en el ranking, el
+departamento, el número de sedes y la capacidad de cada IPS, por si
+quiere revisarlo o llamar a alguna directamente.
 
 ---
 
