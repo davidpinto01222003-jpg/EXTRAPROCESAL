@@ -701,6 +701,16 @@ SENALES_DE_TOPE = (
     "5.4.5",
 )
 
+# La conexion se vencio. Google cierra las sesiones SMTP largas; no es
+# un limite de nada. Se reconecta y se sigue, sin perder el correo.
+SENALES_DE_RECONEXION = (
+    "connection expired",
+    "try reconnecting",
+    "closing connection",
+    "connection timed out",
+    "4.4.2",
+)
+
 # Un freno TEMPORAL: Google pide bajar el ritmo. Se levanta solo, en
 # minutos o en un par de horas, el mismo dia. No es el tope diario, y
 # confundirlos hace perder un dia de campaña.
@@ -721,9 +731,14 @@ def es_tope_de_google(error):
     return any(senal in texto for senal in SENALES_DE_TOPE)
 
 
+def hay_que_reconectar(error):
+    texto = str(error).lower()
+    return any(senal in texto for senal in SENALES_DE_RECONEXION)
+
+
 def es_freno_temporal(error):
     texto = str(error).lower()
-    if es_tope_de_google(error):
+    if es_tope_de_google(error) or hay_que_reconectar(error):
         return False
     return any(senal in texto for senal in SENALES_DE_FRENO)
 
@@ -1075,6 +1090,11 @@ def orden_enviar(args, configuracion):
     enviados = fallidos = 0
     print()
     print("  " + "-" * 62)
+    # Google cierra la sesion SMTP cuando lleva mucho rato abierta. En
+    # vez de esperar a que la cierre, se renueva cada tantos correos.
+    CORREOS_POR_CONEXION = 40
+    desde_conexion = 0
+
     try:
         for i, contacto in enumerate(lote, 1):
             etiqueta = contacto["institucion"] or contacto["correo"]
@@ -1120,6 +1140,19 @@ def orden_enviar(args, configuracion):
                         pass
                     servidor = conectar(configuracion, clave, args.host, args.puerto)
                 except smtplib.SMTPException as error:
+                    if hay_que_reconectar(error):
+                        # Google cerro la sesion por vieja. Se abre otra
+                        # y se reintenta este mismo correo: no se pierde.
+                        print(marca + "  reconectando...")
+                        try:
+                            servidor.quit()
+                        except Exception:  # noqa: BLE001
+                            pass
+                        time.sleep(3)
+                        servidor = conectar(configuracion, clave,
+                                            args.host, args.puerto)
+                        desde_conexion = 0
+                        continue
                     if es_tope_de_google(error):
                         print(marca + "  TOPE DIARIO DE GOOGLE")
                         anotar(contacto["correo"], contacto["institucion"],
@@ -1143,6 +1176,16 @@ def orden_enviar(args, configuracion):
                 anotar(contacto["correo"], contacto["institucion"], "enviado",
                        mensaje["Message-ID"])
                 enviados += 1
+                desde_conexion += 1
+
+            if desde_conexion >= CORREOS_POR_CONEXION and i < len(lote):
+                try:
+                    servidor.quit()
+                except Exception:  # noqa: BLE001
+                    pass
+                servidor = conectar(configuracion, clave, args.host,
+                                    args.puerto)
+                desde_conexion = 0
 
             if i < len(lote):
                 time.sleep(random.uniform(pausa_min, pausa_max))
