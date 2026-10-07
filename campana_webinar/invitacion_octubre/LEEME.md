@@ -5,54 +5,59 @@ Inscripciones: https://forms.gle/rheWoEX9D3X2NjYm6
 
 ---
 
-## Lo primero: esto NO se manda de un solo golpe
+## Dónde va la campaña
 
-La base tiene **2.715 correos**, uno por IPS, ordenados de mayor a menor
-capacidad instalada. La campaña de septiembre fueron 415. Es casi siete
-veces más.
+El **6 de octubre salieron 184 correos**, las instituciones más grandes
+de la lista. El envío se cortó solo porque Google cierra las sesiones
+SMTP largas; **no se agotó ninguna cuota**. Ese defecto ya está
+corregido: ahora el programa reconecta y sigue.
 
-La cuenta `contactoclientes@oscal.net` nunca ha enviado ese volumen, y
-**un salto repentino de volumen es lo que más dispara los filtros de
-SPAM** — más que el contenido, más que las imágenes. Gmail y Outlook
-miran cuánto manda usted normalmente; si de un día para otro pasa de
-cero a tres mil, lo tratan como una cuenta comprometida.
+**`contactos.xlsx` ya no trae esos 184.** Quedan **2.531**.
 
-La solución es subir de a poco. El programa ya trae un tope diario
-(`maximo_por_dia` en `config.ini`) y lleva el registro de lo que ya
-mandó, así que **nunca repite un correo**: usted solo sube el número
-cada día y vuelve a correr el envío.
-
-### Calendario sugerido
-
-| Día | `maximo_por_dia` | A quién le llega |
+| Tramo | Correos | Día |
 |---|---|---|
-| Martes 6 de octubre | 250 | tramo A, las 250 IPS más grandes |
-| Miércoles 7 | 450 | tramo B |
-| Jueves 8 | 650 | tramo C |
-| Viernes 9 | 850 | tramo D |
-| Lunes 12 | — | **FESTIVO, no enviar** |
-| Martes 13 | 600 | tramo E, las 515 restantes |
+| A | 650 | miércoles 7 |
+| B | 650 | jueves 8 |
+| C | 650 | viernes 9 |
+| — | — | lunes 12: **festivo** |
+| D | 581 | martes 13 |
 
-El número de la columna del medio es **acumulado del día**: el programa
-cuenta cuántos lleva enviados hoy y para cuando llega al tope.
+Ponga `maximo_por_dia` en 650 y corra la opción 3 una vez al día. El
+programa lleva el registro y nunca repite un correo.
 
-**Cada lote se demora.** Entre un correo y el siguiente hay una pausa de
-10 a 20 segundos, a propósito: enviar de corrido es lo que delata un
-envío automático. En la práctica:
+---
 
-| Correos | Tiempo aproximado |
-|---|---|
-| 250 | 1 hora |
-| 450 | 1 hora 50 |
-| 650 | 2 horas 40 |
-| 850 | 3 horas 30 |
+## Cuánto se demora, y cómo acortarlo
 
-El computador tiene que quedar prendido y el programa abierto todo ese
-rato. Si se interrumpe no pasa nada grave: el programa anota lo que ya
-mandó y al volver a correr sigue donde quedó.
+Esto es lo que más pesa ahora. Del envío del 6 de octubre salió el dato
+real: **24 segundos entre un correo y el siguiente**. La pausa
+configurada es de 10 a 20 s, o sea unos 15. **Los 9 segundos de más son
+el brochure subiendo por la red.**
 
-El lunes 12 es festivo en Colombia (Día de la Raza). Un correo
-institucional ese día lo lee nadie.
+Con eso, los 2.531 que faltan son:
+
+| | Horas en total | Por día |
+|---|---|---|
+| Como está ahora | **16,9 h** | 4,2 h |
+| Sin adjunto, misma pausa | 11,3 h | 2,8 h |
+| Sin adjunto, pausa 6–12 s | **7,0 h** | 1,8 h |
+
+Son más de **cuatro horas diarias** con el computador prendido en el
+primer caso, contra menos de dos en el último.
+
+Si quiere acortarlo, en `config.ini`:
+
+- Borre lo que va después de `adjunto =` — el correo baja de 2,15 MB a
+  144 KB y sale el brochure. Quien se inscriba lo recibe después.
+- Ponga `pausa_minima = 6` y `pausa_maxima = 12`.
+
+El corte del 6 de octubre fue por antigüedad de la conexión, no por
+ritmo, así que bajar las pausas no tiene riesgo demostrado.
+
+Si prefiere mantener el brochure, también funciona. Solo cuesta el
+doble de tiempo frente al computador.
+
+---
 
 ### El orden importa, y no es alfabético
 
@@ -77,14 +82,21 @@ quiere revisarlo o llamar a alguna directamente.
 
 ## Antes del primer envío
 
-**1. Traiga los correos excluidos de la campaña pasada.** Copie:
+**1. No borre la carpeta `estado`.** Ahí está el registro de lo que ya
+salió. El ZIP no la trae a propósito: si usted descomprime encima de la
+carpeta que ya tiene, la suya se conserva intacta.
+
+Si arranca en una carpeta nueva, copie de la campaña anterior:
 
 ```
 campana_webinar\estado\excluidos.csv  →  invitacion_octubre\estado\excluidos.csv
 ```
 
-Ese archivo tiene los 10 que rebotaron y los dominios muertos. Si no lo
-copia, el programa les vuelve a escribir y los rebotes se repiten.
+Ese archivo tiene los 10 que rebotaron y los dominios muertos.
+
+**No abra `estado\enviados.csv` con Excel.** Excel reescribe las
+comillas y daña las filas cuyo nombre de institución lleva una coma. Si
+lo quiere mirar, use el Bloc de notas.
 
 **2. Mire la vista previa.** Opción 1 del menú. Confirme que diga
 *"Medidas y peso correctos"* y que el texto esté bien.
