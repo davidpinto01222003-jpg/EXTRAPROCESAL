@@ -1,8 +1,7 @@
 [[BLOQUE_SALUDO]]
 
 Le escribo para avisarle que el webinar de mañana se aplaza. El doctor
-López tuvo un quebranto de salud y preferimos reprogramar antes que
-dictar la sesión a medias.
+López tuvo un quebranto de salud que le imposibilita dictar la sesión.
 
     Nueva fecha: miércoles 21 de octubre
     8:00 a 8:45 de la mañana (hora de Colombia)
