@@ -23,8 +23,16 @@ Doble clic en `enviar_campana.bat`.
 escrito y **un enlace por persona**: al abrirlo con clic se abre el chat
 de WhatsApp con el texto puesto, solo hay que darle enviar.
 
-Ábralo con Excel. Mande los dos canales: el que no vea el correo ve el
-WhatsApp.
+Ábralo con Excel.
+
+**Mande primero la imagen** `recursos/aplazamiento_whatsapp.jpg` y
+enseguida el texto. La imagen se ve completa en el chat y se entiende
+sin abrirla; el texto trae el detalle.
+
+Mándelos **de a uno y sin afán**, desde el 316 368 66 89. Pegar el
+mismo texto 24 veces en dos minutos es lo que WhatsApp lee como spam.
+
+Mande los dos canales: el que no vea el correo ve el WhatsApp.
 
 ## Lo que hay que hacer aparte
 
