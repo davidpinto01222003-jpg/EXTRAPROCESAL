@@ -1,0 +1,660 @@
+{
+ "Table 1": {
+  "head": [
+   "Year",
+   "USD billions",
+   "Year-over-year growth"
+  ],
+  "rows": [
+   [
+    "2021",
+    "97",
+    "7.8%"
+   ],
+   [
+    "2022",
+    "105",
+    "8.2%"
+   ],
+   [
+    "2023",
+    "108",
+    "2.9%"
+   ],
+   [
+    "2024",
+    "111",
+    "2.8%"
+   ],
+   [
+    "2025",
+    "112",
+    "0.9%"
+   ]
+  ],
+  "note": "Note. Data from Ken Research (n.d.)."
+ },
+ "Table 2": {
+  "head": [
+   "Segment",
+   "Core activities",
+   "Employment relevance"
+  ],
+  "rows": [
+   [
+    "Freight transportation",
+    "Truck, rail, air, and sea movement",
+    "Dispatch, routing, fleet and transport coordination"
+   ],
+   [
+    "Freight forwarding",
+    "Arranging domestic or international shipments",
+    "Carrier selection, documentation and customer service"
+   ],
+   [
+    "Warehousing and storage",
+    "Inventory storage and order handling",
+    "Warehouse supervision, inventory and reporting"
+   ],
+   [
+    "Courier, express, parcel",
+    "Time-sensitive packages and last-mile delivery",
+    "Hub operations and distribution planning"
+   ]
+  ],
+  "note": "Note. Segments from Mordor Intelligence (2026)."
+ },
+ "Table 3": {
+  "head": [
+   "Company or group",
+   "Principal activity"
+  ],
+  "rows": [
+   [
+    "CN",
+    "Rail freight and intermodal services"
+   ],
+   [
+    "CPKC",
+    "Rail freight across Canada, the United States, and Mexico"
+   ],
+   [
+    "TFI International",
+    "Truckload, LTL and transportation services"
+   ],
+   [
+    "Mullen Group",
+    "Trucking, logistics and warehousing"
+   ],
+   [
+    "Cargojet",
+    "Air cargo services"
+   ],
+   [
+    "Canada Post / Purolator",
+    "Postal, courier and parcel delivery"
+   ],
+   [
+    "FedEx / UPS / DHL",
+    "Express delivery, freight and contract logistics"
+   ],
+   [
+    "Amazon",
+    "E-commerce fulfilment and distribution"
+   ],
+   [
+    "Freightera",
+    "Digital freight marketplace and shipment coordination"
+   ]
+  ],
+  "note": ""
+ },
+ "Table 4": {
+  "head": [
+   "Employer / job",
+   "Education or experience",
+   "Skills / certifications"
+  ],
+  "rows": [
+   [
+    "CPKC · Assistant Trainmaster",
+    "Secondary school or equivalent; rail operating background an asset",
+    "Train/yard plans, compliance, staff supervision; conductor qualification may need to be obtained or maintained"
+   ],
+   [
+    "TFI / Normandin Transit · Logistics Coordinator",
+    "High school required; transportation experience and postsecondary study are assets",
+    "Shipment tracking, TMS, Microsoft Office, customer communication; bilingualism an asset"
+   ],
+   [
+    "Canada Post · Supervisor, Operations Relief",
+    "High school; 1 year managing a team OR 2 years in a unionized workplace",
+    "Daily scheduling, safety, productivity reports, Microsoft Office; postsecondary education an asset"
+   ],
+   [
+    "Purolator · Operations Coordinator Hub Yard",
+    "No fixed diploma or years of experience stated; linehaul knowledge preferred",
+    "Yard checks, equipment assignments, numeracy, English and communication"
+   ],
+   [
+    "Mullen Group · Senior Transportation Applications Specialist",
+    "Postsecondary study in logistics/business/IS or equivalent experience",
+    "TMS, ERP integration, analytics, troubleshooting and user training"
+   ],
+   [
+    "FedEx Canada · Operations Administrator II",
+    "High school/GED and 2 years customer service, clerical or related experience",
+    "Documentation, data entry, customer service and Microsoft Office"
+   ],
+   [
+    "UPS · Distribution Supervisor I",
+    "Secondary school; warehouse experience typically requested",
+    "Inventory, warehouse staff coordination, safety and reporting"
+   ],
+   [
+    "DHL Supply Chain · Operations Supervisor, Distribution",
+    "Operations or leadership experience; education requirements vary",
+    "KPI monitoring, workforce planning, safety and continuous improvement"
+   ],
+   [
+    "Amazon · Area Manager II",
+    "Leadership experience and one of the education/service routes in advertisement",
+    "Team leadership, performance metrics, process improvement; Lean experience an asset"
+   ]
+  ],
+  "note": "Note. Advertisements are listed with links in Table A3."
+ },
+ "Table 5": {
+  "head": [
+   "Requirement",
+   "Ads (of 10)",
+   "Current evidence in my profile",
+   "Planned action"
+  ],
+  "rows": [
+   [
+    "Stakeholder communication",
+    "10",
+    "Freight-status updates at GLT",
+    "Lead with it in the headline, About and GLT entry"
+   ],
+   [
+    "Excel or Microsoft Office",
+    "9",
+    "Microsoft Office listed in Skills",
+    "Confirm the Excel functions I can use independently"
+   ],
+   [
+    "Problem or exception resolution",
+    "9",
+    "Not yet described",
+    "Add a verified example under GLT or Garage"
+   ],
+   [
+    "Operational records and documents",
+    "8",
+    "Not yet described",
+    "Describe the records I handled once verified"
+   ],
+   [
+    "ERP, TMS, WMS or MRP",
+    "8",
+    "SAP ERP listed in Skills",
+    "Attach SAP ERP to the role where I used it; add other systems only with evidence"
+   ],
+   [
+    "Inventory or stock control",
+    "7",
+    "Stock movement and replenishment at Garage",
+    "Keep in the Garage entry and Skills"
+   ],
+   [
+    "Shipment scheduling or tracking",
+    "6",
+    "Freight-status updates at GLT",
+    "Keep in the GLT entry and About"
+   ],
+   [
+    "Reporting, KPI or trend analysis",
+    "6",
+    "KPI-related skills, Power BI and Colombina indicator projects",
+    "Featured Power BI variance report"
+   ]
+  ],
+  "note": "Note. Counts from Figure 5; posting-level codes in Table A1."
+ },
+ "Table 6": {
+  "head": [
+   "Audience",
+   "Role in the hiring process",
+   "Priority information"
+  ],
+  "rows": [
+   [
+    "Talent acquisition / HR",
+    "Search, screen and coordinate applications",
+    "Matching titles, qualifications and skills"
+   ],
+   [
+    "External recruiters / headhunters",
+    "Source candidates for client vacancies",
+    "Relevant specialization and availability"
+   ],
+   [
+    "Logistics / operations managers",
+    "Evaluate operational fit and supervise teams",
+    "Examples of coordination, reliability and problem solving"
+   ],
+   [
+    "Industry peers / contacts",
+    "Share vacancies, refer candidates and exchange expertise",
+    "Genuine interests, network participation and useful work"
+   ]
+  ],
+  "note": ""
+ },
+ "Table 7": {
+  "head": [
+   "Occupation",
+   "Low (CAD/year)",
+   "Median (CAD/year)",
+   "High (CAD/year)"
+  ],
+  "rows": [
+   [
+    "Transportation logistics coordinator",
+    "$44,990",
+    "$61,339",
+    "$93,163"
+   ],
+   [
+    "Transportation logistics supervisor",
+    "$41,392",
+    "$60,008",
+    "$93,600"
+   ]
+  ],
+  "note": "Note. Annual values assume 2,080 hours per year (40 hours × 52 weeks). Data from Government"
+ },
+ "Table 8": {
+  "head": [
+   "Element",
+   "Decision LinkedIn Profile Review",
+   "How it will be evidenced"
+  ],
+  "rows": [
+   [
+    "Product",
+    "Freight coordination and inventory operations",
+    "GLT and Garage duties, education and a work sample"
+   ],
+   [
+    "Price",
+    "CAD 50,000–65,000 as an initial comparison",
+    "Check the location, scope, schedule and posted pay"
+   ],
+   [
+    "Place",
+    "LinkedIn and employer career pages",
+    "Focused profile, local job searches and direct applications"
+   ],
+   [
+    "Promotion",
+    "Practical examples and sector conversations",
+    "Posts, comments, a Featured item and relevant connections"
+   ]
+  ],
+  "note": ""
+ },
+ "Table 9": {
+  "head": [
+   "Stage",
+   "Action I Will Take",
+   "Evidence of Completion"
+  ],
+  "rows": [
+   [
+    "Record the baseline",
+    "Save the profile and available analytics. Retrieve the exact connections count, following count, post breakdown and any available seven- day view count before editing.",
+    "Dated profile and analytics evidence, baseline values and Resume Worded report when available."
+   ],
+   [
+    "Revise the profile",
+    "Apply the selected banner, headline, About text and Experience wording. Reorder the skills and check the English and Spanish versions.",
+    "Before-and-after profile sections and a list of keywords added, retained or moved."
+   ],
+   [
+    "Add evidence of my work",
+    "Choose an existing analytics project or prepare a labelled inventory example. Add the work sample to Featured and explain the decision it supports.",
+    "Featured item and a copy or link that shows the analysis and data source."
+   ],
+   [
+    "Publish and interact",
+    "Share a practical post on freight updates or inventory accuracy. Leave substantive comments and connect with relevant people in local logistics.",
+    "Links to posts and a record of relevant comments or connections."
+   ],
+   [
+    "Compare results",
+    "Record the final analytics using equivalent measurement windows. Compare the profile text, review feedback and performance by post.",
+    "Completed Table 10, a post-by-post record and dated after evidence."
+   ]
+  ],
+  "note": ""
+ },
+ "Table 10": {
+  "head": [
+   "Metric",
+   "First Day Last Day Change November 11, 2026 Date: __________"
+  ],
+  "rows": [
+   [
+    "People who follow me",
+    "1,085"
+   ],
+   [
+    "Connections",
+    "1,077"
+   ],
+   [
+    "Profile viewers in 90 days",
+    "3"
+   ],
+   [
+    "Weekly search appearances",
+    "6 (October 27–November 2)"
+   ],
+   [
+    "Posts in the dashboard activity window",
+    "0 shown (November 5–11)"
+   ],
+   [
+    "Articles published",
+    "0"
+   ],
+   [
+    "Photo posts",
+    "0"
+   ],
+   [
+    "Video posts",
+    "0"
+   ],
+   [
+    "Text, document and other posts",
+    "0"
+   ],
+   [
+    "Post impressions in seven days",
+    "0 shown"
+   ],
+   [
+    "Views by post or format, where available",
+    "Not recorded"
+   ],
+   [
+    "Reactions on posts",
+    "Not recorded"
+   ],
+   [
+    "Comments on my posts",
+    "Not recorded"
+   ],
+   [
+    "Search keywords used in my profile",
+    "See the first-day keyword list in the profile analytics section."
+   ]
+  ],
+  "note": ""
+ },
+ "Table A1": {
+  "head": [
+   "ID and advertisement",
+   "Evidence and qualification examples",
+   "Codes"
+  ],
+  "rows": [
+   [
+    "A · Rolls Right Logistics Coordinator · Vancouver (Rolls Right, n.d.)",
+    "Truck routing and tracking, bills of lading, Office, TMS, and customer issue resolution. Relevant experience may substitute for a preferred degree.",
+    "C, D, T, X, S, P"
+   ],
+   [
+    "B · Domtar Traffic Office Coordinator · Surrey (Domtar, n.d.)",
+    "Shipment entry and closeout, carrier emails, completed files, and issue resolution with planners. SAP is an asset.",
+    "C, D, S, P"
+   ],
+   [
+    "C · Rhenus Logistics Ocean Freight Coordinator · Richmond (Rhenus Logistics, n.d.)",
+    "Bookings, tracking, freight documents, claims and status reports. Three or more years in freight forwarding or logistics with strong ocean experience.",
+    "C, D, T, X, P, K"
+   ],
+   [
+    "D · DSV Logistics Coordinator · Richmond (DSV, n.d.)",
+    "Truck tracking, filing, warehouse orders and load counts. Office and WMS are named. Dangerous Goods Certification is an asset.",
+    "C, D, T, X, S, I, P"
+   ],
+   [
+    "E · Aston Carter Logistics Coordinator · Richmond (Aston Carter, n.d.)",
+    "Schedules and customs records, carrier performance, inventory and claims. One to two years of related experience. SAP and intermediate Excel appear under additional qualifications.",
+    "C, D, T, X, S, I, P, K"
+   ],
+   [
+    "F · Hecny Transportation Canada Logistics Operations Coordinator · Vancouver (Hecny Transportation Canada, n.d.)",
+    "Tracks cross-border loads, maintains WMS inventory and follows up on exceptions. Excel and Outlook are listed. Working English plus Mandarin or Cantonese is requested.",
+    "C, D, T, X, S, I, P"
+   ],
+   [
+    "G · Redwood Employment Inventory Control Specialist · Surrey (Redwood Employment, n.d.)",
+    "Cycle counts, audit records, discrepancy investigations, ERP and inventory analysis. Five or more years in manufacturing inventory or supply chain roles.",
+    "C, D, X, S, I, P, K"
+   ],
+   [
+    "H · Seaspan Inventory Coordinator · North Vancouver (Seaspan, n.d.)",
+    "Cycle counts, stock accuracy, variance analysis and KPI reporting. Advanced Excel and MRP/ERP. Five years of manufacturing inventory and reporting experience.",
+    "C, X, S, I, P, K"
+   ],
+   [
+    "I · Sandvik Inventory Coordinator · Surrey (Sandvik, n.d.)",
+    "Stock parameters, inventory counts, demand planning support and performance reporting. Inventory experience and Excel are listed.",
+    "C, X, I, K"
+   ],
+   [
+    "J · Holland Imports Purchasing Planner and Inventory Analyst · Burnaby (Holland Imports, n.d.)",
+    "Tracks factory and shipping milestones, manages POs, forecasts and inventory parameters. ERP and advanced Excel. SCMP or APICS/CPIM is preferred.",
+    "C, D, T, X, S, I, P, K"
+   ]
+  ],
+  "note": "Note. C = stakeholder communication, D = operational records and documents, T = shipment"
+ },
+ "Table A2": {
+  "head": [
+   "ID Link to job description",
+   "Source type"
+  ],
+  "rows": [
+   [
+    "A Rolls Right · Logistics Coordinator · Vancouver",
+    "Employer or staffing firm career page"
+   ],
+   [
+    "B Domtar · Traffic Office Coordinator · Surrey",
+    "Employer or staffing firm career page"
+   ],
+   [
+    "C Rhenus Logistics · Ocean Freight Coordinator · Richmond",
+    "Employer or staffing firm career page"
+   ],
+   [
+    "D DSV · Logistics Coordinator · Richmond",
+    "LinkedIn job ad"
+   ],
+   [
+    "E Aston Carter · Logistics Coordinator · Richmond",
+    "LinkedIn job ad"
+   ],
+   [
+    "F Hecny Transportation Canada · Logistics Operations Coordinator · Vancouver",
+    "LinkedIn job ad"
+   ],
+   [
+    "G Redwood Employment · Inventory Control Specialist · Surrey",
+    "Employer or staffing firm career page"
+   ],
+   [
+    "H Seaspan · Inventory Coordinator · North Vancouver",
+    "Public copy of employer job text"
+   ],
+   [
+    "I Sandvik · Inventory Coordinator · Surrey",
+    "Public copy of employer job text"
+   ],
+   [
+    "J Holland Imports · Purchasing Planner and Inventory Analyst · Burnaby",
+    "Public copy of employer job text"
+   ],
+   [
+    "Additional LinkedIn Job Advertisements From the National Comparison",
+    ""
+   ],
+   [
+    "CPKC · Assistant Trainmaster (Canadian Pacific Kansas City, n.d.)",
+    "Rail operations and supervision"
+   ],
+   [
+    "Normandin Transit · Logistics Coordinator (Normandin Transit, n.d.)",
+    "Freight coordination in Quebec"
+   ],
+   [
+    "Canada Post · Supervisor Operations Relief (Canada Post, n.d.)",
+    "Frontline operations supervision"
+   ],
+   [
+    "Purolator · Operations Coordinator Hub Yard (Purolator, n.d.)",
+    "Parcel hub and yard coordination"
+   ],
+   [
+    "Mullen Group · Senior Transportation Applications Specialist (Mullen Group, n.d.)",
+    "Specialized transportation systems"
+   ],
+   [
+    "FedEx · Operations Administrator II (FedEx Canada, n.d.)",
+    "Operations administration"
+   ],
+   [
+    "UPS · Distribution Supervisor I (UPS, n.d.)",
+    "Warehouse supervision"
+   ],
+   [
+    "DHL Supply Chain · Operations Supervisor (DHL Supply Chain, 2026)",
+    "Distribution supervision"
+   ],
+   [
+    "Amazon · Area Manager II (Amazon, 2026)",
+    "Fulfilment and team management"
+   ]
+  ],
+  "note": ""
+ },
+ "Table A3": {
+  "head": [
+   "LinkedIn job advertisement",
+   "Operating context"
+  ],
+  "rows": [
+   [
+    "CPKC · Assistant Trainmaster (Canadian Pacific Kansas City, n.d.)",
+    "Rail operations and supervision"
+   ],
+   [
+    "Normandin Transit · Logistics Coordinator (Normandin Transit, n.d.)",
+    "Freight coordination in Quebec"
+   ],
+   [
+    "Canada Post · Supervisor Operations Relief (Canada Post, n.d.)",
+    "Frontline operations supervision"
+   ],
+   [
+    "Purolator · Operations Coordinator Hub Yard (Purolator, n.d.)",
+    "Parcel hub and yard coordination"
+   ],
+   [
+    "Mullen Group · Senior Transportation Applications Specialist (Mullen Group, n.d.)",
+    "Specialized transportation systems"
+   ],
+   [
+    "FedEx · Operations Administrator II (FedEx Canada, n.d.)",
+    "Operations administration"
+   ],
+   [
+    "UPS · Distribution Supervisor I (UPS, n.d.)",
+    "Warehouse supervision"
+   ],
+   [
+    "DHL Supply Chain · Operations Supervisor (DHL Supply Chain, 2026)",
+    "Distribution supervision"
+   ],
+   [
+    "Amazon · Area Manager II (Amazon, 2026)",
+    "Fulfilment and team management"
+   ]
+  ],
+  "note": ""
+ },
+ "Table C1": {
+  "head": [
+   "Evidence",
+   "What I Will Attach",
+   "Link to My Analysis"
+  ],
+  "rows": [
+   [
+    "Profile sections",
+    "Before and after views of my headline, banner, About, Experience and Skills. Include Featured once it is published.",
+    "Show the revised wording and identify the vacancy requirement each change addresses."
+   ],
+   [
+    "Network counts",
+    "Dated views showing followers, following and exact connections when available.",
+    "Use the same source for first and last day. Enter both totals and the difference in Table 10."
+   ],
+   [
+    "Profile visibility",
+    "Dated views of weekly search appearances and profile viewers. Show the date ranges",
+    "Compare like periods. Keep weekly views"
+   ],
+   [
+    "",
+    "and any searcher data the account displays.",
+    "and rolling 90-day viewers on separate rows."
+   ],
+   [
+    "Content performance",
+    "A list of posts by format and date, each post link, and its impressions, reactions, views and comments when available.",
+    "Attach individual post analytics and the overall dashboard. Record the observation window."
+   ],
+   [
+    "Search keywords",
+    "The exact before-and-after text or a marked list of role titles, skills and other terms, with the section for each term.",
+    "Explain what moved, what was added and why it reflects my actual experience."
+   ],
+   [
+    "Tool feedback",
+    "Original and updated Resume Worded results if available, plus the ChatGPT assessment notes above and my review of the suggestions.",
+    "Report observed feedback and identify which suggestions I used."
+   ]
+  ],
+  "note": ""
+ },
+ "Table C2": {
+  "head": [
+   "Date, Format and Link",
+   "Capture Date or Window",
+   "Impressions",
+   "Views",
+   "Reactions",
+   "Comments"
+  ],
+  "rows": [],
+  "note": ""
+ }
+}
