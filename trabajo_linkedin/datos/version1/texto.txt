@@ -1,0 +1,1226 @@
+[0] p3 x113: ## In-Depth LinkedIn Optimization With Marketing Management Techniques
+
+[1] p3 x233: ## Canadian Logistics Industry
+
+[2] p3 x231: Maria Juliana Velasquez Recio
+
+[3] p3 x246: [Department, Institution]
+
+[4] p3 x217: MRKT-621: Marketing Management
+
+[5] p3 x262: [Instructor Name]
+
+[6] p3 x249: [Assignment Due Date]
+
+[7] p4 x248: ## Research and Analysis
+
+[8] p4 x72: ## Target Industry: Canadian Logistics
+
+[9] p4 x108: [[The project focuses on logistics in Canada, with particular interest in freight transportation and the digital services that help firms book and coordinate shipments. Innovation, Science and Economic Development Canada (2018) defines logistics as the planning, implementation, and control of the movement and storage of goods, services, and related information. In business practice, these activities connect suppliers, production sites, warehouses, carriers, and customers. Freight transportation is central to that process, but reliable distribution also depends on inventory control, order processing, and the exchange of accurate information.]]
+
+[10] p4 x108: [[The industry is closely tied to Canada’s domestic economy and international trade.]] Transport Canada (2025b) reports that transportation and warehousing contributed CAD 96.5 billion, or 4.3% of national GDP, in 2024. International merchandise trade was approximately CAD 1.55 trillion that year, by value road transportation carried 46%, marine transport 21.1%, air 11.6%, and rail 10.5%. These figures describe the transportation and warehousing sector and merchandise flows, respectively.
+
+[11] p4 x108: Mordor Intelligence (2026) estimates that freight transportation accounted for 60.88% of the Canadian freight and logistics market in 2025. That scale, combined with the growing use of digital freight marketplaces, makes this field a relevant starting point for examining employers and the qualifications they seek. [[Freightera, a Vancouver-based business-to-business platform for comparing and booking shipments, provides a useful example of this type of service (Freightera, n.d.-a).]]
+
+[12] p5 x72: ## Historical Market Performance, 2021–2025
+
+[13] p5 x108: [[Ken Research (n.d.) estimates that the market increased from USD 97 billion in 2021 to USD 112 billion in 2025, a cumulative gain of approximately 15.5%. Growth was concentrated in the first two years and slowed substantially afterward.]]
+
+[14] p5 x72: ## Table 1
+
+[15] p5 x72: Estimated Canadian Logistics Market Value, 2021–2025
+
+[16] p5 x139: ## Year USD billions Year-over-year growth
+
+[17] p5 x78: 2021 97 7.8%
+
+[18] p5 x78: 2022 105 8.2%
+
+[19] p5 x78: 2023 108 2.9%
+
+[20] p5 x78: 2024 111 2.8%
+
+[21] p5 x78: 2025 112 0.9%
+
+[22] p6 x72: ## Figure 1
+
+[23] p6 x72: Estimated Market Value of the Canadian Logistics Industry, 2021–2025
+
+[24] p6 x72: ## 2021: Recovery Exposed Supply-chain Weaknesses
+
+[25] p6 x108: [[Freight demand recovered as commercial activity resumed after the initial COVID-19 restrictions. Transport Canada (2022) documented higher port container traffic and increased truck crossings compared with 2020, reflecting the return of trade flows. Yet the transportation network remained vulnerable: container scarcity, overseas shipping delays, wildfires, and severe flooding in British Columbia disrupted key routes. End to end container transit from Shanghai to Toronto via West Coast ports averaged 34.5 days, well above the 2019 level of 25.9 days reported in Transport Canada’s historical series (Transport Canada, 2026).]]
+
+[26] p7 x72: ## 2022: Strong Market Value, Persistent Congestion
+
+[27] p7 x108: [[The market estimate rose to USD 105 billion, its strongest annual growth in the period (Ken Research, n.d.). Export demand for Canadian commodities benefited from upheaval in world supply markets, while imported goods continued to put pressure on terminals and inland connections (Transport Canada, 2023).]] The average Shanghai - Toronto container journey reached 39.9 days in 2022, the longest of the five years reviewed (Transport Canada, 2026). [[Freight prices and capacity constraints contributed to the higher market value, but neither should be interpreted as proof of better service or higher physical volumes.]]
+
+[28] p7 x72: ## 2023: Weaker Goods Demand and Labour Disruption
+
+[29] p7 x108: [[Growth slowed to 2.9% as inflation, higher financing costs, and softer spending reduced demand for some imported and industrial goods (Ken Research, n.d.; Transport Canada, 2024). The July 2023 labour dispute at British Columbia ports was especially disruptive. Statistics Canada (2023) reported that, relative to June, merchandise imports cleared through those ports fell 18.5% and exports departing them fell 23.0%; the figures were not seasonally adjusted. The Shanghai - Toronto transit measure improved to 35.0 days, though part of that relief reflected reduced congestion as demand eased (Transport Canada, 2026).]]
+
+[30] p7 x72: ## 2024: Recovery Differed by Corridor
+
+[31] p7 x108: [[The market estimate reached USD 111 billion, up 2.8% (Ken Research, n.d.). Freight volumes recovered in several transport modes, but results varied across Canadian gateways. Transport Canada (2025a) reported higher container activity at major ports alongside continued interruptions from labour disputes and extreme weather. Online retail remained a meaningful source of distribution demand: Statistics Canada (2026a) measured CAD 73.7 billion in e-commerce operating revenue for 2024, 9.0% above 2023.]]
+
+[32] p8 x108: ## 2025: Trade Reorientation Reshaped Freight Flows
+
+[33] p8 x108: [[The market estimate edged up to USD 112 billion, an increase of just 0.9% (Ken Research, n.d.). Transport Canada (2026) found that Canadian merchandise exports to the United States fell about 5%, while exports to non U.S. markets climbed roughly 16%. Truck entries into Canada decreased by about 5% and U.S. linked rail freight weakened, but marine gateways gained from overseas trade. The Port of Vancouver handled a record 170.4 million metric tonnes, 8% above 2024. Container transit from Shanghai to Toronto improved to 33.3 days, although it remained noticeably slower than in 2019 (Transport Canada, 2026).]]
+
+[34] p8 x72: ## Interpretation of the Historical Trend
+
+[35] p8 x108: [[The period began with a demand rebound that exceeded parts of the network’s practical capacity. As shipping conditions normalized, freight activity weakened in some routes and service reliability gradually improved. By 2025, trade policy was changing the geography of freight demand: transborder trucking faced pressure while ocean oriented corridors gained business. For employers, this history makes shipment visibility, contingency planning, customer communication, and adaptable routing more valuable than a narrow focus on shipment growth alone.]]
+
+[36] p8 x72: ## Current Market and Outlook, 2026–2031
+
+[37] p8 x108: [[Mordor Intelligence (2026) places the freight and logistics market at USD 111.66 billion in 2025 and USD 116.63 billion in 2026. Its forecast reaches USD 145.05 billion by 2031, implying a 4.45% compound annual growth rate.]]
+
+[38] p9 x72: ## Figure 2
+
+[39] p9 x72: Projected Canadian Logistics Market Value, 2026–2031
+
+[40] p9 x108: [[Conditions during 2026 help explain both the opportunity and the risk. Statistics Canada (2026b) reports that real GDP increased 0.8% in the second quarter, supported by exports, spending, and investment. At the same time, the Bank of Canada (2026) projects 1.0% real GDP growth for 2026 and warns of persistent energy-price pressures and uncertainty over U.S. trade policy. Its October report forecasts annual inflation of 2.9% in 2026 and 3.1% in 2027. Higher fuel and input costs could compress margins for road-freight operators even if the nominal value of logistics services rises.]]
+
+[41] p10 x108: [[Online commerce is likely to sustain demand for fulfilment, warehousing, and parcel delivery. Mordor Intelligence (2026) forecasts faster growth in courier, express, and parcel services than in the overall market, consistent with the expansion of online retail documented by Statistics Canada (2026a). Trade diversification also supports port, rail, and intermodal services,]] particularly when exporters need alternatives to established U.S.-focused corridors (Transport Canada, 2026).
+
+[42] p10 x108: [[Digital systems can help companies plan routes, track exceptions, and coordinate shipments, but their value depends on workflow integration and employee capabilities. Freight marketplaces such as Freightera already demonstrate how shippers can compare carriers and manage documentation online (Freightera, n.d.-a). Meanwhile, environmental performance remains material: transport was responsible for approximately 22% of Canada’s greenhouse gas emissions in 2024, including both passenger and freight activity (Transport Canada, 2026). For logistics providers, fuel efficiency, network utilization, and lower-emission modes could become competitive considerations alongside price and service.]]
+
+[43] p10 x108: [[The outlook is therefore cautiously positive. Demand is expected to shift toward specialized, data enabled services, although labour availability, energy costs, climate-related disruption, and North American trade conditions may affect the pace of growth.]]
+
+[44] p10 x72: ## Market Segmentation and Selected Segment
+
+[45] p10 x108: [[For the purpose of this assignment, logistics is segmented by service rather than by customer demographics. Mordor Intelligence (2026) distinguishes freight transportation, freight forwarding, warehousing and storage, and courier, express, and parcel services.]]
+
+[46] p10 x72: ## Table 2
+
+[47] p10 x72: Main Service Segments of Canadian Freight and Logistics
+
+[48] p10 x129: ## Segment Core activities Employment relevance
+
+[49] p10 x78: Freight transportation Truck, rail, air, and sea
+
+[50] p10 x234: movement
+
+[51] p10 x390: Dispatch, routing, fleet and
+
+[52] p10 x390: transport coordination
+
+[53] p10 x78: Freight forwarding Arranging domestic or
+
+[54] p10 x234: international shipments
+
+[55] p10 x390: Carrier selection, documentation
+
+[56] p10 x390: and customer service
+
+[57] p11 x129: ## Segment Core activities Employment relevance
+
+[58] p11 x78: Warehousing and storage Inventory storage and order
+
+[59] p11 x234: handling
+
+[60] p11 x390: Warehouse supervision,
+
+[61] p11 x390: inventory and reporting
+
+[62] p11 x78: Courier, express, parcel Time-sensitive packages and
+
+[63] p11 x234: last-mile delivery
+
+[64] p11 x390: Hub operations and distribution
+
+[65] p11 x390: planning
+
+[66] p11 x108: [[I selected freight transportation, with an emphasis on road freight and digital brokerage. Mordor Intelligence (2026) estimates that freight transportation generated 60.88% of market revenue in 2025 and that road freight represented 60.97% of freight transportation revenue.]] Freightera illustrates this segment through LTL, FTL, flatbed and cross-border options (Freightera, n.d.-a).
+
+[67] p11 x72: ## Leading Companies Operating in Canada
+
+[68] p11 x108: The following comparison includes major Canada based transport groups, together with multinational operators relevant to the target career paths. In particular, the consolidated figures for CN, CPKC, and TFI include operations outside Canada, while multinational companies such as FedEx, UPS, DHL, and Amazon do not report a directly comparable Canada-only logistics revenue measure in the sources examined.
+
+[69] p11 x72: ## Table 3
+
+[70] p11 x72: Selected Logistics Employers and Main Activities
+
+[71] p11 x144: ## Company or group Principal activity
+
+[72] p11 x78: CN Rail freight and intermodal services
+
+[73] p11 x78: CPKC Rail freight across Canada, the United States, and
+
+[74] p11 x312: Mexico
+
+[75] p11 x78: TFI International Truckload, LTL and transportation services
+
+[76] p11 x78: Mullen Group Trucking, logistics and warehousing
+
+[77] p12 x144: ## Company or group Principal activity
+
+[78] p12 x78: Cargojet Air cargo services
+
+[79] p12 x78: Canada Post / Purolator Postal, courier and parcel delivery
+
+[80] p12 x78: FedEx / UPS / DHL Express delivery, freight and contract logistics
+
+[81] p12 x78: Amazon E-commerce fulfilment and distribution
+
+[82] p12 x78: Freightera Digital freight marketplace and shipment
+
+[83] p12 x312: coordination
+
+[84] p12 x108: Among the five transport companies selected for financial comparison, CN reported CAD 17.304 billion in 2025 revenue, ahead of CPKC at CAD 15.078 billion (Canadian National Railway, 2026; Canadian Pacific Kansas City, 2026). [[TFI International reported USD 7.885 billion; converted using the Bank of Canada’s 2025 average rate of CAD 1.3978 per U.S. dollar, this is approximately CAD 11.02 billion (Bank of Canada, n.d.; TFI International, 2026). Mullen Group reported CAD 2.134 billion and Cargojet CAD 0.993 billion (Cargojet, 2026; Mullen Group, 2026).]]
+
+[85] p13 x72: ## Figure 3
+
+[86] p13 x72: 2025 Consolidated Revenue of Selected Freight Transportation Companies
+
+[87] p13 x108: [[The revenue-growth comparison conveys a different picture. Mullen Group posted a 7.3% increase in 2025, but its management attributed the increase to acquisitions rather than stronger underlying freight demand (Mullen Group, 2026). CPKC grew approximately 3.7%, CN 1.5%, while Cargojet and TFI International reported declines of around 0.8% and 6.1%, respectively (Canadian National Railway, 2026; Canadian Pacific Kansas City, 2026; Cargojet, 2026; TFI International, 2026). Canada Post’s 4.7% revenue decline reflected labour uncertainty and lost parcel business (Canada Post, 2026). These percentages compare different business models and revenue bases, so they should not be read as a ranking of operational efficiency. Figure 4 shows the annual changes for the companies in the comparison.]]
+
+[88] p14 x72: ## Figure 4
+
+[89] p14 x72: Annual Revenue Growth for Selected Logistics Companies, 2024–2025
+
+[90] p14 x108: [[Freightera warrants separate treatment. In May 2025, the company reported 31.4% revenue growth for fiscal 2024 (Freightera, 2025), the reason why I included Freightera is because its digital marketplace illustrates the type of freight coordination I want to pursue.]]
+
+[91] p14 x72: ## Target Jobs and Employment Requirements
+
+[92] p14 x108: [[I started with a national sample of job advertisements to see how requirements change across operating environments. Table 4 includes dispatch and coordination, operational supervision, digital systems and cargo handling.]]
+
+[93] p14 x72: ## Table 4
+
+[94] p14 x72: LinkedIn Job Sample and Selected Qualifications
+
+[95] p14 x113: ## Employer / job Education or experience Skills / certifications
+
+[96] p15 x113: ## Employer / job Education or experience Skills / certifications
+
+[97] p15 x78: CPKC — Assistant Trainmaster Secondary school or
+
+[98] p15 x231: equivalent; rail operating
+
+[99] p15 x231: background an asset
+
+[100] p15 x371: Train/yard plans, compliance, staff
+
+[101] p15 x371: supervision; conductor qualification
+
+[102] p15 x371: may need to be obtained or
+
+[103] p15 x371: maintained
+
+[104] p15 x78: TFI / Normandin Transit —
+
+[105] p15 x78: Logistics Coordinator
+
+[106] p15 x231: High school required;
+
+[107] p15 x231: transportation experience
+
+[108] p15 x231: and postsecondary study are
+
+[109] p15 x231: assets
+
+[110] p15 x371: Shipment tracking, TMS, Microsoft
+
+[111] p15 x371: Office, customer communication;
+
+[112] p15 x371: bilingualism an asset
+
+[113] p15 x78: Canada Post — Supervisor,
+
+[114] p15 x78: Operations Relief
+
+[115] p15 x231: High school; 1 year
+
+[116] p15 x231: managing a team OR 2 years
+
+[117] p15 x231: in a unionized workplace
+
+[118] p15 x371: Daily scheduling, safety,
+
+[119] p15 x371: productivity reports, Microsoft
+
+[120] p15 x371: Office; postsecondary education an
+
+[121] p15 x371: asset
+
+[122] p15 x78: Purolator — Operations
+
+[123] p15 x78: Coordinator Hub Yard
+
+[124] p15 x231: No fixed diploma or years of
+
+[125] p15 x231: experience stated; linehaul
+
+[126] p15 x231: knowledge preferred
+
+[127] p15 x371: Yard checks, equipment
+
+[128] p15 x371: assignments, numeracy, English and
+
+[129] p15 x371: communication
+
+[130] p15 x78: Mullen Group — Senior
+
+[131] p15 x78: Transportation Applications
+
+[132] p15 x78: Specialist
+
+[133] p15 x231: Postsecondary study in
+
+[134] p15 x231: logistics/business/IS or
+
+[135] p15 x231: equivalent experience
+
+[136] p15 x371: TMS, ERP integration, analytics,
+
+[137] p15 x371: troubleshooting and user training
+
+[138] p15 x78: FedEx Canada — Operations
+
+[139] p15 x78: Administrator II
+
+[140] p15 x231: High school/GED and 2
+
+[141] p15 x231: years customer service,
+
+[142] p15 x231: clerical or related experience
+
+[143] p15 x371: Documentation, data entry, customer
+
+[144] p15 x371: service and Microsoft Office
+
+[145] p15 x78: UPS — Distribution Supervisor
+
+[146] p15 x78: I
+
+[147] p15 x231: Secondary school;
+
+[148] p15 x231: warehouse experience
+
+[149] p15 x231: typically requested
+
+[150] p15 x371: Inventory, warehouse staff
+
+[151] p15 x371: coordination, safety and reporting
+
+[152] p15 x78: DHL Supply Chain —
+
+[153] p15 x78: Operations Supervisor -
+
+[154] p15 x78: Distribution
+
+[155] p15 x231: Operations or leadership
+
+[156] p15 x231: experience; education
+
+[157] p15 x231: requirements vary
+
+[158] p15 x371: KPI monitoring, workforce
+
+[159] p15 x371: planning, safety and continuous
+
+[160] p15 x371: improvement
+
+[161] p15 x78: Amazon — Area Manager II Leadership experience and
+
+[162] p15 x231: one of the education/service
+
+[163] p15 x231: routes in advertisement
+
+[164] p15 x371: Team leadership, performance
+
+[165] p15 x371: metrics, process improvement; Lean
+
+[166] p15 x371: experience an asset
+
+[167] p16 x108: [[Across the sample, coordination and customer facing roles repeatedly call for accurate documentation, Microsoft Office, shipment monitoring, and communication. Supervisory positions add staff management and safety accountability. More specialized opportunities require]] knowledge of railway rules, air cargo procedures, or transportation software. [[This difference matters when optimizing a professional profile, because a broad logistics headline may attract general attention, but concrete evidence of coordination, reporting, and systems knowledge is more directly relevant to the entry and intermediate roles selected here (Government of Canada, n.d.-a; employer postings in Appendix A).]]
+
+[168] p16 x108: [[I narrowed my search to Logistics Coordinator, Transportation Coordinator, Operations Coordinator and comparable operations-support roles. Inventory Coordinator and distribution roles are a secondary optio]]
+
+[169] p16 x108: ## Competencies in Metro Vancouver Job Advertisements
+
+[170] p16 x108: [[To test that decision against the local market, I reviewed 10 advertisements in Vancouver, North Vancouver, Richmond, Surrey and Burnaby. Six describe freight or logistics operations and four describe inventory or planning work. I counted each competency once per posting if it appeared as a requirement, an asset or an explicit duty.]]
+
+[171] p16 x108: [[All 10 advertisements describe communication with customers, carriers, colleagues or other stakeholders. Nine mention Excel or Microsoft Office, and nine refer to solving problems or resolving exceptions. Eight include operational records and eight name an operating system such as ERP, TMS, WMS or MRP. Inventory or stock control appears in seven, while shipment scheduling or tracking and reporting or analysis appear in six each. The last two counts cover different roles. A shipment coordinator needs to keep freight visible, while an inventory coordinator is more likely to work with counts, discrepancies and performance reports.]]
+
+[172] p17 x72: ## Figure 5
+
+[173] p17 x72: Competencies Mentioned in the Metro Vancouver Job Sample
+
+[174] p17 x72: Note. The unit is one job advertisement. The 10 postings are listed and coded in Appendix A.
+
+[175] p17 x183: ## Segmentation, Targeting, and Positioning (STP)
+
+[176] p17 x108: I used segmentation, targeting and positioning to decide which part of the labour market to address and what I can offer it. Segmentation groups audiences by their needs, targeting identifies the groups to prioritize, and positioning defines the value I want those groups to associate with my profile (Gomez Albrecht et al., 2023).
+
+[177] p17 x72: ## Professional Audience Segmentation
+
+[178] p17 x108: Table 5 distinguishes the people who may encounter my profile and the role each group can play in the search.
+
+[179] p18 x72: ## Table 5
+
+[180] p18 x72: Professional Audience Segments for LinkedIn
+
+[181] p18 x128: ## Audience Role in the hiring process Priority information
+
+[182] p18 x78: Talent acquisition / HR Search, screen and coordinate
+
+[183] p18 x234: applications
+
+[184] p18 x390: Matching titles, qualifications
+
+[185] p18 x390: and skills
+
+[186] p18 x78: External recruiters / headhunters Source candidates for client
+
+[187] p18 x234: vacancies
+
+[188] p18 x390: Relevant specialization and
+
+[189] p18 x390: availability
+
+[190] p18 x78: Logistics / operations managers Evaluate operational fit and
+
+[191] p18 x234: supervise teams
+
+[192] p18 x390: Examples of coordination,
+
+[193] p18 x390: reliability and problem solving
+
+[194] p18 x78: Industry peers / contacts Share vacancies, refer
+
+[195] p18 x234: candidates and exchange
+
+[196] p18 x234: expertise
+
+[197] p18 x390: Genuine interests, network
+
+[198] p18 x390: participation and useful work
+
+[199] p18 x72: ## Priority Target Audiences
+
+[200] p18 x108: My primary audience is recruiters hiring for logistics, road freight and distribution in Metro Vancouver. I chose them because they screen candidates across roles with similar titles but different requirements.
+
+[201] p18 x108: My secondary audience is the operations managers who evaluate candidates for these roles.
+
+[202] p18 x108: ## Marketing Personas
+
+[203] p18 x108: I developed two personas from the vacancy descriptions and LinkedIn’s search guidance. Figure 6 captures their hiring decisions. I use the personas to decide what information each reader needs to find in my profile.
+
+[204] p19 x72: ## Figure 6
+
+[205] p19 x72: Marketing Personas for My LinkedIn Strategy
+
+[206] p19 x108: [[The recruiter persona is a talent acquisition specialist screening logistics and distribution applicants in Metro Vancouver, a broad headline forces this person to infer what I coordinated and whether my experience fits the vacancy.]]
+
+[207] p19 x108: [[The operations manager persona is responsible for a freight or warehouse team and needs someone who can keep an order moving when a plan changes. This reader needs evidence of how I handled a handoff or status update.]]
+
+[208] p19 x108: ## Positioning Statement
+
+[209] p19 x108: [[I want to be known for freight coordination and inventory operations, with data analytics as a way to support those responsibilities. My experience at GLT and Garage gives me two examples of operational follow through. My industrial engineering education and postgraduate study at Douglas College help explain why I am also interested in reporting, inventory accuracy and process improvement.]]
+
+[210] p20 x108: [[In practical terms, I will lead with my freight and inventory experience. I will use my headline to identify that direction and my About and Experience sections to explain the work]] behind it. [[Where I include a tool or a performance claim, I will connect it to a specific role, project or result that I can discuss.]]
+
+[211] p20 x186: ## Marketing Mix: The 4Ps of Personal Branding
+
+[212] p20 x108: [[I applied the four Ps to my LinkedIn strategy. Product describes the experience I offer, Price gives me a basis for discussing compensation, Place identifies where I will reach employers, and Promotion sets out how I will show my work and take part in conversations (Gomez Albrecht et al., 2023). Table 7 summarizes these decisions.]]
+
+[213] p20 x72: ## Product: The Professional Value Offered
+
+[214] p20 x108: [[My offer combines freight coordination at GLT Logistics, stockroom operations at Garage Clothing and earlier work in purchasing, planning and operational indicators. The advantage of that combination is practical. I can speak about the customer side of a shipment and the internal work needed to process and replenish stock. I will support the profile with descriptions of those responsibilities and a work sample that demonstrates my analytical skills.]]
+
+[215] p20 x72: ## Price: Salary Benchmark
+
+[216] p20 x108: [[The Government of Canada Job Bank reports national hourly wages of CAD 21.63 to 44.79 for transportation logistics coordinators, with a median of CAD 29.49; for transportation logistics supervisors, the published range is CAD 19.90 to 45.00, with a median of CAD 28.85 (Government of Canada, n.d.-b, n.d.-c). These observations mainly cover 2023–2024, and the pages were updated in November 2025.]]
+
+[217] p20 x108: ## Table 6
+
+[218] p20 x72: Canadian Wages for Selected Logistics Occupations
+
+[219] p20 x103: ## Occupation Low (CAD/year) Median (CAD/year) High (CAD/year)
+
+[220] p20 x78: Transportation logistics
+
+[221] p20 x78: coordinator
+
+[222] p20 x195: $44,990 $61,339 $93,163
+
+[223] p21 x103: ## Occupation Low (CAD/year) Median (CAD/year) High (CAD/year)
+
+[224] p21 x78: Transportation logistics
+
+[225] p21 x78: supervisor
+
+[226] p21 x195: $41,392 $60,008 $93,600
+
+[227] p21 x108: [[I will use CAD 50,000–65,000 as a preliminary comparison range for coordination roles, then adjust my expectations to the job’s scope, location and schedule. For example, DSV’s Richmond coordination posting started at CAD 47,000, and Sandvik’s Surrey inventory position advertised CAD 60,000–75,000 (DSV, n.d.-a; Sandvik, n.d.). The national wage benchmark and the local advertisements answer different questions.]]
+
+[228] p21 x72: ## Place: LinkedIn
+
+[229] p21 x108: [[LinkedIn is where I will present my work history and make it easier for people in logistics to find me. I will also use employer career sites when an advertisement directs me there. A focused title, an accurate location and relevant skills will help a recruiter assess fit (LinkedIn, n.d.-b, n.d.-f).]]
+
+[230] p21 x108: [[I will follow employers such as Freightera, Purolator, Rolls Right and DSV to learn what roles they advertise and what topics their teams discuss. I will look at each posting before applying, especially where the role requires a specific transport mode, language or operating system.]]
+
+[231] p21 x72: ## Promotion: Evidence and Sustainable Values
+
+[232] p21 x108: [[I will use short posts and comments to show how I think about operational work. One post can explain what a shipment update should include when an ETA changes. Another can show how I would check a discrepancy in an inventory count. I will use public data or an example I can share and answer comments that raise a specific question (LinkedIn, n.d.-a).]]
+
+[233] p22 x108: [[The market research also gives me a relevant sustainability topic. Transport Canada (2026) reports that transportation accounted for about 22% of Canada’s greenhouse gas emissions in 2024. Freightera (n.d.-b) describes options for lower-emission shipping. I could use these sources to discuss how load consolidation or mode selection affects both service and emissions, and relate the question to my interest in planning.]]
+
+[234] p22 x72: ## Table 7
+
+[235] p22 x72: 4Ps Applied to the Proposed LinkedIn Strategy
+
+[236] p22 x130: ## Element Decision How it will be evidenced
+
+[237] p22 x78: Product Freight coordination and
+
+[238] p22 x234: inventory operations
+
+[239] p22 x390: GLT and Garage duties,
+
+[240] p22 x390: education and a work sample
+
+[241] p22 x78: Price CAD 50,000–65,000 as an
+
+[242] p22 x234: initial comparison
+
+[243] p22 x390: Check the location, scope,
+
+[244] p22 x390: schedule and posted pay
+
+[245] p22 x78: Place LinkedIn and employer career
+
+[246] p22 x234: pages
+
+[247] p22 x390: Focused profile, local job
+
+[248] p22 x390: searches and direct applications
+
+[249] p22 x78: Promotion Practical examples and sector
+
+[250] p22 x234: conversations
+
+[251] p22 x390: Posts, comments, a Featured
+
+[252] p22 x390: item and relevant connections
+
+[253] p22 x243: ## LinkedIn Profile Review
+
+[254] p22 x108: [[The market analysis gave me criteria for reviewing my profile. A recruiter should be able to recognize the role I am targeting, and an operations manager should be able to see how my experience relates to the work. I began with LinkedIn’s guidance on completing the profile, then compared my existing wording with the skills and duties in the local advertisements.]]
+
+[255] p22 x72: ## Recommendations for a Logistics Profile
+
+[256] p23 x108: [[LinkedIn recommends a recognizable professional photo, a background image, an About section that explains my professional story, and Experience and Skills sections that reflect my career goals (LinkedIn, n.d.-b). The photograph needs to have clear lighting, a simple]] background and a crop that makes my face recognizable on a small screen. [[The banner can use the space beside the portrait to identify my area of work. Also it is important to test how it looks on both laptop and cellphone.]]
+
+[257] p23 x108: [[The headline should name the work I want to be found for and use terms that fit my experience. LinkedIn explains that people search is personalized and considers profile attributes and filters such as location (LinkedIn, n.d.-d). This makes the language of the vacancies a useful starting point for choosing terms. In my case, “Logistics Coordinator,” “Freight Transportation” and “Inventory Management” are more specific than “Logistics” on its own. I would use the role in the headline, explain the work in About and Experience, and attach a small set of relevant skills to the entries where I used them.]]
+
+[258] p23 x108: [[The About section can connect my experience across jobs. It should explain the work I have already done, what I can offer and what roles I am looking for. The Experience section is where I can be more specific about what I handled and who depended on the information. Like providing a status update, coordinating with a carrier or warehouse, and resolving an issue that affects a shipment. If I have a verified result, I can add its scope and period. When I only know the responsibility, describing it accurately is enough.]]
+
+[259] p23 x108: [[Skills and Featured serve different purposes. A skill such as SAP ERP helps describe what I can use. A work sample lets me show how I apply an analytical method. LinkedIn supports adding relevant work, education, skills and media to the profile (LinkedIn, n.d.-b). I would use a college project or a clearly labelled practice dataset to illustrate inventory analysis, and explain the question, the information used and the operational decision it supports.]]
+
+[260] p24 x72: ## Analysis of My Current Profile
+
+[261] p24 x72: ## Photo and Banner
+
+[262] p24 x108: [[My current photo already gives a clear view of my face against a light background. I would keep it if it is still current. My banner is readable and already includes “Logistics Coordinator,” which is relevant to my target roles. It also gives “Data Analyst” its own line, so the banner presents two possible directions. I would use “Freight Coordination and Inventory Operations” as the main message and let my education and work samples show the analytical side of my profile.]]
+
+[263] p24 x72: ## Headline and About
+
+[264] p24 x108: [[My headline currently reads “Industrial Engineering | Data Analytics | Logistics.” It identifies my training and interests, but a recruiter still has to open my experience to learn that I have coordinated freight. I would change it to “Logistics Coordinator | Freight Transportation and Inventory Management | Industrial Engineering.” I would keep my current job title in the Experience section. My profile lists Canada, and I would use Metro Vancouver as the location if it accurately describes where I am based and looking for work. My personalized URL and English and Spanish profile versions already give me a useful starting point.]]
+
+[265] p24 x108: [[My About section currently opens with “I am an Industrial Engineer with an emphasis on operations.” It describes purchasing, planning, stock and software, but the most relevant examples from GLT and Garage appear elsewhere. It also spends part of the space on general traits. I would keep the purchasing and planning context and use the first lines to show how my experience relates to freight and inventory.]]
+
+[266] p25 x72: ## Proposed About Text
+
+[267] p25 x108: [[I have a background in industrial engineering and experience in freight coordination, inventory and retail operations. At GLT Logistics, I kept customers informed about freight status and shared updates with the people involved in each shipment. In my current role at Garage Clothing in Burnaby, I coordinate stock movement, replenishment and shipment processing to keep the sales floor stocked.]]
+
+[268] p25 x108: [[Earlier in my career, I worked in purchasing and planning and supported projects to improve operational indicators. I completed postgraduate studies in data analytics at Douglas College. I am interested in logistics and inventory coordination roles in Metro Vancouver where I can use that experience to support day-to-day operations and reporting.]]
+
+[269] p25 x72: ## Experience and Education
+
+[270] p25 x108: [[The first lines of my Garage and GLT entries already point to relevant work. For Garage, I would write: “Coordinate daily stockroom activities, including inventory movement, replenishment and shipment processing to keep the sales floor stocked.” For GLT, I would write: “Provided freight-status updates to customers and shared shipment information with the people involved in coordinating deliveries.” I would add a second example under each role once I can describe it accurately, such as how I followed up on a shipment exception or handled a stock discrepancy.]]
+
+[271] p25 x108: [[My Colombina entries show that I supported projects to improve indicators and worked on standardizing responsibilities. Those examples help connect my earlier work to the operations and reporting side of my current search. I would keep the exact role titles and dates. I would also retain my industrial engineering education and Douglas College studies, and keep Google Project Management under Courses.]]
+
+[272] p26 x72: ## Skills, Languages and Featured
+
+[273] p26 x108: [[I already list Freight Transportation, Inventory Management, SAP ERP, Microsoft Office, Microsoft Power BI and KPI-related skills. Those entries give me a stronger starting point than a general list of personal qualities. I would put Logistics Coordination, Freight Transportation and Inventory Management higher, then associate SAP ERP, reporting or planning with the positions where I can explain their use. Some labels are duplicated across English and Spanish, including Planning and Planificación, and some have endorsements. I would review those endorsements before merging labels and retain the language proficiency information in Languages.]]
+
+[274] p26 x108: [[My Featured section is an opportunity to give an example of inventory analysis. One possible item is a short Power BI report comparing recorded stock with counted stock by product. I would show how I calculate the variance and explain which discrepancy I would investigate first.]]
+
+[275] p26 x72: ## Activity and Recommendations
+
+[276] p26 x108: [[My visible activity mainly consists of short congratulatory comments. Those interactions help me stay in touch, but they give a recruiter little information about my logistics interests. LinkedIn suggests sharing relevant professional knowledge and starting conversations (LinkedIn, n.d.-a). I would keep interacting with colleagues and add comments that contribute a practical point, such as what information a dispatch team needs when an ETA changes. I could also ask a former colleague or supervisor for a recommendation about specific work we did together.]]
+
+[277] p26 x72: ## Profile Assessment With ChatGPT and Resume Worded
+
+[278] p27 x108: [[I used ChatGPT to compare the text in my headline, About, Experience and Skills sections with the duties in the local advertisements. I asked it to identify which requirements were already supported by my profile, which were present but difficult to find and which needed]] more evidence. [[The comparison showed that my GLT and Garage entries already support freight communication, stock movement and shipment processing. The main gap was where that evidence appeared. My headline was broad, my About section did not connect both jobs, and some relevant skills were scattered across duplicate entries.]]
+
+[279] p27 x108: [[The comparison also identified areas where I need to check my evidence. Microsoft Office is already listed, but I need to confirm the Excel functions I can use independently. SAP ERP is listed, while the advertisements name several different systems. I will only add TMS, WMS, CargoWise or advanced Excel when I can show where I used them. This check is more useful to me than treating every missing word as a weakness. My prompt and an explanation of how I reviewed the output are included in Appendix C.]]
+
+[280] p27 x198: ## LinkedIn Analytics and Search Keywords
+
+[281] p27 x108: [[I recorded November 11, 2026, as the first day of the comparison. The dashboard showed 1,085 followers, zero post impressions in the displayed seven-day window and three profile viewers over 90 days. It also showed six search appearances for October 27–November 2. The profile displayed “500+ connections.”. These figures measure different things. A search appearance records discovery through search, a profile view reflects someone opening the profile, and post impressions measure exposure to content (LinkedIn, n.d.-c, n.d.-g).]]
+
+[282] p28 x108: [[For search optimization, the terms I already use include Industrial Engineering, Data Analytics, Logistics, Logistics Coordinator in my banner, Freight Transportation, Inventory Management, SAP ERP, Microsoft Office and Power BI. I will put the most relevant terms in the sections that support them. “Logistics Coordinator” can appear in my headline and GLT title, freight status updates in my About and GLT description, and inventory management and replenishment in Garage. Reporting and SAP ERP can remain where I can explain their use. If]] LinkedIn provides searcher details or search terms in my account, I will record exactly what it shows. [[My own keyword list is a separate inventory of the text I control.]]
+
+[283] p28 x108: [[I will use those measures to decide what to refine. If search appearances rise but profile views remain low, I will look again at the relevance of my headline and location to the jobs I am targeting. If views rise without relevant connections or conversations, I will check whether my Experience and Featured sections give a reader enough reason to contact me. If a post receives impressions but few reactions or comments, I will review its topic, opening and question before choosing the next one. Followers and connections will help me describe changes in my network, but I will also consider whether the people I reach work in the areas I have selected.]]
+
+[284] p28 x275: ## Action Plan
+
+[285] p28 x108: [[I will first record the complete baseline, then revise the parts of my profile that affect how recruiters understand my experience. The last day will be the date when I finish deploying the plan and record the final readings.]]
+
+[286] p28 x72: ## Table 8
+
+[287] p28 x72: Action Plan for My LinkedIn Profile
+
+[288] p28 x94: ## Stage Action I Will Take Evidence of Completion
+
+[289] p28 x72: Record the baseline
+
+[290] p28 x154: Save the profile and available analytics.
+
+[291] p28 x154: Retrieve the exact connections count,
+
+[292] p28 x154: following count, post breakdown and any
+
+[293] p28 x154: available seven-day view count before
+
+[294] p28 x154: editing.
+
+[295] p28 x360: Dated profile and analytics evidence,
+
+[296] p28 x360: baseline values and Resume Worded
+
+[297] p28 x360: report when available. Revise the profile
+
+[298] p28 x154: Apply the selected banner, headline, About
+
+[299] p28 x154: text and Experience wording. Reorder the
+
+[300] p28 x154: skills and check the English and Spanish
+
+[301] p28 x154: versions.
+
+[302] p28 x360: Before-and-after profile sections and
+
+[303] p28 x360: a list of keywords added, retained or
+
+[304] p28 x360: moved.
+
+[305] p29 x94: ## Stage Action I Will Take Evidence of Completion
+
+[306] p29 x72: Add evidence of my work
+
+[307] p29 x154: Choose an existing analytics project or
+
+[308] p29 x154: prepare a labelled inventory example. Add
+
+[309] p29 x154: the work sample to Featured and explain
+
+[310] p29 x154: the decision it supports.
+
+[311] p29 x360: Featured item and a copy or link that
+
+[312] p29 x360: shows the analysis and data source. Publish and interact
+
+[313] p29 x154: Share a practical post on freight updates or
+
+[314] p29 x154: inventory accuracy. Leave substantive
+
+[315] p29 x154: comments and connect with relevant people
+
+[316] p29 x154: in local logistics.
+
+[317] p29 x360: Links to posts and a record of
+
+[318] p29 x360: relevant comments or connections. Compare results
+
+[319] p29 x154: Record the final analytics using equivalent
+
+[320] p29 x154: measurement windows. Compare the
+
+[321] p29 x154: profile text, review feedback and
+
+[322] p29 x154: performance by post.
+
+[323] p29 x360: Completed Table 9, a post-by-post
+
+[324] p29 x360: record and dated after evidence.
+
+[325] p29 x72: ## First Publication Draft
+
+[326] p29 x108: [[When a pickup is delayed, the next person needs an update they can act on. I would include the last confirmed status, the revised ETA and who is following up. That gives the customer and the operations team a clear starting point for their next decision. If you work in freight or dispatch, what is the first thing you want to know when an ETA changes?]]
+
+[327] p29 x72: ## Key Measurements Before and After
+
+[328] p29 x108: [[I will compare my first day and last day values in Table 9.]]
+
+[329] p29 x108: ## Table 9
+
+[330] p29 x72: First-Day and Last-Day Comparison of My LinkedIn KPIs
+
+[331] p29 x133: ## Metric First Day
+
+[332] p29 x263: ## November 11, 2026
+
+[333] p29 x409: ## Last Day
+
+[334] p29 x417: ## Date:
+
+[335] p29 x403: ## __________
+
+[336] p29 x487: ## Change
+
+[337] p29 x72: People who follow me 1,085 Connections 1077 Profile viewers in 90 days 3 Weekly search appearances 6 (October 27–November 2) Posts in the dashboard activity window
+
+[338] p29 x237: 0 shown (November 5–11) Articles published 0
+
+[339] p30 x133: ## Metric First Day
+
+[340] p30 x263: ## November 11, 2026
+
+[341] p30 x409: ## Last Day
+
+[342] p30 x417: ## Date:
+
+[343] p30 x403: ## __________
+
+[344] p30 x487: ## Change
+
+[345] p30 x72: Photo posts 0 Video posts 0 Text, document and other posts 0 Post impressions in seven days 0 shown Views by post or format, where available
+
+[346] p30 x237: Not recorded Reactions on posts Not recorded Comments on my posts Not recorded Search keywords used in my profile
+
+[347] p30 x237: See the first-day keyword list in
+
+[348] p30 x237: the profile analytics section.
+
+[349] p30 x108: [[I will log each post’s date, format, link, impressions, views when available, reactions and comments. Impressions and views can differ by content format. If I compare individual posts, I will take the reading after the same elapsed time for each post. An increase in search appearances or views would indicate greater visibility during the measurement window. A recruiter message or a relevant discussion would show a different kind of result. Because I will be changing the profile and my activity together, I will interpret the difference as an observed change during the plan.]]
+
+[350] p30 x72: ## Before-and-After Evidence
+
+[351] p30 x108: [[Appendix B contains my first-day profile and dashboard evidence.. I will use the evidence checklist in Appendix C to capture the same screen or data source at each checkpoint. For any improvement I report, I will name the change, cite its evidence label and identify the period that the metric covers.]]
+
+[352] p31 x278: ## References
+
+[353] p31 x72: Amazon. (2026). Area manager II, YYZ4 [Job posting]. LinkedIn.
+
+[354] p31 x108: https://ca.linkedin.com/jobs/view/area-manager-ii-yyz4-at-amazon-4487056629 Aston Carter. (n.d.). Logistics coordinator [Job posting]. LinkedIn.
+
+[355] p31 x108: https://ca.linkedin.com/jobs/view/logistics-coordinator-at-aston-carter-4465678704 Bank of Canada. (n.d.). Annual exchange rates .
+
+[356] p31 x108: https://www.bankofcanada.ca/rates/exchange/annual-average-exchange-rates/ Bank of Canada. (2026, October 28). Monetary policy report—October 2026 .
+
+[357] p31 x108: https://www.bankofcanada.ca/publications/mpr/mpr-2026-10-28/ Canada Post. (n.d.). Supervisor, operations relief [Job posting]. LinkedIn.
+
+[358] p31 x108: https://ca.linkedin.com/jobs/view/supervisor-operations-relief-at-canada-post-postes-cana
+
+[359] p31 x108: da-4474416239 Canada Post. (2026, April 20). Canada Post reports $1.57 billion loss before tax for 2025 .
+
+[360] p31 x108: https://www.canadapost-postescanada.ca/cpc/en/our-company/news-and-media/corporate
+
+[361] p31 x108: -news/news-release/2026-04-20-canada-post-reports-157-billion-loss-before-tax-for-2025 Canadian National Railway. (2026, January 30). CN announces solid fourth quarter and
+
+[362] p31 x108: year-end results .
+
+[363] p31 x108: https://www.cn.ca/en/news/2026/01/cn-announces-solid-fourth-quarter-and-year-end-resu
+
+[364] p31 x108: lts/ Canadian Pacific Kansas City. (n.d.). Assistant trainmaster [Job posting]. LinkedIn.
+
+[365] p31 x108: https://ca.linkedin.com/jobs/view/assistant-trainmaster-at-cpkc-4454842731 Canadian Pacific Kansas City. (2026, January 28). CPKC showcases strength of precision
+
+[366] p31 x108: scheduled railroading; delivers record margins .
+
+[367] p32 x108: https://investor.cpkcr.com/news/press-release-details/2026/CPKC-showcases-strength-of-
+
+[368] p32 x108: Precision-Scheduled-Railroading-delivers-record-margins/default.aspx Cargojet. (2026, February 24). Cargojet announces fourth quarter financial results .
+
+[369] p32 x108: https://cargojet.com/wp-content/uploads/2026/02/CJT-Press-Release-Q4-2025.pdf DHL Supply Chain. (2026). Operations supervisor – distribution [Job posting]. LinkedIn.
+
+[370] p32 x108: https://ca.linkedin.com/jobs/view/operations-supervisor-distribution-at-dhl-supply-chain-
+
+[371] p32 x108: 4476976540 Domtar. (n.d.). Traffic office coordinator [Job posting].
+
+[372] p32 x108: https://jobs.domtar.com/job/Surrey-Traffic-Office-Coordinator-Brit-V3V3T3/129171534
+
+[373] p32 x108: 7/ DSV. (n.d.-a). Logistics coordinator [Job posting]. LinkedIn.
+
+[374] p32 x108: https://ca.linkedin.com/jobs/view/logistics-coordinator-at-dsv-global-transport-and-logisti
+
+[375] p32 x108: cs-4464804911 DSV. (n.d.-b). Operations, air export [Job posting].
+
+[376] p32 x108: https://jobs.dsv.com/job/Vancouver-Operations,-Air-Export-Brit-V6E-2Y3/1456214733/ FedEx Canada. (n.d.). Operations administrator II [Job posting]. LinkedIn.
+
+[377] p32 x108: https://ca.linkedin.com/jobs/view/operations-administrator-ii-at-fedex-canada-448058279
+
+[378] p32 x108: 2 Freightera. (n.d.-a). Company profile . https://www.freightera.com/company-profile Freightera. (n.d.-b). Low emission green freight transport marketplace .
+
+[379] p33 x108: https://www.freightera.com/green-freight Freightera. (2025, May 5). Freightera celebrates birthday with growth and emissions cuts .
+
+[380] p33 x108: https://www.freightera.com/blog/freightera-celebrates-birthday-with-growth-and-emissio
+
+[381] p33 x108: ns-cuts/ Gomez Albrecht, M., Green, M., & Hoffman, L. (2023). Principles of marketing . OpenStax.
+
+[382] p33 x108: https://openstax.org/details/books/principles-marketing Government of Canada. (n.d.-a). Transportation coordinator in Canada: Skills. Job Bank .
+
+[383] p33 x108: https://www.pe.jobbank.gc.ca/marketreport/skills/493/ca Government of Canada. (n.d.-b). Transportation logistics coordinator in Canada: Wages. Job
+
+[384] p33 x108: Bank . https://www.jobbank.gc.ca/marketreport/wages-occupation/27151/ca Government of Canada. (n.d.-c). Transportation logistics supervisor in Canada: Wages. Job
+
+[385] p33 x108: Bank . https://nt.jobbank.gc.ca/marketreport/wages-occupation/521/ca Hecny Transportation Canada. (n.d.). Logistics operations coordinator [Job posting]. LinkedIn.
+
+[386] p33 x108: https://ca.linkedin.com/jobs/view/logistics-operations-coordinator-at-hecny-transportatio
+
+[387] p33 x108: n-canada-4488471933 Holland Imports. (n.d.). Purchasing planner and inventory analyst [Job posting]. My Delta.
+
+[388] p33 x108: https://mydeltabc.ca/jobs/purchasing-planner-inventory-analyst-2740224 Innovation, Science and Economic Development Canada. (2018, July 17). Logistics in Canada .
+
+[389] p33 x108: https://ised-isde.canada.ca/site/logistics-canada/en Ken Research. (n.d.). Canada logistics market size, share & forecast, by service type, mode of
+
+[390] p33 x108: transport & end-use industry, 2026–2032 .
+
+[391] p33 x108: https://www.kenresearch.com/canada-logistics-market LinkedIn. (n.d.-a). A guide to creating engaging LinkedIn posts .
+
+[392] p34 x108: https://members.linkedin.com/create-start LinkedIn. (n.d.-b). Create a good LinkedIn profile .
+
+[393] p34 x108: https://www.linkedin.com/help/linkedin/answer/a554351 LinkedIn. (n.d.-c). Differences between profile appearances and profile views on LinkedIn .
+
+[394] p34 x108: https://www.linkedin.com/help/linkedin/answer/a7167501 LinkedIn. (n.d.-d). Order of your profile in people search results .
+
+[395] p34 x108: https://www.linkedin.com/help/linkedin/answer/a521944 LinkedIn. (n.d.-e). View post analytics for your content .
+
+[396] p34 x108: https://www.linkedin.com/help/linkedin/answer/a525196 Mordor Intelligence. (2026). Canada freight and logistics market size and share
+
+[397] p34 x108: analysis—Growth trends and forecasts (2026–2031) .
+
+[398] p34 x108: https://www.mordorintelligence.com/industry-reports/canada-freight-logistics-market-stu
+
+[399] p34 x108: dy Mullen Group. (n.d.). Senior transportation applications specialist [Job posting]. LinkedIn.
+
+[400] p34 x108: https://ca.linkedin.com/jobs/view/senior-transportation-applications-specialist-at-mullen-
+
+[401] p34 x108: group-ltd-4486991720 Mullen Group. (2026, February 12). Mullen Group Ltd. announces 2025 fourth quarter financial
+
+[402] p34 x108: results and filing of disclosure documents .
+
+[403] p34 x108: https://www.mullen-group.com/news/20260212-mullen-group-ltd-announces-2025-fourth
+
+[404] p34 x108: -quarter-financial-results-and-filing-of-disclosure-documents/ Normandin Transit. (n.d.). We’re hiring: Logistics coordinator | Napierville, QC [Job posting].
+
+[405] p34 x108: LinkedIn.
+
+[406] p34 x108: https://ca.linkedin.com/jobs/view/we-re-hiring-logistics-coordinator-napierville-qc-at-nor
+
+[407] p35 x108: mandin-transit-inc-4488388406 Purolator. (n.d.). Operations coordinator hub yard [Job posting]. LinkedIn.
+
+[408] p35 x108: https://ca.linkedin.com/jobs/view/operations-coordinator-hub-yard-at-purolator-inc-4480
+
+[409] p35 x108: 294803 Redwood Employment. (n.d.). Inventory control specialist [Job posting].
+
+[410] p35 x108: https://redwoodemployment.com/job/inventory-control-specialist/ Resume Worded. (n.d.). LinkedIn profile review . https://resumeworded.com/linkedin-review/ Rhenus Logistics. (n.d.). Ocean freight coordinator [Job posting].
+
+[411] p35 x108: https://www.rhenus.group/career/JR126647/ Rolls Right. (n.d.). Logistics coordinator [Job posting].
+
+[412] p35 x108: https://rollsright.ca/careers/logistics-coordinator-vancouver/ Sandvik. (n.d.). Inventory coordinator [Job posting]. My Maple Ridge.
+
+[413] p35 x108: https://mymapleridgebc.ca/jobs/inventory-coordinator-3423697 Seaspan. (n.d.). Inventory coordinator [Job posting]. My Burnaby.
+
+[414] p35 x108: https://myburnaby.ca/jobs/inventory-coordinator-3796615?from=employers/seaspan Statistics Canada. (2023, September 6). Canadian international merchandise trade, July 2023 .
+
+[415] p35 x108: https://www150.statcan.gc.ca/n1/daily-quotidien/230906/dq230906a-eng.htm Statistics Canada. (2026a, February 11). Annual retail trade, 2024 .
+
+[416] p35 x108: https://www150.statcan.gc.ca/n1/daily-quotidien/260211/dq260211b-eng.htm Statistics Canada. (2026b, August 28). Gross domestic product, income and expenditure, second
+
+[417] p35 x108: quarter 2026 .
+
+[418] p35 x108: https://www150.statcan.gc.ca/n1/daily-quotidien/260828/dq260828a-eng.htm TFI International. (2026, February 17). TFI International announces 2025 fourth quarter and
+
+[419] p35 x108: full-year results .
+
+[420] p36 x108: https://www.sec.gov/Archives/edgar/data/1588823/000119312526054656/tfii-ex99_1.ht
+
+[421] p36 x108: m Transport Canada. (2022). Transportation in Canada 2021: System performance .
+
+[422] p36 x108: https://tc.canada.ca/en/corporate-services/transparency/corporate-management-reporting/t
+
+[423] p36 x108: ransportation-canada-annual-reports/2021/system-performance Transport Canada. (2023). Transportation in Canada 2022: System performance .
+
+[424] p36 x108: https://tc.canada.ca/en/corporate-services/transparency/corporate-management-reporting/t
+
+[425] p36 x108: ransportation-canada-annual-reports/transportation-canada-2022/system-performance Transport Canada. (2024). Transportation in Canada 2023: System performance .
+
+[426] p36 x108: https://tc.canada.ca/en/corporate-services/transparency/corporate-management-reporting/t
+
+[427] p36 x108: ransportation-canada-annual-reports/transportation-canada-2023/system-performance Transport Canada. (2025a). Transportation in Canada 2024: Network performance .
+
+[428] p36 x108: https://tc.canada.ca/en/corporate-services/transparency/corporate-management-reporting/t
+
+[429] p36 x108: ransportation-canada-annual-reports/transportation-canada-2024/network-performance Transport Canada. (2025b). Transportation in Canada 2024: Role of Canada’s transportation
+
+[430] p36 x108: network .
+
+[431] p36 x108: https://tc.canada.ca/en/corporate-services/transparency/corporate-management-reporting/t
+
+[432] p36 x108: ransportation-canada-annual-reports/transportation-canada-2024/role-canada-s-transporta
+
+[433] p36 x108: tion-network Transport Canada. (2026). Transportation in Canada annual report 2025 .
+
+[434] p36 x108: https://tc.canada.ca/en/corporate-services/transparency/corporate-management-reporting/t
+
+[435] p37 x108: ransportation-canada-annual-reports/transportation-canada-annual-report-2025 UPS. (n.d.). Distribution supervisor I [Job posting]. LinkedIn.
+
+[436] p37 x108: https://ca.linkedin.com/jobs/view/distribution-supervisor-i-at-ups-4484819007
+
+[437] p38 x275: ## Appendix A
+
+[438] p38 x207: ## LinkedIn Job Advertisement Evidence
+
+[439] p38 x108: [[Table A1 provides the evidence and coding for the Metro Vancouver sample. Table A2 gives the direct links. I kept the national comparison in Table A3 to show how supervision, regulated operations and systems work differ from my immediate job targets..]]
+
+[440] p38 x72: ## Table A1
+
+[441] p38 x72: Evidence and Coding for the Metro Vancouver Job Sample
+
+[442] p38 x87: ## ID and advertisement [[Evidence and qualification examples]] Codes
+
+[443] p38 x72: A · Rolls Right Logistics Coordinator · Vancouver (Rolls Right, n.d.)
+
+[444] p38 x217: [[Truck routing and tracking, bills of lading, Office,]]
+
+[445] p38 x217: [[TMS, and customer issue resolution. Relevant]]
+
+[446] p38 x217: [[experience may substitute for a preferred degree.]]
+
+[447] p38 x462: C, D, T, X, S,
+
+[448] p38 x462: P B · Domtar Traffic Office Coordinator · Surrey (Domtar, n.d.)
+
+[449] p38 x217: [[Shipment entry and closeout, carrier emails,]]
+
+[450] p38 x217: [[completed files, and issue resolution with planners.]]
+
+[451] p38 x217: [[SAP is an asset.]]
+
+[452] p38 x462: C, D, S, P C · Rhenus Logistics Ocean Freight Coordinator · Richmond (Rhenus Logistics, n.d.)
+
+[453] p38 x217: [[Bookings, tracking, freight documents, claims and]]
+
+[454] p38 x217: [[status reports. Three or more years in freight]]
+
+[455] p38 x217: [[forwarding or logistics with strong ocean]]
+
+[456] p38 x217: [[experience.]]
+
+[457] p38 x462: C, D, T, X, P,
+
+[458] p38 x462: K D · DSV Logistics Coordinator · Richmond (DSV, n.d.-a)
+
+[459] p38 x217: [[Truck tracking, filing, warehouse orders and load]]
+
+[460] p38 x217: [[counts.]] Office and WMS are named. [[Dangerous]]
+
+[461] p38 x217: [[Goods Certification is an asset.]]
+
+[462] p38 x462: C, D, T, X, S,
+
+[463] p38 x462: I, P E · Aston Carter Logistics Coordinator · Richmond (Aston Carter, n.d.)
+
+[464] p38 x217: Schedules and customs records, carrier performance,
+
+[465] p38 x217: inventory and claims. One to two years of related
+
+[466] p38 x217: experience. [[SAP and intermediate Excel appear]]
+
+[467] p38 x217: [[under additional qualifications.]]
+
+[468] p38 x462: C, D, T, X, S,
+
+[469] p38 x462: I, P, K F · Hecny Transportation Canada Logistics Operations Coordinator · Vancouver (Hecny Transportation [[Canada, n.d.)]]
+
+[470] p38 x217: [[Tracks cross-border loads, maintains WMS]]
+
+[471] p38 x217: [[inventory and follows up on exceptions.]] Excel and
+
+[472] p38 x217: Outlook are listed. Working English plus Mandarin
+
+[473] p38 x217: or Cantonese is requested.
+
+[474] p38 x462: C, D, T, X, S,
+
+[475] p38 x462: I, P
+
+[476] p39 x87: ## ID and advertisement Evidence and qualification examples Codes
+
+[477] p39 x72: G · Redwood Employment Inventory Control Specialist · Surrey (Redwood Employment, n.d.)
+
+[478] p39 x217: [[Cycle counts, audit records, discrepancy]]
+
+[479] p39 x217: [[investigations, ERP and inventory analysis.]] Five or
+
+[480] p39 x217: more years in manufacturing inventory or supply
+
+[481] p39 x217: chain roles.
+
+[482] p39 x462: C, D, X, S, I,
+
+[483] p39 x462: P, K H · Seaspan Inventory Coordinator · North Vancouver (Seaspan, n.d.)
+
+[484] p39 x217: Cycle counts, stock accuracy, variance analysis and
+
+[485] p39 x217: KPI reporting. Advanced Excel and MRP/ERP. Five
+
+[486] p39 x217: years of manufacturing inventory and reporting
+
+[487] p39 x217: experience.
+
+[488] p39 x462: C, X, S, I, P, K I · Sandvik Inventory Coordinator · Surrey [[(Sandvik, n.d.)]]
+
+[489] p39 x217: Stock parameters, inventory counts, demand
+
+[490] p39 x217: planning support and performance reporting.
+
+[491] p39 x217: Inventory experience and Excel are listed.
+
+[492] p39 x462: C, X, I, K J · Holland Imports Purchasing Planner and Inventory Analyst · Burnaby (Holland Imports, n.d.)
+
+[493] p39 x217: Tracks factory and shipping milestones, manages
+
+[494] p39 x217: POs, forecasts and inventory parameters. ERP and
+
+[495] p39 x217: advanced Excel. SCMP or APICS/CPIM is
+
+[496] p39 x217: preferred.
+
+[497] p39 x462: C, D, T, X, S,
+
+[498] p39 x462: I, P, K
+
+[499] p39 x72: Note. C = stakeholder communication, D = operational records and documents, T = shipment scheduling or tracking, X = Excel or Microsoft Office, S = ERP, TMS, WMS or MRP, I = inventory or stock control, P = problem or exception resolution, K = reporting, KPI or trend analysis.
+
+[500] p39 x108: [[I coded D when the posting explicitly referred to operational records, forms or documentation. I coded S for a named system or system type. P required an explicit reference to problem-solving, discrepancy investigation or issue resolution. For K, I looked for formal reporting, performance measurement or analysis beyond routine customer updates.]]
+
+[501] p39 x72: ## Table A2
+
+[502] p39 x72: Direct Links to the Local Job Advertisements
+
+[503] p39 x79: ## ID Link to job description Source type
+
+[504] p39 x72: A Rolls Right · Logistics Coordinator · Vancouver
+
+[505] p39 x396: Employer or staffing firm
+
+[506] p39 x396: career page B Domtar · Traffic Office Coordinator · Surrey
+
+[507] p39 x396: Employer or staffing firm
+
+[508] p39 x396: career page
+
+[509] p40 x79: ## ID Link to job description Source type
+
+[510] p40 x72: C Rhenus Logistics · Ocean Freight Coordinator · Richmond
+
+[511] p40 x396: Employer or staffing firm
+
+[512] p40 x396: career page D DSV · Logistics Coordinator · Richmond LinkedIn job ad E Aston Carter · Logistics Coordinator · Richmond LinkedIn job ad F
+
+[513] p40 x111: Hecny Transportation Canada · Logistics Operations
+
+[514] p40 x111: Coordinator · Vancouver
+
+[515] p40 x396: LinkedIn job ad G
+
+[516] p40 x111: Redwood Employment · Inventory Control Specialist ·
+
+[517] p40 x111: Surrey
+
+[518] p40 x396: Employer or staffing firm
+
+[519] p40 x396: career page H Seaspan · Inventory Coordinator · North Vancouver
+
+[520] p40 x396: Public copy of employer job
+
+[521] p40 x396: text I Sandvik · Inventory Coordinator · Surrey
+
+[522] p40 x396: Public copy of employer job
+
+[523] p40 x396: text J
+
+[524] p40 x111: Holland Imports · Purchasing Planner and Inventory Analyst
+
+[525] p40 x111: · Burnaby
+
+[526] p40 x396: Public copy of employer job
+
+[527] p40 x396: text
+
+[528] p41 x72: ## Table A3
+
+[529] p41 x72: Additional LinkedIn Job Advertisements From the National Comparison
+
+[530] p41 x144: ## LinkedIn job advertisement Operating context
+
+[531] p41 x72: CPKC · Assistant Trainmaster [[(Canadian Pacific Kansas City, n.d.)]]
+
+[532] p41 x360: Rail operations and supervision Normandin Transit · Logistics Coordinator (Normandin Transit, n.d.)
+
+[533] p41 x360: Freight coordination in Quebec Canada Post · Supervisor Operations Relief (Canada Post, n.d.)
+
+[534] p41 x360: Frontline operations supervision Purolator · Operations Coordinator Hub Yard (Purolator, n.d.)
+
+[535] p41 x360: Parcel hub and yard coordination Mullen Group · Senior Transportation Applications Specialist (Mullen Group, n.d.)
+
+[536] p41 x360: [[Specialized transportation systems]] FedEx · Operations Administrator II (FedEx Canada, n.d.)
+
+[537] p41 x360: [[Operations administration]] UPS · Distribution Supervisor I (UPS, n.d.)
+
+[538] p41 x360: [[Warehouse supervision]] DHL Supply Chain · Operations Supervisor (DHL Supply Chain, 2026)
+
+[539] p41 x360: [[Distribution supervision]] Amazon · Area Manager II (Amazon, 2026)
+
+[540] p41 x360: [[Fulfilment and team management]]
+
+[541] p42 x275: ## Appendix B
+
+[542] p42 x165: ## My LinkedIn Profile and Analytics Before the Changes
+
+[543] p42 x108: [[Figures B1–B8 document my profile and analytics as I reviewed them on November 11, 2026. The analytics retain the reporting windows displayed in LinkedIn.]]
+
+[544] p42 x72: ## Figure B1
+
+[545] p42 x72: Profile Introduction and Banner
+
+[546] p43 x72: ## Figure B2
+
+[547] p43 x72: First-Day Analytics Dashboard
+
+[548] p43 x72: ## Figure B3
+
+[549] p43 x72: About Section
+
+[550] p44 x72: ## Figure B4
+
+[551] p44 x72: Recent Activity
+
+[552] p44 x72: ## Figure B5
+
+[553] p44 x72: Current and Previous Experience
+
+[554] p45 x72: ## Figure B6
+
+[555] p45 x72: Earlier Experience
+
+[556] p45 x72: ## Figure B7
+
+[557] p45 x72: Education
+
+[558] p46 x72: ## Figure B8
+
+[559] p46 x72: Course and Languages
+
+[560] p47 x275: ## Appendix C
+
+[561] p47 x194: ## Tool Assessment and Final Evidence to Add
+
+[562] p47 x72: ## ChatGPT Assessment Record
+
+[563] p47 x108: [[Prompt framing for reproducing my comparison: “Compare my LinkedIn headline, About, Experience and Skills with these Metro Vancouver logistics and inventory job descriptions. Identify the requirements already supported by my work, the evidence that is hard to find, and the qualifications I should verify before adding. Suggest wording based on my actual duties.”]]
+
+[564] p47 x108: [[I reviewed the suggested wording against my GLT and Garage responsibilities and against the source advertisements. The results I kept were a more focused headline, earlier placement of relevant experience, and clearer links between individual skills and work. I set aside suggestions that would imply advanced Excel or experience with systems I have not confirmed.]]
+
+[565] p47 x72: ## Resume Worded Evidence
+
+[566] p47 x108: [[Save the result of the LinkedIn Review for the profile before changes, using a saved copy of the original profile if the tool allows it. Record the review date and any overall score or section feedback the service displays. Repeat the review after applying the changes. Add both reports or relevant extracts, then explain which feedback led to a change and how that change relates to a target job. If the initial profile can no longer be submitted, label the first review with its actual profile version and date.]]
+
+[567] p48 x72: ## Evidence to Attach After Deployment
+
+[568] p48 x72: ## Table C1
+
+[569] p48 x72: Evidence for the Final Comparison
+
+[570] p48 x87: ## Evidence What I Will Attach Link to My Analysis
+
+[571] p48 x72: Profile sections [[Before and after views of my headline,]]
+
+[572] p48 x158: [[banner, About, Experience and Skills.]]
+
+[573] p48 x158: [[Include Featured once it is published.]]
+
+[574] p48 x356: [[Show the revised wording and identify]]
+
+[575] p48 x356: [[the vacancy requirement each change]]
+
+[576] p48 x356: [[addresses.]] Network counts [[Dated views showing followers,]]
+
+[577] p48 x158: [[following and exact connections when]]
+
+[578] p48 x158: [[available.]]
+
+[579] p48 x356: [[Use the same source for first and last]]
+
+[580] p48 x356: [[day. Enter both totals and the]]
+
+[581] p48 x356: [[difference in Table 9.]] Profile visibility [[Dated views of weekly search]]
+
+[582] p48 x158: [[appearances and profile viewers. Show]]
+
+[583] p48 x158: [[the date ranges and any searcher data the]]
+
+[584] p48 x158: [[account displays.]]
+
+[585] p48 x356: [[Compare like periods. Keep weekly]]
+
+[586] p48 x356: [[views and rolling 90-day viewers on]]
+
+[587] p48 x356: [[separate rows.]] Content performance
+
+[588] p48 x158: [[A list of posts by format and date, each]]
+
+[589] p48 x158: [[post link, and its impressions, reactions,]]
+
+[590] p48 x158: [[views and comments when available.]]
+
+[591] p48 x356: [[Attach individual post analytics and]]
+
+[592] p48 x356: [[the overall dashboard. Record the]]
+
+[593] p48 x356: [[observation window.]] Search keywords
+
+[594] p48 x158: [[The exact before-and-after text or a]]
+
+[595] p48 x158: [[marked list of role titles, skills and other]]
+
+[596] p48 x158: [[terms, with the section for each term.]]
+
+[597] p48 x356: [[Explain what moved, what was added]]
+
+[598] p48 x356: [[and why it reflects my actual]]
+
+[599] p48 x356: [[experience.]] Tool feedback [[Original and updated Resume Worded]]
+
+[600] p48 x158: [[results if available, plus the ChatGPT]]
+
+[601] p48 x158: [[assessment notes above and my review of]]
+
+[602] p48 x158: [[the suggestions.]]
+
+[603] p48 x356: [[Report observed feedback and identify]]
+
+[604] p48 x356: [[which suggestions I used.]]
+
+[605] p48 x108: [[I will label the final evidence by metric or profile section and include its capture date. If a value is unavailable, I will state that in the table. I will leave the last-day date and results blank until the comparison is complete. I will use Table C2 to record each publication and mark metrics unavailable when LinkedIn does not report them.]]
+
+[606] p49 x72: ## Table C2
+
+[607] p49 x72: Record of Publications and Engagement
+
+[608] p49 x82: ## Date, Format and
+
+[609] p49 x112: ## Link
+
+[610] p49 x191: ## Capture Date or
+
+[611] p49 x210: ## Window
+
+[612] p49 x287: ## Impressions Views Reactions Comments
+

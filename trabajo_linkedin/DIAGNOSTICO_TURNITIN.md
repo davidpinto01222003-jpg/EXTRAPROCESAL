@@ -6,9 +6,9 @@
 |---|---|---|
 | `Trabaj_linkedin_revisado_2.pdf` | El **mismo informe original** (entrega `trn:oid:::3117:653789619`, 9.392 palabras) | 71 % |
 | `Trabajo_LinkedIn_revisado_3.pdf` | Informe de **mi v3** (entrega `…653860694`, 9.205 palabras) | **73 %** |
-| `Trabajo_linkedin_1.pdf` | **No es un informe de Turnitin.** Es otra versión del trabajo (47 páginas, sin marcas) | Sin dato |
+| `Trabajo_linkedin_1.pdf` y su informe `Trabajo_linkedin_1_1.pdf` | Otra versión del trabajo, con oraciones más cortas (entrega `…653317787`, 8.227 palabras, 11 de noviembre) | **88 %** |
 
-`Trabajo_linkedin_1` comparte cerca de la mitad de sus frases con la versión "revisado", tanto en los párrafos marcados como en los no marcados. Es otra versión del mismo texto, no un borrador distinto. Sin su informe no se puede saber cuánto marca.
+`Trabajo_linkedin_1` comparte cerca de la mitad de sus frases con la versión "revisado", tanto en los párrafos marcados como en los no marcados. Es otra versión del mismo texto, no un borrador distinto, y su informe da **88 %**: es la versión que más marca. En orden cronológico: versión 1, 88 %; "revisado", 71 %; v3, 73 %. La diferencia entre 71 y 73 está dentro de lo que varía Turnitin de una entrega a otra.
 
 ## 2. Qué marcó Turnitin en la v3 (comparado con el original)
 
