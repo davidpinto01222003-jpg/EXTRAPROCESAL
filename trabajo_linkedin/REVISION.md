@@ -19,7 +19,7 @@ Turnitin dejó pasar los datos y marcó la parte de razonamiento y de plan: los 
 
 ## 2. Los patrones
 
-1. **Oraciones enormes y todas iguales.** La oración media tenía **44,6 palabras**. De 122 oraciones, 75 pasaban de 40 palabras y solo una tenía menos de 15. Casi todos los párrafos eran una o dos oraciones larguísimas. Por ejemplo, la introducción completa era una sola oración de 62 palabras. Ese ritmo parejo es lo que más delata un texto generado o pasado por un parafraseador. El nombre del archivo ("revisado") sugiere que el texto ya había pasado por una revisión de ese tipo. Unir oraciones con comas sube la detección en vez de bajarla.
+1. **Oraciones enormes y todas iguales.** La oración media tenía **44,6 palabras**. De 122 oraciones, 75 pasaban de 40 palabras y solo una tenía menos de 15. Casi todos los párrafos eran una o dos oraciones larguísimas. Por ejemplo, la introducción completa era una sola oración de 63 palabras. Ese ritmo parejo es lo que más delata un texto generado o pasado por un parafraseador. El nombre del archivo ("revisado") sugiere que el texto ya había pasado por una revisión de ese tipo. Unir oraciones con comas sube la detección en vez de bajarla.
 2. **Cadenas de subordinadas con los mismos conectores.** Hay 37 *which*, 19 *while*, 13 *since*, 13 *because* y 10 *although*. A eso se suman fórmulas fijas como *which is why*, *for that reason*, *so that*, *in light of*, *on that basis* e *in practical terms*. En promedio había 0,69 conectores de este tipo por oración.
 3. **El plan en futuro, repetido.** *I will* / *I would* aparecían 47 veces, casi siempre encadenados con *so that* o *whenever*.
 4. **Frases que anuncian en vez de decir.** Algunos ejemplos:
