@@ -17,6 +17,9 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
 import contenido as C
+import v3_textos
+
+C.NUEVO.update(v3_textos.V3)  # tercera pasada
 
 AQUI = Path(__file__).parent
 P = json.load(open(AQUI / "datos/parrafos.json"))
